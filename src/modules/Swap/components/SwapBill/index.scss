@@ -1,0 +1,45 @@
+.swap-bill {
+    width: 100%;
+    max-width: 442px;
+    padding: 16px;
+    margin: 0 auto;
+
+    &__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__info {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: .75px;
+        color: rgba(255, 255, 266, .64);
+    }
+
+    &__icn {
+        width: 16px;
+        height: 16px;
+        margin-left: 6px;
+        opacity: .5;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &__val {
+        font-size: 14px;
+        line-height: 20px;
+        text-align: right;
+        letter-spacing: .75px;
+    }
+}
