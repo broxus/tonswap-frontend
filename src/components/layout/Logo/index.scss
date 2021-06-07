@@ -1,0 +1,22 @@
+.logo {
+    display: block;
+    width: 135px;
+    margin-right: 40px;
+
+    &__mob {
+        display: none;
+    }
+
+    @media only screen and (max-width: 767px) {
+        width: 28px;
+        margin-right: 0;
+
+        &__mob {
+            display: block;
+        }
+
+        &__desktop {
+            display: none;
+        }
+    }
+}

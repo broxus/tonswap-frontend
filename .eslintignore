@@ -1,0 +1,6 @@
+/dist
+node_modules/*
+__tests__/*
+**/*-test.js
+/*.js
+/webpack.config.ts

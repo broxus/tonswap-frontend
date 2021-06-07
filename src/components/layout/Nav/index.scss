@@ -1,0 +1,36 @@
+.main-nav {
+    ul {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        li {
+            margin-right: 40px;
+
+            a {
+                color: #fff;
+                font-size: 16px;
+                letter-spacing: .25px;
+                opacity: .48;
+                font-weight: 500;
+
+                &:hover,
+                &.active {
+                    opacity: 1;
+                }
+            }
+        }
+    }
+
+    @media only screen and (max-width: 767px) {
+        ul {
+            li {
+                margin-right: 24px;
+
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}

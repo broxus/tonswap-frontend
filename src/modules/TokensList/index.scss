@@ -1,0 +1,104 @@
+@import '~@/styles/_mix';
+
+.swap-popup-search {
+    margin: 12px 0 20px;
+
+    &__input {
+        @include input-reset;
+        height: 36px;
+        padding: 0 12px;
+        border: 1px solid rgba(255, 255, 255, .16);
+        color: #fff;
+        cursor: text;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: .75px;
+
+        &::-webkit-input-placeholder {
+            opacity: .24;
+            color: #fff;
+        }
+
+        &::-moz-placeholder {
+            opacity: .24;
+            color: #fff;
+        }
+
+        &:-moz-placeholder {
+            opacity: .24;
+            color: #fff;
+        }
+
+        &:-ms-input-placeholder {
+            opacity: .24;
+            color: #fff;
+        }
+
+        &::placeholder {
+            opacity: .24;
+            color: #fff;
+        }
+
+        &:-webkit-autofill {
+            -webkit-text-fill-color: #fff !important;
+            color: #fff !important;
+        }
+    }
+}
+
+.swap-popup-list {
+    flex-grow: 1;
+    overflow-y: auto;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    width: calc(100% + 40px);
+    margin-left: -20px;
+}
+
+.swap-popup-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 12px 16px;
+    color: #fff;
+
+    &.disabled {
+        opacity: .32;
+        cursor: default;
+        user-select: none;
+        pointer-events: none;
+    }
+
+    &__right {
+        text-align: right;
+        line-height: 20px;
+        letter-spacing: .25px;
+        font-weight: 500;
+    }
+
+    &__left {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    &__icon {
+        width: 24px;
+        flex-shrink: 0;
+        margin-right: 12px;
+    }
+
+    &__name {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 20px;
+        letter-spacing: .25px;
+    }
+
+    &__txt {
+        font-size: 12px;
+        line-height: 16px;
+        letter-spacing: .4px;
+        opacity: .5;
+    }
+}

@@ -1,0 +1,95 @@
+html {
+    -webkit-locale: 'en-150';
+    direction: ltr;
+    font-size: 10px;
+    min-height: 100%;
+    unicode-bidi: isolate;
+}
+
+html,
+body {
+    -webkit-tap-highlight-color: transparent;
+    min-height: 100%;
+    width: 100%;
+}
+
+body {
+    -moz-font-feature-settings: 'kern';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: none;
+    background: radial-gradient(50% 100% at 0% 0%, rgba(247, 97, 42, 0.16) 0%, rgba(246, 97, 42, 0) 100%),
+                radial-gradient(50% 100% at 100% 100%, rgba(197, 228, 243, 0.16) 0%, rgba(197, 228, 243, 0) 100%),
+                #050B2E;
+    color: #fff;
+    font: 400 16px/1.2 'PT Root UI';
+    min-width: 310px;
+    min-height: 100%;
+    opacity: 1;
+    overflow-x: hidden;
+    position: relative;
+}
+
+ol,
+ul,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+q,
+figure,
+figcaption,
+blockquote,
+cite,
+fieldset,
+hr {
+    border: 0 none;
+    margin: 0;
+    padding: 0;
+}
+
+ul li,
+ol li {
+    list-style: none;
+}
+
+a {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    outline: none;
+    text-decoration: none;
+    transition: .25s ease;
+
+    &:-moz-any-link:focus,
+    &:-moz-focusring,
+    &::-moz-focus-inner,
+    &::-moz-focus-outer {
+        outline: 0 !important;
+        outline: none;
+    }
+
+    &:active {
+        outline: none;
+    }
+
+    &[href^='tel:'],
+    &[href^='mailto:'] {
+        white-space: nowrap;
+    }
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+[type='number']::-webkit-inner-spin-button,
+[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    height: auto;
+    margin: 0;
+}

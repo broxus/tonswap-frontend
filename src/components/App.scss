@@ -1,0 +1,16 @@
+@import '~@/styles/index.scss';
+
+.wrapper {
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.main {
+    flex-grow: 1;
+}
