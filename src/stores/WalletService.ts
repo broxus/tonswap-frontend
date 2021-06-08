@@ -253,7 +253,7 @@ export class WalletService {
         )
         this.#contractSubscriber.on('data', event => {
             log(
-                '%cTON Provider%c contractStateChanged',
+                '%cTON Provider%c The wallet\'s `contractStateChanged` event was captured',
                 'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                 'color: #c5e4f3',
                 event,
@@ -268,7 +268,7 @@ export class WalletService {
         )
         this.#transactionsSubscriber.on('data', event => {
             log(
-                '%cTON Provider%c contractStateChanged',
+                '%cTON Provider%c The wallet\'s `transactionsFound` event was captured',
                 'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                 'color: #c5e4f3',
                 event,

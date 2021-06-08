@@ -205,9 +205,10 @@ export class TokensCacheService {
     /**
      *
      * @param {string} root
+     * @param {string} prefix
      * @returns {Promise<void>}
      */
-    public async watch(root: string): Promise<void> {
+    public async watch(root: string, prefix: string): Promise<void> {
         if (!this.wallet.address) {
             return
         }
@@ -226,12 +227,13 @@ export class TokensCacheService {
         }
 
         if (token.wallet) {
-            const hasSubscriber = this.#tokensBalancesSubscribers.has(token.root)
+            const key = `${prefix}-${token.root}`
+            const hasSubscriber = this.#tokensBalancesSubscribers.has(key)
 
             if (hasSubscriber) {
                 try {
-                    this.#tokensBalancesSubscribers.get(token.root)?.unsubscribe()
-                    this.#tokensBalancesSubscribers.delete(token.root)
+                    this.#tokensBalancesSubscribers.get(key)?.unsubscribe()
+                    this.#tokensBalancesSubscribers.delete(key)
                 }
                 catch (e) {
                     log('Cannot subscribe on token balance update', e)
@@ -241,22 +243,23 @@ export class TokensCacheService {
             const address = new Address(token.wallet)
 
             this.#tokensBalancesSubscribers.set(
-                token.root,
+                key,
                 (await ton.subscribe('contractStateChanged', {
                     address,
-                })).on('data', async () => {
-                    try {
-                        const balance = await TokenWallet.balance({
-                            wallet: address,
-                        })
-                        this.updateTokenBalance(token.root, balance)
-                    }
-                    catch (e) {}
+                })).on('data', async event => {
+                    log(
+                        '%cTON Provider%c The token\'s `contractStateChanged` event was captured',
+                        'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
+                        'color: #c5e4f3',
+                        event,
+                    )
+                    await this.syncToken(token.root)
                 }),
             )
 
             log(
-                `%cTON Provider%c Subscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates`,
+                `%cTON Provider%c Subscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
+               Key: (${key})`,
                 'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                 'color: #c5e4f3',
                 'color: #bae701',
@@ -270,9 +273,10 @@ export class TokensCacheService {
     /**
      *
      * @param {string} root
+     * @param {string} prefix
      * @returns {Promise<void>}
      */
-    public async unwatch(root: string): Promise<void> {
+    public async unwatch(root: string, prefix: string): Promise<void> {
         if (!this.wallet.address) {
             return
         }
@@ -283,7 +287,8 @@ export class TokensCacheService {
             return
         }
 
-        const subscriber = this.#tokensBalancesSubscribers.get(token.root)
+        const key = `${prefix}-${token.root}`
+        const subscriber = this.#tokensBalancesSubscribers.get(key)
 
         try {
             await subscriber?.unsubscribe()
@@ -292,10 +297,11 @@ export class TokensCacheService {
             log('Cannot unsubscribe from token balance update', e)
         }
 
-        this.#tokensBalancesSubscribers.delete(token.root)
+        this.#tokensBalancesSubscribers.delete(key)
 
         log(
-            `%cTON Provider%c Unsubscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates`,
+            `%cTON Provider%c Unsubscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
+           Key: (${key})`,
             'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
             'color: #c5e4f3',
             'color: #bae701',

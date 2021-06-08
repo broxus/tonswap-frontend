@@ -15,7 +15,7 @@ type Props = {
 
 
 function InnerItem({ disabled, token, onSelect }: Props): JSX.Element {
-    const balance = useTokenFormattedBalance(token)
+    const balance = useTokenFormattedBalance(token, { subscriberPrefix: 'list' })
 
     const onClick = () => {
         onSelect?.(token)

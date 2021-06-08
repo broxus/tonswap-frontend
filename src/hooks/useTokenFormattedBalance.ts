@@ -4,11 +4,26 @@ import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 import { error, formatBalance } from '@/utils'
 
 
+type HookOptions = {
+    dexAccountBalance?: string;
+    subscriberPrefix?: string;
+    watchOnMount?: boolean;
+    unwatchOnUnmount?: boolean;
+}
+
+
 export function useTokenFormattedBalance(
     token?: TokenCache,
-    dexAccountBalance?: string,
+    options?: HookOptions,
 ): string {
     const tokensCache = useTokensCache()
+
+    const {
+        dexAccountBalance,
+        subscriberPrefix = 'sub',
+        watchOnMount = true,
+        unwatchOnUnmount = watchOnMount as boolean,
+    } = { ...options }
 
     const [balance, setBalance] = React.useState(
         formatBalance(
@@ -37,13 +52,15 @@ export function useTokenFormattedBalance(
             }).catch(err => {
                 error('Token update failure', err)
             }).finally(async () => {
-                await tokensCache.watch(token.root)
+                if (watchOnMount) {
+                    await tokensCache.watch(token.root, subscriberPrefix)
+                }
             })
         }
 
         return () => {
-            if (token) {
-                tokensCache.unwatch(token.root)
+            if (token && unwatchOnUnmount) {
+                tokensCache.unwatch(token.root, subscriberPrefix)
             }
         }
     }, [token])

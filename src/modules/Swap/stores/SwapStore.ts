@@ -193,7 +193,7 @@ export class SwapStore {
             | 'handleTransactionResult'
         >(this, {
             changeData: action.bound,
-            reverseTokens: action.bound,
+            toggleTokensDirection: action.bound,
             handleAmountChange: action.bound,
             handleLeftTokenChange: action.bound,
             handleRightTokenChange: action.bound,
@@ -235,7 +235,7 @@ export class SwapStore {
     /**
      *
      */
-    public reverseTokens(): void {
+    public toggleTokensDirection(): void {
         if (this.isLoading) {
             return
         }
@@ -252,13 +252,6 @@ export class SwapStore {
         this.state.priceDirection = this.priceDirection === SwapPriceDirection.LTR
             ? SwapPriceDirection.RTL
             : SwapPriceDirection.LTR
-    }
-
-    /**
-     *
-     */
-    public cleanTransactionResult(): void {
-        this.transactionResult = undefined
     }
 
     /**
@@ -327,18 +320,23 @@ export class SwapStore {
     }
 
     /**
-     *
-     */
-    public async calculate(): Promise<void> {
-        await this.handleAmountChange()
-    }
-
-    /**
-     *
+     * @param {(string | undefined)[]} amounts
+     * @param {(string | undefined)[]} prevAmounts
      * @protected
      */
-    protected async handleAmountChange(): Promise<void> {
-        if (this.isLoading || !this.wallet.address) {
+    protected async handleAmountChange(
+        amounts: (string | undefined)[] = [],
+        prevAmounts: (string | undefined)[] = [],
+    ): Promise<void> {
+        const [leftAmount, rightAmount] = amounts
+        const [prevLeftAmount, prevRightAmount] = prevAmounts
+
+        if (
+            this.isLoading
+            || !this.wallet.address
+            || (this.direction === SwapDirection.LTR && prevRightAmount !== rightAmount)
+            || (this.direction === SwapDirection.RTL && prevLeftAmount !== leftAmount)
+        ) {
             return
         }
 
@@ -382,18 +380,19 @@ export class SwapStore {
                 rightBN = b
             }
 
-            if (this.state.direction === SwapDirection.RTL && this.isEnoughLiquidity) {
+            if (this.direction === SwapDirection.RTL && this.isEnoughLiquidity) {
                 if (this.rightAmount) {
-                    const amBN = new BigNumber(this.rightAmount)
-                        .shiftedBy(decimalsRight)
+                    const amBN = new BigNumber(this.rightAmount).shiftedBy(decimalsRight)
 
                     runInAction(() => {
                         this.state.isEnoughLiquidity = amBN.lt(rightBN)
-
-                        if (!this.isEnoughLiquidity) {
-                            this.data.leftAmount = ''
-                        }
                     })
+
+                    if (!this.isEnoughLiquidity) {
+                        runInAction(() => {
+                            this.data.leftAmount = ''
+                        })
+                    }
                 }
             }
 
@@ -414,13 +413,8 @@ export class SwapStore {
                     )
                 })
 
-                const decimalsLeftM = new BigNumber(10)
-                    .pow(decimalsLeft)
-                    .toString()
-
-                const decimalsRightM = new BigNumber(10)
-                    .pow(decimalsRight)
-                    .toString()
+                const decimalsLeftM = new BigNumber(10).pow(decimalsLeft).toString()
+                const decimalsRightM = new BigNumber(10).pow(decimalsRight).toString()
 
                 if (
                     (
@@ -541,7 +535,7 @@ export class SwapStore {
                     }
                     else {
                         runInAction(() => {
-                            this.data.rightAmount = undefined
+                            this.data.rightAmount = ''
                         })
                     }
                 }
@@ -624,6 +618,7 @@ export class SwapStore {
         runInAction(() => {
             this.data.priceDecimalsLeft = decimalsLeft
             this.data.priceDecimalsRight = decimalsRight
+
             this.state.isValid = new BigNumber(this.expectedAmount || 0).gt(0)
                 && typeof (this.pair) !== 'undefined'
                 && typeof (this.amount) !== 'undefined'
@@ -631,6 +626,7 @@ export class SwapStore {
                 && new BigNumber(this.amount || 0).gt(0)
                 && typeof (this.leftToken?.wallet) !== 'undefined'
                 && new BigNumber(this.leftToken?.balance || 0).gte(this.amount)
+
             this.state.isLoading = false
         })
     }
@@ -755,7 +751,7 @@ export class SwapStore {
                 runInAction(() => {
                     this.transactionResult = {
                         receivedAmount: (res.input.result as any).received.toString(),
-                        receivedDecimals: this.leftToken?.decimals,
+                        receivedDecimals: this.rightToken?.decimals,
                         receivedIcon: this.rightToken?.icon,
                         receivedRoot: this.rightToken?.root,
                         receivedSymbol: this.rightToken?.symbol,
@@ -769,10 +765,13 @@ export class SwapStore {
 
                         transactionHash: transaction.id.hash,
                     }
+
                     this.state.isSwapping = false
                     this.state.isLoading = false
                     this.state.isValid = false
+
                     delete this.state.processingId
+
                     this.data.leftAmount = ''
                     this.data.rightAmount = ''
                 })
@@ -825,9 +824,9 @@ export class SwapStore {
      *
      */
     public start(): void {
-        // this.#amountsDisposer = reaction(() => [this.leftAmount, this.rightAmount], this.handleAmountChange, {
-        //     delay: 700,
-        // })
+        this.#amountsDisposer = reaction(() => [this.leftAmount, this.rightAmount], this.handleAmountChange, {
+            delay: 700,
+        })
         this.#leftTokenDisposer = reaction(() => this.leftToken, this.handleLeftTokenChange)
         this.#rightTokenDisposer = reaction(() => this.rightToken, this.handleRightTokenChange)
         this.#slippageDisposer = reaction(() => this.slippage, this.handleSlippageChange)
@@ -837,15 +836,30 @@ export class SwapStore {
     }
 
     /**
-     *
+     * Manually dispose all of the internal subscribers.
+     * Clean last transaction result, reset swap `bill`, `state` and `data` to default values.
      */
     public dispose(): void {
-        // this.#amountsDisposer?.()
         this.#leftTokenDisposer?.()
         this.#rightTokenDisposer?.()
         this.#transactionDisposer?.()
         this.cleanTransactionResult()
+        this.cleanup()
+    }
 
+    /**
+     * Manually clean last transaction result
+     */
+    public cleanTransactionResult(): void {
+        this.transactionResult = undefined
+    }
+
+    /**
+     * Reset swap `bill`, `state` and `data` to default values.
+     * The selected token's pair will not be reset.
+     * @private
+     */
+    private cleanup(): void {
         this.bill = DEFAULT_SWAP_BILL
         this.data = {
             ...DEFAULT_SWAP_DATA,
@@ -853,8 +867,6 @@ export class SwapStore {
             rightToken: this.rightToken,
         }
         this.state = DEFAULT_SWAP_STATE
-
-        log('Dispose swap')
     }
 
     public get amount(): SwapBill['amount'] {

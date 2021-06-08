@@ -47,9 +47,36 @@ export default (_: any, options: any): WebpackConfig => {
      * -------------------------------------------------------------
      */
 
-    config.optimization = {
+    config.optimization = isDevelopment ? {
         splitChunks: {
-            chunks: 'all',
+            cacheGroups: {
+                default: false,
+                vendors: false,
+            },
+        },
+    } : {
+        splitChunks: {
+            chunks: (chunk) => !/^(polyfills|pages|modules)$/.test(chunk.name),
+            cacheGroups: {
+                vendor: {
+                    chunks: 'all',
+                    name: 'vendors',
+                    test: /(?<!node_modules.*)[\\/]node_modules[\\/]/,
+                    priority: 40,
+                    enforce: true,
+                },
+                common: {
+                    name: 'commons',
+                    test: /(common|layout|hooks|misc)/,
+                    minChunks: 1,
+                    priority: 30,
+                    reuseExistingChunk: true,
+                },
+                default: false,
+                vendors: false,
+            },
+            maxInitialRequests: 10,
+            minSize: 30000,
         },
     }
 
@@ -204,17 +231,7 @@ export default (_: any, options: any): WebpackConfig => {
      * -------------------------------------------------------------
      */
 
-    config.stats = {
-        assets: true,
-        assetsSort: 'field',
-        chunks: false,
-        colors: true,
-        errors: true,
-        entrypoints: false,
-        performance: true,
-        timings: true,
-        version: true,
-    }
+    config.stats = 'summary'
 
     return config
 }

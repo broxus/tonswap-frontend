@@ -17,7 +17,6 @@ type Props = {
     isValid?: boolean;
     token?: TokenCache;
     value?: string;
-    onBlur?(): void;
     onChange?(value: string): void;
     onToggleTokensList?(): void;
 }
@@ -26,11 +25,7 @@ type Props = {
 function Field({ token, ...props }: Props): JSX.Element {
     const intl = useIntl()
 
-    const balance = useTokenFormattedBalance(token)
-
-    const onBlur: React.FocusEventHandler<HTMLInputElement> = () => {
-        props.onBlur?.()
-    }
+    const balance = useTokenFormattedBalance(token, { subscriberPrefix: 'field' })
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         props.onChange?.(event.target.value)
@@ -62,7 +57,6 @@ function Field({ token, ...props }: Props): JSX.Element {
                     value={props.value}
                     readOnly={props.disabled}
                     step="any"
-                    onBlur={onBlur}
                     onChange={onChange}
                 />
                 {token == null ? (
