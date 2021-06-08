@@ -49,6 +49,7 @@
     color: #fff;
     font-weight: bold;
     font-size: 24px;
+    cursor: text;
 
     &::-webkit-input-placeholder {
         opacity: .32;
@@ -133,12 +134,13 @@
 
         svg {
             fill: #C5E4F3;
-            transition: fill 0.15s ease-in-out;
+            transition: fill .15s ease-in-out;
         }
     }
 
-    &.disabled {
-        cursor: not-allowed;
+    &.disabled,
+    &:disabled {
+        cursor: not-allowed !important;
     }
 
     @media only screen and (max-width: 767px) {
@@ -203,7 +205,8 @@
         svg { fill: #fff; }
     }
 
-    &.disabled {
-        cursor: not-allowed;
+    &.disabled,
+    &:disabled {
+        cursor: not-allowed !important;
     }
 }

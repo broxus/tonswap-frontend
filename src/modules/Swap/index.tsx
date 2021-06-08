@@ -25,10 +25,6 @@ export function Swap(): JSX.Element {
     const swap = useSwap()
     const swapForm = useSwapForm()
 
-    const onBlur = async () => {
-        await swap.calculate()
-    }
-
     return (
         <>
             <div className="swap">
@@ -55,7 +51,6 @@ export function Swap(): JSX.Element {
                                         isValid={useBalanceValidation(swap.leftToken, swap.leftAmount)}
                                         token={swap.leftToken}
                                         value={swap.leftAmount}
-                                        onBlur={onBlur}
                                         onChange={swapForm.onChangeData('leftAmount')}
                                         onToggleTokensList={swapForm.showTokensList('leftToken')}
                                     />
@@ -64,7 +59,7 @@ export function Swap(): JSX.Element {
                                         className={classNames('swap-form-change', {
                                             loading: swap.isLoading || swap.isSwapping,
                                         })}
-                                        onClick={swap.reverseTokens}
+                                        onClick={swap.toggleTokensDirection}
                                     >
                                         <Icon icon="reverse" />
                                     </div>
@@ -80,7 +75,6 @@ export function Swap(): JSX.Element {
                                             : true}
                                         token={swap.rightToken}
                                         value={swap.rightAmount}
-                                        onBlur={onBlur}
                                         onChange={swapForm.onChangeData('rightAmount')}
                                         onToggleTokensList={swapForm.showTokensList('rightToken')}
                                     />
