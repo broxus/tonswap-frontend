@@ -1,0 +1,66 @@
+@keyframes checking {
+    from {
+        border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+    to {
+        border: 1px solid rgba(116, 166, 255, 0.76);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.switcher {
+    display: block;
+
+    input{ display: none; }
+
+    &__handle {
+        display: block;
+        cursor: pointer;
+        position: relative;
+        width: 32px;
+        height: 16px;
+        border-radius: 8px;
+        background-color: rgba(255, 255, 255, 0.4);
+        transition: background-color 0.25s;
+
+        &::after {
+            content: '';
+            display: block;
+            position: absolute;
+            background-color: #fff;
+            top: -1px;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            transition: left 0.25s, width 0.15s;
+        }
+
+    }
+
+    input:checked + .switcher__handle {
+        background-color: #e6ac00;
+
+        &::after{ left: 14px; }
+    }
+}
+
+.divider {
+    background: none;
+    border-top: 1px dashed rgba(255, 255, 255, 0.16);
+    margin: 16px 0;
+    opacity: 1;
+}
+
+.spin {
+    animation: rotate 1s linear infinite;
+}

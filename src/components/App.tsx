@@ -9,9 +9,11 @@ import {
 
 import { InitializingModal } from '@/components/common/InitializingModal'
 import { Header } from '@/components/layout/Header'
-import { Account } from '@/modules/Account'
 import messages from '@/lang/en'
+import { Account } from '@/modules/Account'
 import Swap from '@/pages/swap'
+import Pool from '@/pages/pool'
+import { noop } from '@/utils'
 
 import './App.scss'
 
@@ -23,6 +25,7 @@ export function App(): JSX.Element {
             locale="en"
             defaultLocale="en"
             messages={messages}
+            onError={noop}
         >
             <Router>
                 <div className="wrapper">
@@ -34,6 +37,9 @@ export function App(): JSX.Element {
                             </Route>
                             <Route path="/swap">
                                 <Swap />
+                            </Route>
+                            <Route path="/pool">
+                                <Pool />
                             </Route>
                         </Switch>
                     </main>

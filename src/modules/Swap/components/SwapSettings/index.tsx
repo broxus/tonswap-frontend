@@ -4,6 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { SwapStoreDataProp } from '@/modules/Swap/types'
 
 import './index.scss'
 
@@ -37,7 +38,7 @@ function Settings(): JSX.Element {
     }
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
-        swap.changeData('slippage', event.target.value)
+        swap.changeData(SwapStoreDataProp.SLIPPAGE, event.target.value)
     }
 
     React.useEffect(() => {
@@ -61,7 +62,7 @@ function Settings(): JSX.Element {
                 <Icon icon="config" />
             </button>
             {isOpen && (
-                <div ref={popupRef} className="swap-settings__popup">
+                <div ref={popupRef} className="swap-settings__drop">
                     <h3 className="swap-settings__title">
                         {intl.formatMessage({
                             id: 'SWAP_SETTINGS_DROP_TITLE',

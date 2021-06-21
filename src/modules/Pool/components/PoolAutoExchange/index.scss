@@ -1,0 +1,50 @@
+.pool-auto-exchange {
+    margin: 16px 0;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+
+    &:last-child { margin-bottom: 0;}
+
+    &__title {
+        margin-bottom: 10px;
+        font-weight: bold;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0.75px;
+    }
+
+    &__wrap {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+
+    .pool-switcher {
+        flex-shrink: 0;
+        margin: 6px 14px 6px 10px;
+    }
+
+    @media only screen and (max-width: 767px) {
+        .pool-switcher { margin-left: 0; }
+    }
+
+    @media only screen and (max-width: 500px) {
+        &__wrap { display: block; }
+    }
+}
+
+.pool-auto-exchange-btn {
+    flex-shrink: 0;
+    margin-left: 10px;
+
+    @media only screen and (max-width: 500px) {
+        margin: 10px 0 0;
+    }
+}
+
+.pool-auto-exchange-txt {
+    flex-grow: 1;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.4px;
+}

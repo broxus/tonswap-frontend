@@ -123,15 +123,6 @@ const baseConfig = {
         'no-empty': ['warn', {
             allowEmptyCatch: true,
         }],
-        'valid-jsdoc': ['warn', {
-            prefer: {
-                return: 'returns',
-            },
-            requireParamDescription: false,
-            requireReturn: false,
-            requireReturnDescription: false,
-            requireReturnType: false,
-        }],
 
         // Variables
         'no-catch-shadow': 'error',

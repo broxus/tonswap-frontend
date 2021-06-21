@@ -54,3 +54,25 @@ export async function checkPair(leftRoot: string, rightRoot: string): Promise<Ad
 
     return pairAddress
 }
+
+export async function getDexAccount(wallet: string): Promise<string | undefined> {
+    const address = await Dex.accountAddress(new Address(wallet))
+
+    if (!address) {
+        return undefined
+    }
+
+    const { state } = await ton.getFullContractState({ address })
+
+    if (!state?.isDeployed) {
+        return undefined
+    }
+
+    try {
+        await Dex.accountVersion(address)
+        return address.toString()
+    }
+    catch (e) {
+        return undefined
+    }
+}

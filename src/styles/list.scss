@@ -1,4 +1,4 @@
-.swap-bill {
+.list-bill {
     width: 100%;
     max-width: 442px;
     padding: 16px;
@@ -21,8 +21,8 @@
         justify-content: flex-start;
         font-size: 14px;
         line-height: 20px;
-        letter-spacing: .75px;
-        color: rgba(255, 255, 266, .64);
+        letter-spacing: 0.75px;
+        color: rgba(255, 255, 266, 0.64);
     }
 
     &__icn {
@@ -40,6 +40,6 @@
         font-size: 14px;
         line-height: 20px;
         text-align: right;
-        letter-spacing: .75px;
+        letter-spacing: 0.75px;
     }
 }

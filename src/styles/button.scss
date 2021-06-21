@@ -106,6 +106,25 @@
     }
 }
 
+.btn-icon {
+    border: none 0;
+    height: auto;
+    width: auto;
+    padding: 0;
+    opacity: 0.5;
+    transition: opacity 0.15s ease-in-out;
+    color: #fff;
+    margin-left: 7px;
+    vertical-align: middle;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
 .btn--grey {
     @include btn-reset;
     padding: 0 16px;

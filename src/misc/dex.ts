@@ -45,7 +45,7 @@ export const WTON_USDC_PAIR_ADDRESS = new AddressLiteral('0:7dec631cd2c01472838d
 
 export const UNI_WTON_USDT_LP_ROOT_ADDRESS = new AddressLiteral('0:53abe27ec16208973c9643911c35b5d033744fbb95b11b5672f71188db5a42dc')
 
-export const TOKEN_LIST_URI = 'https://raw.githubusercontent.com/broxus/ton-assets/TIP3v4/manifest.json'
+export const TOKEN_LIST_URI = 'https://raw.githubusercontent.com/broxus/ton-assets/master/manifest.json'
 
 export const MIN_WALLET_VERSION = '0.1.5'
 

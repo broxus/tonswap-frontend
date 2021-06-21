@@ -3,7 +3,9 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { SwapPriceDirection, useSwap } from '@/modules/Swap/stores/SwapStore'
+import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
+import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { SwapDirection } from '@/modules/Swap/types'
 import { useWallet } from '@/stores/WalletService'
 import { formatBalance } from '@/utils'
 
@@ -19,44 +21,49 @@ function Price(): JSX.Element | null {
         swap.togglePriceDirection()
     }
 
-    return (wallet.address && swap.pair && swap.leftToken && swap.rightToken) ? (
-        <div className="swap-form-row">
-            <div>Price</div>
+    return (wallet.address && swap.pair?.address && swap.leftToken && swap.rightToken) ? (
+        <div className="form-row">
             <div>
-                {swap.priceDirection === SwapPriceDirection.RTL && (
+                {intl.formatMessage({
+                    id: 'SWAP_PRICE_LABEL',
+                })}
+            </div>
+            <div>
+                {swap.priceDirection === SwapDirection.RTL ? (
                     <span
+                        key={SwapDirection.RTL}
                         dangerouslySetInnerHTML={{
                             __html: intl.formatMessage({
-                                id: 'SWAP_PRICE_VALUE',
+                                id: 'SWAP_PRICE_RESULT',
                             }, {
                                 value: swap.priceLeftToRight
                                     ? formatBalance(
-                                        swap.priceLeftToRight ?? '0',
-                                        swap.priceDecimalsLeft ?? 18,
+                                        swap.priceLeftToRight || '0',
+                                        swap.priceDecimalsLeft ?? DEFAULT_DECIMALS,
                                     )
                                     : '--',
-                                leftSymbol: swap.leftToken.symbol ?? '',
-                                rightSymbol: swap.rightToken.symbol ?? '',
+                                leftSymbol: swap.leftToken.symbol,
+                                rightSymbol: swap.rightToken.symbol,
                             }, {
                                 ignoreTag: true,
                             }),
                         }}
                     />
-                )}
-                {swap.priceDirection === SwapPriceDirection.LTR && (
+                ) : (
                     <span
+                        key={SwapDirection.LTR}
                         dangerouslySetInnerHTML={{
                             __html: intl.formatMessage({
-                                id: 'SWAP_PRICE_VALUE',
+                                id: 'SWAP_PRICE_RESULT',
                             }, {
                                 value: swap.priceRightToLeft
                                     ? formatBalance(
-                                        swap.priceRightToLeft ?? '0',
-                                        swap.priceDecimalsRight ?? 18,
+                                        swap.priceRightToLeft || '0',
+                                        swap.priceDecimalsRight ?? DEFAULT_DECIMALS,
                                     )
                                     : '--',
-                                leftSymbol: swap.rightToken.symbol ?? '',
-                                rightSymbol: swap.leftToken.symbol ?? '',
+                                leftSymbol: swap.rightToken.symbol,
+                                rightSymbol: swap.leftToken.symbol,
                             }, {
                                 ignoreTag: true,
                             }),
@@ -65,7 +72,7 @@ function Price(): JSX.Element | null {
                 )}
                 <button
                     type="button"
-                    className="btn swap-form-row__btn swap-form-price-reverse__btn"
+                    className="btn form-row__btn swap-price-reverse__btn"
                     onClick={onClickReverse}
                 >
                     <Icon icon="reverseHorizontal" />

@@ -42,40 +42,40 @@ export function InitializingModal(): JSX.Element | null {
     }
 
     return isOpen ? (
-        <div className="swap-popup">
-            <div className="swap-popup-overlay" />
-            <div className="swap-popup__wrap">
+        <div className="popup">
+            <div className="popup-overlay" />
+            <div className="popup__wrap">
                 <button
                     type="button"
-                    className="btn swap-popup-close"
+                    className="btn popup-close"
                     onClick={onClose}
                 >
                     <Icon icon="close" />
                 </button>
-                <h2 className="swap-popup-title">
+                <h2 className="popup-title">
                     {intl.formatMessage({
-                        id: 'SWAP_POPUP_INIT_TITLE',
+                        id: 'SWAP_CONNECTING_POPUP_TITLE',
                     })}
                 </h2>
-                <div className="swap-popup-main">
+                <div className="popup-main">
                     <Observer>
                         {() => (
                             <>
                                 <div
                                     className={classNames({
-                                        'swap-popup-main__loader': wallet.hasProvider,
-                                        'swap-popup-main__ava': !wallet.hasProvider,
+                                        'popup-main__loader': wallet.hasProvider,
+                                        'popup-main__ava': !wallet.hasProvider,
                                     })}
                                 >
                                     {wallet.hasProvider && (
                                         <Icon icon="loader" />
                                     )}
                                 </div>
-                                <div className="swap-popup-main__name">
+                                <div className="popup-main__name">
                                     {intl.formatMessage({
                                         id: !wallet.hasProvider
-                                            ? 'SWAP_POPUP_IN_PROCESS'
-                                            : 'SWAP_POPUP_WALLET_NAME',
+                                            ? 'SWAP_CONNECTING_POPUP_LEAD_IN_PROCESS'
+                                            : 'SWAP_CONNECTING_POPUP_LEAD_WALLET_NAME',
                                     })}
                                 </div>
                             </>
@@ -83,7 +83,7 @@ export function InitializingModal(): JSX.Element | null {
                     </Observer>
                 </div>
                 <div
-                    className="swap-popup-txt"
+                    className="popup-txt"
                     dangerouslySetInnerHTML={{
                         __html: intl.formatMessage({
                             id: 'WALLET_INSTALL_NOTE',
@@ -92,7 +92,7 @@ export function InitializingModal(): JSX.Element | null {
                 />
                 {!wallet.hasProvider && (
                     <a
-                        className="btn btn--grey btn-block swap-popup-btn"
+                        className="btn btn--grey btn-block popup-btn"
                         href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk"
                         target="_blank"
                         rel="nofollow noopener noreferrer"

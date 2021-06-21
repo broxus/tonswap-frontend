@@ -5,51 +5,52 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { SwapTransactionProp } from '@/modules/Swap/types'
 import { formatBalance } from '@/utils'
 
 
 type Props = {
-    onClose(): void;
+    onDismiss(): void;
 }
 
 
-function Transaction({ onClose }: Props): JSX.Element | null {
+function Transaction({ onDismiss }: Props): JSX.Element | null {
     const intl = useIntl()
     const swap = useSwap()
 
     return swap.transaction ? (
-        <div className="swap-popup">
-            <div className="swap-popup-overlay" />
-            <div className="swap-popup__wrap">
+        <div className="popup">
+            <div className="popup-overlay" />
+            <div className="popup__wrap">
                 <button
                     type="button"
-                    className="btn swap-popup-close"
-                    onClick={onClose}
+                    className="btn popup-close"
+                    onClick={onDismiss}
                 >
                     <Icon icon="close" />
                 </button>
-                <h2 className="swap-popup-title">
+                <h2 className="popup-title">
                     {intl.formatMessage({
-                        id: 'SWAP_TRANSACTION_RECEIPT_TITLE',
+                        id: 'SWAP_TRANSACTION_RECEIPT_POPUP_TITLE',
                     })}
                 </h2>
-                {swap.transaction.success ? (
+                {swap.transaction[SwapTransactionProp.SUCCESS] ? (
                     <>
-                        <div className="swap-popup-main">
-                            <div className="swap-popup-main__ava">
-                                {swap.transaction.receivedIcon ? (
+                        <div className="popup-main">
+                            <div className="popup-main__ava">
+                                {swap.transaction[SwapTransactionProp.RECEIVED_ICON] ? (
                                     <img
-                                        alt={swap.transaction.receivedSymbol}
-                                        src={swap.transaction.receivedIcon}
+                                        alt={swap.transaction[SwapTransactionProp.RECEIVED_SYMBOL]}
+                                        src={swap.transaction[SwapTransactionProp.RECEIVED_ICON]}
                                     />
-                                ) : swap.transaction.receivedRoot && (
+                                ) : swap.transaction[SwapTransactionProp.RECEIVED_ROOT] && (
                                     <UserAvatar
-                                        address={swap.transaction.receivedRoot}
+                                        address={swap.transaction[SwapTransactionProp.RECEIVED_ROOT] as string}
                                     />
                                 )}
                             </div>
                             <div
-                                className="swap-popup-main__name"
+                                className="popup-main__name"
                                 style={{
                                     maxWidth: 238,
                                     whiteSpace: 'nowrap',
@@ -58,13 +59,13 @@ function Transaction({ onClose }: Props): JSX.Element | null {
                                 }}
                                 dangerouslySetInnerHTML={{
                                     __html: intl.formatMessage({
-                                        id: 'SWAP_TRANSACTION_RECEIPT_SUCCESSFUL_AMOUNT',
+                                        id: 'SWAP_TRANSACTION_RECEIPT_LEAD_SUCCESSFUL_AMOUNT',
                                     }, {
                                         value: formatBalance(
-                                            swap.transaction.receivedAmount ?? '0',
-                                            swap.transaction.receivedDecimals,
+                                            swap.transaction[SwapTransactionProp.RECEIVED_AMOUNT] || '0',
+                                            swap.transaction[SwapTransactionProp.RECEIVED_DECIMALS],
                                         ),
-                                        symbol: swap.transaction.receivedSymbol,
+                                        symbol: swap.transaction[SwapTransactionProp.RECEIVED_SYMBOL],
                                     }, {
                                         ignoreTag: true,
                                     }),
@@ -72,14 +73,14 @@ function Transaction({ onClose }: Props): JSX.Element | null {
                             />
                         </div>
                         <div
-                            className="swap-popup-txt"
+                            className="popup-txt"
                             dangerouslySetInnerHTML={{
                                 __html: intl.formatMessage({
                                     id: 'SWAP_TRANSACTION_RECEIPT_SUCCESSFUL_NOTE',
                                 }, {
-                                    symbol: swap.transaction.receivedSymbol,
-                                    address: swap.transaction.receivedRoot,
-                                    transactionHash: swap.transaction.transactionHash,
+                                    symbol: swap.transaction[SwapTransactionProp.RECEIVED_SYMBOL],
+                                    address: swap.transaction[SwapTransactionProp.RECEIVED_ROOT],
+                                    transactionHash: swap.transaction[SwapTransactionProp.HASH],
                                 }, {
                                     ignoreTag: true,
                                 }),
@@ -88,16 +89,16 @@ function Transaction({ onClose }: Props): JSX.Element | null {
                     </>
                 ) : (
                     <>
-                        <div className="swap-popup-main">
-                            <div className="swap-popup-main__ava error" />
-                            <div className="swap-popup-main__name">
+                        <div className="popup-main">
+                            <div className="popup-main__ava error" />
+                            <div className="popup-main__name">
                                 {intl.formatMessage({
-                                    id: 'SWAP_TRANSACTION_RECEIPT_CANCELLED_TITLE',
+                                    id: 'SWAP_TRANSACTION_RECEIPT_LEAD_CANCELLED',
                                 })}
                             </div>
                         </div>
                         <div
-                            className="swap-popup-txt"
+                            className="popup-txt"
                             dangerouslySetInnerHTML={{
                                 __html: intl.formatMessage({
                                     id: 'SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE',
@@ -108,11 +109,11 @@ function Transaction({ onClose }: Props): JSX.Element | null {
                 )}
                 <button
                     type="button"
-                    className="btn btn-light btn-block swap-popup-btn"
-                    onClick={onClose}
+                    className="btn btn-light btn-block popup-btn"
+                    onClick={onDismiss}
                 >
                     {intl.formatMessage({
-                        id: 'SWAP_TRANSACTION_RECEIPT_BTN_CLOSE_TEXT',
+                        id: 'SWAP_TRANSACTION_RECEIPT_BTN_TEXT_CLOSE',
                     })}
                 </button>
             </div>

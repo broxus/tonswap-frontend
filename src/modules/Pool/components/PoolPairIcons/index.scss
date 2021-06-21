@@ -1,0 +1,18 @@
+.pool-pair-icons {
+    position: relative;
+    z-index: 2;
+
+    img {
+        display: inline-block;
+        position: relative;
+        z-index: 2;
+    }
+
+    img + svg,
+    svg + img,
+    svg + svg,
+    img + img {
+        margin-left: -16px;
+        z-index: 1;
+    }
+}

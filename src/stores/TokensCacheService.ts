@@ -7,8 +7,8 @@ import {
 import ton, { Address, Subscription } from 'ton-inpage-provider'
 
 import { TokenWallet } from '@/misc/token-wallet'
-import { WalletService, useWallet } from '@/stores/WalletService'
 import { TokensListService, useTokensList } from '@/stores/TokensListService'
+import { WalletService, useWallet } from '@/stores/WalletService'
 import { log } from '@/utils'
 
 
@@ -34,7 +34,8 @@ export type TokensCacheData = {
 export class TokensCacheService {
 
     /**
-     *
+     * Current data of the tokens cache
+     * @type {TokensCacheData}
      * @protected
      */
     protected data: TokensCacheData = {
@@ -42,18 +43,13 @@ export class TokensCacheService {
         tokensMap: new ObservableMap<string, TokenCache>(),
     }
 
-    /**
-     *
-     * @private
-     */
-    #tokensBalancesSubscribers: Map<string, Subscription<'contractStateChanged'>>
-
     constructor(
         protected readonly wallet: WalletService,
         protected readonly tokensList: TokensListService,
     ) {
         makeAutoObservable(this)
-
+        // When the Tokens List Service has loaded the list of
+        // available tokens, we will start creating a token map
         reaction(
             () => [this.tokensList.time, this.wallet.address],
             (
@@ -67,6 +63,7 @@ export class TokensCacheService {
             { delay: 100 },
         )
 
+        // Update tokens map when tokens list was changed
         reaction(() => this.data.tokens, tokens => {
             if (tokens.length === 0) {
                 this.data.tokensMap.clear()
@@ -84,10 +81,11 @@ export class TokensCacheService {
     }
 
     /**
-     *
+     * Create a tokens list based on the loaded list of
+     * tokens in the related `TokensListCache` service.
      * @private
      */
-    private build(): void {
+    protected build(): void {
         if (this.tokensList.tokens.length === 0) {
             return
         }
@@ -114,22 +112,15 @@ export class TokensCacheService {
     }
 
     /**
-     *
-     * @private
-     */
-    private invalidate(): void {
-        this.data.tokens = []
-    }
-
-    /**
-     *
+     * Returns list of the cached tokens list.
+     * @returns {TokenCache[]}
      */
     public get tokens(): TokenCache[] {
         return this.data.tokens
     }
 
     /**
-     *
+     * Returns token by the given key.
      * @param {string} key
      * @returns {TokenCache}
      */
@@ -138,7 +129,7 @@ export class TokensCacheService {
     }
 
     /**
-     *
+     * Add a new token to the tokens list.
      * @param {TokenCache} token
      */
     public store(token: TokenCache): void {
@@ -146,11 +137,12 @@ export class TokensCacheService {
     }
 
     /**
-     *
+     * Directly update token balance by the given token root address.
+     * It updates balance in the tokens list.
      * @param {string} root
      * @param {string} balance
      */
-    public updateTokenBalance(root: string, balance: string | undefined): void {
+    public updateTokenBalance(root: string, balance: string): void {
         const token = this.tokens.find(t => t.root === root)
         if (token) {
             token.balance = balance
@@ -158,7 +150,7 @@ export class TokensCacheService {
     }
 
     /**
-     *
+     * Sync token balance with balance in network by the given token root address.
      * @param {string} root
      * @returns {Promise<void>}
      */
@@ -192,7 +184,7 @@ export class TokensCacheService {
                 this.updateTokenBalance(token.root, walletTokenBalance)
             }
             catch (e) {
-                this.updateTokenBalance(token.root, undefined)
+                this.updateTokenBalance(token.root, '0')
             }
         }
 
@@ -203,7 +195,7 @@ export class TokensCacheService {
     }
 
     /**
-     *
+     * Start to watch token balance updates by the given token root address.
      * @param {string} root
      * @param {string} prefix
      * @returns {Promise<void>}
@@ -271,7 +263,7 @@ export class TokensCacheService {
     }
 
     /**
-     *
+     * Stop watching token balance updates by the given token root address.
      * @param {string} root
      * @param {string} prefix
      * @returns {Promise<void>}
@@ -312,7 +304,7 @@ export class TokensCacheService {
     }
 
     /**
-     *
+     * Update token wallet address by the given token root address and current wallet address.
      * @param {string} root
      * @param {string} walletAddress
      * @returns {Promise<void>}
@@ -333,17 +325,24 @@ export class TokensCacheService {
                 token.isUpdatingWalletAddress = true
             })
 
-            const walletTokenAddress = await TokenWallet.walletAddress({
+            await TokenWallet.walletAddress({
                 owner: new Address(walletAddress),
                 root: new Address(token.root),
-            })
-
-            runInAction(() => {
-                token.wallet = walletTokenAddress.toString?.()
-                token.isUpdatingWalletAddress = true
+            }).then(address => {
+                runInAction(() => {
+                    token.wallet = address.toString()
+                    token.isUpdatingWalletAddress = true
+                })
             })
         }
     }
+
+    /**
+     * TON Subscription for the contract state changes.
+     * @type {Map<string, Subscription<'contractStateChanged'>>}
+     * @private
+     */
+    #tokensBalancesSubscribers: Map<string, Subscription<'contractStateChanged'>>
 
 }
 

@@ -1,6 +1,6 @@
 @import '~@/styles/_mix';
 
-.swap-popup-search {
+.popup-search {
     margin: 12px 0 20px;
 
     &__input {
@@ -46,7 +46,7 @@
     }
 }
 
-.swap-popup-list {
+.popup-list {
     flex-grow: 1;
     overflow-y: auto;
     border-top: 1px solid rgba(255, 255, 255, .08);
@@ -54,7 +54,7 @@
     margin-left: -20px;
 }
 
-.swap-popup-item {
+.popup-item {
     display: flex;
     align-items: center;
     justify-content: space-between;

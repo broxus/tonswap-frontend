@@ -59,6 +59,7 @@ ol li {
 
 a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    color: #fff;
     outline: none;
     text-decoration: none;
     transition: .25s ease;
@@ -73,6 +74,11 @@ a {
 
     &:active {
         outline: none;
+    }
+
+    &:hover {
+        color: #fff;
+        text-decoration: underline;
     }
 
     &[href^='tel:'],

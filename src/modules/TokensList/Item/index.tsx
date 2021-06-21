@@ -15,7 +15,9 @@ type Props = {
 
 
 function InnerItem({ disabled, token, onSelect }: Props): JSX.Element {
-    const balance = useTokenFormattedBalance(token, { subscriberPrefix: 'list' })
+    const { balance } = useTokenFormattedBalance(token, {
+        subscriberPrefix: 'list',
+    })
 
     const onClick = () => {
         onSelect?.(token)
@@ -24,29 +26,29 @@ function InnerItem({ disabled, token, onSelect }: Props): JSX.Element {
     return (
         <div
             key={token.root}
-            className={classNames('swap-popup-item', {
+            className={classNames('popup-item', {
                 disabled,
             })}
             onClick={onClick}
         >
-            <div className="swap-popup-item__left">
-                <div className="swap-popup-item__icon">
+            <div className="popup-item__left">
+                <div className="popup-item__icon">
                     {token.icon ? (
                         <img src={token.icon} alt={token.symbol} />
                     ) : (
                         <UserAvatar address={token.root} small />
                     )}
                 </div>
-                <div className="swap-popup-item__main">
-                    <div className="swap-popup-item__name" title={token.symbol}>
+                <div className="popup-item__main">
+                    <div className="popup-item__name" title={token.symbol}>
                         {token.symbol}
                     </div>
-                    <div className="swap-popup-item__txt" title={token.name}>
+                    <div className="popup-item__txt" title={token.name}>
                         {token.name}
                     </div>
                 </div>
             </div>
-            <div className="swap-popup-item__right">
+            <div className="popup-item__right">
                 {balance}
             </div>
         </div>

@@ -1,0 +1,51 @@
+.card {
+    padding: 72px 16px;
+
+    &__wrap {
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto;
+        padding: 32px 40px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 6px;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 64px 0 32px;
+
+        &:first-child {
+            margin-top: 0;
+        }
+    }
+
+    @media only screen and (max-width: 767px) {
+        padding: 32px 16px;
+
+        &__wrap {
+            padding: 16px 16px 24px;
+        }
+
+        &__header {
+            margin-top: 48px;
+            margin-bottom: 32px;
+        }
+    }
+}
+
+.card-title {
+    font-weight: bold;
+    font-size: 28px;
+    line-height: 36px;
+    letter-spacing: .25px;
+    color: #fff;
+    margin: 0;
+
+    @media only screen and (max-width: 767px) {
+        font-size: 24px;
+        line-height: 32px;
+        letter-spacing: 0;
+    }
+}

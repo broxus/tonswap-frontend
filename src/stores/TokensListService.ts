@@ -40,7 +40,8 @@ export type TokensListState = {
 export class TokensListService {
 
     /**
-     * Internal current state of the token list data
+     * Current state of the token list data
+     * @type {TokensListData}
      * @private
      */
     private data: TokensListData = {
@@ -48,7 +49,8 @@ export class TokensListService {
     }
 
     /**
-     * Internal current state of the token list
+     * Current state of the token list
+     * @type {TokensListState}
      * @private
      */
     private state: TokensListState = {

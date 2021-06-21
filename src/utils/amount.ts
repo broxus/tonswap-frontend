@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-export function amount(v?: any, decimals: number = 9): string {
+export function amount(v?: string | number, decimals: number = 9): string {
     const value = !v ? '0' : v.toString()
     const isZero = value == null || value === '0'
     const parts = !isZero

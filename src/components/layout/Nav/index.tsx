@@ -17,7 +17,7 @@ export function Nav(): JSX.Element {
                         to="/swap"
                     >
                         {intl.formatMessage({
-                            id: 'NAV_LINK_SWAP_TEXT',
+                            id: 'NAV_LINK_TEXT_SWAP',
                         })}
                     </NavLink>
                 </li>
@@ -27,7 +27,7 @@ export function Nav(): JSX.Element {
                         to="/pool"
                     >
                         {intl.formatMessage({
-                            id: 'NAV_LINK_POOL_TEXT',
+                            id: 'NAV_LINK_TEXT_POOL',
                         })}
                     </NavLink>
                 </li>
@@ -37,7 +37,7 @@ export function Nav(): JSX.Element {
                         to="/tokens"
                     >
                         {intl.formatMessage({
-                            id: 'NAV_LINK_TOKENS_TEXT',
+                            id: 'NAV_LINK_TEXT_TOKENS',
                         })}
                     </NavLink>
                 </li>
@@ -47,7 +47,7 @@ export function Nav(): JSX.Element {
                         to="/pairs"
                     >
                         {intl.formatMessage({
-                            id: 'NAV_LINK_PAIRS_TEXT',
+                            id: 'NAV_LINK_TEXT_PAIRS',
                         })}
                     </NavLink>
                 </li>

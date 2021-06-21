@@ -10,41 +10,41 @@ import './index.scss'
 
 type Props = {
     currentToken?: TokenCache;
-    onClose?(): void;
+    onDismiss?(): void;
     onSelectToken?(token: TokenCache): void;
 }
 
 
-export function TokensList({ currentToken, onClose, ...props }: Props): JSX.Element {
+export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.Element {
     const intl = useIntl()
     const tokensCache = useTokensCache()
 
     return (
-        <div className="swap-popup">
-            <div onClick={onClose} className="swap-popup-overlay" />
-            <div className="swap-popup__wrap swap-popup__wrap--list">
+        <div className="popup">
+            <div onClick={onDismiss} className="popup-overlay" />
+            <div className="popup__wrap popup__wrap--list">
                 <button
                     type="button"
-                    onClick={onClose}
-                    className="btn swap-popup-close"
+                    onClick={onDismiss}
+                    className="btn popup-close"
                 >
                     <Icon icon="close" />
                 </button>
-                <h2 className="swap-popup-title">
+                <h2 className="popup-title">
                     {intl.formatMessage({
                         id: 'TOKENS_LIST_POPUP_TITLE',
                     })}
                 </h2>
-                <form className="swap-popup-search">
+                <form className="popup-search">
                     <input
                         type="text"
-                        className="swap-popup-search__input"
+                        className="popup-search__input"
                         placeholder={intl.formatMessage({
-                            id: 'TOKENS_LIST_POPUP_SEARCH_PLACEHOLDER',
+                            id: 'TOKENS_LIST_POPUP_FIELD_SEARCH_PLACEHOLDER',
                         })}
                     />
                 </form>
-                <div className="swap-popup-list">
+                <div className="popup-list">
                     {tokensCache.tokens.map(token => (
                         <Item
                             key={token.root}

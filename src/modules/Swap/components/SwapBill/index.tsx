@@ -6,36 +6,34 @@ import { Icon } from '@/components/common/Icon'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
 import { formatBalance } from '@/utils'
 
-import './index.scss'
-
 
 function Bill(): JSX.Element | null {
     const intl = useIntl()
     const swap = useSwap()
 
     return (swap.minExpectedAmount && swap.priceImpact && swap.fee) ? (
-        <div className="swap-bill">
-            <div className="swap-bill__row">
-                <div className="swap-bill__info">
+        <div className="list-bill">
+            <div className="list-bill__row">
+                <div className="list-bill__info">
                     <span>
                         {intl.formatMessage({
-                            id: 'SWAP_BILL_MINIMUM_RECEIVE',
+                            id: 'SWAP_BILL_LABEL_MINIMUM_RECEIVE',
                         })}
                     </span>
-                    <span className="swap-bill__icn">
+                    <span className="list-bill__icn">
                         <Icon icon="info" />
                     </span>
                 </div>
                 <div
-                    className="swap-bill__val"
+                    className="list-bill__val"
                     dangerouslySetInnerHTML={{
                         __html: intl.formatMessage({
-                            id: 'SWAP_BILL_MINIMUM_RECEIVE_RESULT',
+                            id: 'SWAP_BILL_RESULT_MINIMUM_RECEIVE',
                         }, {
                             value: formatBalance(
-                                swap.minExpectedAmount ?? '0',
+                                swap.minExpectedAmount,
                                 swap.rightToken?.decimals,
-                            ),
+                            ) || '0',
                             symbol: swap.rightToken?.symbol ?? '',
                         }, {
                             ignoreTag: true,
@@ -43,22 +41,22 @@ function Bill(): JSX.Element | null {
                     }}
                 />
             </div>
-            <div className="swap-bill__row">
-                <div className="swap-bill__info">
+            <div className="list-bill__row">
+                <div className="list-bill__info">
                     <span>
                         {intl.formatMessage({
-                            id: 'SWAP_TRANSACTION_RECEIPT_TITLE',
+                            id: 'SWAP_BILL_LABEL_PRICE_IMPACT',
                         })}
                     </span>
-                    <span className="swap-bill__icn">
+                    <span className="list-bill__icn">
                         <Icon icon="info" />
                     </span>
                 </div>
                 <div
-                    className="swap-bill__val"
+                    className="list-bill__val"
                     dangerouslySetInnerHTML={{
                         __html: intl.formatMessage({
-                            id: 'SWAP_BILL_PRICE_IMPACT_RESULT',
+                            id: 'SWAP_BILL_RESULT_PRICE_IMPACT',
                         }, {
                             value: swap.priceImpact,
                         }, {
@@ -67,27 +65,27 @@ function Bill(): JSX.Element | null {
                     }}
                 />
             </div>
-            <div className="swap-bill__row">
-                <div className="swap-bill__info">
+            <div className="list-bill__row">
+                <div className="list-bill__info">
                     <span>
                         {intl.formatMessage({
-                            id: 'SWAP_BILL_FEE',
+                            id: 'SWAP_BILL_LABEL_FEE',
                         })}
                     </span>
-                    <span className="swap-bill__icn">
+                    <span className="list-bill__icn">
                         <Icon icon="info" />
                     </span>
                 </div>
                 <div
-                    className="swap-bill__val"
+                    className="list-bill__val"
                     dangerouslySetInnerHTML={{
                         __html: intl.formatMessage({
-                            id: 'SWAP_BILL_FEE_RESULT',
+                            id: 'SWAP_BILL_RESULT_FEE',
                         }, {
                             value: formatBalance(
-                                swap.fee ?? '0',
+                                swap.fee,
                                 swap.leftToken?.decimals,
-                            ),
+                            ) || '0',
                             symbol: swap.leftToken?.symbol ?? '',
                         }, {
                             ignoreTag: true,

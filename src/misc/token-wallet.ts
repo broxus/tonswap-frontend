@@ -63,7 +63,7 @@ export class TokenWallet {
     ): Promise<string> {
         let { wallet } = (args as BalanceWalletRequest)
 
-        if (wallet === undefined) {
+        if (!wallet) {
             wallet = await this.walletAddress(args as WalletAddressRequest)
         }
 

@@ -25,7 +25,7 @@ export function Account(): JSX.Element | null {
         <Observer>
             {() => (wallet.isInitialized ? (
                 <div className="tools">
-                    {wallet.account == null ? (
+                    {!wallet.account ? (
                         <button
                             key="guest"
                             type="button"
@@ -35,7 +35,7 @@ export function Account(): JSX.Element | null {
                             onClick={connect}
                         >
                             {intl.formatMessage({
-                                id: 'WALLET_BTN_CONNECT_TEXT',
+                                id: 'WALLET_BTN_TEXT_CONNECT',
                             })}
                         </button>
                     ) : (
@@ -43,7 +43,7 @@ export function Account(): JSX.Element | null {
                             {wallet.balance && (
                                 <div key="balance" className="tools-ton">
                                     {intl.formatMessage({
-                                        id: 'WALLET_BALANCE',
+                                        id: 'WALLET_BALANCE_HINT',
                                     }, {
                                         balance: formatBalance(
                                             wallet.balance,

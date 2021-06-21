@@ -32,21 +32,26 @@ export type WalletData = {
 }
 
 
+const DEFAULT_WALLET_DATA: WalletData = {
+    account: undefined,
+    balance: '0',
+    contract: undefined,
+    transaction: undefined,
+}
+
+
 export class WalletService {
 
     /**
-     * Internal current state of the wallet data
+     * Current data of the wallet
+     * @type {WalletData}
      * @protected
      */
-    protected data: WalletData = {
-        account: undefined,
-        balance: '0',
-        contract: undefined,
-        transaction: undefined,
-    }
+    protected data: WalletData = DEFAULT_WALLET_DATA
 
     /**
-     * Internal current state of the wallet connection
+     * Current state of the wallet connection
+     * @type {WalletState}
      * @protected
      */
     protected state: WalletState = {
@@ -54,18 +59,6 @@ export class WalletService {
         isConnecting: false,
         isInitialized: false,
     }
-
-    /**
-     * Internal instance of the Ton Subscription for Contract updates
-     * @private
-     */
-    #contractSubscriber: Subscription<'contractStateChanged'> | undefined
-
-    /**
-     * Internal instance of the Ton Subscription for Transaction updates
-     * @private
-     */
-    #transactionsSubscriber: Subscription<'transactionsFound'> | undefined
 
     constructor() {
         this.#contractSubscriber = undefined
@@ -76,7 +69,7 @@ export class WalletService {
         reaction(
             () => this.data.contract,
             contract => {
-                this.data.balance = contract?.balance ?? '0'
+                this.data.balance = contract?.balance || '0'
             },
         )
 
@@ -105,11 +98,11 @@ export class WalletService {
     }
 
     /**
-     * Wallet initializing
+     * Wallet initializing. It runs
+     * @returns {Promise<void>}
      * @private
-     * @returns Promise<void>
      */
-    private async init() {
+    private async init(): Promise<void> {
         const hasProvider = await hasTonProvider()
 
         if (!hasProvider) {
@@ -129,7 +122,7 @@ export class WalletService {
         })
 
         const currentProviderState = await ton.getProviderState()
-        if (currentProviderState.permissions.accountInteraction == null) {
+        if (!currentProviderState.permissions.accountInteraction) {
             runInAction(() => {
                 this.state.isInitialized = true
                 this.state.hasProvider = true
@@ -151,6 +144,7 @@ export class WalletService {
 
     /**
      * Manually connect to the wallet
+     * @returns {Promise<void>}
      */
     public async connect(): Promise<void> {
         if (this.isConnecting) {
@@ -164,7 +158,7 @@ export class WalletService {
             this.state.isConnecting = true
         })
 
-        connectToWallet().catch(err => {
+        await connectToWallet().catch(err => {
             error('Wallet connect error', err)
             runInAction(() => {
                 this.state.isConnecting = false
@@ -204,12 +198,7 @@ export class WalletService {
      * @private
      */
     private reset() {
-        this.data = {
-            account: undefined,
-            contract: undefined,
-            balance: '0',
-            transaction: undefined,
-        }
+        this.data = DEFAULT_WALLET_DATA
         this.state.isConnecting = false
     }
 
@@ -218,19 +207,30 @@ export class WalletService {
      *
      * Run it when account was changed or disconnected.
      * @param {Account} account
+     * @returns {Promise<void>}
      * @private
      */
     private async handleAccountChange(account?: Account): Promise<void> {
         if (this.#contractSubscriber) {
             if (account) {
-                await this.#contractSubscriber.unsubscribe()
+                try {
+                    await this.#contractSubscriber.unsubscribe()
+                }
+                catch (e) {
+                    error(e)
+                }
             }
             this.#contractSubscriber = undefined
         }
 
         if (this.#transactionsSubscriber) {
             if (account) {
-                await this.#transactionsSubscriber.unsubscribe()
+                try {
+                    await this.#transactionsSubscriber.unsubscribe()
+                }
+                catch (e) {
+                    error(e)
+                }
             }
             this.#transactionsSubscriber = undefined
         }
@@ -239,12 +239,12 @@ export class WalletService {
             return
         }
 
-        const { state: contract } = await ton.getFullContractState({
+        await ton.getFullContractState({
             address: account.address,
-        })
-
-        runInAction(() => {
-            this.data.contract = contract
+        }).then(({ state }) => {
+            runInAction(() => {
+                this.data.contract = state
+            })
         })
 
         this.#contractSubscriber = await ton.subscribe(
@@ -283,6 +283,7 @@ export class WalletService {
 
     /**
      * Return computed account
+     * @returns {WalletData["account"]}
      */
     public get account(): WalletData['account'] {
         return this.data.account
@@ -290,6 +291,7 @@ export class WalletService {
 
     /**
      * Return computed wallet address value
+     * @returns {string | undefined}
      */
     public get address(): string | undefined {
         return this.data.account?.address.toString()
@@ -297,6 +299,7 @@ export class WalletService {
 
     /**
      * Return computed wallet balance value
+     * @returns {WalletData['balance']}
      */
     public get balance(): WalletData['balance'] {
         return this.data.balance
@@ -304,6 +307,7 @@ export class WalletService {
 
     /**
      * Return computed last successful transaction data
+     * @returns {WalletData['transaction']}
      */
     public get transaction(): WalletData['transaction'] {
         return this.data.transaction
@@ -312,6 +316,7 @@ export class WalletService {
     /**
      * Return `true` if provider is available.
      * That means extension is installed in activated, else `false`
+     * @returns {WalletState['hasProvider']}
      */
     public get hasProvider(): WalletState['hasProvider'] {
         return this.state.hasProvider
@@ -319,6 +324,7 @@ export class WalletService {
 
     /**
      * Return computed connecting state value
+     * @returns {WalletState['isConnecting']}
      */
     public get isConnecting(): WalletState['isConnecting'] {
         return this.state.isConnecting
@@ -326,10 +332,25 @@ export class WalletService {
 
     /**
      * Return computed initialized state value
+     * @returns {WalletState['isInitialized']}
      */
     public get isInitialized(): WalletState['isInitialized'] {
         return this.state.isInitialized
     }
+
+    /**
+     * Internal instance of the Ton Subscription for Contract updates
+     * @type {Subscription<'contractStateChanged'> | undefined}
+     * @private
+     */
+    #contractSubscriber: Subscription<'contractStateChanged'> | undefined
+
+    /**
+     * Internal instance of the Ton Subscription for Transaction updates
+     * @type {Subscription<'transactionsFound'> | undefined}
+     * @private
+     */
+    #transactionsSubscriber: Subscription<'transactionsFound'> | undefined
 
 }
 

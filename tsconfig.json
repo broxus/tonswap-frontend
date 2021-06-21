@@ -22,6 +22,7 @@
         "noImplicitThis": true,
         "noUnusedParameters": true,
         "paths": {
+            "*": ["node_modules/@types", "types/*"],
             "@/*": ["src/*"]
         },
         "resolveJsonModule": true,

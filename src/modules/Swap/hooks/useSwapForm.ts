@@ -1,23 +1,20 @@
 import * as React from 'react'
 
-import {
-    PropertyKey,
-    SwapData,
-    useSwap,
-} from '@/modules/Swap/stores/SwapStore'
+import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { SwapStoreData, SwapStoreDataProp } from '@/modules/Swap/types'
 import { TokenCache } from '@/stores/TokensCacheService'
 
 
-export type TokenSide = 'leftToken' | 'rightToken'
+type TokenSide = SwapStoreDataProp.LEFT_TOKEN | SwapStoreDataProp.RIGHT_TOKEN
 
 type SwapFormShape = {
     isTokenListShown: boolean;
     tokenSide: TokenSide | null;
     hideTokensList(): void;
     showTokensList(side: TokenSide): () => void;
-    onChangeData<K extends PropertyKey<SwapData>>(key: K): (value: SwapData[K]) => void;
+    onChangeData<K extends keyof SwapStoreData>(key: K): (value: SwapStoreData[K]) => void;
     onSelectToken(token: TokenCache): void;
-    onCloseTransactionReceipt(): void;
+    onDismissTransactionReceipt(): void;
 }
 
 
@@ -42,7 +39,7 @@ export function useSwapForm(): SwapFormShape {
         setTokenListVisible(true)
     }
 
-    const onChangeData = <K extends PropertyKey<SwapData>>(key: K) => (value: SwapData[K]) => {
+    const onChangeData = <K extends keyof SwapStoreData>(key: K) => (value: SwapStoreData[K]) => {
         swap.changeData(key, value)
     }
 
@@ -53,12 +50,12 @@ export function useSwapForm(): SwapFormShape {
         }
     }
 
-    const onCloseTransactionReceipt = () => {
+    const onDismissTransactionReceipt = () => {
         swap.cleanTransactionResult()
     }
 
     React.useEffect(() => {
-        swap.start()
+        swap.init()
         return () => {
             swap.dispose()
         }
@@ -71,6 +68,6 @@ export function useSwapForm(): SwapFormShape {
         showTokensList,
         onChangeData,
         onSelectToken,
-        onCloseTransactionReceipt,
+        onDismissTransactionReceipt,
     }
 }

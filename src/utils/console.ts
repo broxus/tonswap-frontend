@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { throttle } from '@/utils/throttle'
+import { debounce } from '@/utils/debounce'
 
 
 export function log(message?: any, ...optionalParams: any[]): void {
@@ -7,10 +7,10 @@ export function log(message?: any, ...optionalParams: any[]): void {
         typeof console !== 'undefined'
         && typeof console.log === 'function'
     ) {
-        const throttled = throttle(() => {
+        const debounced = debounce(() => {
             console.log(message, ...optionalParams)
-        }, 1000)
-        throttled()
+        }, 0)
+        debounced()
     }
 }
 
@@ -19,10 +19,10 @@ export function warn(message?: any, ...optionalParams: any[]): void {
         typeof console !== 'undefined'
         && typeof console.warn === 'function'
     ) {
-        const throttled = throttle(() => {
+        const debounced = debounce(() => {
             console.warn(message, ...optionalParams)
-        }, 1000)
-        throttled()
+        }, 0)
+        debounced()
     }
 }
 
@@ -31,10 +31,10 @@ export function error(message?: any, ...optionalParams: any[]): void {
         typeof console !== 'undefined'
         && typeof console.error === 'function'
     ) {
-        const throttled = throttle(() => {
+        const debounced = debounce(() => {
             console.error(message, ...optionalParams)
-        }, 1000)
-        throttled()
+        }, 0)
+        debounced()
     }
 }
 
