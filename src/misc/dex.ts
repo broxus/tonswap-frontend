@@ -291,14 +291,14 @@ export class Dex {
         const { id } = await accountContract.methods.withdraw({
             token_root: root,
             amount,
-            deploy_wallet_grams: '50000000',
+            deploy_wallet_grams: '100000000',
             send_gas_to: owner,
             recipient_address: owner,
             recipient_public_key: '0',
         }).send({
             from: owner,
             bounce: false,
-            amount: '1500000000',
+            amount: '2100000000',
         })
         return id
     }
@@ -319,7 +319,7 @@ export class Dex {
         }).send({
             from: owner,
             bounce: false,
-            amount: '1500000000',
+            amount: '2700000000',
         })
         return id
     }
@@ -346,7 +346,7 @@ export class Dex {
         }).send({
             from: owner,
             bounce: false,
-            amount: '1500000000',
+            amount: '2600000000',
         })
         return id
     }

@@ -272,7 +272,7 @@ export class SwapStore {
             return
         }
 
-        const deployGrams = this.rightToken?.wallet ? '50000000' : '0'
+        const deployGrams = this.rightToken?.wallet ? '0' : '100000000'
 
         const pairWallet = await TokenWallet.walletAddress({
             root: new Address(this.leftToken?.root),
@@ -299,7 +299,7 @@ export class SwapStore {
 
         await TokenWallet.send({
             address: new Address(this.leftToken?.wallet),
-            grams: '2000000000',
+            grams: '2600000000',
             owner: new Address(this.wallet.address),
             payload,
             recipient: pairWallet,
