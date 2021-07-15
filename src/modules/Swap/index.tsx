@@ -117,7 +117,7 @@ export function Swap(): JSX.Element {
                 onDismiss={swapForm.onDismissTransactionReceipt}
             />
 
-            {(swapForm.isTokenListShown && swapForm.tokenSide) && (
+            {(swapForm.isTokenListShown && swapForm.tokenSide != null) && (
                 <TokensList
                     key="tokensList"
                     currentToken={swap[swapForm.tokenSide]}

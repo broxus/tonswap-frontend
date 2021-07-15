@@ -1,17 +1,23 @@
 export default {
+    NAV_LINK_SOON_HINT: ' soon',
     NAV_LINK_TEXT_SWAP: 'Swap',
     NAV_LINK_TEXT_POOL: 'Pool',
     NAV_LINK_TEXT_TOKENS: 'Tokens',
     NAV_LINK_TEXT_PAIRS: 'Pairs',
+    NAV_LINK_TEXT_FARMING: 'Farming',
 
-    WALLET_INSTALL_LINK_TEXT: 'Install Crystal Wallet',
-    WALLET_INSTALL_NOTE: '<p>At the moment, only Crystal Wallet supports TON Swap.</p><p>If you haven\'t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/category/extensions" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
+    WALLET_CONNECTING_POPUP_TITLE: 'Connect to a wallet',
+    WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME: 'Crystal Wallet',
+    WALLET_CONNECTING_POPUP_LEAD_IN_PROCESS: 'Initializing...',
+    WALLET_UPDATING_POPUP_LEAD_IS_OUTDATED: 'Extension version is outdated',
+    WALLET_UPDATING_POPUP_NOTE: '<p>Your wallet version is too old. Please update extension at <a href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk">chrome.google.com</a> or local, through chrome://extensions/.</p><p>Reload this page after installing the update.</p>',
+    WALLET_UPDATING_LINK_TEXT: 'Update Crystal Wallet',
+    WALLET_INSTALLATION_LINK_TEXT: 'Install Crystal Wallet',
+    WALLET_INSTALLATION_NOTE: '<p>At the moment, only Crystal Wallet supports TON Swap.</p><p>If you haven\'t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/category/extensions" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
+
     WALLET_BALANCE_HINT: '{balance} TON',
     WALLET_BTN_TEXT_CONNECT: 'Connect to a wallet',
 
-    SWAP_CONNECTING_POPUP_TITLE: 'Connect to a wallet',
-    SWAP_CONNECTING_POPUP_LEAD_WALLET_NAME: 'Crystal Wallet',
-    SWAP_CONNECTING_POPUP_LEAD_IN_PROCESS: 'Initializing...',
     SWAP_HEADER_TITLE: 'Swap tokens',
     SWAP_SETTINGS_DROP_TITLE: 'Transaction Settings',
     SWAP_SETTINGS_DROP_NOTE: 'Slippage tolerance',

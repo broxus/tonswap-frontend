@@ -18,7 +18,11 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
     const intl = useIntl()
     const swap = useSwap()
 
-    return swap.transaction ? (
+    if (swap.transaction == null) {
+        return null
+    }
+
+    return (
         <div className="popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
@@ -118,7 +122,7 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                 </button>
             </div>
         </div>
-    ) : null
+    )
 }
 
 export const SwapTransaction = observer(Transaction)

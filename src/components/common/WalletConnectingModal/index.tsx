@@ -11,7 +11,7 @@ import { useWallet } from '@/stores/WalletService'
 let timeout: ReturnType<typeof setTimeout>
 
 
-export function InitializingModal(): JSX.Element | null {
+export function WalletConnectingModal(): JSX.Element | null {
     const intl = useIntl()
     const wallet = useWallet()
 
@@ -54,7 +54,7 @@ export function InitializingModal(): JSX.Element | null {
                 </button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
-                        id: 'SWAP_CONNECTING_POPUP_TITLE',
+                        id: 'WALLET_CONNECTING_POPUP_TITLE',
                     })}
                 </h2>
                 <div className="popup-main">
@@ -74,8 +74,8 @@ export function InitializingModal(): JSX.Element | null {
                                 <div className="popup-main__name">
                                     {intl.formatMessage({
                                         id: !wallet.hasProvider
-                                            ? 'SWAP_CONNECTING_POPUP_LEAD_IN_PROCESS'
-                                            : 'SWAP_CONNECTING_POPUP_LEAD_WALLET_NAME',
+                                            ? 'WALLET_CONNECTING_POPUP_LEAD_IN_PROCESS'
+                                            : 'WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME',
                                     })}
                                 </div>
                             </>
@@ -86,7 +86,7 @@ export function InitializingModal(): JSX.Element | null {
                     className="popup-txt"
                     dangerouslySetInnerHTML={{
                         __html: intl.formatMessage({
-                            id: 'WALLET_INSTALL_NOTE',
+                            id: 'WALLET_INSTALLATION_NOTE',
                         }),
                     }}
                 />
@@ -98,7 +98,7 @@ export function InitializingModal(): JSX.Element | null {
                         rel="nofollow noopener noreferrer"
                     >
                         {intl.formatMessage({
-                            id: 'WALLET_INSTALL_LINK_TEXT',
+                            id: 'WALLET_INSTALLATION_LINK_TEXT',
                         })}
                     </a>
                 )}

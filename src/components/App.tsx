@@ -7,7 +7,8 @@ import {
     Route,
 } from 'react-router-dom'
 
-import { InitializingModal } from '@/components/common/InitializingModal'
+import { WalletConnectingModal } from '@/components/common/WalletConnectingModal'
+import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
 import messages from '@/lang/en'
 import { Account } from '@/modules/Account'
@@ -44,7 +45,8 @@ export function App(): JSX.Element {
                         </Switch>
                     </main>
                     <Account key="account" />
-                    <InitializingModal />
+                    <WalletConnectingModal />
+                    <WalletUpdateModal />
                 </div>
             </Router>
         </IntlProvider>
