@@ -412,10 +412,11 @@ export class DexAbi {
                 ],
                 outputs: [
                     {
-                        components: [{ name: 'lp_supply', type: 'uint128' }, {
-                            name: 'left_balance',
-                            type: 'uint128',
-                        }, { name: 'right_balance', type: 'uint128' }],
+                        components: [
+                            { name: 'lp_supply', type: 'uint128' },
+                            { name: 'left_balance', type: 'uint128' },
+                            { name: 'right_balance', type: 'uint128' },
+                        ],
                         name: 'value0',
                         type: 'tuple',
                     },
@@ -453,6 +454,23 @@ export class DexAbi {
                 ],
             },
             {
+                name: 'buildCrossPairExchangePayload',
+                inputs: [
+                    { name: '_answer_id', type: 'uint32' },
+                    { name: 'id', type: 'uint64' },
+                    { name: 'deploy_wallet_grams', type: 'uint128' },
+                    { name: 'expected_amount', type: 'uint128' },
+                    {
+                        components: [{ name: 'amount', type: 'uint128' }, { name: 'root', type: 'address' }],
+                        name: 'steps',
+                        type: 'tuple[]',
+                    },
+                ],
+                outputs: [
+                    { name: 'value0', type: 'cell' },
+                ],
+            },
+            {
                 name: 'tokensReceivedCallback',
                 inputs: [
                     { name: 'token_wallet', type: 'address' },
@@ -477,22 +495,19 @@ export class DexAbi {
                 ],
                 outputs: [
                     {
-                        components: [{ name: 'step_1_left_deposit', type: 'uint128' }, {
-                            name: 'step_1_right_deposit',
-                            type: 'uint128',
-                        }, { name: 'step_1_lp_reward', type: 'uint128' }, {
-                            name: 'step_2_left_to_right',
-                            type: 'bool',
-                        }, { name: 'step_2_right_to_left', type: 'bool' }, {
-                            name: 'step_2_spent',
-                            type: 'uint128',
-                        }, { name: 'step_2_fee', type: 'uint128' }, {
-                            name: 'step_2_received',
-                            type: 'uint128',
-                        }, { name: 'step_3_left_deposit', type: 'uint128' }, {
-                            name: 'step_3_right_deposit',
-                            type: 'uint128',
-                        }, { name: 'step_3_lp_reward', type: 'uint128' }],
+                        components: [
+                            { name: 'step_1_left_deposit', type: 'uint128' },
+                            { name: 'step_1_right_deposit', type: 'uint128' },
+                            { name: 'step_1_lp_reward', type: 'uint128' },
+                            { name: 'step_2_left_to_right', type: 'bool' },
+                            { name: 'step_2_right_to_left', type: 'bool' },
+                            { name: 'step_2_spent', type: 'uint128' },
+                            { name: 'step_2_fee', type: 'uint128' },
+                            { name: 'step_2_received', type: 'uint128' },
+                            { name: 'step_3_left_deposit', type: 'uint128' },
+                            { name: 'step_3_right_deposit', type: 'uint128' },
+                            { name: 'step_3_lp_reward', type: 'uint128' },
+                        ],
                         name: 'value0',
                         type: 'tuple',
                     },
@@ -570,6 +585,23 @@ export class DexAbi {
                     { name: 'account_owner', type: 'address' },
                     { name: 'value6', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [],
+            },
+            {
+                name: 'crossPairExchange',
+                inputs: [
+                    { name: 'id', type: 'uint64' },
+                    { name: 'value1', type: 'uint32' },
+                    { name: 'prev_pair_left_root', type: 'address' },
+                    { name: 'prev_pair_right_root', type: 'address' },
+                    { name: 'spent_token_root', type: 'address' },
+                    { name: 'spent_amount', type: 'uint128' },
+                    { name: 'sender_public_key', type: 'uint256' },
+                    { name: 'sender_address', type: 'address' },
+                    { name: 'original_gas_to', type: 'address' },
+                    { name: 'deploy_wallet_grams', type: 'uint128' },
+                    { name: 'payload', type: 'cell' },
                 ],
                 outputs: [],
             },
@@ -1247,13 +1279,14 @@ export class TokenAbi {
                 ],
                 outputs: [
                     {
-                        components: [{ name: 'name', type: 'bytes' }, {
-                            name: 'symbol',
-                            type: 'bytes',
-                        }, { name: 'decimals', type: 'uint8' }, {
-                            name: 'root_public_key',
-                            type: 'uint256',
-                        }, { name: 'root_owner_address', type: 'address' }, { name: 'total_supply', type: 'uint128' }],
+                        components: [
+                            { name: 'name', type: 'bytes' },
+                            { name: 'symbol', type: 'bytes' },
+                            { name: 'decimals', type: 'uint8' },
+                            { name: 'root_public_key', type: 'uint256' },
+                            { name: 'root_owner_address', type: 'address' },
+                            { name: 'total_supply', type: 'uint128' },
+                        ],
                         name: 'value0',
                         type: 'tuple',
                     },
@@ -1463,13 +1496,15 @@ export class TokenAbi {
                 ],
                 outputs: [
                     {
-                        components: [{ name: 'root_address', type: 'address' },
+                        components: [
+                            { name: 'root_address', type: 'address' },
                             { name: 'wallet_public_key', type: 'uint256' },
                             { name: 'owner_address', type: 'address' },
                             { name: 'balance', type: 'uint128' },
                             { name: 'receive_callback', type: 'address' },
                             { name: 'bounced_callback', type: 'address' },
-                            { name: 'allow_non_notifiable', type: 'bool' }],
+                            { name: 'allow_non_notifiable', type: 'bool' },
+                        ],
                         name: 'value0',
                         type: 'tuple',
                     },
@@ -1498,8 +1533,10 @@ export class TokenAbi {
                 ],
                 outputs: [
                     {
-                        components: [{ name: 'remaining_tokens', type: 'uint128' },
-                            { name: 'spender', type: 'address' }],
+                        components: [
+                            { name: 'remaining_tokens', type: 'uint128' },
+                            { name: 'spender', type: 'address' },
+                        ],
                         name: 'value0',
                         type: 'tuple',
                     },
@@ -1653,11 +1690,11 @@ export class FarmAbi {
                 name: 'deployFarmPool',
                 inputs: [
                     { name: 'pool_owner', type: 'address' },
-                    { name: 'rewardPerSecond', type: 'uint256' },
+                    { name: 'rewardPerSecond', type: 'uint256[]' },
                     { name: 'farmStartTime', type: 'uint256' },
                     { name: 'farmEndTime', type: 'uint256' },
                     { name: 'tokenRoot', type: 'address' },
-                    { name: 'rewardTokenRoot', type: 'address' },
+                    { name: 'rewardTokenRoot', type: 'address[]' },
                 ],
                 outputs: [],
             },
@@ -1715,11 +1752,11 @@ export class FarmAbi {
                 inputs: [
                     { name: 'pool', type: 'address' },
                     { name: 'pool_owner', type: 'address' },
-                    { name: 'rewardPerSecond', type: 'uint256' },
+                    { name: 'rewardPerSecond', type: 'uint256[]' },
                     { name: 'farmStartTime', type: 'uint256' },
                     { name: 'farmEndTime', type: 'uint256' },
                     { name: 'tokenRoot', type: 'address' },
-                    { name: 'rewardTokenRoot', type: 'address' },
+                    { name: 'rewardTokenRoot', type: 'address[]' },
                 ],
                 outputs: [],
             },
@@ -1734,11 +1771,11 @@ export class FarmAbi {
                 name: 'constructor',
                 inputs: [
                     { name: '_owner', type: 'address' },
-                    { name: '_rewardPerSecond', type: 'uint256' },
+                    { name: '_rewardPerSecond', type: 'uint256[]' },
                     { name: '_farmStartTime', type: 'uint256' },
                     { name: '_farmEndTime', type: 'uint256' },
                     { name: '_tokenRoot', type: 'address' },
-                    { name: '_rewardTokenRoot', type: 'address' },
+                    { name: '_rewardTokenRoot', type: 'address[]' },
                 ],
                 outputs: [],
             },
@@ -1778,8 +1815,8 @@ export class FarmAbi {
                 inputs: [
                     { name: '_deposit_nonce', type: 'uint64' },
                     { name: '_prevAmount', type: 'uint256' },
-                    { name: '_prevRewardDebt', type: 'uint256' },
-                    { name: '_accTonPerShare', type: 'uint256' },
+                    { name: '_prevRewardDebt', type: 'uint256[]' },
+                    { name: '_accTonPerShare', type: 'uint256[]' },
                 ],
                 outputs: [],
             },
@@ -1801,20 +1838,9 @@ export class FarmAbi {
                 inputs: [
                     { name: 'user', type: 'address' },
                     { name: '_prevAmount', type: 'uint256' },
-                    { name: '_prevRewardDebt', type: 'uint256' },
+                    { name: '_prevRewardDebt', type: 'uint256[]' },
                     { name: '_withdrawAmount', type: 'uint256' },
-                    { name: '_accTonPerShare', type: 'uint256' },
-                    { name: 'send_gas_to', type: 'address' },
-                ],
-                outputs: [],
-            },
-            {
-                name: 'finishWithdrawAll',
-                inputs: [
-                    { name: 'user', type: 'address' },
-                    { name: '_prevAmount', type: 'uint256' },
-                    { name: '_prevRewardDebt', type: 'uint256' },
-                    { name: '_accTonPerShare', type: 'uint256' },
+                    { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
                 outputs: [],
@@ -1830,10 +1856,10 @@ export class FarmAbi {
                 name: 'pendingReward',
                 inputs: [
                     { name: 'user_amount', type: 'uint256' },
-                    { name: 'user_reward_debt', type: 'uint256' },
+                    { name: 'user_reward_debt', type: 'uint256[]' },
                 ],
                 outputs: [
-                    { name: 'value0', type: 'uint256' },
+                    { name: 'value0', type: 'uint256[]' },
                 ],
             },
             {
@@ -1869,20 +1895,6 @@ export class FarmAbi {
                 ],
                 outputs: [
                     { name: 'value0', type: 'address' },
-                ],
-            },
-            {
-                name: 'rewardPerSecond',
-                inputs: [],
-                outputs: [
-                    { name: 'rewardPerSecond', type: 'uint256' },
-                ],
-            },
-            {
-                name: 'accTonPerShare',
-                inputs: [],
-                outputs: [
-                    { name: 'accTonPerShare', type: 'uint256' },
                 ],
             },
             {
@@ -1928,38 +1940,52 @@ export class FarmAbi {
                 ],
             },
             {
+                name: 'rewardPerSecond',
+                inputs: [],
+                outputs: [
+                    { name: 'rewardPerSecond', type: 'uint256[]' },
+                ],
+            },
+            {
+                name: 'accTonPerShare',
+                inputs: [],
+                outputs: [
+                    { name: 'accTonPerShare', type: 'uint256[]' },
+                ],
+            },
+            {
                 name: 'rewardTokenRoot',
                 inputs: [],
                 outputs: [
-                    { name: 'rewardTokenRoot', type: 'address' },
+                    { name: 'rewardTokenRoot', type: 'address[]' },
                 ],
             },
             {
                 name: 'rewardTokenWallet',
                 inputs: [],
                 outputs: [
-                    { name: 'rewardTokenWallet', type: 'address' },
+                    { name: 'rewardTokenWallet', type: 'address[]' },
                 ],
             },
             {
                 name: 'rewardTokenBalance',
                 inputs: [],
                 outputs: [
-                    { name: 'rewardTokenBalance', type: 'uint256' },
+                    { name: 'rewardTokenBalance', type: 'uint256[]' },
                 ],
             },
             {
                 name: 'rewardTokenBalanceCumulative',
                 inputs: [],
                 outputs: [
-                    { name: 'rewardTokenBalanceCumulative', type: 'uint256' },
+                    { name: 'rewardTokenBalanceCumulative', type: 'uint256[]' },
                 ],
             },
             {
                 name: 'unclaimedReward',
                 inputs: [],
                 outputs: [
-                    { name: 'unclaimedReward', type: 'uint256' },
+                    { name: 'unclaimedReward', type: 'uint256[]' },
                 ],
             },
             {
@@ -2015,6 +2041,7 @@ export class FarmAbi {
             {
                 name: 'RewardDeposit',
                 inputs: [
+                    { name: 'token_root', type: 'address' },
                     { name: 'amount', type: 'uint256' },
                 ],
                 outputs: [],
@@ -2028,7 +2055,9 @@ export class FarmAbi {
         functions: [
             {
                 name: 'constructor',
-                inputs: [],
+                inputs: [
+                    { name: 'reward_tokens_count', type: 'uint256' },
+                ],
                 outputs: [],
             },
             {
@@ -2038,10 +2067,12 @@ export class FarmAbi {
                 ],
                 outputs: [
                     {
-                        components: [{ name: 'amount', type: 'uint256' },
-                            { name: 'rewardDebt', type: 'uint256' },
+                        components: [
+                            { name: 'amount', type: 'uint256' },
+                            { name: 'rewardDebt', type: 'uint256[]' },
                             { name: 'farmPool', type: 'address' },
-                            { name: 'user', type: 'address' }],
+                            { name: 'user', type: 'address' },
+                        ],
                         name: 'value0',
                         type: 'tuple',
                     },
@@ -2052,7 +2083,7 @@ export class FarmAbi {
                 inputs: [
                     { name: 'nonce', type: 'uint64' },
                     { name: '_amount', type: 'uint256' },
-                    { name: '_accTonPerShare', type: 'uint256' },
+                    { name: '_accTonPerShare', type: 'uint256[]' },
                 ],
                 outputs: [],
             },
@@ -2060,7 +2091,7 @@ export class FarmAbi {
                 name: 'processWithdraw',
                 inputs: [
                     { name: '_amount', type: 'uint256' },
-                    { name: '_accTonPerShare', type: 'uint256' },
+                    { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
                 outputs: [],
@@ -2068,7 +2099,7 @@ export class FarmAbi {
             {
                 name: 'processWithdrawAll',
                 inputs: [
-                    { name: '_accTonPerShare', type: 'uint256' },
+                    { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
                 outputs: [],
@@ -2091,7 +2122,7 @@ export class FarmAbi {
                 name: 'rewardDebt',
                 inputs: [],
                 outputs: [
-                    { name: 'rewardDebt', type: 'uint256' },
+                    { name: 'rewardDebt', type: 'uint256[]' },
                 ],
             },
             {

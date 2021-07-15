@@ -1,4 +1,4 @@
-import {
+import ton, {
     Address,
     AddressLiteral,
     Contract,
@@ -7,6 +7,7 @@ import {
 } from 'ton-inpage-provider'
 
 import { DexAbi } from '@/misc/abi'
+import { TokenWallet } from '@/misc/token-wallet'
 
 
 export type PairTokenRoots = {
@@ -37,11 +38,15 @@ export type PairExpectedDepositLiquidity = {
 
 export const DEX_ROOT_ADDRESS = new AddressLiteral('0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940')
 
-export const FARM_FABRIC_ADDRESS = new AddressLiteral('0:eb79363843fce1a1d678b4074a5b94232678f4dbcc1f0de1ed9b041db1ffe4ef')
+export const FARM_FABRIC_ADDRESS = new AddressLiteral('0:92754ebdfda77efefe9e81a720cc46f3fb1bec82a29593eae3bf2713b608d39f')
 
 export const WTON_ROOT_ADDRESS = new AddressLiteral('0:0ee39330eddb680ce731cd6a443c71d9069db06d149a9bec9569d1eb8d04eb37')
 
+export const BRIDGE_ROOT_ADDRESS = new AddressLiteral('0:a453e9973010fadd4895e0d37c1ad15cba97f4fd31ef17663343f79768f678d9');
+
 export const WTON_USDC_PAIR_ADDRESS = new AddressLiteral('0:7dec631cd2c01472838d577c7d912916abc3b1503f75e38175b0aed1e0cfefb1')
+
+export const WTON_BRIDGE_PAIR_ADDRESS = new AddressLiteral('0:22e137155647e2ce7d9cb04d538a4be05ea832c3f34290e776e38d2acf5af54f')
 
 export const UNI_WTON_USDT_LP_ROOT_ADDRESS = new AddressLiteral('0:53abe27ec16208973c9643911c35b5d033744fbb95b11b5672f71188db5a42dc')
 
@@ -255,7 +260,7 @@ export class Dex {
             right_root: right,
             send_gas_to: creator,
         }).send({
-            amount: '5000000000',
+            amount: '10000000000',
             bounce: false,
             from: creator,
         })
@@ -303,12 +308,14 @@ export class Dex {
         return id
     }
 
-    public static async withdrawAccountLiquidity(account: Address,
+    public static async withdrawAccountLiquidity(
+        account: Address,
         owner: Address,
         leftRoot: Address,
         rightRoot: Address,
         lpRoot: Address,
-        amount: string): Promise<TransactionId> {
+        amount: string,
+    ): Promise<TransactionId> {
         const accountContract = new Contract(DexAbi.Account, account)
         const { id } = await accountContract.methods.withdrawLiquidity({
             left_root: leftRoot,
@@ -322,6 +329,57 @@ export class Dex {
             amount: '2700000000',
         })
         return id
+    }
+
+    public static async withdrawLiquidity(
+        owner: Address,
+        leftRoot: Address,
+        rightRoot: Address,
+        lpRoot: Address,
+        amount: string,
+    ): Promise<TransactionId> {
+        const pairAddress = await Dex.pairAddress(leftRoot, rightRoot)
+        const lpWalletPair = await TokenWallet.walletAddress({ root: lpRoot, owner: pairAddress })
+        const lpWalletUser = await TokenWallet.walletAddress({ root: lpRoot, owner })
+        const lpWalletPairState = (
+            await ton.getFullContractState({ address: lpWalletPair })
+        ).state
+        const lpWalletUserState = (
+            await ton.getFullContractState({ address: lpWalletUser })
+        ).state
+        if (lpWalletPairState === undefined
+            || lpWalletUserState === undefined
+            || !lpWalletPairState.isDeployed
+            || !lpWalletUserState.isDeployed) {
+            throw Error('LP wallets not exists')
+        }
+        const leftWalletUser = await TokenWallet.walletAddress({ root: leftRoot, owner })
+        const rightWalletUser = await TokenWallet.walletAddress({ root: rightRoot, owner })
+        const leftWalletUserState = (
+            await ton.getFullContractState({ address: leftWalletUser })
+        ).state
+        const rightWalletUserState = (
+            await ton.getFullContractState({ address: rightWalletUser })
+        ).state
+        const allDeployed = leftWalletUserState !== undefined
+            && rightWalletUserState !== undefined
+            && leftWalletUserState.isDeployed
+            && rightWalletUserState.isDeployed
+        const pairContract = new Contract(DexAbi.Pair, pairAddress)
+        const { value0: withdrawPayload } = await pairContract.methods.buildWithdrawLiquidityPayload({
+            id: new Date().getTime(),
+            deploy_wallet_grams: allDeployed ? '0' : '100000000',
+        }).call()
+        return TokenWallet.send({
+            tokens: amount,
+            owner,
+            address: lpWalletUser,
+            recipient: lpWalletPair,
+            grams: '2700000000',
+            withDerive: false,
+            bounce: true,
+            payload: withdrawPayload,
+        })
     }
 
     public static async depositAccountLiquidity(
