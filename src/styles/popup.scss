@@ -18,20 +18,6 @@
         box-shadow: 0 8px 16px rgba(43, 51, 56, 0.08);
         backdrop-filter: blur(80px);
         padding: 20px 20px 28px;
-
-        &--list {
-            top: 80px;
-            display: flex;
-            align-items: stretch;
-            justify-content: flex-start;
-            flex-direction: column;
-            max-height: calc(100vh - 160px);
-            padding-bottom: 0;
-
-            .popup-title {
-                margin-bottom: 0;
-            }
-        }
     }
 
     .amount {
@@ -45,11 +31,6 @@
             top: auto;
             bottom: 0;
             transform: none;
-
-            &--list {
-                top: 80px;
-                max-height: calc(100% - 80px);
-            }
         }
     }
 }

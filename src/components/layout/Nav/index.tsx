@@ -39,6 +39,11 @@ export function Nav(): JSX.Element {
                         {intl.formatMessage({
                             id: 'NAV_LINK_TEXT_TOKENS',
                         })}
+                        <sup>
+                            {intl.formatMessage({
+                                id: 'NAV_LINK_SOON_HINT',
+                            })}
+                        </sup>
                     </NavLink>
                 </li>
                 <li>
@@ -48,6 +53,21 @@ export function Nav(): JSX.Element {
                     >
                         {intl.formatMessage({
                             id: 'NAV_LINK_TEXT_PAIRS',
+                        })}
+                        <sup>
+                            {intl.formatMessage({
+                                id: 'NAV_LINK_SOON_HINT',
+                            })}
+                        </sup>
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink
+                        activeClassName="active"
+                        to="/farming"
+                    >
+                        {intl.formatMessage({
+                            id: 'NAV_LINK_TEXT_FARMING',
                         })}
                     </NavLink>
                 </li>

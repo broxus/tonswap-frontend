@@ -7,14 +7,13 @@ import { useTokenFormattedBalance } from '@/hooks/useTokenFormattedBalance'
 import { TokenCache } from '@/stores/TokensCacheService'
 
 
-type Props = {
+export type Props = {
     disabled?: boolean;
     token: TokenCache;
     onSelect?(token: TokenCache): void;
 }
 
-
-function InnerItem({ disabled, token, onSelect }: Props): JSX.Element {
+export const Item = observer(({ disabled, token, onSelect }: Props) => {
     const { balance } = useTokenFormattedBalance(token, {
         subscriberPrefix: 'list',
     })
@@ -33,11 +32,9 @@ function InnerItem({ disabled, token, onSelect }: Props): JSX.Element {
         >
             <div className="popup-item__left">
                 <div className="popup-item__icon">
-                    {token.icon ? (
-                        <img src={token.icon} alt={token.symbol} />
-                    ) : (
-                        <UserAvatar address={token.root} small />
-                    )}
+                    {token.icon
+                        ? <img src={token.icon} alt={token.symbol} />
+                        : <UserAvatar address={token.root} small />}
                 </div>
                 <div className="popup-item__main">
                     <div className="popup-item__name" title={token.symbol}>
@@ -53,6 +50,4 @@ function InnerItem({ disabled, token, onSelect }: Props): JSX.Element {
             </div>
         </div>
     )
-}
-
-export const Item = observer(InnerItem)
+})

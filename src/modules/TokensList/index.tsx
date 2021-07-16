@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { Item } from '@/modules/TokensList/Item'
+import { WaypointWrappedItem } from '@/modules/TokensList/components'
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 
 import './index.scss'
@@ -46,7 +46,7 @@ export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.El
                 </form>
                 <div className="popup-list">
                     {tokensCache.tokens.map(token => (
-                        <Item
+                        <WaypointWrappedItem
                             key={token.root}
                             disabled={currentToken?.root === token.root}
                             token={token}
