@@ -272,7 +272,7 @@ export class SwapStore {
             return
         }
 
-        const deployGrams = this.rightToken?.wallet ? '0' : '100000000'
+        const deployGrams = this.rightToken?.balance ? '0' : '100000000'
 
         const pairWallet = await TokenWallet.walletAddress({
             root: new Address(this.leftToken?.root),
@@ -289,7 +289,7 @@ export class SwapStore {
             value0: payload,
         } = await this.pairContract?.methods.buildExchangePayload({
             id: processingId,
-            expected_amount: this.minExpectedAmount || '0',
+            expected_amount: this.minExpectedAmount,
             deploy_wallet_grams: deployGrams,
         }).call()
 
