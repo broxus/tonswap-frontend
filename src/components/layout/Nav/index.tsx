@@ -71,6 +71,16 @@ export function Nav(): JSX.Element {
                         })}
                     </NavLink>
                 </li>
+                <li>
+                    <NavLink
+                        activeClassName="active"
+                        to="/builder"
+                    >
+                        {intl.formatMessage({
+                            id: 'NAV_LINK_TEXT_BUILDER',
+                        })}
+                    </NavLink>
+                </li>
             </ul>
         </nav>
     )
