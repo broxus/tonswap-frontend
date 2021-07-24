@@ -63,7 +63,7 @@ deploy:rollout-dev:
   except:
     - tags
   dependencies:
-    - deploy:config-master
+    - deploy:config-dev
   environment:
     name: $CI_PROJECT_NAME
     on_stop: deploy:stop-master
