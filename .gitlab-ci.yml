@@ -65,7 +65,7 @@ deploy:rollout-dev:
   dependencies:
     - deploy:config-dev
   environment:
-    name: $CI_PROJECT_NAME
+    name: $CI_PROJECT_NAME-dev
     on_stop: deploy:stop-dev
 
 deploy:stop-dev:
@@ -78,5 +78,5 @@ deploy:stop-dev:
   except:
     - tags
   environment:
-    name: $CI_PROJECT_NAME
+    name: $CI_PROJECT_NAME-dev
     action: stop
