@@ -16,33 +16,92 @@
     }
 }
 
+.section {
+    box-sizing: border-box;
+    margin: 0 auto;
+    padding: 72px 16px;
+    width: 100%;
+
+    @media only screen and (max-width: 767px) {
+        padding: 32px 16px;
+    }
+
+    &__header {
+        align-items: center;
+        column-gap: 2em;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin: 64px 0 32px;
+
+        &:first-child {
+            margin-top: 0;
+        }
+
+        &-link {
+            color: #ffffff;
+            display: flex;
+            flex-direction: row;
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.48;
+            outline: none;
+            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            text-decoration: none;
+            transition: 0.25s ease;
+
+            &:hover {
+                opacity: 1;
+                text-decoration: none;
+            }
+        }
+    }
+
+    &--small { max-width: 520px; }
+    &--large { max-width: 1200px; }
+}
+
+.section-title {
+    color: #ffffff;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 0.25px;
+    line-height: 36px;
+    margin: 0;
+
+    @media only screen and (max-width: 767px) {
+        font-size: 24px;
+        letter-spacing: 0;
+        line-height: 32px;
+    }
+}
 
 .switcher {
     display: block;
 
-    input{ display: none; }
+    input { display: none; }
 
     &__handle {
-        display: block;
-        cursor: pointer;
-        position: relative;
-        width: 32px;
-        height: 16px;
-        border-radius: 8px;
         background-color: rgba(255, 255, 255, 0.4);
+        border-radius: 8px;
+        cursor: pointer;
+        display: block;
+        height: 16px;
+        position: relative;
         transition: background-color 0.25s;
+        width: 32px;
 
         &::after {
+            background-color: #ffffff;
+            border-radius: 50%;
             content: '';
             display: block;
-            position: absolute;
-            background-color: #fff;
-            top: -1px;
-            left: 0;
-            width: 18px;
             height: 18px;
-            border-radius: 50%;
+            left: 0;
+            position: absolute;
+            top: -1px;
             transition: left 0.25s, width 0.15s;
+            width: 18px;
         }
 
     }
@@ -50,7 +109,7 @@
     input:checked + .switcher__handle {
         background-color: #e6ac00;
 
-        &::after{ left: 14px; }
+        &::after { left: 14px; }
     }
 }
 

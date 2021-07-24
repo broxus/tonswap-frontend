@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import ton from 'ton-inpage-provider'
 import { useIntl } from 'react-intl'
 
-import { MIN_WALLET_VERSION } from '@/misc'
+import { DexConstants } from '@/misc'
 import { useWallet } from '@/stores/WalletService'
 
 
@@ -22,7 +22,7 @@ function UpdateModal(): JSX.Element | null {
         (async () => {
             const currentProviderState = await ton.getProviderState()
             const [currentMajorVersion, currentMinorVersion, currentPatchVersion] = currentProviderState.version.split('.')
-            const [minMajorVersion, minMinorVersion, minPatchVersion] = MIN_WALLET_VERSION.split('.')
+            const [minMajorVersion, minMinorVersion, minPatchVersion] = DexConstants.MinWalletVersion.split('.')
             setOutdatedTo(
                 currentMajorVersion < minMajorVersion
                 || (currentMajorVersion <= minMajorVersion && currentMinorVersion < minMinorVersion)

@@ -12,9 +12,10 @@ import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
 import messages from '@/lang/en'
 import { Account } from '@/modules/Account'
-import Swap from '@/pages/swap'
+import Farming from '@/pages/farming'
+import CreateFarmPool from '@/pages/farming/create'
 import Pool from '@/pages/pool'
-import { noop } from '@/utils'
+import Swap from '@/pages/swap'
 
 import './App.scss'
 
@@ -26,7 +27,7 @@ export function App(): JSX.Element {
             locale="en"
             defaultLocale="en"
             messages={messages}
-            onError={noop}
+            // onError={noop}
         >
             <Router>
                 <div className="wrapper">
@@ -34,13 +35,19 @@ export function App(): JSX.Element {
                     <main className="main">
                         <Switch>
                             <Route exact path="/">
-                                <Redirect to="/swap" />
+                                <Redirect exact to="/swap" />
                             </Route>
-                            <Route path="/swap">
+                            <Route exact path="/swap">
                                 <Swap />
                             </Route>
-                            <Route path="/pool">
+                            <Route exact path="/pool">
                                 <Pool />
+                            </Route>
+                            <Route exact path="/farming">
+                                <Farming />
+                            </Route>
+                            <Route exact path="/farming/create">
+                                <CreateFarmPool />
                             </Route>
                         </Switch>
                     </main>

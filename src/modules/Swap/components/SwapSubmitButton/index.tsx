@@ -79,7 +79,7 @@ function SubmitButton(): JSX.Element {
             {...buttonProps}
         >
             {showSpinner ? (
-                <div className="swap-popup-main__loader">
+                <div className="popup-main__loader">
                     <Icon icon="loader" />
                 </div>
             ) : buttonText}

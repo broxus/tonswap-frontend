@@ -18,7 +18,7 @@ import {
 } from '@/modules/Pool/components'
 import { usePoolForm } from '@/modules/Pool/hooks/usePoolForm'
 import { usePool } from '@/modules/Pool/stores/PoolStore'
-import { PoolStoreDataProp } from '@/modules/Pool/types'
+import { AddLiquidityStep, PoolStoreDataProp } from '@/modules/Pool/types'
 import { TokensList } from '@/modules/TokensList'
 import { useWallet } from '@/stores/WalletService'
 
@@ -32,10 +32,10 @@ export function Pool(): JSX.Element {
     const wallet = useWallet()
 
     return (
-        <>
+        <section className="section section--small">
             <div className="card">
                 <div className="card__wrap">
-                    <div className="card__header">
+                    <header className="card__header">
                         <h2 className="card-title">
                             {intl.formatMessage({
                                 id: 'POOL_HEADER_TITLE',
@@ -44,7 +44,7 @@ export function Pool(): JSX.Element {
                         {pool.pair && (
                             <PoolPairIcons key="pair-icons" />
                         )}
-                    </div>
+                    </header>
 
                     <div className="form">
                         <Observer>
@@ -115,14 +115,14 @@ export function Pool(): JSX.Element {
                         </Observer>
 
                         <Observer>
-                            {() => (pool.isPoolShareDataAvailable
+                            {() => ((pool.isPoolShareDataAvailable && pool.step === AddLiquidityStep.DEPOSIT_LIQUIDITY)
                                 ? <PoolShareData key="poolShareData" />
                                 : null
                             )}
                         </Observer>
 
                         <Observer>
-                            {() => (wallet.account ? (
+                            {() => (wallet.account != null ? (
                                 <PoolStepsAnnotations key="annotations" />
                             ) : null)}
                         </Observer>
@@ -130,13 +130,13 @@ export function Pool(): JSX.Element {
                         <PoolSubmitButton key="submitButton" />
                     </div>
                 </div>
-
-                {pool.isDexAccountDataAvailable && (
-                    <PoolDexAccountData key="dexAccount" />
-                )}
-
-                <PoolRootsInfo key="rootsInfo" />
             </div>
+
+            {pool.isDexAccountDataAvailable && (
+                <PoolDexAccountData key="dexAccount" />
+            )}
+
+            <PoolRootsInfo key="rootsInfo" />
 
             <PoolDepositLiquidityTransaction
                 key="transaction"
@@ -151,6 +151,6 @@ export function Pool(): JSX.Element {
                     onSelectToken={poolForm.onSelectToken}
                 />
             )}
-        </>
+        </section>
     )
 }

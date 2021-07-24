@@ -153,7 +153,8 @@ const baseConfig = {
         'jsx-a11y/no-static-element-interactions': 'off',
         'jsx-a11y/click-events-have-key-events': 'off',
         'jsx-a11y/no-noninteractive-element-interactions': 'off',
-        "jsx-a11y/label-has-associated-control": "off",
+        'jsx-a11y/label-has-associated-control': 'off',
+        'jsx-a11y/no-autofocus': 'off',
 
         // Plugin: eslint-plugin-react
         // Full list: https://github.com/yannickcr/eslint-plugin-react

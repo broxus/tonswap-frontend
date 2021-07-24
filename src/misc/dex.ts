@@ -1,12 +1,12 @@
 import ton, {
     Address,
-    AddressLiteral,
     Contract,
     FullContractState,
     TransactionId,
 } from 'ton-inpage-provider'
 
 import { DexAbi } from '@/misc/abi'
+import { DexConstants } from '@/misc/dex-constants'
 import { TokenWallet } from '@/misc/token-wallet'
 
 
@@ -36,24 +36,6 @@ export type PairExpectedDepositLiquidity = {
     step_3_lp_reward: string | number;
 }
 
-export const DEX_ROOT_ADDRESS = new AddressLiteral('0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940')
-
-export const FARM_FABRIC_ADDRESS = new AddressLiteral('0:92754ebdfda77efefe9e81a720cc46f3fb1bec82a29593eae3bf2713b608d39f')
-
-export const WTON_ROOT_ADDRESS = new AddressLiteral('0:0ee39330eddb680ce731cd6a443c71d9069db06d149a9bec9569d1eb8d04eb37')
-
-export const BRIDGE_ROOT_ADDRESS = new AddressLiteral('0:a453e9973010fadd4895e0d37c1ad15cba97f4fd31ef17663343f79768f678d9');
-
-export const WTON_USDC_PAIR_ADDRESS = new AddressLiteral('0:7dec631cd2c01472838d577c7d912916abc3b1503f75e38175b0aed1e0cfefb1')
-
-export const WTON_BRIDGE_PAIR_ADDRESS = new AddressLiteral('0:22e137155647e2ce7d9cb04d538a4be05ea832c3f34290e776e38d2acf5af54f')
-
-export const UNI_WTON_USDT_LP_ROOT_ADDRESS = new AddressLiteral('0:53abe27ec16208973c9643911c35b5d033744fbb95b11b5672f71188db5a42dc')
-
-export const TOKEN_LIST_URI = 'https://raw.githubusercontent.com/broxus/ton-assets/master/manifest.json'
-
-export const MIN_WALLET_VERSION = '0.1.5'
-
 
 export class Dex {
 
@@ -61,7 +43,7 @@ export class Dex {
         owner: Address,
         state?: FullContractState,
     ): Promise<Address> {
-        const rootContract = new Contract(DexAbi.Root, DEX_ROOT_ADDRESS)
+        const rootContract = new Contract(DexAbi.Root, DexConstants.DexRootAddress)
         const {
             value0: walletAddress,
         } = await rootContract.methods.getExpectedAccountAddress({
@@ -145,7 +127,7 @@ export class Dex {
         right: Address,
         state?: FullContractState,
     ): Promise<Address> {
-        const rootContract = new Contract(DexAbi.Root, DEX_ROOT_ADDRESS)
+        const rootContract = new Contract(DexAbi.Root, DexConstants.DexRootAddress)
         const {
             value0: pairAddress,
         } = await rootContract.methods.getExpectedPairAddress({
@@ -237,7 +219,7 @@ export class Dex {
     }
 
     public static async createAccount(owner: Address): Promise<TransactionId> {
-        const rootContract = new Contract(DexAbi.Root, DEX_ROOT_ADDRESS)
+        const rootContract = new Contract(DexAbi.Root, DexConstants.DexRootAddress)
         const { id } = await rootContract.methods.deployAccount({
             account_owner: owner,
             send_gas_to: owner,
@@ -254,7 +236,7 @@ export class Dex {
         right: Address,
         creator: Address,
     ): Promise<TransactionId> {
-        const rootContract = new Contract(DexAbi.Root, DEX_ROOT_ADDRESS)
+        const rootContract = new Contract(DexAbi.Root, DexConstants.DexRootAddress)
         const { id } = await rootContract.methods.deployPair({
             left_root: left,
             right_root: right,
@@ -347,10 +329,12 @@ export class Dex {
         const lpWalletUserState = (
             await ton.getFullContractState({ address: lpWalletUser })
         ).state
-        if (lpWalletPairState === undefined
+        if (
+            lpWalletPairState === undefined
             || lpWalletUserState === undefined
             || !lpWalletPairState.isDeployed
-            || !lpWalletUserState.isDeployed) {
+            || !lpWalletUserState.isDeployed
+        ) {
             throw Error('LP wallets not exists')
         }
         const leftWalletUser = await TokenWallet.walletAddress({ root: leftRoot, owner })
