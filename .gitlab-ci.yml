@@ -9,6 +9,8 @@ stages:
 # dev pipeline
 cloudbuild:image-dev:
   extends: .cloudbuild:common
+  variables:
+    IMAGE_NAME: gcr.io/broxus/ton/tonswap/tonswap
   only:
     - develop
   except:
