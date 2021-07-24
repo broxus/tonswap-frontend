@@ -1,8 +1,8 @@
 .pool-annotation-title {
-    margin-bottom: 20px;
-    font-weight: bold;
     font-size: 24px;
+    font-weight: bold;
     line-height: 32px;
+    margin-bottom: 20px;
 
     &.center {
         text-align: center;
@@ -10,20 +10,20 @@
 }
 
 .pool-annotation-main {
-    display: flex;
     align-items: center;
+    display: flex;
     justify-content: flex-start;
     margin-top: 32px;
     padding: 16px;
 
     &__ava {
-        overflow: hidden;
-        flex-shrink: 0;
-        border-radius: 50%;
-        margin-right: 16px;
         background-color: rgba(255, 255, 255, 0.5);
-        width: 32px;
+        border-radius: 50%;
+        flex-shrink: 0;
         height: 32px;
+        margin-right: 16px;
+        overflow: hidden;
+        width: 32px;
 
         &.success {
             background-color: rgba(41, 114, 41, 0.5);
@@ -36,32 +36,35 @@
 
     &__lead {
         font-size: 18px;
-        line-height: 24px;
-        letter-spacing: .5px;
         font-weight: 500;
+        letter-spacing: 0.5px;
+        line-height: 24px;
     }
 
     &__loader {
-        width: 32px;
+        align-items: center;
+        display: flex;
         height: 32px;
+        justify-content: center;
         margin-right: 16px;
+        width: 32px;
 
         svg {
             animation: rotate 1s linear infinite;
-            fill: #fff;
+            fill: #ffffff;
         }
     }
 }
 
 .pool-annotation-txt {
-    margin: 32px 0;
-    font-size: 12px;
-    line-height: 16px;
-    letter-spacing: .4px;
     color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    letter-spacing: 0.4px;
+    line-height: 16px;
+    margin: 32px 0;
 
     p {
-        margin: .8em 0;
+        margin: 0.8em 0;
 
         &:last-child {
             margin-bottom: 0;
@@ -78,12 +81,12 @@
     }
 
     strong {
+        color: #ffffff;
         display: block;
-        font-weight: 500;
-        color: #fff;
         font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.25px;
         line-height: 20px;
-        letter-spacing: .25px;
     }
 
     &:last-child {

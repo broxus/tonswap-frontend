@@ -1,14 +1,14 @@
 @import '_mix';
 
 .form-row {
-    margin: 16px 16px 16px 20px;
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    line-height: 20px;
-    letter-spacing: .75px;
     color: rgba(255, 255, 255, 0.64);
+    display: flex;
+    font-size: 14px;
+    justify-content: space-between;
+    letter-spacing: 0.75px;
+    line-height: 20px;
+    margin: 16px 16px 16px 20px;
 
     & + .form-submit {
         margin-top: 16px;
@@ -16,13 +16,14 @@
 
     &__btn {
         @include btn-reset;
-        width: 24px;
-        height: 24px;
+
         display: inline-block;
-        vertical-align: middle;
+        height: 24px;
+        margin-left: 8px;
         position: relative;
         top: -1px;
-        margin-left: 8px;
+        vertical-align: middle;
+        width: 24px;
     }
 
     @media only screen and (max-width: 767px) {
@@ -49,20 +50,20 @@
 }
 
 .form-fieldset {
-    display: block;
-    padding: 10px 16px 10px 20px;
-    margin-bottom: 5px;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    outline: none;
+    display: block;
     height: 78px;
+    margin-bottom: 5px;
+    outline: none;
+    padding: 10px 16px 10px 20px;
 
     &.alert {
-        border-color: #EB4361;
+        border-color: #eb4361;
     }
 
     &.checking {
-        border: 1px solid rgba(255, 255, 255, 0.16);
         animation: 1.5s linear 0s infinite alternate checking;
+        border: 1px solid rgba(255, 255, 255, 0.16);
     }
 
     &.caution {
@@ -71,128 +72,130 @@
     }
 
     &__header {
-        margin-bottom: 4px;
-        display: flex;
         align-items: center;
-        justify-content: space-between;
+        color: #ffffff;
+        display: flex;
         font-size: 14px;
+        justify-content: space-between;
+        letter-spacing: 0.75px;
         line-height: 20px;
-        letter-spacing: .75px;
-        color: #fff;
-        opacity: .64;
+        margin-bottom: 4px;
+        opacity: 0.64;
     }
 
     &__main {
-        display: flex;
         align-items: center;
+        display: flex;
         justify-content: space-between;
     }
 
     .frame {
-        width: calc(100% + 20px);
         margin: 4px 0 0 -10px;
+        width: calc(100% + 20px);
     }
 
     @media only screen and (max-width: 767px) {
         padding-left: 10px;
         .frame {
-            width: 100%;
             margin: 4px 0 0;
+            width: 100%;
         }
     }
 }
 
 .form-input {
     @include input-reset;
-    color: #fff;
-    font-weight: bold;
-    font-size: 24px;
+
+    color: #ffffff;
     cursor: text;
+    font-size: 24px;
+    font-weight: bold;
 
     &::-webkit-input-placeholder {
-        opacity: .32;
-        color: #fff;
+        color: #ffffff;
+        opacity: 0.32;
     }
 
     &::-moz-placeholder {
-        opacity: .32;
-        color: #fff;
+        color: #ffffff;
+        opacity: 0.32;
     }
 
     &:-moz-placeholder {
-        opacity: .32;
-        color: #fff;
+        color: #ffffff;
+        opacity: 0.32;
     }
 
     &:-ms-input-placeholder {
-        opacity: .32;
-        color: #fff;
+        color: #ffffff;
+        opacity: 0.32;
     }
 
     &::placeholder {
-        opacity: .32;
-        color: #fff;
+        color: #ffffff;
+        opacity: 0.32;
     }
 
     &:-webkit-autofill {
-        -webkit-text-fill-color: #fff !important;
-        color: #fff !important;
+        color: #ffffff !important;
+        -webkit-text-fill-color: #ffffff !important;
     }
 }
 
 .form-select {
     &.btn {
         @include btn-reset;
-        display: flex;
+
         align-items: center;
+        background-color: rgba(197, 228, 243, 0.08);
+        color: #c5e4f3;
+        display: flex;
         justify-content: center;
-        padding: 4px 6px 4px 14px;
-        background-color: rgba(197, 228, 243, .08);
-        color: #C5E4F3;
         margin-right: -10px;
+        padding: 4px 6px 4px 14px;
     }
 
     &:hover {
         background-color: rgba(197, 228, 243, 1);
-        color: #000;
+        color: #000000;
 
         .form-select__arrow {
-            svg { fill: #000; }
+            svg { fill: #000000; }
         }
     }
 
     &--lg {
         justify-content: space-between;
-        width: 100%;
         padding: 15px 10px 15px 20px;
+        width: 100%;
     }
 
     &--light {
-        background-color: #C5E4F3;
+        background-color: #c5e4f3;
         color: #293166;
 
         &:hover {
-            background-color: darken(#C5E4F3, 10%);
+            background-color: darken(#c5e4f3, 10%);
             color: #293166;
         }
     }
 
     &__txt {
         font-size: 16px;
-        line-height: 20px;
-        letter-spacing: .25px;
         font-weight: 500;
+        letter-spacing: 0.25px;
+        line-height: 20px;
     }
 
     &__arrow {
-        width: 24px;
-        height: 24px;
         flex-shrink: 0;
+        height: 24px;
         margin-left: 4px;
+        width: 24px;
 
         svg {
-            fill: #C5E4F3;
-            transition: fill .15s ease-in-out;
+            fill: #c5e4f3;
+            transition: fill 0.15s ease-in-out;
         }
     }
 
@@ -210,8 +213,8 @@
 
 a.form-submit,
 button.form-submit {
-    margin-top: 32px;
     line-height: 64px;
+    margin-top: 32px;
     padding-bottom: 0;
     padding-top: 0;
 
@@ -228,8 +231,9 @@ button.form-submit {
 .form-drop {
     &.btn {
         @include btn-reset;
-        display: flex;
+
         align-items: center;
+        display: flex;
         justify-content: space-between;
         padding: 4px 0;
     }
@@ -237,24 +241,24 @@ button.form-submit {
     &--s {
         .form-drop__name {
             font-size: 14px;
+            letter-spacing: 0.75px;
             line-height: 20px;
             text-align: right;
-            letter-spacing: .75px;
         }
 
         .form-drop__arrow {
-            width: 20px;
             height: 20px;
             margin: 0 0 0 4px;
+            width: 20px;
         }
     }
 
     &__logo {
         display: block;
-        width: 24px;
+        flex-shrink: 0;
         height: 24px;
         margin-right: 8px;
-        flex-shrink: 0;
+        width: 24px;
 
         img {
             width: 100%;
@@ -262,22 +266,22 @@ button.form-submit {
     }
 
     &__name {
-        font-size: 18px;
-        line-height: 24px;
-        letter-spacing: .5px;
-        font-weight: 500;
-        color: #fff;
+        color: #ffffff;
         flex-grow: 1;
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        line-height: 24px;
         text-align: left;
     }
 
     &__arrow {
-        width: 24px;
-        height: 24px;
         flex-shrink: 0;
+        height: 24px;
         margin-right: -4px;
+        width: 24px;
 
-        svg { fill: #fff; }
+        svg { fill: #ffffff; }
     }
 
     &.disabled,

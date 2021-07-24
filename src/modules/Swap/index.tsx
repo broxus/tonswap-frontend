@@ -27,10 +27,10 @@ export function Swap(): JSX.Element {
     const swapForm = useSwapForm()
 
     return (
-        <>
+        <section className="section section--small">
             <div className="card">
                 <div className="card__wrap">
-                    <div className="card__header">
+                    <header className="card__header">
                         <h2 className="card-title">
                             {intl.formatMessage({
                                 id: 'SWAP_HEADER_TITLE',
@@ -38,7 +38,7 @@ export function Swap(): JSX.Element {
                         </h2>
 
                         <SwapSettings />
-                    </div>
+                    </header>
 
                     <div className="form">
                         <Observer>
@@ -108,9 +108,9 @@ export function Swap(): JSX.Element {
                         <SwapSubmitButton key="submitButton" />
                     </div>
                 </div>
-
-                <SwapBill key="bill" />
             </div>
+
+            <SwapBill key="bill" />
 
             <SwapTransaction
                 key="transaction"
@@ -125,6 +125,6 @@ export function Swap(): JSX.Element {
                     onSelectToken={swapForm.onSelectToken}
                 />
             )}
-        </>
+        </section>
     )
 }

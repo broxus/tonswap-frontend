@@ -41,8 +41,7 @@ import {
 import { DexAccountService, useDexAccount } from '@/stores/DexAccountService'
 import { TokenCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletData, WalletService } from '@/stores/WalletService'
-import { debounce, error } from '@/utils'
-import { isAmountValid } from '@/utils/is-amount-valid'
+import { debounce, error, isAmountValid } from '@/utils'
 
 
 export class PoolStore {
@@ -549,7 +548,7 @@ export class PoolStore {
      * @returns {Promise<void>}
      * @protected
      */
-    protected async handleTokensChange(tokens: TokenCache[] = [], prevTokens: TokenCache[] = []): Promise<void> {
+    protected handleTokensChange(tokens: TokenCache[] = [], prevTokens: TokenCache[] = []): void {
         const [leftToken, rightToken] = tokens
         const [prevLeftToken, prevRightToken] = prevTokens
 
@@ -584,7 +583,7 @@ export class PoolStore {
      * @param {WalletData['transaction']} [transaction]
      * @protected
      */
-    protected async handleTransactionResult(transaction?: WalletData['transaction']): Promise<void> {
+    protected handleTransactionResult(transaction?: WalletData['transaction']): void {
         if (
             !transaction
             || !this.wallet.address
@@ -758,7 +757,7 @@ export class PoolStore {
      * @param {string} [prevWalletAddress]
      * @protected
      */
-    protected async handleWalletAddressChange(walletAddress?: string, prevWalletAddress?: string): Promise<void> {
+    protected handleWalletAddressChange(walletAddress?: string, prevWalletAddress?: string): void {
         if (!walletAddress || walletAddress !== prevWalletAddress) {
             this.reset()
             this.setStep(AddLiquidityStep.INIT)

@@ -48,8 +48,7 @@ import {
     WalletService,
     useWallet,
 } from '@/stores/WalletService'
-import { debounce, error } from '@/utils'
-import { isAmountValid } from '@/utils/is-amount-valid'
+import { debounce, error, isAmountValid } from '@/utils'
 
 
 export class SwapStore {

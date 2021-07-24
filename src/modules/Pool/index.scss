@@ -1,8 +1,8 @@
 .pool-linkage {
     margin: 8px auto;
     opacity: 0.5;
+    transition: opacity 0.15s ease-in-out;
     width: 36px;
-    transition: opacity .15s ease-in-out;
 
-    svg { stroke: #fff; }
+    svg { stroke: #ffffff; }
 }

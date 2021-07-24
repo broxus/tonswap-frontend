@@ -1,0 +1,69 @@
+.farming-pool-form {
+    + .farming-pool-form {
+        margin-top: 26px;
+    }
+
+    &__field-wrapper {
+        column-gap: 10px;
+        display: flex;
+        flex-direction: row;
+        margin-top: 10px;
+    }
+
+    &__actions {
+        column-gap: 10px;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        margin-top: 20px;
+    }
+
+    &__hint,
+    &__text {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 12px;
+        line-height: 16px;
+        margin-bottom: 10px;
+    }
+
+    &__hint {
+        margin-top: 5px;
+    }
+
+    &__hint + &__field-wrapper {
+        margin-top: 20px;
+    }
+
+    .farming-pool-form &__input {
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #ffffff;
+        font-size: 14px;
+        height: 40px;
+        line-height: 20px;
+        padding: 0 64px 0 12px;
+    }
+
+    .farming-pool-form &__swap-amount {
+        flex-grow: 1;
+        position: relative;
+
+        &-btn {
+            background: rgba(197, 228, 243, 0.16);
+            border-radius: 0;
+            color: #c5e4f3;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 20px;
+            padding: 3px 12px;
+            position: absolute;
+            right: 5px;
+            top: 6px;
+            z-index: 2;
+
+            &:not(:disabled):hover {
+                background-color: #c5e4f3;
+                color: #293166;
+            }
+        }
+    }
+}

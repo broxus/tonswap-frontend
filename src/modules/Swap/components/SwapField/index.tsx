@@ -7,7 +7,7 @@ import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useTokenFormattedBalance } from '@/hooks/useTokenFormattedBalance'
 import { TokenCache } from '@/stores/TokensCacheService'
-import { formatAmount } from '@/utils/format-amount'
+import { formatAmount } from '@/utils'
 
 
 type Props = {
@@ -22,7 +22,7 @@ type Props = {
 }
 
 
-function Field({ token, ...props }: Props): JSX.Element {
+function Field({ isValid = true, token, ...props }: Props): JSX.Element {
     const intl = useIntl()
 
     const field = useTokenFormattedBalance(token, {
@@ -36,16 +36,16 @@ function Field({ token, ...props }: Props): JSX.Element {
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
-        if (!/^[0-9]{0,64}[.]?[0-9]{0,64}$/.test(value)) {
-            return
-        }
+        // if (!/^[0-9]{0,64}[.]?[0-9]{0,64}$/.test(value)) {
+        //     return
+        // }
         props.onChange?.(value)
     }
 
     return (
         <fieldset
             className={classNames('form-fieldset', {
-                alert: !props.isValid && !props.disabled,
+                alert: !isValid && !props.disabled,
                 checking: field.isFetching,
             })}
         >

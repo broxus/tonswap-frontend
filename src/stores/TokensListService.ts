@@ -1,6 +1,6 @@
 import { action, makeAutoObservable } from 'mobx'
 
-import { TOKEN_LIST_URI } from '@/misc/dex'
+import { DexConstants } from '@/misc'
 import { error } from '@/utils'
 
 
@@ -113,7 +113,7 @@ export class TokensListService {
 }
 
 
-const TokensListServiceStore = new TokensListService(TOKEN_LIST_URI)
+const TokensListServiceStore = new TokensListService(DexConstants.TokenListURI)
 
 export function useTokensList(): TokensListService {
     return TokensListServiceStore
