@@ -2,18 +2,81 @@ include:
   - project: "common/gitlab-ci"
     ref: master
     file: "/templates/cloudbuild-common.gitlab-ci.yaml"
+  - project: "common/gitlab-ci"
+    ref: master
+    file: "templates/deploy.gitlab-ci.yaml"
+
+variables:
+  IMAGE_BASE: gcr.io/broxus/ton/tonswap/tonswap
+  CLUSTER_SETUP_DEV: gcloud container clusters get-credentials broxus-1 --zone europe-west1-c --project dexpa-175115
+  CLUSTER_SETUP_MASTER: gcloud container clusters get-credentials broxus-1 --zone europe-west1-c --project broxus
 
 stages:
   - cloudbuild
+  - deploy-config
+  - deploy-rollout
 
 # dev pipeline
 cloudbuild:image-dev:
   extends: .cloudbuild:common
   variables:
-    IMAGE_NAME: gcr.io/broxus/ton/tonswap/tonswap
+    IMAGE_NAME: $IMAGE_BASE
   only:
     - develop
   except:
     - tags
   script:
     - gcloud builds submit --machine-type=n1-highcpu-8 --config=cloudbuild.yaml .
+
+deploy:config-dev:
+  extends: .deploy:configuration
+  variables:
+    CONFIG_APPLICATION_PORT: "80"
+    CONFIG_HEALTHZ_PORT: "80"
+    CONFIG_HEALTHZ_URL: "/"
+    CONFIG_EXPOSE_PORT: "30170"
+    CONFIG_IMAGE: $IMAGE_BASE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+  only:
+    - develop
+  except:
+    - tags
+  script:
+    - |
+      deploy/common/build.sh kustomize \
+      -t statefulset \
+      -r deploy/common/base/service-statefulset.yaml \
+      -r deploy/common/base/service-expose.yaml \
+      -p kustomize/overrides.dev.yaml \
+      > kustomization.yaml
+  artifacts:
+    name: $CI_COMMIT_REF_NAME-deploy-config
+    paths:
+      - deploy/deployment.yaml
+
+deploy:rollout-dev:
+  extends: .deploy:rollout
+  variables:
+    CLUSTER_SETUP: $CLUSTER_SETUP_DEV
+    CONFIG_APPLICATION: $CI_PROJECT_NAME
+  only:
+    - develop
+  except:
+    - tags
+  dependencies:
+    - deploy:config-master
+  environment:
+    name: $CI_PROJECT_NAME
+    on_stop: deploy:stop-master
+
+deploy:stop-dev:
+  extends: .deploy:stop
+  variables:
+    CLUSTER_SETUP: $CLUSTER_SETUP_DEV
+    CONFIG_APPLICATION: $CI_PROJECT_NAME
+  only:
+    - develop
+  except:
+    - tags
+  environment:
+    name: $CI_PROJECT_NAME
+    action: stop

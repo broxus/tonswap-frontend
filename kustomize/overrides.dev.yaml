@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: __APPLICATION__
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: __APPLICATION__
+          resources:
+            limits:
+              cpu: 0.1
+              memory: 64Mi
+            requests:
+              cpu: 0.01
+              memory: 64Mi
