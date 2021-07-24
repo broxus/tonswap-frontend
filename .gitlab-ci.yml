@@ -1,0 +1,17 @@
+include:
+  - project: "common/gitlab-ci"
+    ref: master
+    file: "/templates/cloudbuild-common.gitlab-ci.yaml"
+
+stages:
+  - cloudbuild
+
+# dev pipeline
+cloudbuild:image-dev:
+  extends: .cloudbuild:common
+  only:
+    - develop
+  except:
+    - tags
+  script:
+    - gcloud builds submit --machine-type=n1-highcpu-8 --config=cloudbuild.yaml .
