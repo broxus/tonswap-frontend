@@ -4,7 +4,7 @@ COPY . .
 
 RUN \
     set -eux; \
-    npm install && \
+    npm ci && \
     npm run build
 
 FROM nginx:1.21
