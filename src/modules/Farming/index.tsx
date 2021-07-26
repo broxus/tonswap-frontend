@@ -25,7 +25,7 @@ export function Farming(): JSX.Element {
         return () => {
             farming.dispose()
         }
-    })
+    }, [])
 
     return (
         <section className="section section--large">
@@ -55,11 +55,17 @@ export function Farming(): JSX.Element {
                         &nbsp;
                         <Icon icon="externalLink" />
                     </a>
-                    <Link to="/farming/create" className="btn btn-light">
-                        {intl.formatMessage({
-                            id: 'FARMING_HEADER_CREATE_LINK_TEXT',
-                        })}
-                    </Link>
+                    <Observer>
+                        {() => (
+                            wallet.address != null ? (
+                                <Link key="createPoolLink" to="/farming/create" className="btn btn-light">
+                                    {intl.formatMessage({
+                                        id: 'FARMING_HEADER_CREATE_LINK_TEXT',
+                                    })}
+                                </Link>
+                            ) : null
+                        )}
+                    </Observer>
                 </div>
             </header>
 

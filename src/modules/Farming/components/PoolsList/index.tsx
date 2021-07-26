@@ -17,7 +17,6 @@ export function PoolsList(): JSX.Element {
             {() => (
                 <div className="farming-list">
                     <div className="farming-list__header">
-                        <div />
                         <div>
                             {intl.formatMessage({
                                 id: 'FARMING_LIST_HEADER_TOKEN_CELL',

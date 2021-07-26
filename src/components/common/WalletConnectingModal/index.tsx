@@ -47,7 +47,7 @@ export function WalletConnectingModal(): JSX.Element | null {
             <div className="popup__wrap">
                 <button
                     type="button"
-                    className="btn popup-close"
+                    className="btn btn-icon popup-close"
                     onClick={onClose}
                 >
                     <Icon icon="close" />

@@ -61,7 +61,9 @@ export type PoolPair = {
 }
 
 export enum PoolDataProp {
+    CURRENT_SHARE_LEFT = 'currentShareLeft',
     CURRENT_SHARE_PERCENT = 'currentSharePercent',
+    CURRENT_SHARE_RIGHT = 'currentShareRight',
     IS_POOL_EMPTY = 'isPoolEmpty',
     LEFT_DEPOSIT = 'leftDeposit',
     LEFT_PRICE = 'leftPrice',
@@ -83,7 +85,9 @@ export enum PoolDataProp {
 }
 
 export type PoolData = {
+    [PoolDataProp.CURRENT_SHARE_LEFT]?: string;
     [PoolDataProp.CURRENT_SHARE_PERCENT]?: string;
+    [PoolDataProp.CURRENT_SHARE_RIGHT]?: string;
     [PoolDataProp.IS_POOL_EMPTY]: boolean | undefined;
     [PoolDataProp.LEFT_DEPOSIT]?: string;
     [PoolDataProp.LEFT_PRICE]?: string;

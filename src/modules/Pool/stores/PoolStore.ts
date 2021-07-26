@@ -378,37 +378,37 @@ export class PoolStore {
     /**
      *
      */
-    public async depositLp(): Promise<void> {
-        if (
-            !this.lpRoot
-            || !this.lpWalletAddress
-            || !this.lpWalletBalance
-            || !this.wallet.address
-        ) {
-            return
-        }
-
-        const lpWallet = this.dex.wallets?.get(this.lpRoot)?.toString()
-
-        if (!lpWallet) {
-            return
-        }
-
-        this.changeState(PoolStoreStateProp.IS_DEPOSITING_LP, true)
-
-        await TokenWallet.send({
-            address: new Address(this.lpWalletAddress),
-            owner: new Address(this.wallet.address),
-            recipient: new Address(lpWallet),
-            tokens: this.lpWalletBalance,
-            grams: '1500000000',
-        }).finally(() => {
-            this.changeState(PoolStoreStateProp.IS_DEPOSITING_LP, false)
-        })
-
-        await this.syncLpBalance()
-        await this.syncPoolShare()
-    }
+    // public async depositLp(): Promise<void> {
+    //     if (
+    //         !this.lpRoot
+    //         || !this.lpWalletAddress
+    //         || !this.lpWalletBalance
+    //         || !this.wallet.address
+    //     ) {
+    //         return
+    //     }
+    //
+    //     const lpWallet = this.dex.wallets?.get(this.lpRoot)?.toString()
+    //
+    //     if (!lpWallet) {
+    //         return
+    //     }
+    //
+    //     this.changeState(PoolStoreStateProp.IS_DEPOSITING_LP, true)
+    //
+    //     await TokenWallet.send({
+    //         address: new Address(this.lpWalletAddress),
+    //         owner: new Address(this.wallet.address),
+    //         recipient: new Address(lpWallet),
+    //         tokens: this.lpWalletBalance,
+    //         grams: '1500000000',
+    //     }).finally(() => {
+    //         this.changeState(PoolStoreStateProp.IS_DEPOSITING_LP, false)
+    //     })
+    //
+    //     await this.syncLpBalance()
+    //     await this.syncPoolShare()
+    // }
 
     /**
      *
@@ -1252,6 +1252,8 @@ export class PoolStore {
                 if (this.isPoolEmpty) {
                     this.changePoolData(PoolDataProp.SHARE_PERCENT, '100.0')
                     this.changePoolData(PoolDataProp.CURRENT_SHARE_PERCENT, '0.0')
+                    this.changePoolData(PoolDataProp.CURRENT_SHARE_LEFT, '0.0')
+                    this.changePoolData(PoolDataProp.CURRENT_SHARE_RIGHT, '0.0')
                     this.changePoolData(PoolDataProp.SHARE_CHANGE_PERCENT, '100.0')
                 }
                 else {
@@ -1266,12 +1268,34 @@ export class PoolStore {
                     )
                     this.changePoolData(
                         PoolDataProp.CURRENT_SHARE_PERCENT,
-                        new BigNumber(this.lpBalance || '0')
+                        new BigNumber(this.lpWalletBalance || '0')
                             .multipliedBy(100)
                             .dividedBy(new BigNumber(pairLp))
                             .decimalPlaces(8, BigNumber.ROUND_DOWN)
                             .toFixed(),
                     )
+                    if (this.leftToken) {
+                        this.changePoolData(
+                            PoolDataProp.CURRENT_SHARE_LEFT,
+                            new BigNumber(this.lpWalletBalance || '0')
+                                .times(new BigNumber(pairLeft))
+                                .dividedBy(new BigNumber(pairLp))
+                                .decimalPlaces(0, BigNumber.ROUND_DOWN)
+                                .shiftedBy(-this.leftToken.decimals)
+                                .toString(),
+                        )
+                    }
+                    if (this.rightToken) {
+                        this.changePoolData(
+                            PoolDataProp.CURRENT_SHARE_RIGHT,
+                            new BigNumber(this.lpWalletBalance || '0')
+                                .times(new BigNumber(pairRight))
+                                .dividedBy(new BigNumber(pairLp))
+                                .decimalPlaces(0, BigNumber.ROUND_DOWN)
+                                .shiftedBy(-this.rightToken.decimals)
+                                .toString(),
+                        )
+                    }
                     this.changePoolData(
                         PoolDataProp.SHARE_CHANGE_PERCENT,
                         new BigNumber(this.sharePercent || '0')
@@ -1459,9 +1483,9 @@ export class PoolStore {
         return this.leftToken ? this.dex.balances?.get(this.leftToken?.root) || '0' : '0'
     }
 
-    public get isDepositLpAvailable(): boolean {
-        return this.lpWalletBalance !== undefined && this.lpWalletBalance !== '0'
-    }
+    // public get isDepositLpAvailable(): boolean {
+    //     return this.lpWalletBalance !== undefined && this.lpWalletBalance !== '0'
+    // }
 
     public get isDexLeftBalanceValid(): boolean {
         if (!this.leftToken) {
@@ -1499,6 +1523,10 @@ export class PoolStore {
 
     public get isWithdrawLpAvailable(): boolean {
         return this.lpBalance !== undefined && this.lpBalance !== '0'
+    }
+
+    public get isWithdrawLiquidityAvailable(): boolean {
+        return this.lpWalletBalance !== undefined && this.lpWalletBalance !== '0'
     }
 
     /*
@@ -1624,8 +1652,16 @@ export class PoolStore {
         return this.pool[PoolDataProp.SHARE_CHANGE_PERCENT]
     }
 
+    public get currentShareLeft(): PoolData[PoolDataProp.CURRENT_SHARE_LEFT] {
+        return this.pool[PoolDataProp.CURRENT_SHARE_LEFT]
+    }
+
     public get currentSharePercent(): PoolData[PoolDataProp.CURRENT_SHARE_PERCENT] {
         return this.pool[PoolDataProp.CURRENT_SHARE_PERCENT]
+    }
+
+    public get currentShareRight(): PoolData[PoolDataProp.CURRENT_SHARE_RIGHT] {
+        return this.pool[PoolDataProp.CURRENT_SHARE_RIGHT]
     }
 
     public get leftPrice(): PoolData[PoolDataProp.LEFT_PRICE] {

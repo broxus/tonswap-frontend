@@ -1,5 +1,6 @@
 import * as React from 'react'
 import BigNumber from 'bignumber.js'
+import { reaction } from 'mobx'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
@@ -9,12 +10,14 @@ import { PoolCreatingParams } from '@/modules/Farming/components/PoolCreatingPar
 import { PoolField } from '@/modules/Farming/components/PoolField'
 import { useCreateFarmPoolStore } from '@/modules/Farming/stores/CreateFarmPoolStore'
 import { CreateFarmPoolStoreDataProp } from '@/modules/Farming/types'
+import { useWallet } from '@/stores/WalletService'
 import { noop } from '@/utils'
 
 
 export function Create(): JSX.Element {
     const intl = useIntl()
     const history = useHistory()
+    const wallet = useWallet()
     const creatingPool = useCreateFarmPoolStore()
 
     const onChangeFarmToken = (address: string | undefined) => {
@@ -63,7 +66,13 @@ export function Create(): JSX.Element {
 
     React.useEffect(() => {
         creatingPool.init()
+        const logoutDisposer = reaction(() => wallet.address, address => {
+            if (!address) {
+                history.push('/farming')
+            }
+        })
         return () => {
+            logoutDisposer?.()
             creatingPool.dispose()
         }
     }, [])

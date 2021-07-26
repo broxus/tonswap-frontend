@@ -29,14 +29,13 @@ function DexAccountData(): JSX.Element {
         }
     }
 
-    const onDepositLp = async () => {
-        await pool.depositLp()
-    }
+    // const onDepositLp = async () => {
+    //     await pool.depositLp()
+    // }
 
     const onWithdrawLiquidity = async () => {
         await pool.withdrawLiquidity()
     }
-
 
     return (
         <div className="list-bill">
@@ -102,8 +101,8 @@ function DexAccountData(): JSX.Element {
                 </div>
             )}
 
-            {pool.lpBalance && (
-                <div key="lpBalance" className="list-bill__row">
+            {pool.lpWalletBalance && (
+                <div key="lpWalletBalance" className="list-bill__row">
                     <div className="list-bill__info">
                         <span>
                             {intl.formatMessage({
@@ -125,6 +124,7 @@ function DexAccountData(): JSX.Element {
                                 )}
                             </button>
                         )}
+                        {/*
                         {pool.isDepositLpAvailable && (
                             <button
                                 key="depositLp"
@@ -140,7 +140,8 @@ function DexAccountData(): JSX.Element {
                                 )}
                             </button>
                         )}
-                        {pool.isWithdrawLpAvailable && (
+                        */}
+                        {pool.isWithdrawLiquidityAvailable && (
                             <button
                                 key="withdrawLiquidity"
                                 type="button"
@@ -157,7 +158,7 @@ function DexAccountData(): JSX.Element {
                         )}
                     </div>
                     <div className="list-bill__val">
-                        {formatBalance(pool.lpBalance, pool.lpDecimals) || '0'}
+                        {formatBalance(pool.lpWalletBalance, pool.lpDecimals) || '0'}
                     </div>
                 </div>
             )}
@@ -176,6 +177,34 @@ function DexAccountData(): JSX.Element {
                             id: 'POOL_DEX_DATA_RESULT_CURRENT_SHARE',
                         }, {
                             value: pool.currentSharePercent,
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {pool.currentShareLeft && (
+                <div key="currentShareLeft" className="list-bill__row">
+                    <div className="list-bill__info"> </div>
+                    <div className="list-bill__val">
+                        {intl.formatMessage({
+                            id: 'POOL_DEX_DATA_RESULT_CURRENT_SHARE_LEFT',
+                        }, {
+                            symbol: pool.leftToken?.symbol,
+                            value: pool.currentShareLeft,
+                        })}
+                    </div>
+                </div>
+            )}
+
+            {pool.currentShareRight && (
+                <div key="currentShareRight" className="list-bill__row">
+                    <div className="list-bill__info"> </div>
+                    <div className="list-bill__val">
+                        {intl.formatMessage({
+                            id: 'POOL_DEX_DATA_RESULT_CURRENT_SHARE_RIGHT',
+                        }, {
+                            symbol: pool.rightToken?.symbol,
+                            value: pool.currentShareRight,
                         })}
                     </div>
                 </div>
