@@ -26,7 +26,7 @@ export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.El
                 <button
                     type="button"
                     onClick={onDismiss}
-                    className="btn popup-close"
+                    className="btn btn-icon popup-close"
                 >
                     <Icon icon="close" />
                 </button>

@@ -242,7 +242,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                     target="_blank"
                                     rel="nofollow noopener noreferrer"
                                 >
-                                    {sliceAddress(pool.tokenRoot)}
+                                    {sliceAddress(pool.userDataAddress)}
                                 </a>
                             </div>
                         </div>

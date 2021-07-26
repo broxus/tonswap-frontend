@@ -160,6 +160,7 @@ export class FarmingStore {
                 left: lbu,
                 right: rbu,
             } = await Dex.pairBalances(DexConstants.WTONUSDTPairAddress, wtonUsdtPairState)
+
             if (DexConstants.WTONRootAddress.toString() === lru.toString()) {
                 wtonPrice = new BigNumber(rbu).shiftedBy(-6).div(new BigNumber(lbu).shiftedBy(-9))
                     .decimalPlaces(6, BigNumber.ROUND_DOWN)
@@ -179,6 +180,7 @@ export class FarmingStore {
                 left: lbu,
                 right: rbu,
             } = await Dex.pairBalances(DexConstants.WTONBRIDGEPairAddress, wtonBridgePairState)
+
             if (DexConstants.WTONRootAddress.toString() === lru.toString()) {
                 bridgePrice = new BigNumber(lbu).shiftedBy(-9).div(new BigNumber(rbu).shiftedBy(-9))
                     .multipliedBy(wtonPrice)

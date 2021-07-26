@@ -89,6 +89,8 @@ export default {
     POOL_DEX_DATA_LABEL_LP_TOKENS: 'LP Tokens',
     POOL_DEX_DATA_LABEL_CURRENT_SHARE: 'Current share',
     POOL_DEX_DATA_RESULT_CURRENT_SHARE: '{value}%',
+    POOL_DEX_DATA_RESULT_CURRENT_SHARE_LEFT: '{value} {symbol}',
+    POOL_DEX_DATA_RESULT_CURRENT_SHARE_RIGHT: '{value} {symbol}',
     POOL_ROOTS_INFO_LABEL_DEX_ADDRESS: 'TON Swap account address',
     POOL_ROOTS_INFO_LABEL_LP_ROOT: 'LP Root address',
     POOL_ROOTS_INFO_LABEL_PAIR_ROOT: 'Pool address',

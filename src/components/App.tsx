@@ -16,6 +16,7 @@ import Farming from '@/pages/farming'
 import CreateFarmPool from '@/pages/farming/create'
 import Pool from '@/pages/pool'
 import Swap from '@/pages/swap'
+import { noop } from '@/utils'
 
 import './App.scss'
 
@@ -27,7 +28,7 @@ export function App(): JSX.Element {
             locale="en"
             defaultLocale="en"
             messages={messages}
-            // onError={noop}
+            onError={noop}
         >
             <Router>
                 <div className="wrapper">

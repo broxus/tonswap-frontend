@@ -2,8 +2,8 @@
     cursor: pointer;
     margin: 8px auto;
     opacity: 0.5;
-    width: 36px;
     transition: opacity 0.15s ease-in-out;
+    width: 36px;
 
     &:hover {
         opacity: 0.8;
@@ -14,5 +14,5 @@
         opacity: 0.2;
     }
 
-    svg { stroke: #fff; }
+    svg { stroke: #ffffff; }
 }

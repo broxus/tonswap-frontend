@@ -1,18 +1,33 @@
 .farming-list {
-    --farming-list-grid-template: 24px 1fr 1fr 1fr 200px 85px 70px;
+    --farming-list-grid-template: 30% 1fr 1fr 200px 85px 70px;
 
     display: flex;
     flex-direction: column;
     min-height: 400px;
+    overflow-x: scroll;
+    width: 100%;
+
+    &::-webkit-scrollbar {
+        width: 0;
+    }
 
     &__header,
     &__row {
         align-items: center;
         border-bottom: 1px solid rgb(255, 255, 255, 8%);
         column-gap: 10px;
-        display: grid;
-        grid-template-columns: var(--farming-list-grid-template);
         padding: 10px 0;
+
+        @media only screen and (min-width: 960px) {
+            display: grid;
+            grid-template-columns: var(--farming-list-grid-template);
+        }
+    }
+
+    @media only screen and (max-width: 959px) {
+        &__header {
+            display: none;
+        }
     }
 
     &__cell {
@@ -20,9 +35,31 @@
         font-weight: 500;
         line-height: 20px;
 
-        &--center {
-            text-align: center;
+        &-inner {
+            align-items: center;
+            column-gap: 10px;
+            display: flex;
+
+            &-leader {
+                column-gap: 10px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                padding-top: 8px;
+
+                &-term {
+                    color: rgba(255, 255, 255, 48%);
+                    font-size: 14px;
+
+                    @media only screen and (min-width: 960px) {
+                        display: none;
+                    }
+                }
+
+                &-value { width: 100%; }
+            }
         }
+
         &--right {
             text-align: right;
         }
@@ -34,6 +71,16 @@
             margin: 0 0 -10px;
             min-height: calc(100% + 10px);
             padding: 0 0 10px;
+        }
+
+        &--pool {
+            text-align: center;
+
+            @media only screen and (max-width: 959px) {
+                background: none;
+                justify-content: flex-start;
+                text-align: left;
+            }
         }
     }
 

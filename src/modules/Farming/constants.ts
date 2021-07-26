@@ -31,15 +31,9 @@ export const DEFAULT_FARMING_POOL_STORE_STATE: FarmingPoolStoreState = {
 }
 
 export const DEFAULT_CREATE_FARM_POOL_STORE_DATA: CreateFarmPoolStoreData = {
-    farmToken: {
-        isValid: true,
-    },
-    farmStart: {
-        isValid: true,
-    },
-    farmEnd: {
-        isValid: true,
-    },
+    farmToken: {},
+    farmStart: {},
+    farmEnd: {},
     rewardTokens: [
         {},
     ],

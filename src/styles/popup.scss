@@ -104,6 +104,10 @@ button.popup-close {
         font-weight: 500;
         letter-spacing: 0.5px;
         line-height: 24px;
+        max-width: 238px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     &__loader {

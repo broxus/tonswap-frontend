@@ -21,7 +21,7 @@ function Price(): JSX.Element | null {
         swap.togglePriceDirection()
     }
 
-    return (wallet.address && swap.pair?.address && swap.leftToken && swap.rightToken) ? (
+    return (wallet.address && /* swap.pair?.address && */swap.leftToken && swap.rightToken) ? (
         <div className="form-row">
             <div>
                 {intl.formatMessage({

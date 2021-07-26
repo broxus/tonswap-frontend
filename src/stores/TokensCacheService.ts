@@ -224,7 +224,7 @@ export class TokensCacheService {
 
             if (hasSubscriber) {
                 try {
-                    this.#tokensBalancesSubscribers.get(key)?.unsubscribe()
+                    await this.#tokensBalancesSubscribers.get(key)?.unsubscribe()
                     this.#tokensBalancesSubscribers.delete(key)
                 }
                 catch (e) {

@@ -28,7 +28,7 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
             <div className="popup__wrap">
                 <button
                     type="button"
-                    className="btn popup-close"
+                    className="btn btn-icon popup-close"
                     onClick={onDismiss}
                 >
                     <Icon icon="close" />
@@ -55,12 +55,6 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                             </div>
                             <div
                                 className="popup-main__name"
-                                style={{
-                                    maxWidth: 238,
-                                    whiteSpace: 'nowrap',
-                                    textOverflow: 'ellipsis',
-                                    overflow: 'hidden',
-                                }}
                                 dangerouslySetInnerHTML={{
                                     __html: intl.formatMessage({
                                         id: 'SWAP_TRANSACTION_RECEIPT_LEAD_SUCCESSFUL_AMOUNT',

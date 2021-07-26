@@ -305,6 +305,7 @@ export class CreateFarmPoolStore {
             !!this.farmToken.isValid
             && !!this.farmStart.isValid
             && !!this.farmEnd.isValid
+            && this.farmStart.value != this.farmEnd.value
             && this.rewardTokens.every(token => token.isValid && token.isRewardTotalValid)
         )
     }

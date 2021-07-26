@@ -48,7 +48,7 @@ export function Account(): JSX.Element | null {
                                         balance: formatBalance(
                                             wallet.balance,
                                             9,
-                                        ),
+                                        ) || 0,
                                     })}
                                 </div>
                             )}
