@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
+
 import { usePool } from '@/modules/Pool/stores/PoolStore'
 import { Icon } from '@/components/common/Icon'
 import { SwapTransactionProp } from '@/modules/Swap/types'
@@ -10,7 +11,7 @@ import { formatBalance } from '@/utils'
 
 
 type Props = {
-    onDismiss(): void;
+    onDismiss: () => void;
 }
 
 

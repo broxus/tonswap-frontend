@@ -159,8 +159,7 @@ function SubmitButton(): JSX.Element {
                     id: 'POOL_BTN_TEXT_SUPPLY',
                 })
             }
-        }
-            break
+        } break
 
         default:
     }

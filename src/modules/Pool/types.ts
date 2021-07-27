@@ -1,5 +1,7 @@
+import { DecodedAbiFunctionInputs, Transaction } from 'ton-inpage-provider'
+
+import { DexAbi, PairBalances, PairTokenRoots } from '@/misc'
 import { TokenCache } from '@/stores/TokensCacheService'
-import { PairBalances, PairTokenRoots } from '@/misc'
 
 
 export enum PoolStoreDataProp {
@@ -146,6 +148,15 @@ export type DepositLiquiditySuccessData = {
     [DepositLiquiditySuccessDataProp.SHARE]: string;
     [DepositLiquiditySuccessDataProp.SHARE_CHANGE_PERCENT]: string;
     [DepositLiquiditySuccessDataProp.SHARE_PERCENT]: string;
+}
+
+export type DepositLiquiditySuccessResult = {
+    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairDepositLiquiditySuccess'>,
+    transaction: Transaction
+}
+
+export type DepositLiquidityFailureResult = {
+    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>
 }
 
 export enum DepositLiquidityErrorDataProp {

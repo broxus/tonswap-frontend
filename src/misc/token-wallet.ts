@@ -6,7 +6,7 @@ import {
 } from 'ton-inpage-provider'
 
 import { TokenAbi } from '@/misc/abi'
-import { log } from '@/utils'
+import { debug } from '@/utils'
 
 
 export type WalletAddressRequest = {
@@ -41,7 +41,7 @@ export class TokenWallet {
             _answer_id: 0,
         }).call({ cachedState: state })
 
-        log(
+        debug(
             `%cToken Wallet%c Request wallet %c${args.owner.toString()}%c address
                In token: %c${args.root.toString()}%c
                Found: %c${tokenWallet.toString()}`,
@@ -72,7 +72,7 @@ export class TokenWallet {
             _answer_id: 0,
         }).call({ cachedState: state })
 
-        log(
+        debug(
             `%cToken Wallet%c Request token wallet %c${wallet.toString()}%c balance
                Result: %c${balance}`,
             'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',

@@ -1,13 +1,13 @@
 import BigNumber from 'bignumber.js'
+import * as E from 'fp-ts/Either'
 import {
     IReactionDisposer,
     action,
     makeAutoObservable,
     reaction,
     runInAction,
-    toJS,
 } from 'mobx'
-import { Address, Contract } from 'ton-inpage-provider'
+import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
 
 import { DexAbi, checkPair, TokenWallet } from '@/misc'
 import {
@@ -22,10 +22,12 @@ import {
     SwapBill,
     SwapBillProp,
     SwapDirection,
+    SwapFailureResult,
     SwapStoreData,
     SwapStoreDataProp,
     SwapStoreState,
     SwapStoreStateProp,
+    SwapSuccessResult,
     SwapTransactionProp,
     SwapTransactionResult,
 } from '@/modules/Swap/types'
@@ -34,20 +36,9 @@ import {
     getComputedNoRightAmountPerPrice,
     getComputedPriceImpact,
 } from '@/modules/Swap/utils'
-import {
-    TokenCache,
-    TokensCacheService,
-    useTokensCache,
-} from '@/stores/TokensCacheService'
-import {
-    TokensListService,
-    useTokensList,
-} from '@/stores/TokensListService'
-import {
-    WalletData,
-    WalletService,
-    useWallet,
-} from '@/stores/WalletService'
+import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
+import { TokensListService, useTokensList } from '@/stores/TokensListService'
+import { WalletService, useWallet } from '@/stores/WalletService'
 import { debounce, error, isAmountValid } from '@/utils'
 
 
@@ -82,7 +73,13 @@ export class SwapStore {
     protected transactionResult: SwapTransactionResult | undefined = undefined
 
     /**
-     *
+     * Internal swap transaction subscriber
+     * @type {Subscriber}
+     * @protected
+     */
+    protected transactionSubscriber: Subscriber | undefined
+
+    /**
      * @param {WalletService} wallet
      * @param {TokensCacheService} tokensCache
      * @param {TokensListService} tokensList
@@ -94,18 +91,16 @@ export class SwapStore {
     ) {
         makeAutoObservable<
             SwapStore,
-            | 'handleAmountChange'
+            | 'handleAmountsChange'
             | 'handleSlippageChange'
             | 'handleTokensChange'
-            | 'handleTransactionResult'
             | 'handleWalletAccountChange'
         >(this, {
             changeData: action.bound,
             toggleTokensDirection: action.bound,
-            handleAmountChange: action.bound,
+            handleAmountsChange: action.bound,
             handleSlippageChange: action.bound,
             handleTokensChange: action.bound,
-            handleTransactionResult: action.bound,
             handleWalletAccountChange: action.bound,
         })
 
@@ -153,12 +148,20 @@ export class SwapStore {
     }
 
     /**
-     *
+     * Manually init all necessary subscribers.
+     * Triggered initial tokens and change amounts.
      */
-    public init(): void {
+    public async init(): Promise<void> {
+        if (this.transactionSubscriber !== undefined) {
+            await this.transactionSubscriber.unsubscribe()
+            this.transactionSubscriber = undefined
+        }
+
+        this.transactionSubscriber = new Subscriber(ton)
+
         this.#amountsDisposer = reaction(
             () => [this.leftAmount, this.rightAmount],
-            debounce(this.handleAmountChange, 400),
+            debounce(this.handleAmountsChange, 400),
         )
 
         this.#slippageDisposer = reaction(() => this.slippage, this.handleSlippageChange)
@@ -168,47 +171,137 @@ export class SwapStore {
             debounce(this.handleTokensChange, 100),
         )
 
-        this.#transactionDisposer = reaction(() => this.wallet.transaction, this.handleTransactionResult)
-
         this.#walletAccountDisposer = reaction(() => this.wallet.address, this.handleWalletAccountChange)
 
         this.handleTokensChange([
             this.leftToken as TokenCache,
             this.rightToken as TokenCache,
         ]).then(async () => {
-            await this.handleAmountChange()
+            await this.handleAmountsChange()
         })
     }
 
     /**
      * Manually dispose all of the internal subscribers.
-     * Clean last transaction result, reset swap `bill`, `state` and `data` to default values.
+     * Clean last transaction result, reset all data to their defaults.
      */
-    public dispose(): void {
+    public async dispose(): Promise<void> {
+        if (this.transactionSubscriber !== undefined) {
+            await this.transactionSubscriber.unsubscribe()
+            this.transactionSubscriber = undefined
+        }
         this.#amountsDisposer?.()
         this.#tokensDisposer?.()
-        this.#transactionDisposer?.()
         this.#walletAccountDisposer?.()
         this.cleanTransactionResult()
         this.reset()
     }
 
     /**
-     * Manually clean last transaction result
+     * Manually start swap processing.
+     * @returns {Promise<void>}
      */
-    public cleanTransactionResult(): void {
-        this.transactionResult = undefined
+    public async swap(): Promise<void> {
+        if (
+            !this.wallet.address
+            || !this.isValid
+            || (!this.pair?.address || !this.pairContract)
+            || !this.leftToken?.root
+            || !this.leftToken?.wallet
+            || !this.amount
+            || !this.minExpectedAmount
+        ) {
+            this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
+            return
+        }
+
+        const deployGrams = this.rightToken?.balance ? '0' : '100000000'
+
+        const pairWallet = await TokenWallet.walletAddress({
+            root: new Address(this.leftToken?.root),
+            owner: this.pair.address,
+        })
+
+        const processingId = new BigNumber(
+            Math.floor(
+                Math.random() * (Number.MAX_SAFE_INTEGER - 1),
+            ) + 1,
+        ).toString()
+
+        const {
+            value0: payload,
+        } = await this.pairContract?.methods.buildExchangePayload({
+            id: processingId,
+            expected_amount: this.minExpectedAmount,
+            deploy_wallet_grams: deployGrams,
+        }).call()
+
+        this.changeState(SwapStoreStateProp.IS_LOADING, true)
+        this.changeState(SwapStoreStateProp.IS_SWAPPING, true)
+
+        const owner = new Contract(DexAbi.Callbacks, new Address(this.wallet.address))
+
+        let stream = this.transactionSubscriber?.transactions(
+            new Address(this.wallet.address),
+        )
+
+        const oldStream = this.transactionSubscriber?.oldTransactions(new Address(this.wallet.address), {
+            fromLt: this.wallet.contract?.lastTransactionId?.lt,
+        })
+
+        if (stream !== undefined && oldStream !== undefined) {
+            stream = stream.merge(oldStream)
+        }
+
+        const resultHandler = stream?.flatMap(a => a.transactions).filterMap(async transaction => {
+            const result = await owner.decodeTransaction({
+                transaction,
+                methods: ['dexPairExchangeSuccess', 'dexPairOperationCancelled'],
+            })
+
+            if (result !== undefined) {
+                if (result.method === 'dexPairOperationCancelled' && result.input.id.toString() === processingId) {
+                    return E.left({ input: result.input })
+                }
+
+                if (result.method === 'dexPairExchangeSuccess' && result.input.id.toString() === processingId) {
+                    return E.right({ input: result.input, transaction })
+                }
+            }
+
+            return undefined
+        }).first()
+
+        try {
+            await TokenWallet.send({
+                address: new Address(this.leftToken?.wallet),
+                grams: '2600000000',
+                owner: new Address(this.wallet.address),
+                payload,
+                recipient: pairWallet,
+                tokens: this.amount,
+            })
+
+            if (resultHandler !== undefined) {
+                E.match(
+                    (r: SwapFailureResult) => this.handleSwapFailure(r),
+                    (r: SwapSuccessResult) => this.handleSwapSuccess(r),
+                )(await resultHandler)
+            }
+        }
+        catch (err) {
+            error('decodeTransaction error: ', err)
+            this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
+            this.changeState(SwapStoreStateProp.IS_LOADING, false)
+        }
     }
 
 
     /**
-     * Manually change store state by the given key
-     * @template K
-     * @param {K} key
-     * @param {SwapStoreState[K]} value
+     * Manually clean last transaction result
      */
-    protected changeState<K extends keyof SwapStoreState>(key: K, value: SwapStoreState[K]): void {
-        this.state[key] = value
+    public cleanTransactionResult(): void {
+        this.transactionResult = undefined
     }
 
     /**
@@ -254,64 +347,6 @@ export class SwapStore {
         )
     }
 
-    /**
-     *
-     * @returns {Promise<void>}
-     */
-    public async swap(): Promise<void> {
-        if (
-            !this.wallet.address
-            || !this.isValid
-            || (!this.pair?.address || !this.pairContract)
-            || !this.leftToken?.root
-            || !this.leftToken?.wallet
-            || !this.amount
-            || !this.minExpectedAmount
-        ) {
-            this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
-            return
-        }
-
-        const deployGrams = this.rightToken?.balance ? '0' : '100000000'
-
-        const pairWallet = await TokenWallet.walletAddress({
-            root: new Address(this.leftToken?.root),
-            owner: this.pair.address,
-        })
-
-        const processingId = new BigNumber(
-            Math.floor(
-                Math.random() * (Number.MAX_SAFE_INTEGER - 1),
-            ) + 1,
-        ).toString()
-
-        const {
-            value0: payload,
-        } = await this.pairContract?.methods.buildExchangePayload({
-            id: processingId,
-            expected_amount: this.minExpectedAmount,
-            deploy_wallet_grams: deployGrams,
-        }).call()
-
-        this.changeState(SwapStoreStateProp.IS_LOADING, true)
-        this.changeState(SwapStoreStateProp.IS_SWAPPING, true)
-        this.changeState(SwapStoreStateProp.PROCESSING_ID, processingId)
-
-        await TokenWallet.send({
-            address: new Address(this.leftToken?.wallet),
-            grams: '2600000000',
-            owner: new Address(this.wallet.address),
-            payload,
-            recipient: pairWallet,
-            tokens: this.amount,
-        }).catch(err => {
-            error('Sending error', err)
-            this.changeState(SwapStoreStateProp.IS_LOADING, false)
-            this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
-            this.changeState(SwapStoreStateProp.PROCESSING_ID, undefined)
-        })
-    }
-
     /*
      * Reactions handlers
      * ----------------------------------------------------------------------------------
@@ -322,7 +357,7 @@ export class SwapStore {
      * @param {(string | undefined)[]} prevAmounts
      * @protected
      */
-    protected async handleAmountChange(amounts: string[] = [], prevAmounts: string[] = []): Promise<void> {
+    protected async handleAmountsChange(amounts: string[] = [], prevAmounts: string[] = []): Promise<void> {
         const [leftAmount, rightAmount] = amounts
         const [prevLeftAmount, prevRightAmount] = prevAmounts
 
@@ -629,6 +664,35 @@ export class SwapStore {
 
     /**
      *
+     * @param {string} value
+     * @param {string} prevValue
+     * @protected
+     */
+    protected handleSlippageChange(value: string, prevValue: string): void {
+        if (value === prevValue) {
+            return
+        }
+
+        const val = new BigNumber(value || '0')
+
+        if (val.isNaN() || !val.isFinite() || val.lte(0)) {
+            this.changeData(SwapStoreDataProp.SLIPPAGE, '0.5')
+        }
+        else {
+            this.changeData(SwapStoreDataProp.SLIPPAGE, val.toString())
+        }
+
+        if (this.expectedAmount) {
+            this.bill[SwapBillProp.MIN_EXPECTED_AMOUNT] = new BigNumber(this.expectedAmount)
+                .div(100)
+                .times(new BigNumber(100).minus(this.slippage))
+                .dp(0, BigNumber.ROUND_DOWN)
+                .toString()
+        }
+    }
+
+    /**
+     *
      * @param {TokenCache[]} [tokens]
      * @param {TokenCache[]} [prevTokens]
      * @returns {Promise<void>}
@@ -694,117 +758,7 @@ export class SwapStore {
             })
         }
 
-        await this.handleAmountChange()
-    }
-
-    /**
-     *
-     * @param {WalletData['transaction']} [transaction]
-     * @protected
-     */
-    protected async handleTransactionResult(transaction?: WalletData['transaction']): Promise<void> {
-        if (
-            !this.state[SwapStoreStateProp.PROCESSING_ID]
-            || !this.wallet.address
-            || !transaction?.inMessage.body
-        ) {
-            return
-        }
-
-        const owner = new Contract(DexAbi.Callbacks, new Address(this.wallet.address))
-
-        await owner.decodeTransaction({
-            transaction: toJS(transaction), // Convert Proxy to simple object
-            methods: [
-                'dexPairExchangeSuccess',
-                'dexPairOperationCancelled',
-            ],
-        }).then(res => {
-            if (
-                res?.method === 'dexPairOperationCancelled'
-                && res.input.id.toString() === this.state[SwapStoreStateProp.PROCESSING_ID]
-            ) {
-                runInAction(() => {
-                    this.transactionResult = {
-                        [SwapTransactionProp.SUCCESS]: false,
-                    }
-
-                    this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
-                    this.changeState(SwapStoreStateProp.IS_LOADING, false)
-                    this.changeState(SwapStoreStateProp.PROCESSING_ID, undefined)
-                })
-            }
-            else if (
-                res?.method === 'dexPairExchangeSuccess'
-                && res.input.id.toString() === this.state[SwapStoreStateProp.PROCESSING_ID]
-            ) {
-                runInAction(() => {
-                    this.transactionResult = {
-                        [SwapTransactionProp.HASH]: transaction.id.hash,
-
-                        [SwapTransactionProp.RECEIVED_AMOUNT]: (res.input.result as any).received.toString(),
-                        [SwapTransactionProp.RECEIVED_DECIMALS]: this.rightToken?.decimals,
-                        [SwapTransactionProp.RECEIVED_ICON]: this.rightToken?.icon,
-                        [SwapTransactionProp.RECEIVED_ROOT]: this.rightToken?.root,
-                        [SwapTransactionProp.RECEIVED_SYMBOL]: this.rightToken?.symbol,
-
-                        [SwapTransactionProp.SPENT_AMOUNT]: (res.input.result as any).spent.toString(),
-                        [SwapTransactionProp.SPENT_DECIMALS]: this.leftToken?.decimals,
-                        [SwapTransactionProp.SPENT_FEE]: (res.input.result as any).fee.toString(),
-                        [SwapTransactionProp.SPENT_SYMBOL]: this.leftToken?.symbol,
-
-                        [SwapTransactionProp.SUCCESS]: true,
-                    }
-
-                    this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
-                    this.changeState(SwapStoreStateProp.IS_LOADING, false)
-                    this.changeState(SwapStoreStateProp.IS_VALID, false)
-                    this.changeState(SwapStoreStateProp.PROCESSING_ID, undefined)
-                    this.data[SwapStoreDataProp.LEFT_AMOUNT] = ''
-                    this.data[SwapStoreDataProp.RIGHT_AMOUNT] = ''
-                })
-            }
-        }).catch(err => {
-            error('decodeTransaction error: ', err)
-            runInAction(() => {
-                this.transactionResult = {
-                    [SwapTransactionProp.SUCCESS]: false,
-                }
-
-                this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
-                this.changeState(SwapStoreStateProp.IS_LOADING, false)
-                this.changeState(SwapStoreStateProp.PROCESSING_ID, undefined)
-            })
-        })
-    }
-
-    /**
-     *
-     * @param {string} value
-     * @param {string} prevValue
-     * @protected
-     */
-    protected handleSlippageChange(value: string, prevValue: string): void {
-        if (value === prevValue) {
-            return
-        }
-
-        const val = new BigNumber(value || '0')
-
-        if (val.isNaN() || !val.isFinite() || val.lte(0)) {
-            this.changeData(SwapStoreDataProp.SLIPPAGE, '0.5')
-        }
-        else {
-            this.changeData(SwapStoreDataProp.SLIPPAGE, val.toString())
-        }
-
-        if (this.expectedAmount) {
-            this.bill[SwapBillProp.MIN_EXPECTED_AMOUNT] = new BigNumber(this.expectedAmount)
-                .div(100)
-                .times(new BigNumber(100).minus(this.slippage))
-                .dp(0, BigNumber.ROUND_DOWN)
-                .toString()
-        }
+        await this.handleAmountsChange()
     }
 
     /**
@@ -820,12 +774,102 @@ export class SwapStore {
     }
 
     /*
+     * Internal swap processing handlers
+     * ----------------------------------------------------------------------------------
+     */
+
+    /**
+     * Success transaction callback handler
+     * @param {SwapSuccessResult['input']} input
+     * @param {SwapSuccessResult['transaction']} transaction
+     * @protected
+     */
+    protected handleSwapSuccess({ input, transaction }: SwapSuccessResult): void {
+        this.transactionResult = {
+            [SwapTransactionProp.HASH]: transaction.id.hash,
+
+            [SwapTransactionProp.RECEIVED_AMOUNT]: input.result.received.toString(),
+            [SwapTransactionProp.RECEIVED_DECIMALS]: this.rightToken?.decimals,
+            [SwapTransactionProp.RECEIVED_ICON]: this.rightToken?.icon,
+            [SwapTransactionProp.RECEIVED_ROOT]: this.rightToken?.root,
+            [SwapTransactionProp.RECEIVED_SYMBOL]: this.rightToken?.symbol,
+
+            [SwapTransactionProp.SPENT_AMOUNT]: input.result.spent.toString(),
+            [SwapTransactionProp.SPENT_DECIMALS]: this.leftToken?.decimals,
+            [SwapTransactionProp.SPENT_FEE]: input.result.fee.toString(),
+            [SwapTransactionProp.SPENT_SYMBOL]: this.leftToken?.symbol,
+
+            [SwapTransactionProp.SUCCESS]: true,
+        }
+
+        this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
+        this.changeState(SwapStoreStateProp.IS_LOADING, false)
+        this.changeState(SwapStoreStateProp.IS_VALID, false)
+
+        this.data[SwapStoreDataProp.LEFT_AMOUNT] = ''
+        this.data[SwapStoreDataProp.RIGHT_AMOUNT] = ''
+    }
+
+    /**
+     * Failure transaction callback handler
+     * @param _
+     * @protected
+     */
+    protected handleSwapFailure(_?: SwapFailureResult): void {
+        this.transactionResult = {
+            [SwapTransactionProp.SUCCESS]: false,
+        }
+
+        this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
+        this.changeState(SwapStoreStateProp.IS_LOADING, false)
+    }
+
+    /*
      * Internal utilities methods
      * ----------------------------------------------------------------------------------
      */
 
     /**
-     *
+     * Manually change store state by the given key
+     * @template K
+     * @param {K} key
+     * @param {SwapStoreState[K]} value
+     */
+    protected changeState<K extends keyof SwapStoreState>(key: K, value: SwapStoreState[K]): void {
+        this.state[key] = value
+    }
+
+    /**
+     * Reset swap `bill` and `state` to default values.
+     * @protected
+     */
+    protected reset(): void {
+        this.resetBill()
+        this.resetState()
+    }
+
+    /**
+     * Reset swap `bill` data to default values
+     * @protected
+     */
+    protected resetBill(): void {
+        this.bill = DEFAULT_SWAP_BILL
+    }
+
+    /**
+     * Reset swap `state` data to default values
+     * @protected
+     */
+    protected resetState(): void {
+        this.data = {
+            ...DEFAULT_SWAP_STORE_DATA,
+            [SwapStoreDataProp.LEFT_TOKEN]: this.leftToken,
+            [SwapStoreDataProp.RIGHT_TOKEN]: this.rightToken,
+        }
+    }
+
+    /**
+     * Sync pool from network
      * @returns {Promise<void>}
      * @protected
      */
@@ -857,35 +901,6 @@ export class SwapStore {
                 },
             })
         })
-    }
-
-    /**
-     * Reset swap `bill` and `state` to default values.
-     * @protected
-     */
-    protected reset(): void {
-        this.resetBill()
-        this.resetState()
-    }
-
-    /**
-     * Reset swap `bill` data to default values
-     * @protected
-     */
-    protected resetBill(): void {
-        this.bill = DEFAULT_SWAP_BILL
-    }
-
-    /**
-     * Reset swap `state` data to default values
-     * @protected
-     */
-    protected resetState(): void {
-        this.data = {
-            ...DEFAULT_SWAP_STORE_DATA,
-            [SwapStoreDataProp.LEFT_TOKEN]: this.leftToken,
-            [SwapStoreDataProp.RIGHT_TOKEN]: this.rightToken,
-        }
     }
 
     /*
@@ -1120,8 +1135,6 @@ export class SwapStore {
     #slippageDisposer: IReactionDisposer | undefined
 
     #tokensDisposer: IReactionDisposer | undefined
-
-    #transactionDisposer: IReactionDisposer | undefined
 
     #walletAccountDisposer: IReactionDisposer | undefined
 

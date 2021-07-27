@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
-import { SwapStoreDataProp } from '@/modules/Swap/types'
+import { useSwapSettings } from '@/modules/Swap/hooks/useSwapSettings'
 
 import './index.scss'
 
@@ -12,57 +12,20 @@ import './index.scss'
 function Settings(): JSX.Element {
     const intl = useIntl()
     const swap = useSwap()
-
-    const popupRef = React.useRef<HTMLDivElement>(null)
-
-    const triggerRef = React.useRef<HTMLButtonElement>(null)
-
-    const [isOpen, setOpen] = React.useState(false)
-
-    const show = () => {
-        setOpen(true)
-    }
-
-    const hide = () => {
-        setOpen(false)
-    }
-
-    const handleOuterClick = (event: MouseEvent | TouchEvent) => {
-        if (
-            !popupRef.current?.contains(event.target as Node)
-            && !triggerRef.current?.contains(event.target as Node)
-            && (event.target as Node)?.parentNode
-        ) {
-            hide()
-        }
-    }
-
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
-        swap.changeData(SwapStoreDataProp.SLIPPAGE, event.target.value)
-    }
-
-    React.useEffect(() => {
-        document.addEventListener('click', handleOuterClick, false)
-        document.addEventListener('touchend', handleOuterClick, false)
-
-        return () => {
-            document.removeEventListener('click', handleOuterClick, false)
-            document.removeEventListener('touchend', handleOuterClick, false)
-        }
-    })
+    const settings = useSwapSettings()
 
     return (
         <div className="swap-settings">
             <button
-                ref={triggerRef}
+                ref={settings.triggerRef}
                 type="button"
                 className="btn swap-settings__btn"
-                onClick={show}
+                onClick={settings.show}
             >
                 <Icon icon="config" />
             </button>
-            {isOpen && (
-                <div ref={popupRef} className="swap-settings__drop">
+            {settings.isOpen && (
+                <div ref={settings.popupRef} className="swap-settings__drop">
                     <h3 className="swap-settings__title">
                         {intl.formatMessage({
                             id: 'SWAP_SETTINGS_DROP_TITLE',
@@ -81,7 +44,7 @@ function Settings(): JSX.Element {
                             type="text"
                             className="swap-settings__input"
                             value={swap.slippage}
-                            onChange={onChange}
+                            onChange={settings.onChange}
                         />
                     </div>
                     <div className="swap-settings__bar">
@@ -91,7 +54,7 @@ function Settings(): JSX.Element {
                                 name="percent"
                                 value="0.1"
                                 checked={swap.slippage === '0.1'}
-                                onChange={onChange}
+                                onChange={settings.onChange}
                             />
                             <span className="swap-settings__radio-txt">0.1%</span>
                         </label>
@@ -101,7 +64,7 @@ function Settings(): JSX.Element {
                                 name="percent"
                                 value="0.5"
                                 checked={swap.slippage === '0.5'}
-                                onChange={onChange}
+                                onChange={settings.onChange}
                             />
                             <span className="swap-settings__radio-txt">0.5%</span>
                         </label>
@@ -111,7 +74,7 @@ function Settings(): JSX.Element {
                                 name="percent"
                                 value="1.0"
                                 checked={swap.slippage === '1'}
-                                onChange={onChange}
+                                onChange={settings.onChange}
                             />
                             <span className="swap-settings__radio-txt">1.0%</span>
                         </label>
