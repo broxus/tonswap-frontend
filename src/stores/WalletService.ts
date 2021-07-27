@@ -13,7 +13,7 @@ import ton, {
 } from 'ton-inpage-provider'
 
 import { connectToWallet } from '@/misc/helpers'
-import { error, log } from '@/utils'
+import { error, debug } from '@/utils'
 
 
 export type Account = Permissions['accountInteraction']
@@ -62,7 +62,6 @@ export class WalletService {
 
     constructor() {
         this.#contractSubscriber = undefined
-        this.#transactionsSubscriber = undefined
 
         makeAutoObservable(this)
 
@@ -223,18 +222,6 @@ export class WalletService {
             this.#contractSubscriber = undefined
         }
 
-        if (this.#transactionsSubscriber) {
-            if (account) {
-                try {
-                    await this.#transactionsSubscriber.unsubscribe()
-                }
-                catch (e) {
-                    error(e)
-                }
-            }
-            this.#transactionsSubscriber = undefined
-        }
-
         if (!account) {
             return
         }
@@ -252,7 +239,7 @@ export class WalletService {
             { address: account.address },
         )
         this.#contractSubscriber.on('data', event => {
-            log(
+            debug(
                 '%cTON Provider%c The wallet\'s `contractStateChanged` event was captured',
                 'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                 'color: #c5e4f3',
@@ -260,23 +247,6 @@ export class WalletService {
             )
             runInAction(() => {
                 this.data.contract = event.state
-            })
-        })
-        this.#transactionsSubscriber = await ton.subscribe(
-            'transactionsFound',
-            { address: account.address },
-        )
-        this.#transactionsSubscriber.on('data', event => {
-            log(
-                '%cTON Provider%c The wallet\'s `transactionsFound` event was captured',
-                'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
-                'color: #c5e4f3',
-                event,
-            )
-            event.transactions.forEach(transaction => {
-                runInAction(() => {
-                    this.data.transaction = transaction
-                })
             })
         })
     }
@@ -303,6 +273,14 @@ export class WalletService {
      */
     public get balance(): WalletData['balance'] {
         return this.data.balance
+    }
+
+    /**
+     * Returns computed wallet contract state
+     * @returns {WalletData['contract']}
+     */
+    public get contract(): WalletData['contract'] {
+        return this.data.contract
     }
 
     /**
@@ -344,13 +322,6 @@ export class WalletService {
      * @private
      */
     #contractSubscriber: Subscription<'contractStateChanged'> | undefined
-
-    /**
-     * Internal instance of the Ton Subscription for Transaction updates
-     * @type {Subscription<'transactionsFound'> | undefined}
-     * @private
-     */
-    #transactionsSubscriber: Subscription<'transactionsFound'> | undefined
 
 }
 

@@ -9,8 +9,6 @@ import { AddLiquidityStep } from '@/modules/Pool/types'
 import './index.scss'
 
 
-// todo: should be refactored to less markup
-
 function StepsAnnotations(): JSX.Element | null {
     const intl = useIntl()
     const pool = usePool()

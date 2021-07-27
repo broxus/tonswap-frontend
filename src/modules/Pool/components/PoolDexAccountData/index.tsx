@@ -7,9 +7,13 @@ import { usePool } from '@/modules/Pool/stores/PoolStore'
 import { formatBalance } from '@/utils'
 
 
-function DexAccountData(): JSX.Element {
+function DexAccountData(): JSX.Element | null {
     const intl = useIntl()
     const pool = usePool()
+
+    if (!pool.isDexAccountDataAvailable) {
+        return null
+    }
 
     const onWithdrawLeftToken = async () => {
         if (pool.leftToken && pool.dexLeftBalance) {
@@ -28,10 +32,6 @@ function DexAccountData(): JSX.Element {
             await pool.withdrawToken(pool.lpRoot, pool.lpBalance)
         }
     }
-
-    // const onDepositLp = async () => {
-    //     await pool.depositLp()
-    // }
 
     const onWithdrawLiquidity = async () => {
         await pool.withdrawLiquidity()
@@ -124,23 +124,6 @@ function DexAccountData(): JSX.Element {
                                 )}
                             </button>
                         )}
-                        {/*
-                        {pool.isDepositLpAvailable && (
-                            <button
-                                key="depositLp"
-                                type="button"
-                                className="btn btn-icon"
-                                title="Deposit"
-                                onClick={onDepositLp}
-                            >
-                                {pool.isDepositingLp ? (
-                                    <Icon icon="loader" ratio={0.6} className="spin" />
-                                ) : (
-                                    <Icon icon="pull" ratio={0.7} />
-                                )}
-                            </button>
-                        )}
-                        */}
                         {pool.isWithdrawLiquidityAvailable && (
                             <button
                                 key="withdrawLiquidity"

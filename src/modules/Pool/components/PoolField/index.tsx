@@ -19,13 +19,17 @@ type Props = {
     readOnly?: boolean;
     token?: TokenCache;
     value?: string;
-    onChange?(value: string): void;
-    onToggleTokensList?(): void;
+    onKeyPress?: () => void;
+    onChange?: (value: string) => void;
+    onToggleTokensList?: () => void;
 }
 
 
 function Field({
-    dexAccountBalance, isValid, token, ...props
+    dexAccountBalance,
+    isValid = true,
+    token,
+    ...props
 }: Props): JSX.Element {
     const intl = useIntl()
 
@@ -36,14 +40,17 @@ function Field({
 
     const onBlur: React.FocusEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
-        props.onChange?.(formatAmount(value))
+        const validatedAmount = formatAmount(value, token?.decimals)
+        if (props.value !== validatedAmount && validatedAmount != null) {
+            props.onChange?.(validatedAmount)
+        }
+        else if (validatedAmount == null) {
+            props.onChange?.('')
+        }
     }
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
-        // if (!/^[0-9]{0,64}[.]?[0-9]{0,64}$/.test(value)) {
-        //     return
-        // }
         props.onChange?.(value)
     }
 
@@ -75,6 +82,7 @@ function Field({
                     readOnly={props.readOnly}
                     onBlur={onBlur}
                     onChange={onChange}
+                    onKeyPress={props.onKeyPress}
                 />
                 {!token ? (
                     <button

@@ -28,7 +28,7 @@ import './index.scss'
 export function Pool(): JSX.Element {
     const intl = useIntl()
     const pool = usePool()
-    const poolForm = usePoolForm()
+    const form = usePoolForm()
     const wallet = useWallet()
 
     return (
@@ -63,10 +63,15 @@ export function Pool(): JSX.Element {
                                     )}
                                     token={pool.leftToken}
                                     value={pool.leftAmount}
-                                    onChange={poolForm.onChangeData(PoolStoreDataProp.LEFT_AMOUNT)}
-                                    onToggleTokensList={poolForm.showTokensList(PoolStoreDataProp.LEFT_TOKEN)}
+                                    readOnly={
+                                        pool.isDepositingLiquidity
+                                        || pool.isDepositingLeft
+                                        || pool.isDepositingRight
+                                    }
+                                    onChange={form.onChangeData(PoolStoreDataProp.LEFT_AMOUNT)}
+                                    onKeyPress={form.debouncedSyncPoolShare}
+                                    onToggleTokensList={form.showTokensList(PoolStoreDataProp.LEFT_TOKEN)}
                                 />
-
                             )}
                         </Observer>
 
@@ -94,8 +99,14 @@ export function Pool(): JSX.Element {
                                     )}
                                     token={pool.rightToken}
                                     value={pool.rightAmount}
-                                    onChange={poolForm.onChangeData(PoolStoreDataProp.RIGHT_AMOUNT)}
-                                    onToggleTokensList={poolForm.showTokensList(PoolStoreDataProp.RIGHT_TOKEN)}
+                                    readOnly={
+                                        pool.isDepositingLiquidity
+                                        || pool.isDepositingLeft
+                                        || pool.isDepositingRight
+                                    }
+                                    onChange={form.onChangeData(PoolStoreDataProp.RIGHT_AMOUNT)}
+                                    onKeyPress={form.debouncedSyncPoolShare}
+                                    onToggleTokensList={form.showTokensList(PoolStoreDataProp.RIGHT_TOKEN)}
                                 />
                             )}
                         </Observer>
@@ -140,15 +151,15 @@ export function Pool(): JSX.Element {
 
             <PoolDepositLiquidityTransaction
                 key="transaction"
-                onDismiss={poolForm.onDismissTransactionReceipt}
+                onDismiss={form.onDismissTransactionReceipt}
             />
 
-            {(poolForm.isTokenListShown && poolForm.tokenSide) && (
+            {(form.isTokenListShown && form.tokenSide) && (
                 <TokensList
                     key="tokensList"
-                    currentToken={pool[poolForm.tokenSide]}
-                    onDismiss={poolForm.hideTokensList}
-                    onSelectToken={poolForm.onSelectToken}
+                    currentToken={pool[form.tokenSide]}
+                    onDismiss={form.hideTokensList}
+                    onSelectToken={form.onSelectToken}
                 />
             )}
         </section>

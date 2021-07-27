@@ -17,8 +17,8 @@ type Props = {
     readOnly?: boolean;
     token?: TokenCache;
     value?: string;
-    onChange?(value: string): void;
-    onToggleTokensList?(): void;
+    onChange?: (value: string) => void;
+    onToggleTokensList?: () => void;
 }
 
 
@@ -31,14 +31,11 @@ function Field({ isValid = true, token, ...props }: Props): JSX.Element {
 
     const onBlur: React.FocusEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
-        props.onChange?.(formatAmount(value))
+        props.onChange?.(formatAmount(value, token?.decimals) || '')
     }
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
-        // if (!/^[0-9]{0,64}[.]?[0-9]{0,64}$/.test(value)) {
-        //     return
-        // }
         props.onChange?.(value)
     }
 

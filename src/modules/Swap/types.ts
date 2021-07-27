@@ -1,5 +1,6 @@
-import { Address } from 'ton-inpage-provider'
+import { Address, DecodedAbiFunctionInputs, Transaction } from 'ton-inpage-provider'
 
+import { DexAbi } from '@/misc'
 import { TokenCache } from '@/stores/TokensCacheService'
 
 
@@ -74,7 +75,6 @@ export enum SwapStoreStateProp {
     IS_VALID = 'isValid',
     PAIR_EXIST = 'pairExist',
     PRICE_DIRECTION = 'priceDirection',
-    PROCESSING_ID = 'processingId',
 }
 
 export type SwapStoreState = {
@@ -85,7 +85,6 @@ export type SwapStoreState = {
     [SwapStoreStateProp.IS_VALID]: boolean;
     [SwapStoreStateProp.PAIR_EXIST]: boolean;
     [SwapStoreStateProp.PRICE_DIRECTION]?: SwapDirection;
-    [SwapStoreStateProp.PROCESSING_ID]?: string;
 }
 
 export enum SwapTransactionProp {
@@ -118,3 +117,11 @@ export type SwapTransactionResult = {
     [SwapTransactionProp.TRANSACTION_HASH]?: string;
 }
 
+export type SwapSuccessResult = {
+    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairExchangeSuccess'>,
+    transaction: Transaction
+}
+
+export type SwapFailureResult = {
+    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>
+}

@@ -3,6 +3,7 @@ import * as React from 'react'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
 import { SwapStoreData, SwapStoreDataProp } from '@/modules/Swap/types'
 import { TokenCache } from '@/stores/TokensCacheService'
+import { error } from '@/utils'
 
 
 type TokenSide = SwapStoreDataProp.LEFT_TOKEN | SwapStoreDataProp.RIGHT_TOKEN
@@ -10,11 +11,11 @@ type TokenSide = SwapStoreDataProp.LEFT_TOKEN | SwapStoreDataProp.RIGHT_TOKEN
 type SwapFormShape = {
     isTokenListShown: boolean;
     tokenSide: TokenSide | null;
-    hideTokensList(): void;
-    showTokensList(side: TokenSide): () => void;
-    onChangeData<K extends keyof SwapStoreData>(key: K): (value: SwapStoreData[K]) => void;
-    onSelectToken(token: TokenCache): void;
-    onDismissTransactionReceipt(): void;
+    hideTokensList: () => void;
+    showTokensList: (side: TokenSide) => () => void;
+    onChangeData: <K extends keyof SwapStoreData>(key: K) => (value: SwapStoreData[K]) => void;
+    onSelectToken: (token: TokenCache) => void;
+    onDismissTransactionReceipt: () => void;
 }
 
 
@@ -55,9 +56,11 @@ export function useSwapForm(): SwapFormShape {
     }
 
     React.useEffect(() => {
-        swap.init()
+        (async () => {
+            await swap.init()
+        })()
         return () => {
-            swap.dispose()
+            swap.dispose().catch(err => error(err))
         }
     }, [])
 

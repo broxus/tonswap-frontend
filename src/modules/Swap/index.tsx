@@ -24,7 +24,7 @@ import './index.scss'
 export function Swap(): JSX.Element {
     const intl = useIntl()
     const swap = useSwap()
-    const swapForm = useSwapForm()
+    const form = useSwapForm()
 
     return (
         <section className="section section--small">
@@ -56,10 +56,10 @@ export function Swap(): JSX.Element {
                                     readOnly={swap.isLoading || swap.isSwapping}
                                     token={swap.leftToken}
                                     value={swap.leftAmount}
-                                    onChange={swapForm.onChangeData(
+                                    onChange={form.onChangeData(
                                         SwapStoreDataProp.LEFT_AMOUNT,
                                     )}
-                                    onToggleTokensList={swapForm.showTokensList(
+                                    onToggleTokensList={form.showTokensList(
                                         SwapStoreDataProp.LEFT_TOKEN,
                                     )}
                                 />
@@ -93,10 +93,10 @@ export function Swap(): JSX.Element {
                                     readOnly={swap.isLoading || swap.isSwapping}
                                     token={swap.rightToken}
                                     value={swap.rightAmount}
-                                    onChange={swapForm.onChangeData(
+                                    onChange={form.onChangeData(
                                         SwapStoreDataProp.RIGHT_AMOUNT,
                                     )}
-                                    onToggleTokensList={swapForm.showTokensList(
+                                    onToggleTokensList={form.showTokensList(
                                         SwapStoreDataProp.RIGHT_TOKEN,
                                     )}
                                 />
@@ -114,15 +114,15 @@ export function Swap(): JSX.Element {
 
             <SwapTransaction
                 key="transaction"
-                onDismiss={swapForm.onDismissTransactionReceipt}
+                onDismiss={form.onDismissTransactionReceipt}
             />
 
-            {(swapForm.isTokenListShown && swapForm.tokenSide != null) && (
+            {(form.isTokenListShown && form.tokenSide != null) && (
                 <TokensList
                     key="tokensList"
-                    currentToken={swap[swapForm.tokenSide]}
-                    onDismiss={swapForm.hideTokensList}
-                    onSelectToken={swapForm.onSelectToken}
+                    currentToken={swap[form.tokenSide]}
+                    onDismiss={form.hideTokensList}
+                    onSelectToken={form.onSelectToken}
                 />
             )}
         </section>

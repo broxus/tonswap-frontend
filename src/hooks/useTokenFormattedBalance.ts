@@ -4,23 +4,26 @@ import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 import { error, formatBalance } from '@/utils'
 
 
-type HookOptions = {
+type TokenFormattedBalanceOptions = {
     dexAccountBalance?: string;
     subscriberPrefix?: string;
     watchOnMount?: boolean;
     unwatchOnUnmount?: boolean;
 }
 
-type HookShape = {
+type TokenFormattedBalanceShape = {
     balance: string;
     isFetching: boolean;
 }
 
 
+const mountedTokens: Record<string, boolean> = {}
+
+
 export function useTokenFormattedBalance(
     token?: TokenCache,
-    options?: HookOptions,
-): HookShape {
+    options?: TokenFormattedBalanceOptions,
+): TokenFormattedBalanceShape {
     const tokensCache = useTokensCache()
 
     const {
@@ -40,8 +43,6 @@ export function useTokenFormattedBalance(
 
     const [isFetching, setFetchingTo] = React.useState(false)
 
-    const isMounted = React.useRef<boolean | null>(null)
-
     React.useEffect(() => {
         setBalance(formatBalance(
             token?.balance || '0',
@@ -52,41 +53,46 @@ export function useTokenFormattedBalance(
 
     React.useEffect(() => {
         if (token) {
-            setFetchingTo(true)
-            tokensCache.syncToken(token.root).then(() => {
-                if (!isMounted.current) {
-                    return
-                }
-                setBalance(formatBalance(
-                    token?.balance || '0',
-                    token?.decimals,
-                    dexAccountBalance,
-                ) || '0')
-                setFetchingTo(false)
-            }).catch(err => {
-                error('Token update failure', err)
-                if (!isMounted.current) {
-                    return
-                }
-                setFetchingTo(false)
-            }).finally(async () => {
-                if (!isMounted.current) {
-                    return
-                }
-                if (watchOnMount) {
-                    await tokensCache.watch(token.root, subscriberPrefix)
-                }
-                setFetchingTo(false)
-            })
+            mountedTokens[`${subscriberPrefix}-${token.root}`] = true;
+
+            (async () => {
+                setFetchingTo(true)
+                await tokensCache.syncToken(token.root).then(() => {
+                    if (!mountedTokens[`${subscriberPrefix}-${token.root}`]) {
+                        return
+                    }
+                    setBalance(formatBalance(
+                        token?.balance || '0',
+                        token?.decimals,
+                        dexAccountBalance,
+                    ) || '0')
+                    setFetchingTo(false)
+                }).catch(err => {
+                    error('Token update failure', err)
+                    if (!mountedTokens[`${subscriberPrefix}-${token.root}`]) {
+                        return
+                    }
+                    setFetchingTo(false)
+                }).finally(async () => {
+                    if (watchOnMount) {
+                        await tokensCache.watch(token.root, subscriberPrefix)
+                    }
+                    if (!mountedTokens[`${subscriberPrefix}-${token.root}`]) {
+                        return
+                    }
+                    setFetchingTo(false)
+                })
+            })()
         }
 
-        isMounted.current = true
-
         return () => {
-            if (token && unwatchOnUnmount) {
-                tokensCache.unwatch(token.root, subscriberPrefix)
+            if (token) {
+                mountedTokens[`${subscriberPrefix}-${token.root}`] = false
             }
-            isMounted.current = false
+
+            if (token && unwatchOnUnmount) {
+                tokensCache.unwatch(token.root, subscriberPrefix).catch(err => error(err))
+            }
         }
     }, [token])
 

@@ -295,7 +295,8 @@ export class FarmingStore {
                             catch (e) {}
 
                             if (
-                                !isPoolOwner && isExpired
+                                !isPoolOwner
+                                && isExpired
                                 && new BigNumber(userBalance).isZero()
                                 && userReward.findIndex(a => !new BigNumber(a).isZero()) < 0
                             ) {

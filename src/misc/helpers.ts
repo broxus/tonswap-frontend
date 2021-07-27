@@ -4,7 +4,7 @@ import ton, {
 } from 'ton-inpage-provider'
 
 import { Dex } from '@/misc/dex'
-import { log } from '@/utils'
+import { debug } from '@/utils'
 
 
 export async function connectToWallet(): Promise<void> {
@@ -26,7 +26,7 @@ export async function checkPair(leftRoot: string, rightRoot: string): Promise<Ad
 
     if (!pairState.state?.isDeployed) {
         if (process.env.NODE_ENV === 'development') {
-            log(
+            debug(
                 `%cTON Provider%c Check Pair: %c${pairAddress?.toString()}%c is%c not deployed`,
                 'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                 'color: #c5e4f3',
@@ -44,7 +44,7 @@ export async function checkPair(leftRoot: string, rightRoot: string): Promise<Ad
     }
 
     if (process.env.NODE_ENV === 'development') {
-        log(
+        debug(
             `%cTON Provider%c Check Pair: Found one: %c${pairAddress?.toString()}`,
             'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
             'color: #c5e4f3',

@@ -1,3 +1,4 @@
+import { Mutex } from '@broxus/await-semaphore'
 import {
     ObservableMap,
     makeAutoObservable,
@@ -9,7 +10,7 @@ import ton, { Address, Subscription } from 'ton-inpage-provider'
 import { TokenWallet } from '@/misc/token-wallet'
 import { TokensListService, useTokensList } from '@/stores/TokensListService'
 import { WalletService, useWallet } from '@/stores/WalletService'
-import { log } from '@/utils'
+import { debug } from '@/utils'
 
 
 export type TokenCache = {
@@ -78,6 +79,7 @@ export class TokensCacheService {
         })
 
         this.#tokensBalancesSubscribers = new Map<string, Subscription<'contractStateChanged'>>()
+        this.#tokensBalancesSubscribersMutex = new Mutex()
     }
 
     /**
@@ -220,45 +222,40 @@ export class TokensCacheService {
 
         if (token.wallet) {
             const key = `${prefix}-${token.root}`
-            const hasSubscriber = this.#tokensBalancesSubscribers.has(key)
 
-            if (hasSubscriber) {
-                try {
-                    await this.#tokensBalancesSubscribers.get(key)?.unsubscribe()
-                    this.#tokensBalancesSubscribers.delete(key)
+            await this.#tokensBalancesSubscribersMutex.use(async () => {
+                const entry = this.#tokensBalancesSubscribers.get(key)
+                if (entry != null || !token.wallet) {
+                    return
                 }
-                catch (e) {
-                    log('Cannot subscribe on token balance update', e)
-                }
-            }
 
-            const address = new Address(token.wallet)
+                const address = new Address(token.wallet)
 
-            this.#tokensBalancesSubscribers.set(
-                key,
-                (await ton.subscribe('contractStateChanged', {
+                const subscription = (await ton.subscribe('contractStateChanged', {
                     address,
                 })).on('data', async event => {
-                    log(
+                    debug(
                         '%cTON Provider%c The token\'s `contractStateChanged` event was captured',
                         'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                         'color: #c5e4f3',
                         event,
                     )
                     await this.syncToken(token.root)
-                }),
-            )
+                })
 
-            log(
-                `%cTON Provider%c Subscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
+                this.#tokensBalancesSubscribers.set(key, subscription)
+
+                debug(
+                    `%cTON Provider%c Subscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
                Key: (${key})`,
-                'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
-                'color: #c5e4f3',
-                'color: #bae701',
-                'color: #c5e4f3',
-                'color: #bae701',
-                'color: #c5e4f3',
-            )
+                    'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
+                    'color: #c5e4f3',
+                    'color: #bae701',
+                    'color: #c5e4f3',
+                    'color: #bae701',
+                    'color: #c5e4f3',
+                )
+            })
         }
     }
 
@@ -280,27 +277,30 @@ export class TokensCacheService {
         }
 
         const key = `${prefix}-${token.root}`
-        const subscriber = this.#tokensBalancesSubscribers.get(key)
 
-        try {
-            await subscriber?.unsubscribe()
-        }
-        catch (e) {
-            log('Cannot unsubscribe from token balance update', e)
-        }
+        await this.#tokensBalancesSubscribersMutex.use(async () => {
+            const subscriber = this.#tokensBalancesSubscribers.get(key)
 
-        this.#tokensBalancesSubscribers.delete(key)
+            try {
+                await subscriber?.unsubscribe()
+            }
+            catch (e) {
+                debug('Cannot unsubscribe from token balance update', e)
+            }
 
-        log(
-            `%cTON Provider%c Unsubscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
+            this.#tokensBalancesSubscribers.delete(key)
+
+            debug(
+                `%cTON Provider%c Unsubscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
            Key: (${key})`,
-            'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
-            'color: #c5e4f3',
-            'color: #bae701',
-            'color: #c5e4f3',
-            'color: #bae701',
-            'color: #c5e4f3',
-        )
+                'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
+                'color: #c5e4f3',
+                'color: #bae701',
+                'color: #c5e4f3',
+                'color: #bae701',
+                'color: #c5e4f3',
+            )
+        })
     }
 
     /**
@@ -344,8 +344,14 @@ export class TokensCacheService {
      */
     #tokensBalancesSubscribers: Map<string, Subscription<'contractStateChanged'>>
 
-}
+    /**
+     * Subscribers map mutex. Used to prevent duplicate subscriptions
+     * @type Mutex
+     * @private
+     */
+    #tokensBalancesSubscribersMutex: Mutex
 
+}
 
 const TokensCacheServiceStore = new TokensCacheService(
     useWallet(),
