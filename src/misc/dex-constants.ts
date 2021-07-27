@@ -22,6 +22,8 @@ export class DexConstants {
 
     static UniWTONUSDTLPRootAddress = new AddressLiteral('0:53abe27ec16208973c9643911c35b5d033744fbb95b11b5672f71188db5a42dc');
 
+    static TokenFactoryAddress = new AddressLiteral('0:d5c74d583a377891946c8119dc127fac359fb4773911237e6da09ffb3addf10f');
+
     static TokenListURI = 'https://raw.githubusercontent.com/broxus/ton-assets/master/manifest.json';
 
     static MinWalletVersion = '0.1.5';

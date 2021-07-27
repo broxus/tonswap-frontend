@@ -200,6 +200,7 @@ export class SwapStore {
         this.transactionResult = undefined
     }
 
+
     /**
      * Manually change store state by the given key
      * @template K

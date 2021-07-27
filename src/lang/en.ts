@@ -6,6 +6,7 @@ export default {
     NAV_LINK_TEXT_TOKENS: 'Tokens',
     NAV_LINK_TEXT_PAIRS: 'Pairs',
     NAV_LINK_TEXT_FARMING: 'Farming',
+    NAV_LINK_TEXT_BUILDER: 'Builder',
 
     WALLET_CONNECTING_POPUP_TITLE: 'Connect to a wallet',
     WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME: 'Crystal Wallet',
@@ -185,5 +186,23 @@ export default {
     FARMING_CREATE_POOL_PARAMS_REWARD_TOKEN_FARM_DEPOSIT_VALUE: '{value} {symbol}',
     FARMING_CREATE_POOL_VALID_STATE_CREATION_NOTE: 'Farm pool creation cost is 7 TON. Gas does not return.',
     FARMING_CREATE_POOL_VALID_STATE_DEPOSIT_NOTE: 'You need to deposit full amount of {tokensDeposits} to pool address before it becomes active.',
-    FARMING_CREATE_BTN_TEXT_SUBMIT: 'Create pool'
+    FARMING_CREATE_BTN_TEXT_SUBMIT: 'Create pool',
+
+    BUILDER_HEADER_TITLE: 'Builder',
+    BUILDER_HEADER_CREATE_LINK_TEXT: 'Create new token',
+    BUILDER_LIST_HEADER_NAME_CELL: 'Name',
+    BUILDER_LIST_HEADER_SYMBOL_CELL: 'Symbol',
+    BUILDER_LIST_HEADER_DECIMALS_CELL: 'Decimals',
+    BUILDER_LIST_HEADER_TOTAL_SUPPLY_CELL: 'Total supply',
+    BUILDER_CREATE_HEADER_TITLE: 'Create token',
+    BUILDER_CREATE_FIELD_LABEL_NAME: 'Name',
+    BUILDER_CREATE_FIELD_LABEL_SYMBOL: 'Symbol',
+    BUILDER_CREATE_FIELD_LABEL_DECIMALS: 'Decimals',
+    BUILDER_CREATE_BTN_TEXT_SUBMIT: 'Build',
+    BUILDER_CREATE_BTN_TEXT_ENTER_ALL_DATA: 'Enter all data',
+    BUILDER_CREATE_TRANSACTION_RECEIPT_POPUP_TITLE: 'Token receipt',
+    BUILDER_CREATE_TRANSACTION_RECEIPT_TOKEN_DEPLOYED: 'Token deployed',
+    BUILDER_CREATE_TRANSACTION_RECEIPT_SUCCESSFUL_NOTE: '<p>Token {name} deployed successfully.</p><p>{symbol} token root <a href="https://ton-explorer.com/accounts/{address}" target="_blank" rel="nofollow noopener noreferrer">contract</a>.</p><p>You can view the result transaction in the <a href="https://ton-explorer.com/transactions/{transactionHash}" target="_blank" rel="nofollow noopener noreferrer">explorer</a>.</p>',
+    BUILDER_CREATE_TRANSACTION_RECEIPT_TOKEN_NOT_DEPLOYED: 'Token not deployed',
+    BUILDER_CREATE_TRANSACTION_RECEIPT_BTN_TEXT_CLOSE: 'Close',
 }

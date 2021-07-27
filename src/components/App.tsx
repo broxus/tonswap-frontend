@@ -15,6 +15,8 @@ import { Account } from '@/modules/Account'
 import Farming from '@/pages/farming'
 import CreateFarmPool from '@/pages/farming/create'
 import Pool from '@/pages/pool'
+import Builder from '@/pages/builder'
+import CreateToken from '@/pages/builder/create'
 import Swap from '@/pages/swap'
 import { noop } from '@/utils'
 
@@ -49,6 +51,12 @@ export function App(): JSX.Element {
                             </Route>
                             <Route exact path="/farming/create">
                                 <CreateFarmPool />
+                            </Route>
+                            <Route exact path="/builder">
+                                <Builder />
+                            </Route>
+                            <Route path="/builder/create">
+                                <CreateToken />
                             </Route>
                         </Switch>
                     </main>

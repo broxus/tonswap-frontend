@@ -492,6 +492,7 @@ export class FarmingStore {
             symbol = undefined
         }
         if (symbol === undefined || decimals === undefined) { return undefined }
+
         return { decimals, symbol }
     }
 
