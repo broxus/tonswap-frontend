@@ -1,5 +1,5 @@
-import { FullContractState, TransactionId } from 'ton-inpage-provider'
 import BigNumber from 'bignumber.js'
+import { FullContractState, TransactionId } from 'ton-inpage-provider'
 
 
 export type FarmPool = {
@@ -35,34 +35,19 @@ export type FarmingStoreData = {
     tokensCache: Map<string, FullContractState>;
 }
 
-export enum FarmingPoolStoreDataProp {
-    ADMIN_DEPOSIT = 'adminDeposit',
-    ADMIN_WALLET_ADDRESS = 'adminWalletAddress',
-    ADMIN_WALLET_BALANCE = 'adminWalletBalance',
-    USER_DEPOSIT = 'userDeposit',
-    USER_WALLET_ADDRESS = 'userWalletAddress',
-    USER_WALLET_BALANCE = 'userWalletBalance',
-}
-
 export type FarmingPoolStoreData = {
-    [FarmingPoolStoreDataProp.ADMIN_DEPOSIT]: (string | undefined)[];
-    [FarmingPoolStoreDataProp.ADMIN_WALLET_ADDRESS]: (string | undefined)[];
-    [FarmingPoolStoreDataProp.ADMIN_WALLET_BALANCE]: (string | undefined)[];
-    [FarmingPoolStoreDataProp.USER_DEPOSIT]: string | undefined;
-    [FarmingPoolStoreDataProp.USER_WALLET_ADDRESS]: string | undefined;
-    [FarmingPoolStoreDataProp.USER_WALLET_BALANCE]: string | undefined;
-}
-
-export enum FarmingPoolStoreStateProp {
-    IS_ADMIN_DEPOSITING = 'isAdminDepositing',
-    IS_ADMIN_WITHDRAW_UNCLAIMING = 'isAdminWithdrawUnclaiming',
-    IS_USER_DEPOSITING = 'isUserDepositing',
+    adminDeposit: (string | undefined)[];
+    adminWalletAddress: (string | undefined)[];
+    adminWalletBalance: (string | undefined)[];
+    userDeposit: string | undefined;
+    userWalletAddress: string | undefined;
+    userWalletBalance: string | undefined;
 }
 
 export type FarmingPoolStoreState = {
-    [FarmingPoolStoreStateProp.IS_ADMIN_DEPOSITING]: boolean;
-    [FarmingPoolStoreStateProp.IS_ADMIN_WITHDRAW_UNCLAIMING]: boolean;
-    [FarmingPoolStoreStateProp.IS_USER_DEPOSITING]: boolean;
+    isAdminDepositing: boolean;
+    isAdminWithdrawUnclaiming: boolean;
+    isUserDepositing: boolean;
 }
 
 export type FarmDate = {
@@ -85,24 +70,13 @@ export type FarmRewardToken = FarmToken & {
     isRewardTotalValid?: boolean;
 }
 
-export enum CreateFarmPoolStoreDataProp {
-    FARM_END = 'farmEnd',
-    FARM_START = 'farmStart',
-    FARM_TOKEN = 'farmToken',
-    REWARD_TOKENS = 'rewardTokens',
-}
-
 export type CreateFarmPoolStoreData = {
-    [CreateFarmPoolStoreDataProp.FARM_END]: FarmDate;
-    [CreateFarmPoolStoreDataProp.FARM_START]: FarmDate;
-    [CreateFarmPoolStoreDataProp.FARM_TOKEN]: FarmToken;
-    [CreateFarmPoolStoreDataProp.REWARD_TOKENS]: FarmRewardToken[];
-}
-
-export enum CreateFarmPoolStoreStateProp {
-    IS_CREATING = 'isCreating',
+    farmEnd: FarmDate;
+    farmStart: FarmDate;
+    farmToken: FarmToken;
+    rewardTokens: FarmRewardToken[];
 }
 
 export type CreateFarmPoolStoreState = {
-    [CreateFarmPoolStoreStateProp.IS_CREATING]: boolean;
+    isCreating: boolean;
 }

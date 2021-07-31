@@ -4,7 +4,6 @@ import {
     CreateFarmPoolStoreData,
     CreateFarmPoolStoreState,
     FarmingPoolStoreData,
-    FarmingPoolStoreDataProp,
     FarmingPoolStoreState,
     FarmingStoreData,
 } from '@/modules/Farming/types'
@@ -16,12 +15,12 @@ export const DEFAULT_FARMING_STORE_DATA: FarmingStoreData = {
 }
 
 export const DEFAULT_FARMING_POOL_STORE_DATA: FarmingPoolStoreData = {
-    [FarmingPoolStoreDataProp.ADMIN_DEPOSIT]: [],
-    [FarmingPoolStoreDataProp.ADMIN_WALLET_ADDRESS]: [],
-    [FarmingPoolStoreDataProp.ADMIN_WALLET_BALANCE]: [],
-    [FarmingPoolStoreDataProp.USER_DEPOSIT]: undefined,
-    [FarmingPoolStoreDataProp.USER_WALLET_ADDRESS]: undefined,
-    [FarmingPoolStoreDataProp.USER_WALLET_BALANCE]: undefined,
+    adminDeposit: [],
+    adminWalletAddress: [],
+    adminWalletBalance: [],
+    userDeposit: undefined,
+    userWalletAddress: undefined,
+    userWalletBalance: undefined,
 }
 
 export const DEFAULT_FARMING_POOL_STORE_STATE: FarmingPoolStoreState = {

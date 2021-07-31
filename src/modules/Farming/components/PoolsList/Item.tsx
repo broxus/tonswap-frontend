@@ -10,7 +10,7 @@ import { amount } from '@/utils'
 
 
 type Props = {
-    pool: FarmPool
+    pool: FarmPool;
 }
 
 export function Item({ pool }: Props): JSX.Element {

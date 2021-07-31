@@ -20,16 +20,12 @@ import {
 } from '@/modules/Swap/constants'
 import {
     SwapBill,
-    SwapBillProp,
     SwapDirection,
     SwapFailureResult,
     SwapStoreData,
-    SwapStoreDataProp,
     SwapStoreState,
-    SwapStoreStateProp,
     SwapSuccessResult,
-    SwapTransactionProp,
-    SwapTransactionResult,
+    SwapTransactionReceipt,
 } from '@/modules/Swap/types'
 import {
     getComputedDefaultPerPrice,
@@ -67,17 +63,10 @@ export class SwapStore {
 
     /**
      * Last swap transaction result data
-     * @type {SwapTransactionResult | undefined}
+     * @type {SwapTransactionReceipt | undefined}
      * @protected
      */
-    protected transactionResult: SwapTransactionResult | undefined = undefined
-
-    /**
-     * Internal swap transaction subscriber
-     * @type {Subscriber}
-     * @protected
-     */
-    protected transactionSubscriber: Subscriber | undefined
+    protected transactionReceipt: SwapTransactionReceipt | undefined = undefined
 
     /**
      * @param {WalletService} wallet
@@ -106,11 +95,11 @@ export class SwapStore {
 
         reaction(() => this.tokensCache.tokens, () => {
             if (!this.leftToken || this.leftToken.root === DEFAULT_LEFT_TOKEN_ROOT) {
-                this.changeData(SwapStoreDataProp.LEFT_TOKEN, this.tokensCache.get(DEFAULT_LEFT_TOKEN_ROOT))
+                this.changeData('leftToken', this.tokensCache.get(DEFAULT_LEFT_TOKEN_ROOT))
             }
 
             if (!this.rightToken || this.rightToken.root === DEFAULT_RIGHT_TOKEN_ROOT) {
-                this.changeData(SwapStoreDataProp.RIGHT_TOKEN, this.tokensCache.get(DEFAULT_RIGHT_TOKEN_ROOT))
+                this.changeData('rightToken', this.tokensCache.get(DEFAULT_RIGHT_TOKEN_ROOT))
             }
         })
     }
@@ -127,19 +116,19 @@ export class SwapStore {
      * @param {SwapStoreData[K]} value
      */
     public changeData<K extends keyof SwapStoreData>(key: K, value: SwapStoreData[K]): void {
-        if (key === SwapStoreDataProp.RIGHT_AMOUNT) {
-            this.changeState(SwapStoreStateProp.DIRECTION, SwapDirection.RTL)
+        if (key === 'rightAmount') {
+            this.changeState('direction', SwapDirection.RTL)
         }
-        else if (key === SwapStoreDataProp.LEFT_AMOUNT) {
-            this.changeState(SwapStoreStateProp.DIRECTION, SwapDirection.LTR)
+        else if (key === 'leftAmount') {
+            this.changeState('direction', SwapDirection.LTR)
         }
 
         if (
-            [SwapStoreDataProp.LEFT_AMOUNT, SwapStoreDataProp.RIGHT_AMOUNT].includes(key)
+            ['leftAmount', 'rightAmount'].includes(key)
             && (value as string).length === 0
         ) {
-            this.data[SwapStoreDataProp.LEFT_AMOUNT] = ''
-            this.data[SwapStoreDataProp.RIGHT_AMOUNT] = ''
+            this.data.leftAmount = ''
+            this.data.rightAmount = ''
             this.resetBill()
         }
         else {
@@ -152,12 +141,9 @@ export class SwapStore {
      * Triggered initial tokens and change amounts.
      */
     public async init(): Promise<void> {
-        if (this.transactionSubscriber !== undefined) {
-            await this.transactionSubscriber.unsubscribe()
-            this.transactionSubscriber = undefined
-        }
+        await this.unsubscribeTransactionSubscriber()
 
-        this.transactionSubscriber = new Subscriber(ton)
+        this.#transactionSubscriber = new Subscriber(ton)
 
         this.#amountsDisposer = reaction(
             () => [this.leftAmount, this.rightAmount],
@@ -173,12 +159,14 @@ export class SwapStore {
 
         this.#walletAccountDisposer = reaction(() => this.wallet.address, this.handleWalletAccountChange)
 
-        this.handleTokensChange([
-            this.leftToken as TokenCache,
-            this.rightToken as TokenCache,
-        ]).then(async () => {
+        try {
+            await this.handleTokensChange([
+                this.leftToken as TokenCache,
+                this.rightToken as TokenCache,
+            ])
             await this.handleAmountsChange()
-        })
+        }
+        catch (e) {}
     }
 
     /**
@@ -186,10 +174,7 @@ export class SwapStore {
      * Clean last transaction result, reset all data to their defaults.
      */
     public async dispose(): Promise<void> {
-        if (this.transactionSubscriber !== undefined) {
-            await this.transactionSubscriber.unsubscribe()
-            this.transactionSubscriber = undefined
-        }
+        await this.unsubscribeTransactionSubscriber()
         this.#amountsDisposer?.()
         this.#tokensDisposer?.()
         this.#walletAccountDisposer?.()
@@ -211,7 +196,7 @@ export class SwapStore {
             || !this.amount
             || !this.minExpectedAmount
         ) {
-            this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
+            this.changeState('isSwapping', false)
             return
         }
 
@@ -236,16 +221,16 @@ export class SwapStore {
             deploy_wallet_grams: deployGrams,
         }).call()
 
-        this.changeState(SwapStoreStateProp.IS_LOADING, true)
-        this.changeState(SwapStoreStateProp.IS_SWAPPING, true)
+        this.changeState('isLoading', true)
+        this.changeState('isSwapping', true)
 
         const owner = new Contract(DexAbi.Callbacks, new Address(this.wallet.address))
 
-        let stream = this.transactionSubscriber?.transactions(
+        let stream = this.#transactionSubscriber?.transactions(
             new Address(this.wallet.address),
         )
 
-        const oldStream = this.transactionSubscriber?.oldTransactions(new Address(this.wallet.address), {
+        const oldStream = this.#transactionSubscriber?.oldTransactions(new Address(this.wallet.address), {
             fromLt: this.wallet.contract?.lastTransactionId?.lt,
         })
 
@@ -274,7 +259,7 @@ export class SwapStore {
 
         try {
             await TokenWallet.send({
-                address: new Address(this.leftToken?.wallet),
+                address: new Address(this.leftToken.wallet),
                 grams: '2600000000',
                 owner: new Address(this.wallet.address),
                 payload,
@@ -289,19 +274,18 @@ export class SwapStore {
                 )(await resultHandler)
             }
         }
-        catch (err) {
-            error('decodeTransaction error: ', err)
-            this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
-            this.changeState(SwapStoreStateProp.IS_LOADING, false)
+        catch (e) {
+            error('decodeTransaction error: ', e)
+            this.changeState('isSwapping', false)
+            this.changeState('isLoading', false)
         }
     }
-
 
     /**
      * Manually clean last transaction result
      */
     public cleanTransactionResult(): void {
-        this.transactionResult = undefined
+        this.transactionReceipt = undefined
     }
 
     /**
@@ -319,17 +303,17 @@ export class SwapStore {
             rightToken,
         } = this
 
-        this.data[SwapStoreDataProp.LEFT_AMOUNT] = rightAmount
-        this.data[SwapStoreDataProp.RIGHT_AMOUNT] = leftAmount
+        this.data.leftAmount = rightAmount
+        this.data.rightAmount = leftAmount
 
-        this.data[SwapStoreDataProp.LEFT_TOKEN] = rightToken
-        this.data[SwapStoreDataProp.RIGHT_TOKEN] = leftToken
+        this.data.leftToken = rightToken
+        this.data.rightToken = leftToken
 
         if (this.direction === SwapDirection.LTR) {
-            this.changeState(SwapStoreStateProp.DIRECTION, SwapDirection.RTL)
+            this.changeState('direction', SwapDirection.RTL)
         }
         else if (this.direction === SwapDirection.RTL) {
-            this.changeState(SwapStoreStateProp.DIRECTION, SwapDirection.LTR)
+            this.changeState('direction', SwapDirection.LTR)
         }
 
         this.resetBill()
@@ -339,12 +323,9 @@ export class SwapStore {
      * Manually revert price direction
      */
     public togglePriceDirection(): void {
-        this.changeState(
-            SwapStoreStateProp.PRICE_DIRECTION,
-            this.priceDirection === SwapDirection.LTR
-                ? SwapDirection.RTL
-                : SwapDirection.LTR,
-        )
+        this.changeState('priceDirection', this.priceDirection === SwapDirection.LTR
+            ? SwapDirection.RTL
+            : SwapDirection.LTR)
     }
 
     /*
@@ -364,6 +345,7 @@ export class SwapStore {
         if (
             this.isLoading
             || !this.wallet.address
+            || !this.pair
             || (this.direction === SwapDirection.LTR && prevRightAmount !== rightAmount)
             || (this.direction === SwapDirection.RTL && prevLeftAmount !== leftAmount)
         ) {
@@ -372,11 +354,16 @@ export class SwapStore {
 
         this.resetBill()
 
-        if (this.pair?.address) {
-            this.changeState(SwapStoreStateProp.IS_ENOUGH_LIQUIDITY, true)
-            this.changeState(SwapStoreStateProp.IS_LOADING, true)
+        if (this.pair.address) {
+            this.changeState('isEnoughLiquidity', true)
+            this.changeState('isLoading', true)
 
-            await this.syncPairData()
+            try {
+                await this.syncPairData()
+            }
+            catch (e) {
+                error('Sync pair data error', e)
+            }
 
             const leftBalance = this.pair.balances?.left || '0'
             const rightBalance = this.pair.balances?.right || '0'
@@ -384,16 +371,13 @@ export class SwapStore {
             let leftBN = new BigNumber(leftBalance),
                 rightBN = new BigNumber(rightBalance)
 
-            if (!(this.pair?.roots?.left.toString() === this.leftToken?.root)) {
+            if (!(this.pair.roots?.left.toString() === this.leftToken?.root)) {
                 const left = leftBN
                 leftBN = rightBN
                 rightBN = left
             }
 
-            this.changeState(
-                SwapStoreStateProp.IS_ENOUGH_LIQUIDITY,
-                !leftBN.isZero() && !rightBN.isZero(),
-            )
+            this.changeState('isEnoughLiquidity', !leftBN.isZero() && !rightBN.isZero())
 
             const leftDecimals = this.leftToken?.decimals ?? DEFAULT_DECIMALS
             const rightDecimals = this.rightToken?.decimals ?? DEFAULT_DECIMALS
@@ -402,7 +386,7 @@ export class SwapStore {
                 if (this.isRightAmountValid) {
                     const amount = new BigNumber(this.rightAmount || '0').shiftedBy(rightDecimals)
 
-                    this.changeState(SwapStoreStateProp.IS_ENOUGH_LIQUIDITY, amount.lt(rightBN))
+                    this.changeState('isEnoughLiquidity', amount.lt(rightBN))
 
                     if (!this.isEnoughLiquidity) {
                         runInAction(() => {
@@ -413,24 +397,18 @@ export class SwapStore {
             }
 
             if (this.isEnoughLiquidity) {
-                this.changeData(
-                    SwapStoreDataProp.PRICE_LEFT_TO_RIGHT,
-                    getComputedDefaultPerPrice(
-                        leftBN,
-                        leftDecimals,
-                        rightBN.shiftedBy(-rightDecimals),
-                        leftDecimals,
-                    ),
-                )
-                this.changeData(
-                    SwapStoreDataProp.PRICE_RIGHT_TO_LEFT,
-                    getComputedDefaultPerPrice(
-                        rightBN,
-                        rightDecimals,
-                        leftBN.shiftedBy(-leftDecimals),
-                        rightDecimals,
-                    ),
-                )
+                this.changeData('priceLeftToRight', getComputedDefaultPerPrice(
+                    leftBN,
+                    leftDecimals,
+                    rightBN.shiftedBy(-rightDecimals),
+                    leftDecimals,
+                ))
+                this.changeData('priceRightToLeft', getComputedDefaultPerPrice(
+                    rightBN,
+                    rightDecimals,
+                    leftBN.shiftedBy(-leftDecimals),
+                    rightDecimals,
+                ))
 
                 const leftDecimalsM = new BigNumber(10).pow(this.leftToken?.decimals || 0).toString()
                 const rightDecimalsM = new BigNumber(10).pow(this.rightToken?.decimals || 0).toString()
@@ -444,14 +422,14 @@ export class SwapStore {
                     && this.rightToken?.root
                 ) {
                     runInAction(() => {
-                        this.bill[SwapBillProp.EXPECTED_AMOUNT] = (
+                        this.bill.expectedAmount = (
                             new BigNumber(this.rightAmount)
                                 .times(rightDecimalsM)
                                 .dp(0, BigNumber.ROUND_DOWN)
                                 .toString()
                         )
 
-                        this.bill[SwapBillProp.MIN_EXPECTED_AMOUNT] = (
+                        this.bill.minExpectedAmount = (
                             new BigNumber(this.expectedAmount || '0')
                                 .div(100)
                                 .times(new BigNumber(100).minus(this.slippage))
@@ -460,7 +438,7 @@ export class SwapStore {
                         )
                     })
 
-                    if (this.pairContract) {
+                    if (this.pairContract !== undefined) {
                         // TODO: replace this code with FIXME after upgrade DEX
                         // START
                         const {
@@ -509,15 +487,15 @@ export class SwapStore {
 
                         if (expectedAmount.lte(0) || expectedAmount.isNaN() || !expectedAmount.isFinite()) {
                             runInAction(() => {
-                                this.data[SwapStoreDataProp.LEFT_AMOUNT] = ''
-                                this.data[SwapStoreDataProp.RIGHT_AMOUNT] = ''
+                                this.data.leftAmount = ''
+                                this.data.rightAmount = ''
                             })
                         }
                         else {
                             runInAction(() => {
-                                this.bill[SwapBillProp.AMOUNT] = expectedAmount.toString()
-                                this.bill[SwapBillProp.FEE] = expectedFee.toString()
-                                this.data[SwapStoreDataProp.LEFT_AMOUNT] = expectedAmount.div(leftDecimalsM).toString()
+                                this.bill.amount = expectedAmount.toString()
+                                this.bill.fee = expectedFee.toString()
+                                this.data.leftAmount = expectedAmount.div(leftDecimalsM).toString()
                             })
                         }
                     }
@@ -528,7 +506,7 @@ export class SwapStore {
                     && this.leftToken?.root
                 ) {
                     runInAction(() => {
-                        this.bill[SwapBillProp.AMOUNT] = new BigNumber(this.leftAmount || '0')
+                        this.bill.amount = new BigNumber(this.leftAmount || '0')
                             .times(leftDecimalsM)
                             .dp(0, BigNumber.ROUND_DOWN)
                             .toString()
@@ -545,9 +523,9 @@ export class SwapStore {
                         }).call()
 
                         runInAction(() => {
-                            this.bill[SwapBillProp.FEE] = expectedFee.toString()
-                            this.bill[SwapBillProp.EXPECTED_AMOUNT] = expectedAmount.toString()
-                            this.bill[SwapBillProp.MIN_EXPECTED_AMOUNT] = (
+                            this.bill.fee = expectedFee.toString()
+                            this.bill.expectedAmount = expectedAmount.toString()
+                            this.bill.minExpectedAmount = (
                                 new BigNumber(this.expectedAmount || '0')
                                     .div(100)
                                     .times(new BigNumber(100).minus(this.slippage))
@@ -565,12 +543,12 @@ export class SwapStore {
                             && !newRight.isNaN()
                         ) {
                             runInAction(() => {
-                                this.data[SwapStoreDataProp.RIGHT_AMOUNT] = newRight.toFixed()
+                                this.data.rightAmount = newRight.toFixed()
                             })
                         }
                         else {
                             runInAction(() => {
-                                this.data[SwapStoreDataProp.RIGHT_AMOUNT] = ''
+                                this.data.rightAmount = ''
                             })
                         }
                     }
@@ -589,10 +567,7 @@ export class SwapStore {
                             && !priceLeftToRight.isNaN()
                             && priceLeftToRight.gt(0)
                         ) {
-                            this.changeData(
-                                SwapStoreDataProp.PRICE_LEFT_TO_RIGHT,
-                                priceLeftToRight.toString(),
-                            )
+                            this.changeData('priceLeftToRight', priceLeftToRight.toString())
                         }
 
                         const priceRightToLeft = getComputedNoRightAmountPerPrice(
@@ -606,15 +581,12 @@ export class SwapStore {
                             && !priceRightToLeft.isNaN()
                             && priceRightToLeft.gt(0)
                         ) {
-                            this.changeData(
-                                SwapStoreDataProp.PRICE_RIGHT_TO_LEFT,
-                                priceRightToLeft.toString(),
-                            )
+                            this.changeData('priceRightToLeft', priceRightToLeft.toString())
                         }
 
                         if (this.pair.roots?.left?.toString() === this.leftToken?.root) {
                             runInAction(() => {
-                                this.bill[SwapBillProp.PRICE_IMPACT] = getComputedPriceImpact(
+                                this.bill.priceImpact = getComputedPriceImpact(
                                     new BigNumber(leftBalance).div(rightBalance),
                                     new BigNumber(leftBalance)
                                         .plus(this.amount || '0')
@@ -624,7 +596,7 @@ export class SwapStore {
                         }
                         else {
                             runInAction(() => {
-                                this.bill[SwapBillProp.PRICE_IMPACT] = getComputedPriceImpact(
+                                this.bill.priceImpact = getComputedPriceImpact(
                                     new BigNumber(rightBalance).div(leftBalance),
                                     new BigNumber(rightBalance)
                                         .plus(this.amount || '0')
@@ -636,30 +608,27 @@ export class SwapStore {
                 }
             }
             else {
-                this.changeData(SwapStoreDataProp.PRICE_LEFT_TO_RIGHT, undefined)
-                this.changeData(SwapStoreDataProp.PRICE_RIGHT_TO_LEFT, undefined)
+                this.changeData('priceLeftToRight', undefined)
+                this.changeData('priceRightToLeft', undefined)
             }
         }
         else {
-            this.changeData(SwapStoreDataProp.PRICE_LEFT_TO_RIGHT, undefined)
-            this.changeData(SwapStoreDataProp.PRICE_RIGHT_TO_LEFT, undefined)
+            this.changeData('priceLeftToRight', undefined)
+            this.changeData('priceRightToLeft', undefined)
         }
 
-        this.changeData(SwapStoreDataProp.PRICE_DECIMALS_LEFT, this.leftToken?.decimals)
-        this.changeData(SwapStoreDataProp.PRICE_DECIMALS_RIGHT, this.rightToken?.decimals)
-        this.changeState(
-            SwapStoreStateProp.IS_VALID,
-            (
-                this.isEnoughLiquidity
-                && this.pair?.address !== undefined
-                && this.amount !== undefined
-                && this.leftToken?.wallet !== undefined
-                && new BigNumber(this.expectedAmount || 0).gt(0)
-                && new BigNumber(this.amount || 0).gt(0)
-                && new BigNumber(this.leftToken?.balance || 0).gte(this.amount)
-            ),
-        )
-        this.changeState(SwapStoreStateProp.IS_LOADING, false)
+        this.changeData('priceDecimalsLeft', this.leftToken?.decimals)
+        this.changeData('priceDecimalsRight', this.rightToken?.decimals)
+        this.changeState('isValid', (
+            this.isEnoughLiquidity
+            && this.pair.address !== undefined
+            && this.amount !== undefined
+            && this.leftToken?.wallet !== undefined
+            && new BigNumber(this.expectedAmount || 0).gt(0)
+            && new BigNumber(this.amount || 0).gt(0)
+            && new BigNumber(this.leftToken?.balance || 0).gte(this.amount)
+        ))
+        this.changeState('isLoading', false)
     }
 
     /**
@@ -676,14 +645,14 @@ export class SwapStore {
         const val = new BigNumber(value || '0')
 
         if (val.isNaN() || !val.isFinite() || val.lte(0)) {
-            this.changeData(SwapStoreDataProp.SLIPPAGE, '0.5')
+            this.changeData('slippage', '0.5')
         }
         else {
-            this.changeData(SwapStoreDataProp.SLIPPAGE, val.toString())
+            this.changeData('slippage', val.toString())
         }
 
         if (this.expectedAmount) {
-            this.bill[SwapBillProp.MIN_EXPECTED_AMOUNT] = new BigNumber(this.expectedAmount)
+            this.bill.minExpectedAmount = new BigNumber(this.expectedAmount)
                 .div(100)
                 .times(new BigNumber(100).minus(this.slippage))
                 .dp(0, BigNumber.ROUND_DOWN)
@@ -718,44 +687,43 @@ export class SwapStore {
         if (leftToken?.root === rightToken?.root) {
             if (isLeftChanged) {
                 const { leftAmount } = this
-                this.data[SwapStoreDataProp.RIGHT_TOKEN] = undefined
-                this.data[SwapStoreDataProp.RIGHT_AMOUNT] = leftAmount
-                this.data[SwapStoreDataProp.LEFT_AMOUNT] = ''
+                this.data.rightToken = undefined
+                this.data.rightAmount = leftAmount
+                this.data.leftAmount = ''
             }
             else if (isRightChanged) {
                 const { rightAmount } = this
-                this.data[SwapStoreDataProp.LEFT_TOKEN] = undefined
-                this.data[SwapStoreDataProp.LEFT_AMOUNT] = rightAmount
-                this.data[SwapStoreDataProp.RIGHT_AMOUNT] = ''
+                this.data.leftToken = undefined
+                this.data.leftAmount = rightAmount
+                this.data.rightAmount = ''
             }
         }
 
         if ((isLeftChanged || isRightChanged) && !isToggleDirection) {
-            this.changeData(SwapStoreDataProp.PAIR, undefined)
-            this.changeState(SwapStoreStateProp.PAIR_EXIST, false)
+            this.changeData('pair', undefined)
+            this.changeState('pairExist', false)
         }
 
         if (!leftToken?.root || !rightToken?.root) {
-            this.changeData(SwapStoreDataProp.PAIR, undefined)
-            this.changeState(SwapStoreStateProp.PAIR_EXIST, false)
+            this.changeData('pair', undefined)
+            this.changeState('pairExist', false)
             return
         }
 
         if (!this.pair) {
-            this.changeState(SwapStoreStateProp.IS_LOADING, true)
+            this.changeState('isLoading', true)
 
-            await checkPair(
-                leftToken?.root,
-                rightToken?.root,
-            ).then(pair => {
-                this.changeData(SwapStoreDataProp.PAIR, { address: pair })
-                this.changeState(SwapStoreStateProp.PAIR_EXIST, !!pair)
-                this.changeState(SwapStoreStateProp.IS_LOADING, false)
-            }).catch(() => {
-                this.changeData(SwapStoreDataProp.PAIR, undefined)
-                this.changeState(SwapStoreStateProp.PAIR_EXIST, false)
-                this.changeState(SwapStoreStateProp.IS_LOADING, false)
-            })
+            try {
+                const pair = await checkPair(leftToken?.root, rightToken?.root)
+                this.changeData('pair', { address: pair })
+                this.changeState('pairExist', pair !== undefined)
+                this.changeState('isLoading', false)
+            }
+            catch (e) {
+                this.changeData('pair', undefined)
+                this.changeState('pairExist', false)
+                this.changeState('isLoading', false)
+            }
         }
 
         await this.handleAmountsChange()
@@ -785,49 +753,63 @@ export class SwapStore {
      * @protected
      */
     protected handleSwapSuccess({ input, transaction }: SwapSuccessResult): void {
-        this.transactionResult = {
-            [SwapTransactionProp.HASH]: transaction.id.hash,
-
-            [SwapTransactionProp.RECEIVED_AMOUNT]: input.result.received.toString(),
-            [SwapTransactionProp.RECEIVED_DECIMALS]: this.rightToken?.decimals,
-            [SwapTransactionProp.RECEIVED_ICON]: this.rightToken?.icon,
-            [SwapTransactionProp.RECEIVED_ROOT]: this.rightToken?.root,
-            [SwapTransactionProp.RECEIVED_SYMBOL]: this.rightToken?.symbol,
-
-            [SwapTransactionProp.SPENT_AMOUNT]: input.result.spent.toString(),
-            [SwapTransactionProp.SPENT_DECIMALS]: this.leftToken?.decimals,
-            [SwapTransactionProp.SPENT_FEE]: input.result.fee.toString(),
-            [SwapTransactionProp.SPENT_SYMBOL]: this.leftToken?.symbol,
-
-            [SwapTransactionProp.SUCCESS]: true,
+        this.transactionReceipt = {
+            hash: transaction.id.hash,
+            receivedAmount: input.result.received.toString(),
+            receivedDecimals: this.rightToken?.decimals,
+            receivedIcon: this.rightToken?.icon,
+            receivedRoot: this.rightToken?.root,
+            receivedSymbol: this.rightToken?.symbol,
+            spentAmount: input.result.spent.toString(),
+            spentDecimals: this.leftToken?.decimals,
+            spentFee: input.result.fee.toString(),
+            spentSymbol: this.leftToken?.symbol,
+            success: true,
         }
 
-        this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
-        this.changeState(SwapStoreStateProp.IS_LOADING, false)
-        this.changeState(SwapStoreStateProp.IS_VALID, false)
+        this.changeState('isSwapping', false)
+        this.changeState('isLoading', false)
+        this.changeState('isValid', false)
 
-        this.data[SwapStoreDataProp.LEFT_AMOUNT] = ''
-        this.data[SwapStoreDataProp.RIGHT_AMOUNT] = ''
+        this.data.leftAmount = ''
+        this.data.rightAmount = ''
     }
 
     /**
      * Failure transaction callback handler
-     * @param _
+     * @param {SwapFailureResult} [_]
      * @protected
      */
     protected handleSwapFailure(_?: SwapFailureResult): void {
-        this.transactionResult = {
-            [SwapTransactionProp.SUCCESS]: false,
+        this.transactionReceipt = {
+            success: false,
         }
 
-        this.changeState(SwapStoreStateProp.IS_SWAPPING, false)
-        this.changeState(SwapStoreStateProp.IS_LOADING, false)
+        this.changeState('isSwapping', false)
+        this.changeState('isLoading', false)
     }
 
     /*
      * Internal utilities methods
      * ----------------------------------------------------------------------------------
      */
+
+    /**
+     * Try to unsubscribe from transaction subscriber
+     * @protected
+     */
+    protected async unsubscribeTransactionSubscriber(): Promise<void> {
+        if (this.#transactionSubscriber !== undefined) {
+            try {
+                await this.#transactionSubscriber.unsubscribe()
+            }
+            catch (e) {
+                error('Transaction unsubscribe error', e)
+            }
+
+            this.#transactionSubscriber = undefined
+        }
+    }
 
     /**
      * Manually change store state by the given key
@@ -863,8 +845,8 @@ export class SwapStore {
     protected resetState(): void {
         this.data = {
             ...DEFAULT_SWAP_STORE_DATA,
-            [SwapStoreDataProp.LEFT_TOKEN]: this.leftToken,
-            [SwapStoreDataProp.RIGHT_TOKEN]: this.rightToken,
+            leftToken: this.leftToken,
+            rightToken: this.rightToken,
         }
     }
 
@@ -878,28 +860,28 @@ export class SwapStore {
             return
         }
 
-        await Promise.all([
+        const [
+            { left_balance: leftBalance },
+            { right_balance: rightBalance },
+            { left: leftRoot, right: rightRoot },
+        ] = await Promise.all([
             this.pairContract.methods.left_balance({}).call(),
             this.pairContract.methods.right_balance({}).call(),
             this.pairContract.methods.getTokenRoots({
                 _answer_id: 0,
             }).call(),
-        ]).then(async ([
-            { left_balance: leftBalance },
-            { right_balance: rightBalance },
-            { left: leftRoot, right: rightRoot },
-        ]) => {
-            this.changeData(SwapStoreDataProp.PAIR, {
-                address: this.pair?.address,
-                balances: {
-                    left: leftBalance.toString(),
-                    right: rightBalance.toString(),
-                },
-                roots: {
-                    left: leftRoot,
-                    right: rightRoot,
-                },
-            })
+        ])
+
+        this.changeData('pair', {
+            address: this.pair?.address,
+            balances: {
+                left: leftBalance.toString(),
+                right: rightBalance.toString(),
+            },
+            roots: {
+                left: leftRoot,
+                right: rightRoot,
+            },
         })
     }
 
@@ -909,43 +891,43 @@ export class SwapStore {
      */
 
     /**
-     *
-     * @returns {SwapBill[SwapBillProp.AMOUNT]}
+     * Bill: amount
+     * @returns {SwapBill['amount']}
      */
-    public get amount(): SwapBill[SwapBillProp.AMOUNT] {
-        return this.bill[SwapBillProp.AMOUNT]
+    public get amount(): SwapBill['amount'] {
+        return this.bill.amount
     }
 
     /**
-     *
-     * @returns {SwapBill[SwapBillProp.EXPECTED_AMOUNT]}
+     * Bill: expected amount
+     * @returns {SwapBill['expectedAmount']}
      */
-    public get expectedAmount(): SwapBill[SwapBillProp.EXPECTED_AMOUNT] {
-        return this.bill[SwapBillProp.EXPECTED_AMOUNT]
+    public get expectedAmount(): SwapBill['expectedAmount'] {
+        return this.bill.expectedAmount
     }
 
     /**
-     *
-     * @returns {SwapBill[SwapBillProp.FEE]}
+     * Bill: fee
+     * @returns {SwapBill['fee']}
      */
-    public get fee(): SwapBill[SwapBillProp.FEE] {
-        return this.bill[SwapBillProp.FEE]
+    public get fee(): SwapBill['fee'] {
+        return this.bill.fee
     }
 
     /**
-     *
-     * @returns {SwapBill[SwapBillProp.MIN_EXPECTED_AMOUNT]}
+     * Bill: min expected amount
+     * @returns {SwapBill['minExpectedAmount']}
      */
-    public get minExpectedAmount(): SwapBill[SwapBillProp.MIN_EXPECTED_AMOUNT] {
-        return this.bill[SwapBillProp.MIN_EXPECTED_AMOUNT]
+    public get minExpectedAmount(): SwapBill['minExpectedAmount'] {
+        return this.bill.minExpectedAmount
     }
 
     /**
-     *
-     * @returns {SwapBill[SwapBillProp.PRICE_IMPACT]}
+     * Bill: price impact
+     * @returns {SwapBill['priceImpact']}
      */
-    public get priceImpact(): SwapBill[SwapBillProp.PRICE_IMPACT] {
-        return this.bill[SwapBillProp.PRICE_IMPACT]
+    public get priceImpact(): SwapBill['priceImpact'] {
+        return this.bill.priceImpact
     }
 
     /*
@@ -968,27 +950,27 @@ export class SwapStore {
     }
 
     /**
-     *
-     * @returns {SwapStoreData[SwapStoreDataProp.LEFT_AMOUNT]}
+     * Left amount value
+     * @returns {SwapStoreData['leftAmount']}
      */
-    public get leftAmount(): SwapStoreData[SwapStoreDataProp.LEFT_AMOUNT] {
-        return this.data[SwapStoreDataProp.LEFT_AMOUNT]
+    public get leftAmount(): SwapStoreData['leftAmount'] {
+        return this.data.leftAmount
+    }
+
+    /**
+     * Selected left token
+     * @returns {SwapStoreData['leftToken]}
+     */
+    public get leftToken(): SwapStoreData['leftToken'] {
+        return this.data.leftToken
     }
 
     /**
      *
-     * @returns {SwapStoreData[SwapStoreDataProp.LEFT_TOKEN]}
+     * @returns {SwapStoreData['pair']}
      */
-    public get leftToken(): SwapStoreData[SwapStoreDataProp.LEFT_TOKEN] {
-        return this.data[SwapStoreDataProp.LEFT_TOKEN]
-    }
-
-    /**
-     *
-     * @returns {SwapStoreData[SwapStoreDataProp.PAIR]}
-     */
-    public get pair(): SwapStoreData[SwapStoreDataProp.PAIR] {
-        return this.data[SwapStoreDataProp.PAIR]
+    public get pair(): SwapStoreData['pair'] {
+        return this.data.pair
     }
 
     /**
@@ -1002,74 +984,74 @@ export class SwapStore {
 
     /**
      *
-     * @returns {SwapStoreData[SwapStoreDataProp.PRICE_DECIMALS_LEFT]}
+     * @returns {SwapStoreData['priceDecimalsLeft']}
      */
-    public get priceDecimalsLeft(): SwapStoreData[SwapStoreDataProp.PRICE_DECIMALS_LEFT] {
-        return this.data[SwapStoreDataProp.PRICE_DECIMALS_LEFT]
+    public get priceDecimalsLeft(): SwapStoreData['priceDecimalsLeft'] {
+        return this.data.priceDecimalsLeft
     }
 
     /**
      *
-     * @returns {SwapStoreData[SwapStoreDataProp.PRICE_DECIMALS_RIGHT]}
+     * @returns {SwapStoreData['priceDecimalsRight']}
      */
-    public get priceDecimalsRight(): SwapStoreData[SwapStoreDataProp.PRICE_DECIMALS_RIGHT] {
-        return this.data[SwapStoreDataProp.PRICE_DECIMALS_RIGHT]
+    public get priceDecimalsRight(): SwapStoreData['priceDecimalsRight'] {
+        return this.data.priceDecimalsRight
     }
 
     /**
      *
-     * @returns {SwapStoreData[SwapStoreDataProp.PRICE_LEFT_TO_RIGHT]}
+     * @returns {SwapStoreData['priceLeftToRight']}
      */
-    public get priceLeftToRight(): SwapStoreData[SwapStoreDataProp.PRICE_LEFT_TO_RIGHT] {
-        return this.data[SwapStoreDataProp.PRICE_LEFT_TO_RIGHT]
+    public get priceLeftToRight(): SwapStoreData['priceLeftToRight'] {
+        return this.data.priceLeftToRight
     }
 
     /**
      *
-     * @returns {SwapStoreData[SwapStoreDataProp.PRICE_RIGHT_TO_LEFT]}
+     * @returns {SwapStoreData['priceRightToLeft']}
      */
-    public get priceRightToLeft(): SwapStoreData[SwapStoreDataProp.PRICE_RIGHT_TO_LEFT] {
-        return this.data[SwapStoreDataProp.PRICE_RIGHT_TO_LEFT]
+    public get priceRightToLeft(): SwapStoreData['priceRightToLeft'] {
+        return this.data.priceRightToLeft
     }
 
     /**
      *
-     * @returns {SwapStoreData[SwapStoreDataProp.RIGHT_AMOUNT]}
+     * @returns {SwapStoreData['rightAmount']}
      */
-    public get rightAmount(): SwapStoreData[SwapStoreDataProp.RIGHT_AMOUNT] {
-        return this.data[SwapStoreDataProp.RIGHT_AMOUNT]
+    public get rightAmount(): SwapStoreData['rightAmount'] {
+        return this.data.rightAmount
     }
 
     /**
      *
-     * @returns {SwapStoreData[SwapStoreDataProp.RIGHT_TOKEN]}
+     * @returns {SwapStoreData['rightToken']}
      */
-    public get rightToken(): SwapStoreData[SwapStoreDataProp.RIGHT_TOKEN] {
-        return this.data[SwapStoreDataProp.RIGHT_TOKEN]
+    public get rightToken(): SwapStoreData['rightToken'] {
+        return this.data.rightToken
     }
 
     /**
      *
-     * @returns {SwapStoreData[SwapStoreDataProp.SLIPPAGE]}
+     * @returns {SwapStoreData['slippage']}
      */
-    public get slippage(): SwapStoreData[SwapStoreDataProp.SLIPPAGE] {
-        return this.data[SwapStoreDataProp.SLIPPAGE]
+    public get slippage(): SwapStoreData['slippage'] {
+        return this.data.slippage
     }
 
     /**
      *
-     * @returns {SwapStoreState[SwapStoreStateProp.DIRECTION]}
+     * @returns {SwapStoreState['direction']}
      */
-    public get direction(): SwapStoreState[SwapStoreStateProp.DIRECTION] {
-        return this.state[SwapStoreStateProp.DIRECTION]
+    public get direction(): SwapStoreState['direction'] {
+        return this.state.direction
     }
 
     /**
      *
-     * @returns {SwapStoreState[SwapStoreStateProp.IS_ENOUGH_LIQUIDITY]}
+     * @returns {SwapStoreState['isEnoughLiquidity']}
      */
-    public get isEnoughLiquidity(): SwapStoreState[SwapStoreStateProp.IS_ENOUGH_LIQUIDITY] {
-        return this.state[SwapStoreStateProp.IS_ENOUGH_LIQUIDITY]
+    public get isEnoughLiquidity(): SwapStoreState['isEnoughLiquidity'] {
+        return this.state.isEnoughLiquidity
     }
 
     /*
@@ -1079,51 +1061,58 @@ export class SwapStore {
 
     /**
      *
-     * @returns {SwapStoreState[SwapStoreStateProp.IS_LOADING]}
+     * @returns {SwapStoreState['isLoading']}
      */
-    public get isLoading(): SwapStoreState[SwapStoreStateProp.IS_LOADING] {
-        return this.state[SwapStoreStateProp.IS_LOADING]
+    public get isLoading(): SwapStoreState['isLoading'] {
+        return this.state.isLoading
     }
 
     /**
      *
-     * @returns {SwapStoreState[SwapStoreStateProp.IS_SWAPPING]}
+     * @returns {SwapStoreState['isSwapping']}
      */
-    public get isSwapping(): SwapStoreState[SwapStoreStateProp.IS_SWAPPING] {
-        return this.state[SwapStoreStateProp.IS_SWAPPING]
+    public get isSwapping(): SwapStoreState['isSwapping'] {
+        return this.state.isSwapping
     }
 
     /**
      *
-     * @returns {SwapStoreState[SwapStoreStateProp.IS_VALID]}
+     * @returns {SwapStoreState['isValid']}
      */
-    public get isValid(): SwapStoreState[SwapStoreStateProp.IS_VALID] {
-        return this.state[SwapStoreStateProp.IS_VALID]
+    public get isValid(): SwapStoreState['isValid'] {
+        return this.state.isValid
     }
 
     /**
      *
-     * @returns {SwapStoreState[SwapStoreStateProp.PAIR_EXIST]}
+     * @returns {SwapStoreState['pairExist']}
      */
-    public get pairExist(): SwapStoreState[SwapStoreStateProp.PAIR_EXIST] {
-        return this.state[SwapStoreStateProp.PAIR_EXIST]
+    public get pairExist(): SwapStoreState['pairExist'] {
+        return this.state.pairExist
     }
 
     /**
      *
-     * @returns {SwapStoreState[SwapStoreStateProp.PRICE_DIRECTION]}
+     * @returns {SwapStoreState['priceDirection']}
      */
-    public get priceDirection(): SwapStoreState[SwapStoreStateProp.PRICE_DIRECTION] {
-        return this.state[SwapStoreStateProp.PRICE_DIRECTION]
+    public get priceDirection(): SwapStoreState['priceDirection'] {
+        return this.state.priceDirection
     }
 
     /**
      *
-     * @returns {SwapTransactionResult | undefined}
+     * @returns {SwapTransactionReceipt | undefined}
      */
-    public get transaction(): SwapTransactionResult | undefined {
-        return this.transactionResult
+    public get transaction(): SwapTransactionReceipt | undefined {
+        return this.transactionReceipt
     }
+
+    /**
+     * Internal swap transaction subscriber
+     * @type {Subscriber}
+     * @protected
+     */
+    #transactionSubscriber: Subscriber | undefined
 
     /*
      * Internal reaction disposers

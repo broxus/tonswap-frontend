@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { useBalanceValidation } from '@/hooks/useBalanceValidation'
 import { usePool } from '@/modules/Pool/stores/PoolStore'
-import { AddLiquidityStep, PoolStoreDataProp } from '@/modules/Pool/types'
+import { AddLiquidityStep } from '@/modules/Pool/types'
 import { useWallet } from '@/stores/WalletService'
 
 
@@ -31,8 +31,8 @@ function SubmitButton(): JSX.Element {
 
         case AddLiquidityStep.CONNECT_ACCOUNT:
             buttonProps.disabled = false
-            buttonProps.onClick = () => {
-                pool.connectDexAccount()
+            buttonProps.onClick = async () => {
+                await pool.connectDexAccount()
             }
             buttonText = intl.formatMessage({
                 id: 'POOL_BTN_TEXT_CONNECT_ACCOUNT',
@@ -60,8 +60,8 @@ function SubmitButton(): JSX.Element {
         case AddLiquidityStep.CREATING_POOL:
             buttonProps.disabled = pool.step === AddLiquidityStep.CREATING_POOL
             if (pool.step === AddLiquidityStep.CREATE_POOL) {
-                buttonProps.onClick = () => {
-                    pool.createPool()
+                buttonProps.onClick = async () => {
+                    await pool.createPool()
                 }
             }
             buttonText = intl.formatMessage({
@@ -75,8 +75,8 @@ function SubmitButton(): JSX.Element {
         case AddLiquidityStep.CONNECTING_POOL:
             buttonProps.disabled = pool.step === AddLiquidityStep.CONNECTING_POOL
             if (pool.step === AddLiquidityStep.CONNECT_POOL) {
-                buttonProps.onClick = () => {
-                    pool.connectPool()
+                buttonProps.onClick = async () => {
+                    await pool.connectPool()
                 }
             }
             buttonText = intl.formatMessage({
@@ -114,7 +114,7 @@ function SubmitButton(): JSX.Element {
                     || !isValidRight
                 )
                 buttonProps.onClick = async () => {
-                    await pool.depositToken(PoolStoreDataProp.LEFT_TOKEN)
+                    await pool.depositToken('leftToken')
                 }
                 buttonText = intl.formatMessage({
                     id: 'POOL_BTN_TEXT_DEPOSIT_TOKEN',
@@ -138,7 +138,7 @@ function SubmitButton(): JSX.Element {
                     || !isValidRight
                 )
                 buttonProps.onClick = async () => {
-                    await pool.depositToken(PoolStoreDataProp.RIGHT_TOKEN)
+                    await pool.depositToken('rightToken')
                 }
                 buttonText = intl.formatMessage({
                     id: 'POOL_BTN_TEXT_DEPOSIT_TOKEN',

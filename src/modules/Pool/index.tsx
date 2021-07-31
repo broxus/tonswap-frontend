@@ -18,7 +18,7 @@ import {
 } from '@/modules/Pool/components'
 import { usePoolForm } from '@/modules/Pool/hooks/usePoolForm'
 import { usePool } from '@/modules/Pool/stores/PoolStore'
-import { AddLiquidityStep, PoolStoreDataProp } from '@/modules/Pool/types'
+import { AddLiquidityStep } from '@/modules/Pool/types'
 import { TokensList } from '@/modules/TokensList'
 import { useWallet } from '@/stores/WalletService'
 
@@ -55,7 +55,7 @@ export function Pool(): JSX.Element {
                                     label={intl.formatMessage({
                                         id: 'POOL_FIELD_LABEL_LEFT',
                                     })}
-                                    isCaution={pool.isAutoExchangeEnable}
+                                    isCaution={pool.isAutoExchangeEnabled}
                                     isValid={useBalanceValidation(
                                         pool.leftToken,
                                         pool.leftAmount,
@@ -68,9 +68,9 @@ export function Pool(): JSX.Element {
                                         || pool.isDepositingLeft
                                         || pool.isDepositingRight
                                     }
-                                    onChange={form.onChangeData(PoolStoreDataProp.LEFT_AMOUNT)}
+                                    onChange={form.onChangeData('leftAmount')}
                                     onKeyPress={form.debouncedSyncPoolShare}
-                                    onToggleTokensList={form.showTokensList(PoolStoreDataProp.LEFT_TOKEN)}
+                                    onToggleTokensList={form.showTokensList('leftToken')}
                                 />
                             )}
                         </Observer>
@@ -91,7 +91,7 @@ export function Pool(): JSX.Element {
                                     label={intl.formatMessage({
                                         id: 'POOL_FIELD_LABEL_RIGHT',
                                     })}
-                                    isCaution={pool.isAutoExchangeEnable}
+                                    isCaution={pool.isAutoExchangeEnabled}
                                     isValid={useBalanceValidation(
                                         pool.rightToken,
                                         pool.rightAmount,
@@ -104,9 +104,9 @@ export function Pool(): JSX.Element {
                                         || pool.isDepositingLeft
                                         || pool.isDepositingRight
                                     }
-                                    onChange={form.onChangeData(PoolStoreDataProp.RIGHT_AMOUNT)}
+                                    onChange={form.onChangeData('rightAmount')}
                                     onKeyPress={form.debouncedSyncPoolShare}
-                                    onToggleTokensList={form.showTokensList(PoolStoreDataProp.RIGHT_TOKEN)}
+                                    onToggleTokensList={form.showTokensList('rightToken')}
                                 />
                             )}
                         </Observer>

@@ -21,7 +21,7 @@ export function AutoExchange(): JSX.Element {
                 <label className="pool-switcher switcher">
                     <input
                         type="checkbox"
-                        checked={pool.isAutoExchangeEnable}
+                        checked={pool.isAutoExchangeEnabled}
                         onChange={onChange}
                     />
                     <span className="switcher__handle" />

@@ -7,7 +7,7 @@ import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
 import { SwapDirection } from '@/modules/Swap/types'
 import { useWallet } from '@/stores/WalletService'
-import { formatBalance } from '@/utils'
+import { amount } from '@/utils'
 
 import './index.scss'
 
@@ -37,7 +37,7 @@ function Price(): JSX.Element | null {
                                 id: 'SWAP_PRICE_RESULT',
                             }, {
                                 value: swap.priceLeftToRight
-                                    ? formatBalance(
+                                    ? amount(
                                         swap.priceLeftToRight || '0',
                                         swap.priceDecimalsLeft ?? DEFAULT_DECIMALS,
                                     )
@@ -57,7 +57,7 @@ function Price(): JSX.Element | null {
                                 id: 'SWAP_PRICE_RESULT',
                             }, {
                                 value: swap.priceRightToLeft
-                                    ? formatBalance(
+                                    ? amount(
                                         swap.priceRightToLeft || '0',
                                         swap.priceDecimalsRight ?? DEFAULT_DECIMALS,
                                     )

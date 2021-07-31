@@ -15,8 +15,7 @@ import {
 } from '@/modules/Farming/constants'
 import {
     CreateFarmPoolStoreData,
-    CreateFarmPoolStoreDataProp,
-    CreateFarmPoolStoreState, CreateFarmPoolStoreStateProp,
+    CreateFarmPoolStoreState,
     FarmDate,
     FarmRewardToken,
     FarmToken,
@@ -64,8 +63,8 @@ export class CreateFarmPoolStore {
 
     /**
      *
-     * @param key
-     * @param value
+     * @param {keyof CreateFarmPoolStoreData} key
+     * @param {CreateFarmPoolStoreData[K]} value
      */
     public changeData<K extends keyof CreateFarmPoolStoreData>(key: K, value: CreateFarmPoolStoreData[K]): void {
         this.data[key] = value
@@ -82,7 +81,7 @@ export class CreateFarmPoolStore {
             ...rewardTokens[idx],
             ...token,
         }
-        this.changeData(CreateFarmPoolStoreDataProp.REWARD_TOKENS, rewardTokens)
+        this.changeData('rewardTokens', rewardTokens)
     }
 
     /**
@@ -91,7 +90,7 @@ export class CreateFarmPoolStore {
     public addRewardToken(): void {
         const rewardTokens = this.rewardTokens.slice()
         rewardTokens.push({})
-        this.changeData(CreateFarmPoolStoreDataProp.REWARD_TOKENS, rewardTokens)
+        this.changeData('rewardTokens', rewardTokens)
     }
 
     /**
@@ -127,7 +126,7 @@ export class CreateFarmPoolStore {
             return
         }
 
-        this.changeState(CreateFarmPoolStoreStateProp.IS_CREATING, true)
+        this.changeState('isCreating', true)
 
         const rps = this.rewardTokens.map(token => farmSpeed(
             this.farmStart.date as Date,
@@ -147,10 +146,10 @@ export class CreateFarmPoolStore {
                 ((this.farmEnd.date as Date).getTime() / 1000).toFixed(0),
                 rps,
             )
-            this.changeState(CreateFarmPoolStoreStateProp.IS_CREATING, false)
+            this.changeState('isCreating', false)
         }
         catch (e) {
-            this.changeState(CreateFarmPoolStoreStateProp.IS_CREATING, false)
+            this.changeState('isCreating', false)
             throw e
         }
     }
@@ -169,19 +168,16 @@ export class CreateFarmPoolStore {
     protected async handleFarmTokenChange(
         farmToken: FarmToken | undefined,
         prevFarmToken: FarmToken | undefined,
-    ): Promise<void > {
+    ): Promise<void> {
         if (!farmToken?.root || farmToken.root === prevFarmToken?.root) {
             if (!farmToken?.root) {
-                this.changeData(
-                    CreateFarmPoolStoreDataProp.FARM_TOKEN,
-                    DEFAULT_CREATE_FARM_POOL_STORE_DATA[CreateFarmPoolStoreDataProp.FARM_TOKEN],
-                )
+                this.changeData('farmToken', DEFAULT_CREATE_FARM_POOL_STORE_DATA.farmToken)
             }
             return
         }
 
         const token = await resolveToken(farmToken.root)
-        this.changeData(CreateFarmPoolStoreDataProp.FARM_TOKEN, {
+        this.changeData('farmToken', {
             ...farmToken,
             ...token,
             isValid: token != null,
@@ -195,7 +191,7 @@ export class CreateFarmPoolStore {
      * @protected
      */
     protected handleFarmStartChange(farmStart: FarmDate, prevFarmStart: FarmDate): void {
-        this.handleChangeDate(farmStart, prevFarmStart, CreateFarmPoolStoreDataProp.FARM_START)
+        this.handleChangeDate(farmStart, prevFarmStart, 'farmStart')
     }
 
     /**
@@ -205,7 +201,7 @@ export class CreateFarmPoolStore {
      * @protected
      */
     protected handleFarmEndChange(farmEnd: FarmDate, prevFarmEnd: FarmDate): void {
-        this.handleChangeDate(farmEnd, prevFarmEnd, CreateFarmPoolStoreDataProp.FARM_END)
+        this.handleChangeDate(farmEnd, prevFarmEnd, 'farmEnd')
     }
 
     /**
@@ -261,23 +257,20 @@ export class CreateFarmPoolStore {
      *
      * @param {FarmDate} farmDate
      * @param {FarmDate} prevFarmDate
-     * @param {CreateFarmPoolStoreDataProp} field
+     * @param {'farmStart' | 'farmEnd'} key
      * @protected
      */
-    protected handleChangeDate(farmDate: FarmDate, prevFarmDate: FarmDate, field: CreateFarmPoolStoreDataProp): void {
+    protected handleChangeDate(farmDate: FarmDate, prevFarmDate: FarmDate, key: 'farmStart' | 'farmEnd'): void {
         if (!farmDate?.value || farmDate.value === prevFarmDate?.value) {
             if (!farmDate?.value && prevFarmDate.value) {
-                this.changeData(
-                    field,
-                    DEFAULT_CREATE_FARM_POOL_STORE_DATA[field],
-                )
+                this.changeData(key, DEFAULT_CREATE_FARM_POOL_STORE_DATA[key])
             }
             return
         }
 
         const date = parseDate(farmDate.value)
         const now = DateTime.local().toMillis()
-        this.changeData(field, {
+        this.changeData(key, {
             ...farmDate,
             date,
             isValid: date != null && DateTime.fromJSDate(date).toMillis() > now,
@@ -305,7 +298,7 @@ export class CreateFarmPoolStore {
             !!this.farmToken.isValid
             && !!this.farmStart.isValid
             && !!this.farmEnd.isValid
-            && this.farmStart.value != this.farmEnd.value
+            && this.farmStart.value !== this.farmEnd.value
             && this.rewardTokens.every(token => token.isValid && token.isRewardTotalValid)
         )
     }
@@ -318,29 +311,29 @@ export class CreateFarmPoolStore {
     /**
      *
      */
-    public get farmToken(): CreateFarmPoolStoreData[CreateFarmPoolStoreDataProp.FARM_TOKEN] {
-        return this.data[CreateFarmPoolStoreDataProp.FARM_TOKEN]
+    public get farmToken(): CreateFarmPoolStoreData['farmToken'] {
+        return this.data.farmToken
     }
 
     /**
      *
      */
-    public get farmStart(): CreateFarmPoolStoreData[CreateFarmPoolStoreDataProp.FARM_START] {
-        return this.data[CreateFarmPoolStoreDataProp.FARM_START]
+    public get farmStart(): CreateFarmPoolStoreData['farmStart'] {
+        return this.data.farmStart
     }
 
     /**
      *
      */
-    public get farmEnd(): CreateFarmPoolStoreData[CreateFarmPoolStoreDataProp.FARM_END] {
-        return this.data[CreateFarmPoolStoreDataProp.FARM_END]
+    public get farmEnd(): CreateFarmPoolStoreData['farmEnd'] {
+        return this.data.farmEnd
     }
 
     /**
      *
      */
-    public get rewardTokens(): CreateFarmPoolStoreData[CreateFarmPoolStoreDataProp.REWARD_TOKENS] {
-        return this.data[CreateFarmPoolStoreDataProp.REWARD_TOKENS]
+    public get rewardTokens(): CreateFarmPoolStoreData['rewardTokens'] {
+        return this.data.rewardTokens
     }
 
     /*
@@ -351,8 +344,8 @@ export class CreateFarmPoolStore {
     /**
      *
      */
-    public get isCreating(): CreateFarmPoolStoreState[CreateFarmPoolStoreStateProp.IS_CREATING] {
-        return this.state[CreateFarmPoolStoreStateProp.IS_CREATING]
+    public get isCreating(): CreateFarmPoolStoreState['isCreating'] {
+        return this.state.isCreating
     }
 
     /*

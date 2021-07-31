@@ -15,7 +15,6 @@ import {
 } from '@/modules/Swap/components'
 import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
-import { SwapStoreDataProp } from '@/modules/Swap/types'
 import { TokensList } from '@/modules/TokensList'
 
 import './index.scss'
@@ -56,12 +55,8 @@ export function Swap(): JSX.Element {
                                     readOnly={swap.isLoading || swap.isSwapping}
                                     token={swap.leftToken}
                                     value={swap.leftAmount}
-                                    onChange={form.onChangeData(
-                                        SwapStoreDataProp.LEFT_AMOUNT,
-                                    )}
-                                    onToggleTokensList={form.showTokensList(
-                                        SwapStoreDataProp.LEFT_TOKEN,
-                                    )}
+                                    onChange={form.onChangeData('leftAmount')}
+                                    onToggleTokensList={form.showTokensList('leftToken')}
                                 />
                             )}
                         </Observer>
@@ -93,12 +88,8 @@ export function Swap(): JSX.Element {
                                     readOnly={swap.isLoading || swap.isSwapping}
                                     token={swap.rightToken}
                                     value={swap.rightAmount}
-                                    onChange={form.onChangeData(
-                                        SwapStoreDataProp.RIGHT_AMOUNT,
-                                    )}
-                                    onToggleTokensList={form.showTokensList(
-                                        SwapStoreDataProp.RIGHT_TOKEN,
-                                    )}
+                                    onChange={form.onChangeData('rightAmount')}
+                                    onToggleTokensList={form.showTokensList('rightToken')}
                                 />
                             )}
                         </Observer>

@@ -69,7 +69,7 @@ export function usePoolForm(): PoolFormShape {
             await pool.init()
         })()
         return () => {
-            pool.dispose().catch(err => error(err))
+            pool.dispose().catch(reason => error(reason))
         }
     }, [])
 

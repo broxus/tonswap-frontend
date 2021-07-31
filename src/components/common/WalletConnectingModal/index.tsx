@@ -1,40 +1,29 @@
 import * as React from 'react'
 import classNames from 'classnames'
 import { reaction } from 'mobx'
-import { Observer } from 'mobx-react-lite'
+import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { useWallet } from '@/stores/WalletService'
+import { debounce } from '@/utils'
 
 
-let timeout: ReturnType<typeof setTimeout>
-
-
-export function WalletConnectingModal(): JSX.Element | null {
+function ConnectingModal(): JSX.Element | null {
     const intl = useIntl()
     const wallet = useWallet()
 
     const [isOpen, setOpen] = React.useState(false)
 
     React.useEffect(() => {
-        const dispose = reaction(() => wallet.isConnecting, value => {
-            if (value) {
-                clearTimeout(timeout)
-                timeout = setTimeout(() => {
-                    setOpen(value)
-                }, 100)
-            }
-            else {
-                clearTimeout(timeout)
-                setOpen(false)
-            }
-        })
+        const dispose = reaction(() => wallet.isConnecting, debounce(value => {
+            setOpen(value)
+        }, 300))
 
         return () => {
             dispose()
         }
-    }, [wallet.isConnecting])
+    }, [])
 
     const onClose = () => {
         setOpen(false)
@@ -58,29 +47,23 @@ export function WalletConnectingModal(): JSX.Element | null {
                     })}
                 </h2>
                 <div className="popup-main">
-                    <Observer>
-                        {() => (
-                            <>
-                                <div
-                                    className={classNames({
-                                        'popup-main__loader': wallet.hasProvider,
-                                        'popup-main__ava': !wallet.hasProvider,
-                                    })}
-                                >
-                                    {wallet.hasProvider && (
-                                        <Icon icon="loader" />
-                                    )}
-                                </div>
-                                <div className="popup-main__name">
-                                    {intl.formatMessage({
-                                        id: !wallet.hasProvider
-                                            ? 'WALLET_CONNECTING_POPUP_LEAD_IN_PROCESS'
-                                            : 'WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME',
-                                    })}
-                                </div>
-                            </>
+                    <div
+                        className={classNames({
+                            'popup-main__loader': wallet.hasProvider,
+                            'popup-main__ava': !wallet.hasProvider,
+                        })}
+                    >
+                        {wallet.hasProvider && (
+                            <Icon icon="loader" />
                         )}
-                    </Observer>
+                    </div>
+                    <div className="popup-main__name">
+                        {intl.formatMessage({
+                            id: !wallet.hasProvider
+                                ? 'WALLET_CONNECTING_POPUP_LEAD_IN_PROCESS'
+                                : 'WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME',
+                        })}
+                    </div>
                 </div>
                 <div
                     className="popup-txt"
@@ -106,3 +89,6 @@ export function WalletConnectingModal(): JSX.Element | null {
         </div>
     ) : null
 }
+
+
+export const WalletConnectingModal = observer(ConnectingModal)

@@ -1,7 +1,6 @@
 import * as React from 'react'
 
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
-import { SwapStoreDataProp } from '@/modules/Swap/types'
 
 type SwapSettingsShape = {
     popupRef: React.RefObject<HTMLDivElement>;
@@ -42,7 +41,7 @@ export function useSwapSettings(): SwapSettingsShape {
     }
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
-        swap.changeData(SwapStoreDataProp.SLIPPAGE, event.target.value)
+        swap.changeData('slippage', event.target.value)
     }
 
     React.useEffect(() => {
@@ -53,7 +52,7 @@ export function useSwapSettings(): SwapSettingsShape {
             document.removeEventListener('click', handleOuterClick, false)
             document.removeEventListener('touchend', handleOuterClick, false)
         }
-    })
+    }, [])
 
     return {
         popupRef,

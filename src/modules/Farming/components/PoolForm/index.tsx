@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { FarmingPoolStoreDataProp, FarmPool } from '@/modules/Farming/types'
+import { FarmingPoolStoreData, FarmPool } from '@/modules/Farming/types'
 import { useFarmingPool } from '@/modules/Farming/stores/FarmingPoolStore'
 import { amount } from '@/utils'
 
@@ -11,7 +11,7 @@ import { isDepositValid, isWithdrawUnclaimedValid } from '@/modules/Farming/util
 
 
 type Props = {
-    pool: FarmPool
+    pool: FarmPool;
 }
 
 export function PoolForm({ pool }: Props): JSX.Element {
@@ -19,20 +19,22 @@ export function PoolForm({ pool }: Props): JSX.Element {
 
     const farmingPool = React.useMemo(() => useFarmingPool(pool), [])
 
-    const onChange = (key: FarmingPoolStoreDataProp) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onChange = (key: keyof FarmingPoolStoreData) => (event: React.ChangeEvent<HTMLInputElement>) => {
         farmingPool.changeData(key, event.target.value)
     }
 
     const onChangeAdminDeposit = (idx: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
         const adminDeposit = farmingPool.adminDeposit.slice()
         adminDeposit[idx] = event.target.value
-        farmingPool.changeData(FarmingPoolStoreDataProp.ADMIN_DEPOSIT, adminDeposit)
+        farmingPool.changeData('adminDeposit', adminDeposit)
     }
 
     const onAdminDepositToken = (idx: number) => () => farmingPool.adminDepositToken(idx)
 
     React.useEffect(() => {
-        farmingPool.init()
+        (async () => {
+            await farmingPool.init()
+        })()
         return () => {
             farmingPool.dispose()
         }
@@ -64,7 +66,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                     })}
                                     value={farmingPool.userDeposit || ''}
                                     disabled={farmingPool.isUserDepositing}
-                                    onChange={onChange(FarmingPoolStoreDataProp.USER_DEPOSIT)}
+                                    onChange={onChange('userDeposit')}
                                 />
                                 <button
                                     type="button"

@@ -9,7 +9,7 @@ import './index.scss'
 
 
 type Props = {
-    pool: FarmPool
+    pool: FarmPool;
 }
 
 export function PoolDetails({ pool }: Props): JSX.Element {

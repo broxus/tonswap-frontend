@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
@@ -10,8 +11,8 @@ import './index.scss'
 
 type Props = {
     currentToken?: TokenCache;
-    onDismiss?(): void;
-    onSelectToken?(token: TokenCache): void;
+    onDismiss?: () => void;
+    onSelectToken?: (token: TokenCache) => void;
 }
 
 
@@ -44,16 +45,20 @@ export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.El
                         })}
                     />
                 </form>
-                <div className="popup-list">
-                    {tokensCache.tokens.map(token => (
-                        <WaypointWrappedItem
-                            key={token.root}
-                            disabled={currentToken?.root === token.root}
-                            token={token}
-                            onSelect={props.onSelectToken}
-                        />
-                    ))}
-                </div>
+                <Observer>
+                    {() => (
+                        <div className="popup-list">
+                            {tokensCache.tokens.map(token => (
+                                <WaypointWrappedItem
+                                    key={token.root}
+                                    disabled={currentToken?.root === token.root}
+                                    token={token}
+                                    onSelect={props.onSelectToken}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </Observer>
             </div>
         </div>
     )

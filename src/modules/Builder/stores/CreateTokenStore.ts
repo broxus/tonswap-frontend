@@ -196,8 +196,8 @@ export class CreateTokenStore {
                     ]),
                 )
             }
-        }).catch(err => {
-            error('decodeTransaction error: ', err)
+        }).catch(reason => {
+            error('decodeTransaction error: ', reason)
             runInAction(() => {
                 this.transactionResult = {
                     [CreateTokenTransactionProp.SUCCESS]: true,
