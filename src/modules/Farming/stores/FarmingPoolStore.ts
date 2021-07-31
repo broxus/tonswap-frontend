@@ -10,12 +10,12 @@ import {
 import { FarmingStore, useFarmingStore } from '@/modules/Farming/stores/FarmingStore'
 import {
     FarmingPoolStoreData,
-    FarmingPoolStoreDataProp,
-    FarmingPoolStoreState, FarmingPoolStoreStateProp,
+    FarmingPoolStoreState,
     FarmPool,
 } from '@/modules/Farming/types'
 import { depositToken, withdrawUnclaimed } from '@/modules/Farming/utils'
 import { useWallet, WalletService } from '@/stores/WalletService'
+import { error } from '@/utils'
 
 
 export class FarmingPoolStore {
@@ -69,13 +69,14 @@ export class FarmingPoolStore {
     /**
      *
      */
-    public init(): void {
+    public async init(): Promise<void> {
         if (this.wallet.address != null) {
-            this.updateWalletBalances(this.isAdmin, this.wallet.address).finally(() => {
-                this.syncPool().finally(() => {
-                    this.updatePoolTimeTick()
-                })
-            })
+            try {
+                await this.updateWalletBalances(this.isAdmin, this.wallet.address)
+                await this.syncPool()
+                this.updatePoolTimeTick()
+            }
+            catch (e) {}
         }
     }
 
@@ -94,7 +95,7 @@ export class FarmingPoolStore {
      */
     public maxDeposit(): void {
         this.changeData(
-            FarmingPoolStoreDataProp.USER_DEPOSIT,
+            'userDeposit',
             new BigNumber(this.userWalletBalance || '0')
                 .shiftedBy(-this.pool.tokenDecimals)
                 .decimalPlaces(this.pool.tokenDecimals, BigNumber.ROUND_DOWN)
@@ -105,7 +106,7 @@ export class FarmingPoolStore {
     /**
      *
      */
-    public depositToken(): void {
+    public async depositToken(): Promise<void> {
         if (
             this.wallet.address == null
             || this.isUserDepositing
@@ -115,17 +116,19 @@ export class FarmingPoolStore {
             return
         }
 
-        this.changeState(FarmingPoolStoreStateProp.IS_USER_DEPOSITING, true)
+        this.changeState('isUserDepositing', true)
 
-        depositToken(
-            this.userDeposit,
-            this.pool.tokenDecimals,
-            this.pool.address,
-            this.pool.tokenRoot,
-            this.userWalletAddress,
-            this.wallet.address,
-        ).then(async value => {
-            if (value == null) {
+        try {
+            const result = await depositToken(
+                this.userDeposit,
+                this.pool.tokenDecimals,
+                this.pool.address,
+                this.pool.tokenRoot,
+                this.userWalletAddress,
+                this.wallet.address,
+            )
+
+            if (result == null) {
                 return
             }
 
@@ -134,32 +137,38 @@ export class FarmingPoolStore {
                 this.poolUpdateTimeout = undefined
             }
 
-            this.changeData(FarmingPoolStoreDataProp.USER_WALLET_BALANCE, value.newUserBalance)
-            this.changeData(FarmingPoolStoreDataProp.USER_DEPOSIT, undefined)
+            this.changeData('userWalletBalance', result.newUserBalance)
+            this.changeData('userDeposit', undefined)
             await this.syncPool()
-        }).finally(() => {
-            this.changeState(FarmingPoolStoreStateProp.IS_USER_DEPOSITING, false)
-        })
+        }
+        catch (e) {
+            error('Token deposit error', e)
+        }
+        finally {
+            this.changeState('isUserDepositing', false)
+        }
     }
 
     /**
      *
      */
-    public withdrawUnclaimed(): void {
+    public async withdrawUnclaimed(): Promise<void> {
         if (
             this.wallet.address == null
             || this.isUserDepositing
             || this.userWalletAddress == null
         ) { return }
 
-        this.changeState(FarmingPoolStoreStateProp.IS_USER_DEPOSITING, true)
+        this.changeState('isUserDepositing', true)
 
-        withdrawUnclaimed(
-            this.pool.address,
-            this.wallet.address,
-            this.userWalletAddress,
-        ).then(async value => {
-            if (value == null) {
+        try {
+            const result = await withdrawUnclaimed(
+                this.pool.address,
+                this.wallet.address,
+                this.userWalletAddress,
+            )
+
+            if (result == null) {
                 return
             }
 
@@ -168,12 +177,16 @@ export class FarmingPoolStore {
                 this.poolUpdateTimeout = undefined
             }
 
-            this.changeData(FarmingPoolStoreDataProp.USER_WALLET_BALANCE, value)
+            this.changeData('userWalletBalance', result)
             await this.syncPool()
             this.updatePoolTimeTick()
-        }).finally(() => {
-            this.changeState(FarmingPoolStoreStateProp.IS_USER_DEPOSITING, false)
-        })
+        }
+        catch (e) {
+            error('Withdraw unclaimed error', e)
+        }
+        finally {
+            this.changeState('isUserDepositing', false)
+        }
     }
 
     /**
@@ -196,7 +209,7 @@ export class FarmingPoolStore {
             return
         }
 
-        this.changeState(FarmingPoolStoreStateProp.IS_ADMIN_DEPOSITING, true)
+        this.changeState('isAdminDepositing', true)
 
         const poolWallet = await TokenWallet.walletAddress({
             root: new Address(this.pool.rewardTokenRoot[idx]),
@@ -205,7 +218,7 @@ export class FarmingPoolStore {
         const poolWalletState = (await ton.getFullContractState({ address: poolWallet })).state
 
         if (poolWalletState === undefined || !poolWalletState.isDeployed) {
-            this.changeState(FarmingPoolStoreStateProp.IS_ADMIN_DEPOSITING, false)
+            this.changeState('isAdminDepositing', false)
             return
         }
 
@@ -229,8 +242,8 @@ export class FarmingPoolStore {
                 })
                 const adminDeposit = this.adminDeposit.slice()
                 adminDeposit[idx] = undefined
-                this.changeData(FarmingPoolStoreDataProp.ADMIN_DEPOSIT, adminDeposit)
-                this.changeState(FarmingPoolStoreStateProp.IS_ADMIN_DEPOSITING, false)
+                this.changeData('adminDeposit', adminDeposit)
+                this.changeState('isAdminDepositing', false)
             }
         }
     }
@@ -238,19 +251,25 @@ export class FarmingPoolStore {
     /**
      *
      */
-    public adminWithdrawUnclaimed(): void {
+    public async adminWithdrawUnclaimed(): Promise<void> {
         if (this.wallet.address == null) {
             return
         }
 
-        this.changeState(FarmingPoolStoreStateProp.IS_ADMIN_WITHDRAW_UNCLAIMING, true)
+        this.changeState('isAdminWithdrawUnclaiming', true)
 
-        Farm.poolAdminWithdrawUnclaimed(
-            new Address(this.pool.address),
-            new Address(this.wallet.address),
-        ).finally(() => {
-            this.changeState(FarmingPoolStoreStateProp.IS_ADMIN_WITHDRAW_UNCLAIMING, false)
-        })
+        try {
+            await Farm.poolAdminWithdrawUnclaimed(
+                new Address(this.pool.address),
+                new Address(this.wallet.address),
+            )
+        }
+        catch (e) {
+            error('Admin withdraw unclaimed error', e)
+        }
+        finally {
+            this.changeState('isAdminWithdrawUnclaiming', false)
+        }
     }
 
     /*
@@ -355,62 +374,71 @@ export class FarmingPoolStore {
     protected async updateWalletBalances(isAdmin: boolean, accountAddress: string): Promise<void> {
         if (isAdmin) {
             if (this.adminWalletAddress.length === 0) {
-                await Promise.all(
-                    this.pool.rewardTokenRoot.map(
-                        async address => (await TokenWallet.walletAddress({
-                            owner: new Address(accountAddress),
-                            root: new Address(address),
-                        })).toString(),
-                    ),
-                ).then(value => {
-                    this.changeData(FarmingPoolStoreDataProp.ADMIN_WALLET_ADDRESS, value)
-                })
+                try {
+                    const result = await Promise.all(
+                        this.pool.rewardTokenRoot.map(
+                            async address => (await TokenWallet.walletAddress({
+                                owner: new Address(accountAddress),
+                                root: new Address(address),
+                            })).toString(),
+                        ),
+                    )
+                    this.changeData('adminWalletAddress', result)
+                }
+                catch (e) {
+                    error('Admin wallet address error', e)
+                }
             }
-            await Promise.all(
-                this.adminWalletAddress.map(async address => {
-                    try {
-                        if (address != null) {
-                            return await TokenWallet.balance({ wallet: new Address(address) })
+
+            try {
+                const result = await Promise.all(
+                    this.adminWalletAddress.map(async address => {
+                        try {
+                            if (address != null) {
+                                return await TokenWallet.balance({ wallet: new Address(address) })
+                            }
+                            return undefined
                         }
-                        return undefined
-                    }
-                    catch (e) {
-                        return undefined
-                    }
-                }),
-            ).then(value => {
-                this.changeData(FarmingPoolStoreDataProp.ADMIN_WALLET_BALANCE, value)
-            })
-        }
-
-        if (this.userWalletAddress == null) {
-            await TokenWallet.walletAddress({
-                owner: new Address(accountAddress),
-                root: new Address(this.pool.tokenRoot),
-            }).then(value => {
-                this.changeData(FarmingPoolStoreDataProp.USER_WALLET_ADDRESS, value.toString())
-            })
-        }
-
-        try {
-            if (this.userWalletAddress != null) {
-                await TokenWallet.balance({
-                    wallet: new Address(this.userWalletAddress),
-                }).then(value => {
-                    this.changeData(FarmingPoolStoreDataProp.USER_WALLET_BALANCE, value)
-                })
+                        catch (e) {
+                            return undefined
+                        }
+                    }),
+                )
+                this.changeData('adminWalletBalance', result)
+            }
+            catch (e) {
+                error('Admin wallet balance error', e)
             }
         }
-        catch (e) {
-            this.changeData(FarmingPoolStoreDataProp.USER_WALLET_BALANCE, undefined)
+
+        if (this.userWalletAddress === undefined) {
+            try {
+                const result = await TokenWallet.walletAddress({
+                    owner: new Address(accountAddress),
+                    root: new Address(this.pool.tokenRoot),
+                })
+                this.changeData('userWalletAddress', result.toString())
+            }
+            catch (e) {
+                error('User wallet balance error', e)
+            }
         }
 
-        this.changeData(
-            FarmingPoolStoreDataProp.ADMIN_DEPOSIT,
-            this.adminWalletAddress.map(
-                (_, idx) => this.getAdminDeposit(idx),
-            ),
-        )
+        if (this.userWalletAddress !== undefined) {
+            try {
+                const balance = await TokenWallet.balance({
+                    wallet: new Address(this.userWalletAddress),
+                })
+                this.changeData('userWalletBalance', balance)
+            }
+            catch (e) {
+                this.changeData('userWalletBalance', undefined)
+            }
+        }
+
+        this.changeData('adminDeposit', this.adminWalletAddress.map(
+            (_, idx) => this.getAdminDeposit(idx),
+        ))
     }
 
     /*
@@ -433,43 +461,43 @@ export class FarmingPoolStore {
     /**
      *
      */
-    public get adminDeposit(): FarmingPoolStoreData[FarmingPoolStoreDataProp.ADMIN_DEPOSIT] {
-        return this.data[FarmingPoolStoreDataProp.ADMIN_DEPOSIT]
+    public get adminDeposit(): FarmingPoolStoreData['adminDeposit'] {
+        return this.data.adminDeposit
     }
 
     /**
      *
      */
-    public get adminWalletAddress(): FarmingPoolStoreData[FarmingPoolStoreDataProp.ADMIN_WALLET_ADDRESS] {
-        return this.data[FarmingPoolStoreDataProp.ADMIN_WALLET_ADDRESS]
+    public get adminWalletAddress(): FarmingPoolStoreData['adminWalletAddress'] {
+        return this.data.adminWalletAddress
     }
 
     /**
      *
      */
-    public get adminWalletBalance(): FarmingPoolStoreData[FarmingPoolStoreDataProp.ADMIN_WALLET_BALANCE] {
-        return this.data[FarmingPoolStoreDataProp.ADMIN_WALLET_BALANCE]
+    public get adminWalletBalance(): FarmingPoolStoreData['adminWalletBalance'] {
+        return this.data.adminWalletBalance
     }
 
     /**
      *
      */
-    public get userDeposit(): FarmingPoolStoreData[FarmingPoolStoreDataProp.USER_DEPOSIT] {
-        return this.data[FarmingPoolStoreDataProp.USER_DEPOSIT]
+    public get userDeposit(): FarmingPoolStoreData['userDeposit'] {
+        return this.data.userDeposit
     }
 
     /**
      *
      */
-    public get userWalletAddress(): FarmingPoolStoreData[FarmingPoolStoreDataProp.USER_WALLET_ADDRESS] {
-        return this.data[FarmingPoolStoreDataProp.USER_WALLET_ADDRESS]
+    public get userWalletAddress(): FarmingPoolStoreData['userWalletAddress'] {
+        return this.data.userWalletAddress
     }
 
     /**
      *
      */
-    public get userWalletBalance(): FarmingPoolStoreData[FarmingPoolStoreDataProp.USER_WALLET_BALANCE] {
-        return this.data[FarmingPoolStoreDataProp.USER_WALLET_BALANCE]
+    public get userWalletBalance(): FarmingPoolStoreData['userWalletBalance'] {
+        return this.data.userWalletBalance
     }
 
     /*
@@ -480,23 +508,22 @@ export class FarmingPoolStore {
     /**
      *
      */
-    public get isAdminDepositing(): FarmingPoolStoreState[FarmingPoolStoreStateProp.IS_ADMIN_DEPOSITING] {
-        return this.state[FarmingPoolStoreStateProp.IS_ADMIN_DEPOSITING]
+    public get isAdminDepositing(): FarmingPoolStoreState['isAdminDepositing'] {
+        return this.state.isAdminDepositing
     }
 
     /**
      *
      */
-    public get isAdminWithdrawUnclaiming(): FarmingPoolStoreState[
-        FarmingPoolStoreStateProp.IS_ADMIN_WITHDRAW_UNCLAIMING] {
-        return this.state[FarmingPoolStoreStateProp.IS_ADMIN_WITHDRAW_UNCLAIMING]
+    public get isAdminWithdrawUnclaiming(): FarmingPoolStoreState['isAdminWithdrawUnclaiming'] {
+        return this.state.isAdminWithdrawUnclaiming
     }
 
     /**
      *
      */
-    public get isUserDepositing(): FarmingPoolStoreState[FarmingPoolStoreStateProp.IS_USER_DEPOSITING] {
-        return this.state[FarmingPoolStoreStateProp.IS_USER_DEPOSITING]
+    public get isUserDepositing(): FarmingPoolStoreState['isUserDepositing'] {
+        return this.state.isUserDepositing
     }
 
 }

@@ -10,29 +10,28 @@ import { Dex, getDexAccount } from '@/misc'
 import { useWallet, WalletService } from '@/stores/WalletService'
 
 
-export enum DexAccountDataProp {
-    ADDRESS = 'address',
-    BALANCES = 'balances',
-    NONCE = 'nonce',
-    WALLETS = 'wallets',
-}
-
 export type DexAccountData = {
-    [DexAccountDataProp.ADDRESS]?: string;
-    [DexAccountDataProp.BALANCES]?: Map<string, string>;
-    [DexAccountDataProp.NONCE]?: string;
-    [DexAccountDataProp.WALLETS]?: Map<string, Address>;
+    address?: string;
+    balances?: Map<string, string>;
+    nonce?: string;
+    wallets?: Map<string, Address>;
 }
 
-export const DEFAULT_DEX_ACCOUNT_DATA: DexAccountData = {
-    [DexAccountDataProp.ADDRESS]: undefined,
-    [DexAccountDataProp.BALANCES]: undefined,
-    [DexAccountDataProp.WALLETS]: undefined,
+
+const DEFAULT_DEX_ACCOUNT_DATA: DexAccountData = {
+    address: undefined,
+    balances: undefined,
+    wallets: undefined,
 }
 
 
 export class DexAccountService {
 
+    /**
+     * Current data of the DEX account
+     * @type {DexAccountData}
+     * @protected
+     */
     protected data: DexAccountData = DEFAULT_DEX_ACCOUNT_DATA
 
     constructor(protected readonly wallet: WalletService) {
@@ -43,21 +42,26 @@ export class DexAccountService {
         })
     }
 
+    /**
+     * Manually connect to the DEX account.
+     * @returns {Promise<void>}
+     */
     public async connect(): Promise<void> {
         if (!this.wallet.address) {
             return
         }
 
-        await getDexAccount(this.wallet.address).then(address => {
-            runInAction(() => {
-                this.data = {
-                    ...this.data,
-                    [DexAccountDataProp.ADDRESS]: address,
-                }
-            })
+        const address = await getDexAccount(this.wallet.address)
+
+        runInAction(() => {
+            this.data.address = address
         })
     }
 
+    /**
+     * Manually create DEX account
+     * @returns {Promise<TransactionId | undefined>}
+     */
     public async create(): Promise<TransactionId | undefined> {
         if (!this.wallet.address) {
             return undefined
@@ -66,6 +70,10 @@ export class DexAccountService {
         return Dex.createAccount(new Address(this.wallet.address))
     }
 
+    /**
+     * Try to connect to the DEX account, else create a new one
+     * @returns {Promise<void>}
+     */
     public async connectOrCreate(): Promise<void> {
         if (!this.wallet.address) {
             return
@@ -80,6 +88,10 @@ export class DexAccountService {
         await this.connect()
     }
 
+    /**
+     * Connect to the DEX account and sync nonce, balances, and run balances updater
+     * @returns {Promise<void>}
+     */
     public async connectAndSync(): Promise<void> {
         if (!this.wallet.address) {
             return
@@ -96,42 +108,46 @@ export class DexAccountService {
         this.runBalancesUpdater()
     }
 
+    /**
+     * Sync DEX account balances
+     * @returns {Promise<void>}
+     */
     public async syncBalances(): Promise<void> {
         if (!this.wallet.account || !this.address) {
             return
         }
 
-        await Dex.accountBalances(new Address(this.address)).then(balances => {
-            runInAction(() => {
-                this.data[DexAccountDataProp.BALANCES] = balances
-            })
+        const balances = await Dex.accountBalances(new Address(this.address))
+
+        runInAction(() => {
+            this.data.balances = balances
         })
     }
 
+    /**
+     * Sync DEX account wallets
+     * @returns {Promise<void>}
+     */
     public async syncWallets(): Promise<void> {
         if (!this.wallet.account || !this.address) {
             return
         }
 
-        await Dex.accountWallets(new Address(this.address)).then(wallets => {
-            runInAction(() => {
-                this.data[DexAccountDataProp.WALLETS] = wallets
-            })
+        const wallets = await Dex.accountWallets(new Address(this.address))
+
+        runInAction(() => {
+            this.data.wallets = wallets
         })
     }
 
-    public async syncNonce(): Promise<void> {
-        if (this.address) {
-            await Dex.accountNonce(new Address(this.address)).then(nonce => {
-                runInAction(() => {
-                    this.data[DexAccountDataProp.NONCE] = (parseInt(nonce, 10) + 1).toString()
-                })
-            })
-        }
-    }
-
+    /**
+     * Withdraw token by the given root address and amount
+     * @param {string} root
+     * @param {string} amount
+     * @returns {Promise<void>}
+     */
     public async withdrawToken(root: string, amount: string): Promise<void> {
-        if (!this.address || !this.wallet.address || !root || !amount) {
+        if (!this.wallet.address || !this.address || !root || !amount) {
             return
         }
 
@@ -143,6 +159,58 @@ export class DexAccountService {
         )
     }
 
+    /**
+     * Returns account wallet by the given account root address
+     * @param {string} root
+     */
+    public getAccountWallet(root: string | undefined): Address | undefined {
+        if (!root) {
+            return undefined
+        }
+        return this.wallets?.get(root)
+    }
+
+    /**
+     * Returns DEX account address
+     */
+    public get address(): DexAccountData['address'] {
+        return this.data.address
+    }
+
+    /**
+     * Returns map of the DEX account balances
+     */
+    public get balances(): DexAccountData['balances'] {
+        return this.data.balances
+    }
+
+    /**
+     * Returns nonce value
+     */
+    public get nonce(): DexAccountData['nonce'] {
+        return this.data.nonce
+    }
+
+    /**
+     * Returns map of the DEX account wallets
+     */
+    public get wallets(): DexAccountData['wallets'] {
+        return this.data.wallets
+    }
+
+    /**
+     *
+     */
+    public stopBalancesUpdater(): void {
+        if (this.#balancesInterval !== undefined) {
+            clearInterval(this.#balancesInterval)
+            this.#balancesInterval = undefined
+        }
+    }
+
+    /**
+     * @protected
+     */
     protected runBalancesUpdater(): void {
         this.stopBalancesUpdater()
 
@@ -151,38 +219,33 @@ export class DexAccountService {
         }, 5000)
     }
 
-    public stopBalancesUpdater(): void {
-        if (this.#balancesInterval !== undefined) {
-            clearInterval(this.#balancesInterval)
-            this.#balancesInterval = undefined
+    /**
+     * Sync DEX account nonce
+     * @protected
+     * @returns {Promise<void>}
+     */
+    protected async syncNonce(): Promise<void> {
+        if (!this.address) {
+            return
         }
+
+        const nonce = await Dex.accountNonce(new Address(this.address))
+
+        runInAction(() => {
+            this.data.nonce = (parseInt(nonce, 10) + 1).toString()
+        })
     }
 
-    public getAccountWallet(root: string | undefined): Address | undefined {
-        if (!root) {
-            return undefined
-        }
-        return this.wallets?.get(root)
-    }
-
-    public get address(): DexAccountData[DexAccountDataProp.ADDRESS] {
-        return this.data[DexAccountDataProp.ADDRESS]
-    }
-
-    public get balances(): DexAccountData[DexAccountDataProp.BALANCES] {
-        return this.data[DexAccountDataProp.BALANCES]
-    }
-
-    public get nonce(): DexAccountData[DexAccountDataProp.NONCE] {
-        return this.data[DexAccountDataProp.NONCE]
-    }
-
-    public get wallets(): DexAccountData[DexAccountDataProp.WALLETS] {
-        return this.data[DexAccountDataProp.WALLETS]
-    }
-
+    /**
+     *
+     * @private
+     */
     #walletAccountDisposer: IReactionDisposer | undefined
 
+    /**
+     *
+     * @private
+     */
     #balancesInterval: ReturnType<typeof setInterval> | undefined
 
 }

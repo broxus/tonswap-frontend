@@ -47,18 +47,18 @@ export class FarmingStore {
     /**
      *
      */
-    public init(): void {
+    public async init(): Promise<void> {
         this.#walletAccountDisposer = reaction(() => this.wallet.address, this.handleWalletAddressChange)
 
         if (this.wallet.address != null) {
-            this.handleWalletAddressChange()
+            await this.handleWalletAddressChange()
         }
     }
 
     /**
      *
      */
-    public dispose(): void {
+    public async dispose(): Promise<void> {
         this.#walletAccountDisposer?.()
     }
 
@@ -85,11 +85,13 @@ export class FarmingStore {
             this.reset()
         }
 
-        await this.load(20).then(pools => {
+        try {
+            const pools = await this.load(20)
             runInAction(() => {
                 this.data.pools = pools
             })
-        })
+        }
+        catch (e) {}
     }
 
     /*

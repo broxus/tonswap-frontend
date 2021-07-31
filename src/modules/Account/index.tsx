@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useWallet } from '@/stores/WalletService'
-import { formatBalance, sliceAddress } from '@/utils'
+import { amount, sliceAddress } from '@/utils'
 
 import './index.scss'
 
@@ -17,8 +17,8 @@ export function Account(): JSX.Element | null {
     const connect = async () => {
         await wallet.connect()
     }
-    const disconnect = () => {
-        wallet.disconnect()
+    const disconnect = async () => {
+        await wallet.disconnect()
     }
 
     return (
@@ -45,7 +45,7 @@ export function Account(): JSX.Element | null {
                                     {intl.formatMessage({
                                         id: 'WALLET_BALANCE_HINT',
                                     }, {
-                                        balance: formatBalance(
+                                        balance: amount(
                                             wallet.balance,
                                             9,
                                         ) || 0,

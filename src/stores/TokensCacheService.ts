@@ -10,7 +10,7 @@ import ton, { Address, Subscription } from 'ton-inpage-provider'
 import { TokenWallet } from '@/misc/token-wallet'
 import { TokensListService, useTokensList } from '@/stores/TokensListService'
 import { WalletService, useWallet } from '@/stores/WalletService'
-import { debug } from '@/utils'
+import { debug, error } from '@/utils'
 
 
 export type TokenCache = {
@@ -285,14 +285,14 @@ export class TokensCacheService {
                 await subscriber?.unsubscribe()
             }
             catch (e) {
-                debug('Cannot unsubscribe from token balance update', e)
+                error('Cannot unsubscribe from token balance update', e)
             }
 
             this.#tokensBalancesSubscribers.delete(key)
 
             debug(
                 `%cTON Provider%c Unsubscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
-           Key: (${key})`,
+                Key: (${key})`,
                 'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                 'color: #c5e4f3',
                 'color: #bae701',
@@ -325,15 +325,22 @@ export class TokensCacheService {
                 token.isUpdatingWalletAddress = true
             })
 
-            await TokenWallet.walletAddress({
-                owner: new Address(walletAddress),
-                root: new Address(token.root),
-            }).then(address => {
+            try {
+                const address = await TokenWallet.walletAddress({
+                    owner: new Address(walletAddress),
+                    root: new Address(token.root),
+                })
+
                 runInAction(() => {
                     token.wallet = address.toString()
-                    token.isUpdatingWalletAddress = true
                 })
-            })
+            }
+            catch (e) {}
+            finally {
+                runInAction(() => {
+                    token.isUpdatingWalletAddress = false
+                })
+            }
         }
     }
 
@@ -352,6 +359,7 @@ export class TokensCacheService {
     #tokensBalancesSubscribersMutex: Mutex
 
 }
+
 
 const TokensCacheServiceStore = new TokensCacheService(
     useWallet(),

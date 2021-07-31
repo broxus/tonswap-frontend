@@ -11,7 +11,7 @@ type Props = {
     placeholder?: string;
     readOnly?: boolean;
     value?: string;
-    onChange?(value: string): void;
+    onChange?: (value: string) => void;
 }
 
 export function PoolField({ isValid = true, autoFocus = false, ...props }: Props): JSX.Element {

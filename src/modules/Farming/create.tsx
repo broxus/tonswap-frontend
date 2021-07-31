@@ -9,9 +9,7 @@ import { Icon } from '@/components/common/Icon'
 import { PoolCreatingParams } from '@/modules/Farming/components/PoolCreatingParams'
 import { PoolField } from '@/modules/Farming/components/PoolField'
 import { useCreateFarmPoolStore } from '@/modules/Farming/stores/CreateFarmPoolStore'
-import { CreateFarmPoolStoreDataProp } from '@/modules/Farming/types'
 import { useWallet } from '@/stores/WalletService'
-import { noop } from '@/utils'
 
 
 export function Create(): JSX.Element {
@@ -21,16 +19,11 @@ export function Create(): JSX.Element {
     const creatingPool = useCreateFarmPoolStore()
 
     const onChangeFarmToken = (address: string | undefined) => {
-        creatingPool.changeData(
-            CreateFarmPoolStoreDataProp.FARM_TOKEN,
-            { root: address },
-        )
+        creatingPool.changeData('farmToken', { root: address })
     }
 
-    const onChangeDate = (field: CreateFarmPoolStoreDataProp) => (dateString: string | undefined) => {
-        creatingPool.changeData(field, {
-            value: dateString,
-        })
+    const onChangeDate = (key: 'farmStart' | 'farmEnd') => (dateString: string | undefined) => {
+        creatingPool.changeData(key, { value: dateString })
     }
 
     const onChangeRewardTokenRoot = (idx: number) => (value: string | undefined) => {
@@ -56,12 +49,14 @@ export function Create(): JSX.Element {
         })
     }
 
-    const create = () => {
-        creatingPool.create().then(() => {
-            window.setTimeout(async () => {
+    const create = async () => {
+        try {
+            await creatingPool.create()
+            setTimeout(() => {
                 history.push('/farming')
             }, 60 * 1000)
-        }).catch(noop)
+        }
+        catch (e) {}
     }
 
     React.useEffect(() => {
@@ -124,7 +119,7 @@ export function Create(): JSX.Element {
                                     isValid={creatingPool.farmStart.isValid}
                                     readOnly={creatingPool.isCreating}
                                     value={creatingPool.farmStart.value || ''}
-                                    onChange={onChangeDate(CreateFarmPoolStoreDataProp.FARM_START)}
+                                    onChange={onChangeDate('farmStart')}
                                 />
                             )}
                         </Observer>
@@ -142,7 +137,7 @@ export function Create(): JSX.Element {
                                     isValid={creatingPool.farmEnd.isValid}
                                     readOnly={creatingPool.isCreating}
                                     value={creatingPool.farmEnd.value || ''}
-                                    onChange={onChangeDate(CreateFarmPoolStoreDataProp.FARM_END)}
+                                    onChange={onChangeDate('farmEnd')}
                                 />
                             )}
                         </Observer>

@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
-import { formatBalance } from '@/utils'
+import { amount } from '@/utils'
 
 
 function Bill(): JSX.Element | null {
@@ -30,7 +30,7 @@ function Bill(): JSX.Element | null {
                         __html: intl.formatMessage({
                             id: 'SWAP_BILL_RESULT_MINIMUM_RECEIVE',
                         }, {
-                            value: formatBalance(
+                            value: amount(
                                 swap.minExpectedAmount,
                                 swap.rightToken?.decimals,
                             ) || '0',
@@ -82,7 +82,7 @@ function Bill(): JSX.Element | null {
                         __html: intl.formatMessage({
                             id: 'SWAP_BILL_RESULT_FEE',
                         }, {
-                            value: formatBalance(
+                            value: amount(
                                 swap.fee,
                                 swap.leftToken?.decimals,
                             ) || '0',

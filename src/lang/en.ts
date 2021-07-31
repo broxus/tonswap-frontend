@@ -119,6 +119,7 @@ export default {
     POOL_SUPPLY_RECEIPT_SUCCESSFUL_NOTE: '<p>Supply completed successfully.</p><p>LP token root <a href="https://ton-explorer.com/accounts/{address}" target="_blank" rel="nofollow noopener noreferrer">contract</a>.</p><p>You can view the result transaction in the <a href="https://ton-explorer.com/transactions/{transactionHash}" target="_blank" rel="nofollow noopener noreferrer">explorer</a>.</p>',
     POOL_SUPPLY_RECEIPT_LEAD_CANCELLED: 'Supply cancelled',
     POOL_SUPPLY_RECEIPT_CANCELLED_NOTE: '<p>The Supply was canceled. Your balance hasn\'t changed.</p>',
+    POOL_SUPPLY_RECEIPT_POPUP_BTN_TEXT_CLOSE: 'Close',
 
     FARMING_HEADER_TITLE: 'Farming',
     FARMING_HEADER_CREATE_LINK_TEXT: 'Create farm pool',

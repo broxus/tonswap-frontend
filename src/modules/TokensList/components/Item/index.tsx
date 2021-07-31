@@ -10,7 +10,7 @@ import { TokenCache } from '@/stores/TokensCacheService'
 export type Props = {
     disabled?: boolean;
     token: TokenCache;
-    onSelect?(token: TokenCache): void;
+    onSelect?: (token: TokenCache) => void;
 }
 
 export const Item = observer(({ disabled, token, onSelect }: Props) => {

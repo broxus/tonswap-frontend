@@ -5,12 +5,11 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
-import { SwapTransactionProp } from '@/modules/Swap/types'
-import { formatBalance } from '@/utils'
+import { amount } from '@/utils'
 
 
 type Props = {
-    onDismiss(): void;
+    onDismiss: () => void;
 }
 
 
@@ -38,18 +37,18 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                         id: 'SWAP_TRANSACTION_RECEIPT_POPUP_TITLE',
                     })}
                 </h2>
-                {swap.transaction[SwapTransactionProp.SUCCESS] ? (
+                {swap.transaction.success ? (
                     <>
                         <div className="popup-main">
                             <div className="popup-main__ava">
-                                {swap.transaction[SwapTransactionProp.RECEIVED_ICON] ? (
+                                {swap.transaction.receivedIcon ? (
                                     <img
-                                        alt={swap.transaction[SwapTransactionProp.RECEIVED_SYMBOL]}
-                                        src={swap.transaction[SwapTransactionProp.RECEIVED_ICON]}
+                                        alt={swap.transaction.receivedSymbol}
+                                        src={swap.transaction.receivedIcon}
                                     />
-                                ) : swap.transaction[SwapTransactionProp.RECEIVED_ROOT] && (
+                                ) : swap.transaction.receivedRoot !== undefined && (
                                     <UserAvatar
-                                        address={swap.transaction[SwapTransactionProp.RECEIVED_ROOT] as string}
+                                        address={swap.transaction.receivedRoot}
                                     />
                                 )}
                             </div>
@@ -59,11 +58,11 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                                     __html: intl.formatMessage({
                                         id: 'SWAP_TRANSACTION_RECEIPT_LEAD_SUCCESSFUL_AMOUNT',
                                     }, {
-                                        value: formatBalance(
-                                            swap.transaction[SwapTransactionProp.RECEIVED_AMOUNT] || '0',
-                                            swap.transaction[SwapTransactionProp.RECEIVED_DECIMALS],
-                                        ),
-                                        symbol: swap.transaction[SwapTransactionProp.RECEIVED_SYMBOL],
+                                        value: amount(
+                                            swap.transaction.receivedAmount || '0',
+                                            swap.transaction.receivedDecimals,
+                                        ) || '0',
+                                        symbol: swap.transaction.receivedSymbol,
                                     }, {
                                         ignoreTag: true,
                                     }),
@@ -76,9 +75,9 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                                 __html: intl.formatMessage({
                                     id: 'SWAP_TRANSACTION_RECEIPT_SUCCESSFUL_NOTE',
                                 }, {
-                                    symbol: swap.transaction[SwapTransactionProp.RECEIVED_SYMBOL],
-                                    address: swap.transaction[SwapTransactionProp.RECEIVED_ROOT],
-                                    transactionHash: swap.transaction[SwapTransactionProp.HASH],
+                                    symbol: swap.transaction.receivedSymbol,
+                                    address: swap.transaction.receivedRoot,
+                                    transactionHash: swap.transaction.hash,
                                 }, {
                                     ignoreTag: true,
                                 }),

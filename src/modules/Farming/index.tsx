@@ -7,6 +7,7 @@ import { Icon } from '@/components/common/Icon'
 import { PoolsList } from '@/modules/Farming/components/PoolsList'
 import { useFarmingStore } from '@/modules/Farming/stores/FarmingStore'
 import { useWallet } from '@/stores/WalletService'
+import { error } from '@/utils'
 
 import './index.scss'
 
@@ -21,9 +22,11 @@ export function Farming(): JSX.Element {
     }
 
     React.useEffect(() => {
-        farming.init()
+        (async () => {
+            await farming.init()
+        })()
         return () => {
-            farming.dispose()
+            farming.dispose().catch(reason => error(reason))
         }
     }, [])
 

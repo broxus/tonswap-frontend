@@ -11,7 +11,7 @@
         background: rgba(255, 255, 255, 0.1);
         box-shadow: 0 8px 16px rgba(43, 51, 56, 0.08);
         left: 50%;
-        max-width: 360px;
+        max-width: 420px;
         padding: 20px 20px 28px;
         position: absolute;
         top: 128px;
@@ -111,7 +111,10 @@ button.popup-close {
     }
 
     &__loader {
+        align-items: center;
+        display: flex;
         height: 32px;
+        justify-content: center;
         margin-right: 16px;
         width: 32px;
 

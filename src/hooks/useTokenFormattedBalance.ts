@@ -57,31 +57,31 @@ export function useTokenFormattedBalance(
 
             (async () => {
                 setFetchingTo(true)
-                await tokensCache.syncToken(token.root).then(() => {
-                    if (!mountedTokens[`${subscriberPrefix}-${token.root}`]) {
-                        return
+                try {
+                    await tokensCache.syncToken(token.root)
+                    if (mountedTokens[`${subscriberPrefix}-${token.root}`]) {
+                        setBalance(formatBalance(
+                            token?.balance || '0',
+                            token?.decimals,
+                            dexAccountBalance,
+                        ) || '0')
+                        setFetchingTo(false)
                     }
-                    setBalance(formatBalance(
-                        token?.balance || '0',
-                        token?.decimals,
-                        dexAccountBalance,
-                    ) || '0')
-                    setFetchingTo(false)
-                }).catch(err => {
-                    error('Token update failure', err)
-                    if (!mountedTokens[`${subscriberPrefix}-${token.root}`]) {
-                        return
+                }
+                catch (e) {
+                    error('Token update failure', e)
+                    if (mountedTokens[`${subscriberPrefix}-${token.root}`]) {
+                        setFetchingTo(false)
                     }
-                    setFetchingTo(false)
-                }).finally(async () => {
-                    if (watchOnMount) {
-                        await tokensCache.watch(token.root, subscriberPrefix)
+                }
+                finally {
+                    if (mountedTokens[`${subscriberPrefix}-${token.root}`]) {
+                        setFetchingTo(false)
+                        if (watchOnMount) {
+                            await tokensCache.watch(token.root, subscriberPrefix)
+                        }
                     }
-                    if (!mountedTokens[`${subscriberPrefix}-${token.root}`]) {
-                        return
-                    }
-                    setFetchingTo(false)
-                })
+                }
             })()
         }
 
@@ -91,7 +91,7 @@ export function useTokenFormattedBalance(
             }
 
             if (token && unwatchOnUnmount) {
-                tokensCache.unwatch(token.root, subscriberPrefix).catch(err => error(err))
+                tokensCache.unwatch(token.root, subscriberPrefix).catch(reason => error(reason))
             }
         }
     }, [token])

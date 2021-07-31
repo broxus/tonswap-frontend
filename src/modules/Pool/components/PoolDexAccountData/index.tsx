@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { usePool } from '@/modules/Pool/stores/PoolStore'
-import { formatBalance } from '@/utils'
+import { amount } from '@/utils'
 
 
 function DexAccountData(): JSX.Element | null {
@@ -69,7 +69,7 @@ function DexAccountData(): JSX.Element | null {
                         )}
                     </div>
                     <div className="list-bill__val">
-                        {formatBalance(pool.dexLeftBalance, pool.leftToken.decimals) || '0'}
+                        {amount(pool.dexLeftBalance, pool.leftToken.decimals) || '0'}
                     </div>
                 </div>
             )}
@@ -96,7 +96,7 @@ function DexAccountData(): JSX.Element | null {
                         )}
                     </div>
                     <div className="list-bill__val">
-                        {formatBalance(pool.dexRightBalance, pool.rightToken.decimals) || '0'}
+                        {amount(pool.dexRightBalance, pool.rightToken.decimals) || '0'}
                     </div>
                 </div>
             )}
@@ -117,7 +117,7 @@ function DexAccountData(): JSX.Element | null {
                                 title="Withdraw"
                                 onClick={onWithdrawLpToken}
                             >
-                                {pool.isWithdrawingLp ? (
+                                {pool.isWithdrawingLiquidity ? (
                                     <Icon icon="loader" ratio={0.6} className="spin" />
                                 ) : (
                                     <Icon icon="push" ratio={0.7} />
@@ -141,7 +141,7 @@ function DexAccountData(): JSX.Element | null {
                         )}
                     </div>
                     <div className="list-bill__val">
-                        {formatBalance(pool.lpWalletBalance, pool.lpDecimals) || '0'}
+                        {amount(pool.lpWalletBalance, pool.lpDecimals) || '0'}
                     </div>
                 </div>
             )}

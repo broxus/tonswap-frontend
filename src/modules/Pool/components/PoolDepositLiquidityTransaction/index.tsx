@@ -4,10 +4,8 @@ import { useIntl } from 'react-intl'
 
 import { usePool } from '@/modules/Pool/stores/PoolStore'
 import { Icon } from '@/components/common/Icon'
-import { SwapTransactionProp } from '@/modules/Swap/types'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { DepositLiquiditySuccessDataProp } from '@/modules/Pool/types'
-import { formatBalance } from '@/utils'
+import { amount } from '@/utils'
 
 
 type Props = {
@@ -40,11 +38,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                         <div className="popup-main">
                             <div className="popup-main__ava">
                                 <UserAvatar
-                                    address={(
-                                        pool.transaction.successData[
-                                            DepositLiquiditySuccessDataProp.LP_ROOT
-                                        ]
-                                    )}
+                                    address={pool.transaction.successData.lpRoot}
                                 />
                             </div>
                             <div
@@ -53,13 +47,9 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     __html: intl.formatMessage({
                                         id: 'POOL_SUPPLY_RECEIPT_LEAD_SUCCESSFUL_AMOUNT',
                                     }, {
-                                        value: formatBalance(
-                                            pool.transaction.successData[
-                                                DepositLiquiditySuccessDataProp.SHARE
-                                            ] || '0',
-                                            pool.transaction.successData[
-                                                DepositLiquiditySuccessDataProp.LP_DECIMALS
-                                            ],
+                                        value: amount(
+                                            pool.transaction.successData.share || '0',
+                                            pool.transaction.successData.lpDecimals,
                                         ),
                                     }, {
                                         ignoreTag: true,
@@ -85,11 +75,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {intl.formatMessage({
                                         id: 'POOL_SUPPLY_RECEIPT_DATA_RESULT_SHARE_PERCENT',
                                     }, {
-                                        value: (
-                                            pool.transaction.successData[
-                                                DepositLiquiditySuccessDataProp.SHARE_PERCENT
-                                            ]
-                                        ),
+                                        value: pool.transaction.successData.sharePercent,
                                     })}
                                 </div>
                             </div>
@@ -103,37 +89,29 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {intl.formatMessage({
                                         id: 'POOL_SUPPLY_RECEIPT_DATA_RESULT_SHARE_CHANGE_PERCENT',
                                     }, {
-                                        value: (
-                                            pool.transaction.successData[
-                                                DepositLiquiditySuccessDataProp.SHARE_CHANGE_PERCENT
-                                            ]
-                                        ),
+                                        value: pool.transaction.successData.shareChangePercent,
                                     })}
                                 </div>
                             </div>
                             <div className="form-row">
                                 <div>
-                                    {pool.transaction.successData[
-                                        DepositLiquiditySuccessDataProp.LEFT_SYMBOL
-                                    ]}
+                                    {pool.transaction.successData.leftSymbol}
                                 </div>
                                 <div>
-                                    {formatBalance(
-                                        pool.transaction.successData[DepositLiquiditySuccessDataProp.NEW_LEFT],
-                                        pool.transaction.successData[DepositLiquiditySuccessDataProp.LEFT_DECIMALS],
+                                    {amount(
+                                        pool.transaction.successData.newLeft,
+                                        pool.transaction.successData.leftDecimals,
                                     )}
                                 </div>
                             </div>
                             <div className="form-row">
                                 <div>
-                                    {pool.transaction.successData[
-                                        DepositLiquiditySuccessDataProp.RIGHT_SYMBOL
-                                    ]}
+                                    {pool.transaction.successData.rightSymbol}
                                 </div>
                                 <div>
-                                    {formatBalance(
-                                        pool.transaction.successData[DepositLiquiditySuccessDataProp.NEW_RIGHT],
-                                        pool.transaction.successData[DepositLiquiditySuccessDataProp.RIGHT_DECIMALS],
+                                    {amount(
+                                        pool.transaction.successData.newRight,
+                                        pool.transaction.successData.rightDecimals,
                                     )}
                                 </div>
                             </div>
@@ -142,18 +120,12 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {intl.formatMessage({
                                         id: 'POOL_SUPPLY_RECEIPT_DATA_LABEL_NEW_LEFT_PRICE',
                                     }, {
-                                        leftSymbol: pool.transaction.successData[
-                                            DepositLiquiditySuccessDataProp.LEFT_SYMBOL
-                                        ],
-                                        rightSymbol: pool.transaction.successData[
-                                            DepositLiquiditySuccessDataProp.RIGHT_SYMBOL
-                                        ],
+                                        leftSymbol: pool.transaction.successData.leftSymbol,
+                                        rightSymbol: pool.transaction.successData.rightSymbol,
                                     })}
                                 </div>
                                 <div>
-                                    {pool.transaction.successData[
-                                        DepositLiquiditySuccessDataProp.NEW_LEFT_PRICE
-                                    ]}
+                                    {pool.transaction.successData.newLeftPrice}
                                 </div>
                             </div>
                             <div className="form-row">
@@ -161,18 +133,12 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {intl.formatMessage({
                                         id: 'POOL_SUPPLY_RECEIPT_DATA_LABEL_NEW_RIGHT_PRICE',
                                     }, {
-                                        leftSymbol: pool.transaction.successData[
-                                            DepositLiquiditySuccessDataProp.LEFT_SYMBOL
-                                        ],
-                                        rightSymbol: pool.transaction.successData[
-                                            DepositLiquiditySuccessDataProp.RIGHT_SYMBOL
-                                        ],
+                                        leftSymbol: pool.transaction.successData.leftSymbol,
+                                        rightSymbol: pool.transaction.successData.rightSymbol,
                                     })}
                                 </div>
                                 <div>
-                                    {pool.transaction.successData[
-                                        DepositLiquiditySuccessDataProp.NEW_RIGHT_PRICE
-                                    ]}
+                                    {pool.transaction.successData.newRightPrice}
                                 </div>
                             </div>
                         </div>
@@ -183,8 +149,8 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                 __html: intl.formatMessage({
                                     id: 'POOL_SUPPLY_RECEIPT_SUCCESSFUL_NOTE',
                                 }, {
-                                    address: pool.transaction.successData[DepositLiquiditySuccessDataProp.LP_ROOT],
-                                    transactionHash: pool.transaction.successData[SwapTransactionProp.HASH],
+                                    address: pool.transaction.successData.lpRoot,
+                                    transactionHash: pool.transaction.successData.hash,
                                 }, {
                                     ignoreTag: true,
                                 }),
@@ -214,6 +180,15 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                         />
                     </>
                 )}
+                <button
+                    type="button"
+                    className="btn btn-light btn-block"
+                    onClick={onDismiss}
+                >
+                    {intl.formatMessage({
+                        id: 'POOL_SUPPLY_RECEIPT_POPUP_BTN_TEXT_CLOSE',
+                    })}
+                </button>
             </div>
         </div>
     ) : null

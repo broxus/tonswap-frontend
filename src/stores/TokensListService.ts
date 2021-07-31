@@ -1,4 +1,4 @@
-import { action, makeAutoObservable } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx'
 
 import { DexConstants } from '@/misc'
 import { error } from '@/utils'
@@ -76,35 +76,41 @@ export class TokensListService {
 
         fetch(uri, {
             method: 'GET',
-        }).then(value => value.json()).then(action((value: TonTokenListManifest) => {
-            this.data.tokens = value.tokens
-            this.state = {
-                isFetching: false,
-                time: new Date().getTime(),
-                uri,
-            }
-        })).catch(action(err => {
-            error('Cannot load token list', err)
-            this.state.isFetching = false
-        }))
+        }).then(
+            value => value.json(),
+        ).then((value: TonTokenListManifest) => {
+            runInAction(() => {
+                this.data.tokens = value.tokens
+                this.state = {
+                    isFetching: false,
+                    time: new Date().getTime(),
+                    uri,
+                }
+            })
+        }).catch(reason => {
+            error('Cannot load token list', reason)
+            runInAction(() => {
+                this.state.isFetching = false
+            })
+        })
     }
 
     /**
-     * Return computed fetching state value
+     * Returns computed fetching state value
      */
     public get isFetching(): boolean {
         return this.state.isFetching
     }
 
     /**
-     * Return computed last fetching timestamp
+     * Returns computed last fetching timestamp
      */
     public get time(): number | undefined {
         return this.state.time
     }
 
     /**
-     * Return computed Ton tokens list
+     * Returns computed Ton tokens list
      */
     public get tokens(): TonToken[] {
         return this.data.tokens
@@ -113,8 +119,8 @@ export class TokensListService {
 }
 
 
-const TokensListServiceStore = new TokensListService(DexConstants.TokenListURI)
+const TokensList = new TokensListService(DexConstants.TokenListURI)
 
 export function useTokensList(): TokensListService {
-    return TokensListServiceStore
+    return TokensList
 }

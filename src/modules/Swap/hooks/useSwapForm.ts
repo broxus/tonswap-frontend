@@ -1,12 +1,12 @@
 import * as React from 'react'
 
 import { useSwap } from '@/modules/Swap/stores/SwapStore'
-import { SwapStoreData, SwapStoreDataProp } from '@/modules/Swap/types'
+import { SwapStoreData } from '@/modules/Swap/types'
 import { TokenCache } from '@/stores/TokensCacheService'
 import { error } from '@/utils'
 
 
-type TokenSide = SwapStoreDataProp.LEFT_TOKEN | SwapStoreDataProp.RIGHT_TOKEN
+type TokenSide = 'leftToken' | 'rightToken'
 
 type SwapFormShape = {
     isTokenListShown: boolean;
@@ -60,7 +60,7 @@ export function useSwapForm(): SwapFormShape {
             await swap.init()
         })()
         return () => {
-            swap.dispose().catch(err => error(err))
+            swap.dispose().catch(reason => error(reason))
         }
     }, [])
 
