@@ -1,4 +1,19 @@
-header {
-    display: flex;
-    justify-content: space-between;
+.builder {
+    header {
+        display: flex;
+        justify-content: space-between;
+
+        & > * {
+            flex-grow: 1;
+        }
+    }
+
+    .actions {
+        display: flex;
+
+        &__filter {
+            flex-grow: 1;
+            margin-right: 20px;
+        }
+    }
 }

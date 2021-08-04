@@ -61,7 +61,7 @@ export function Create(): JSX.Element {
                                     type="number"
                                     isValid={
                                         creatingToken.decimals.length > 0
-                                        && (+creatingToken.decimals >= 0 && +creatingToken.decimals <= 18)
+                                        && (+creatingToken.decimals > 0 && +creatingToken.decimals <= 18)
                                     }
                                     pattern="^[0-9]+$"
                                     value={creatingToken.decimals}

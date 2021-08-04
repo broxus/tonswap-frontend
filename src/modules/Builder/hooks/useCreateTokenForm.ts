@@ -5,8 +5,8 @@ import { useCreateTokenStore } from '@/modules/Builder/stores/CreateTokenStore'
 
 
 type CreateTokenFormShape = {
-    onChangeData<K extends keyof CreateTokenStoreData>(key: K): (value: CreateTokenStoreData[K]) => void;
-    onDismissTransactionReceipt(): void
+    onChangeData: <K extends keyof CreateTokenStoreData>(key: K) => (value: CreateTokenStoreData[K]) => void;
+    onDismissTransactionReceipt: () => void
 }
 
 

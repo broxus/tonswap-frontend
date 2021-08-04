@@ -206,4 +206,8 @@ export default {
     BUILDER_CREATE_TRANSACTION_RECEIPT_SUCCESSFUL_NOTE: '<p>Token {name} deployed successfully.</p><p>{symbol} token root <a href="https://ton-explorer.com/accounts/{address}" target="_blank" rel="nofollow noopener noreferrer">contract</a>.</p><p>You can view the result transaction in the <a href="https://ton-explorer.com/transactions/{transactionHash}" target="_blank" rel="nofollow noopener noreferrer">explorer</a>.</p>',
     BUILDER_CREATE_TRANSACTION_RECEIPT_TOKEN_NOT_DEPLOYED: 'Token not deployed',
     BUILDER_CREATE_TRANSACTION_RECEIPT_BTN_TEXT_CLOSE: 'Close',
+    BUILDER_SEARCH_FIELD_PLACEHOLDER: 'Filtering...',
+    BUILDER_MESSAGE_TOKEN_NOT_FOUND: 'Token not found',
+    BUILDER_MESSAGE_NO_TOKEN: 'You don\'t have any token',
+    BUILDER_BUTTON_CREATE_TOKEN: 'Create new one',
 }

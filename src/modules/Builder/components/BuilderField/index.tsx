@@ -9,23 +9,23 @@ type Props = {
     isValid?: boolean;
     pattern?: string;
     value?: string;
-    onChange?(value: string): void;
+    onChange?: (value: string) => void;
 };
 
-let valueWasChanged: boolean = false
-
 function Field({ type = 'text', isValid = true, ...props }: Props): JSX.Element {
+    const valueWasChanged = React.useRef<boolean>(false)
+
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
 
         props.onChange?.(value)
-        valueWasChanged = true
+        valueWasChanged.current = true
     }
 
     return (
         <fieldset
             className={classNames('form-fieldset', {
-                alert: valueWasChanged && !isValid,
+                alert: valueWasChanged.current && !isValid,
             })}
         >
             <div className="form-fieldset__header">
