@@ -8,7 +8,7 @@ import { CreateTokenTransactionProp } from '@/modules/Builder/types'
 
 
 type Props = {
-    onDismiss(): void;
+    onDismiss: () => void;
 }
 
 
@@ -26,7 +26,7 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
             <div className="popup__wrap">
                 <button
                     type="button"
-                    className="btn popup-close"
+                    className="btn popup-close btn-icon"
                     onClick={onDismiss}
                 >
                     <Icon icon="close" />
@@ -36,7 +36,7 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                         id: 'BUILDER_CREATE_TRANSACTION_RECEIPT_POPUP_TITLE',
                     })}
                 </h2>
-                {!creatingToken.transaction[CreateTokenTransactionProp.SUCCESS] ? (
+                {creatingToken.transaction[CreateTokenTransactionProp.SUCCESS] ? (
                     <>
                         <div className="popup-main">
                             <div className="popup-main__name">

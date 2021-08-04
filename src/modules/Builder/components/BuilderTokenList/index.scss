@@ -70,3 +70,16 @@
         }
     }
 }
+
+.message {
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    &__text {
+        margin-bottom: 20px;
+    }
+}

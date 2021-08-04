@@ -1,3 +1,9 @@
+import {
+    action, IReactionDisposer, makeAutoObservable, reaction,
+} from 'mobx'
+import * as E from 'fp-ts/Either'
+import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
+
 import { DEFAULT_CREATE_TOKEN_STORE_DATA, DEFAULT_CREATE_TOKEN_STORE_STATE } from '@/modules/Builder/constants'
 import {
     CreateTokenStoreData,
@@ -6,14 +12,12 @@ import {
     CreateTokenStoreStateProp,
     CreateTokenTransactionProp,
     CreateTokenTransactionResult,
+    CreateTokenSuccessResult,
+    CreateTokenFailureResult,
 } from '@/modules/Builder/types'
-import { useWallet, WalletData, WalletService } from '@/stores/WalletService'
-import {
-    action, IReactionDisposer, makeAutoObservable, reaction, runInAction, toJS,
-} from 'mobx'
-import { Address, Contract } from 'ton-inpage-provider'
+import { useWallet, WalletService } from '@/stores/WalletService'
 import { DexConstants, TokenAbi } from '@/misc'
-import { error } from '@/utils'
+import { saveTokenToLocalStorage } from '@/modules/Builder/utils'
 
 export class CreateTokenStore {
 
@@ -37,6 +41,13 @@ export class CreateTokenStore {
      * @protected
      */
     protected transactionResult: CreateTokenTransactionResult | undefined = undefined
+
+    /**
+     * Internal builder transaction subscriber
+     * @type {Subscriber}
+     * @protected
+     */
+    protected transactionSubscriber: Subscriber | undefined
 
     /**
      *
@@ -75,19 +86,28 @@ export class CreateTokenStore {
         this.state[key] = value
     }
 
-    public init(): void {
-        this.#walletAccountDisposer = reaction(() => this.wallet.address, this.handleWalletAccountChange)
+    public async init(): Promise<void> {
+        if (this.transactionSubscriber !== undefined) {
+            await this.transactionSubscriber.unsubscribe()
+            this.transactionSubscriber = undefined
+        }
 
-        this.#transactionDisposer = reaction(() => this.wallet.transaction, this.handleTransactionResult)
+        this.transactionSubscriber = new Subscriber(ton)
+
+        this.#walletAccountDisposer = reaction(() => this.wallet.address, this.handleWalletAccountChange)
     }
 
     /**
      * Manually dispose all of the internal subscribers.
      * Clean reset creating token `data` to default values.
      */
-    public dispose(): void {
+    public async dispose(): Promise<void> {
+        if (this.transactionSubscriber !== undefined) {
+            await this.transactionSubscriber.unsubscribe()
+            this.transactionSubscriber = undefined
+        }
+
         this.#walletAccountDisposer?.()
-        this.#transactionDisposer?.()
         this.reset()
     }
 
@@ -111,7 +131,48 @@ export class CreateTokenStore {
     }
 
     /**
+     * Success transaction callback handler
+     * @param {CreateTokenSuccessResult['input']} input
+     * @param {CreateTokenFailureResult['transaction']} transaction
+     * @protected
+     */
+    protected handleCreateTokenSuccess({ input, transaction }: CreateTokenSuccessResult): void {
+        this.transactionResult = {
+            [CreateTokenTransactionProp.HASH]: transaction.id.hash,
+            [CreateTokenTransactionProp.ROOT]: input.token_root.toString(),
+            [CreateTokenTransactionProp.NAME]: this.name,
+            [CreateTokenTransactionProp.SYMBOL]: this.symbol,
+            [CreateTokenTransactionProp.SUCCESS]: true,
+        }
+
+        this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
+
+        this.data[CreateTokenStoreDataProp.NAME] = ''
+        this.data[CreateTokenStoreDataProp.SYMBOL] = ''
+        this.data[CreateTokenStoreDataProp.DECIMALS] = ''
+
+        saveTokenToLocalStorage(input.token_root.toString())
+    }
+
+    /**
+     * Failure transaction callback handler
+     * @param _
+     * @protected
+     */
+    protected handleCreateTokenFailure(_?: CreateTokenFailureResult): void {
+        this.transactionResult = {
+            [CreateTokenTransactionProp.SUCCESS]: false,
+        }
+
+        this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
+        this.data[CreateTokenStoreDataProp.NAME] = ''
+        this.data[CreateTokenStoreDataProp.SYMBOL] = ''
+        this.data[CreateTokenStoreDataProp.DECIMALS] = ''
+    }
+
+    /**
      *
+     * Manually start creating token processing
      * @returns {Promise<void>>}
      */
     public async createToken(): Promise<void> {
@@ -125,87 +186,74 @@ export class CreateTokenStore {
             return
         }
 
+        const processingId = (
+            Math.floor(
+                Math.random() * (100000 - 1),
+            ) + 1
+        ).toString()
+
         this.changeState(CreateTokenStoreStateProp.IS_CREATING, true)
 
-        await new Contract(TokenAbi.Factory, DexConstants.TokenFactoryAddress).methods.Token({
-            answer_id: 0,
-            root_public_key: 0,
-            root_owner_address: new Address(this.wallet.address),
-            name: btoa(this.name),
-            symbol: btoa(this.symbol),
-            decimals: this.decimals,
-        }).send({
-            from: new Address(this.wallet.address),
-            amount: '5000000000',
-            bounce: true,
-        })
-    }
-
-    /**
-     *
-     * @param {WalletData['transaction']} [transaction]
-     * @protected
-     */
-    protected async handleTransactionResult(transaction?: WalletData['transaction']): Promise<void> {
-        if (!this.wallet.address || !transaction?.inMessage.body) {
-            return
+        try {
+            await new Contract(TokenAbi.Factory, DexConstants.TokenFactoryAddress).methods.Token({
+                answer_id: processingId,
+                root_public_key: 0,
+                root_owner_address: new Address(this.wallet.address),
+                name: btoa(this.name),
+                symbol: btoa(this.symbol),
+                decimals: this.decimals,
+            }).send({
+                from: new Address(this.wallet.address),
+                amount: '5000000000',
+                bounce: true,
+            })
+        }
+        catch (reason) {
+            this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
         }
 
         const owner = new Contract(TokenAbi.TokenRootDeployCallbacks, new Address(this.wallet.address))
 
-        await owner.decodeTransaction({
-            transaction: toJS(transaction),
-            methods: [
-                'notifyTokenRootDeployed',
-                'notifyTokenRootNotDeployed',
-            ],
-        }).then(res => {
-            if (res?.method === 'notifyTokenRootNotDeployed') {
-                runInAction(() => {
-                    this.transactionResult = {
-                        [CreateTokenTransactionProp.SUCCESS]: false,
-                    }
+        let stream = this.transactionSubscriber?.transactions(
+            new Address(this.wallet.address),
+        )
 
-                    this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
-                    this.data[CreateTokenStoreDataProp.NAME] = ''
-                    this.data[CreateTokenStoreDataProp.SYMBOL] = ''
-                    this.data[CreateTokenStoreDataProp.DECIMALS] = ''
-                })
-            }
-            else if (res?.method === 'notifyTokenRootDeployed') {
-                runInAction(() => {
-                    this.transactionResult = {
-                        [CreateTokenTransactionProp.HASH]: transaction.id.hash,
-                        [CreateTokenTransactionProp.ROOT]: res.input.token_root.toString(),
-                        [CreateTokenTransactionProp.NAME]: this.name,
-                        [CreateTokenTransactionProp.SYMBOL]: this.symbol,
-                        [CreateTokenTransactionProp.SUCCESS]: true,
-                    }
+        const oldStream = this.transactionSubscriber?.oldTransactions(new Address(this.wallet.address), {
+            fromLt: this.wallet.contract?.lastTransactionId?.lt,
+        })
 
-                    this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
-                    this.data[CreateTokenStoreDataProp.NAME] = ''
-                    this.data[CreateTokenStoreDataProp.SYMBOL] = ''
-                    this.data[CreateTokenStoreDataProp.DECIMALS] = ''
-                })
+        if (stream !== undefined && oldStream !== undefined) {
+            stream = stream.merge(oldStream)
+        }
 
-                localStorage.setItem(
-                    'tokens',
-                    JSON.stringify([
-                        ...JSON.parse(localStorage.getItem('tokens') || '[]'),
-                        res.input.token_root.toString(),
-                    ]),
-                )
-            }
-        }).catch(reason => {
-            error('decodeTransaction error: ', reason)
-            runInAction(() => {
-                this.transactionResult = {
-                    [CreateTokenTransactionProp.SUCCESS]: true,
+        const resultHandler = stream?.flatMap(a => a.transactions).filterMap(async transaction => {
+            const result = await owner.decodeTransaction({
+                transaction,
+                methods: [
+                    'notifyTokenRootDeployed',
+                    'notifyTokenRootNotDeployed',
+                ],
+            })
+
+            if (result !== undefined) {
+                if (result.method === 'notifyTokenRootNotDeployed' && result.input.answer_id.toString() === processingId) {
+                    return E.left({ input: result.input })
                 }
 
-                this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
-            })
-        })
+                if (result.method === 'notifyTokenRootDeployed' && result.input.answer_id.toString() === processingId) {
+                    return E.right({ input: result.input, transaction })
+                }
+            }
+
+            return undefined
+        }).first()
+
+        if (resultHandler !== undefined) {
+            E.match(
+                (r: CreateTokenFailureResult) => this.handleCreateTokenFailure(r),
+                (r: CreateTokenSuccessResult) => this.handleCreateTokenSuccess(r),
+            )(await resultHandler)
+        }
     }
 
     /**
@@ -251,8 +299,6 @@ export class CreateTokenStore {
     }
 
     #walletAccountDisposer: IReactionDisposer | undefined
-
-    #transactionDisposer: IReactionDisposer | undefined
 
 }
 
