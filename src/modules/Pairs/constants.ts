@@ -41,6 +41,7 @@ export const DEFAULT_PAIR_STORE_STATE: PairStoreState = {
     isVolumeGraphLoading: false,
     timeframe: 'H1',
     transactionsCurrentPage: 1,
+    transactionsEventsType: [],
     transactionsLimit: 10,
     transactionsOrdering: 'blocktimedescending',
 }

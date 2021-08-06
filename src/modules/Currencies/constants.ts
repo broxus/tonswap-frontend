@@ -52,6 +52,7 @@ export const DEFAULT_CURRENCY_STORE_STATE: CurrencyStoreState = {
     pairsOrdering: 'tvldescending',
     timeframe: 'H1',
     transactionsCurrentPage: 1,
+    transactionsEventsType: [],
     transactionsLimit: 10,
     transactionsOrdering: 'blocktimedescending',
 }

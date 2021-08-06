@@ -484,6 +484,9 @@ export class CurrencyStore {
                     : 0,
                 ordering: this.transactionsOrdering,
             }
+            if (this.transactionsEvents.length > 0) {
+                body.eventType = this.transactionsEvents
+            }
             const response = await fetch(`${API_URL}/transactions`, {
                 body: JSON.stringify(body),
                 headers: {
@@ -510,6 +513,13 @@ export class CurrencyStore {
      */
     public get transactions(): CurrencyStoreData['transactionsData']['transactions'] {
         return this.data.transactionsData.transactions
+    }
+
+    /**
+     *
+     */
+    public get transactionsEvents(): CurrencyStoreState['transactionsEventsType'] {
+        return this.state.transactionsEventsType
     }
 
     /**

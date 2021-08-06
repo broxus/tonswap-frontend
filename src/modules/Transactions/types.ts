@@ -29,11 +29,13 @@ export type TransactionInfo = {
 
 export type EventType = 'swaplefttoright' | 'swaprighttoleft' | 'deposit' | 'withdraw'
 
+export type EventTypeFilter = 'all' | 'swaps' | 'deposit' | 'withdraw'
+
 export type TransactionsRequest = {
     createdAtGe?: number;
     createdAtLe?: number;
     currencyAddress?: string;
-    eventType?: EventType;
+    eventType?: EventType[];
     leftAmountGe?: string;
     leftAmountLe?: string;
     limit: number;

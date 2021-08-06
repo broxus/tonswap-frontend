@@ -6,14 +6,11 @@ import { Link, NavLink } from 'react-router-dom'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Icon } from '@/components/common/Icon'
-import { Pagination } from '@/components/common/Pagination'
 import { TokenIcon } from '@/components/common/TokenIcon'
+import { CurrencyPairs } from '@/modules/Currencies/components/CurrencyPairs'
+import { CurrencyTransactions } from '@/modules/Currencies/components/CurrencyTransactions'
 import { Stats } from '@/modules/Currencies/components/Stats'
-import { PairsList } from '@/modules/Pairs/components'
 import { useCurrencyStore } from '@/modules/Currencies/providers/CurrencyStoreProvider'
-import { PairsOrdering } from '@/modules/Pairs/types'
-import { TransactionsList } from '@/modules/Transactions/components'
-import { TransactionsOrdering } from '@/modules/Transactions/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { getChangesDirection, sliceAddress } from '@/utils'
 
@@ -28,56 +25,6 @@ function CurrencyInner(): JSX.Element {
     const token = React.useMemo(() => (
         store.currency?.address ? tokensCache.get(store.currency.address) : undefined
     ), [store.currency?.address, tokensCache.tokens])
-
-    const onPairsNextPage = async () => {
-        if (store.pairsCurrentPage < store.pairsTotalPages) {
-            store.changeState('pairsCurrentPage', store.pairsCurrentPage + 1)
-            await store.loadPairs()
-        }
-    }
-
-    const onPairsPrevPage = async () => {
-        if (store.pairsCurrentPage > 1) {
-            store.changeState('pairsCurrentPage', store.pairsCurrentPage - 1)
-            await store.loadPairs()
-        }
-    }
-
-    const onChangePairsPage = async (value: number) => {
-        store.changeState('pairsCurrentPage', value)
-        await store.loadPairs()
-    }
-
-    const onSwitchPairsOrdering = async (value: PairsOrdering) => {
-        store.changeState('pairsOrdering', value)
-        store.changeState('pairsCurrentPage', 1)
-        await store.loadPairs()
-    }
-
-    const onTransactionsNextPage = async () => {
-        if (store.transactionsCurrentPage < store.transactionsTotalPages) {
-            store.changeState('transactionsCurrentPage', store.transactionsCurrentPage + 1)
-            await store.loadTransactions()
-        }
-    }
-
-    const onTransactionsPrevPage = async () => {
-        if (store.transactionsCurrentPage > 1) {
-            store.changeState('transactionsCurrentPage', store.transactionsCurrentPage - 1)
-            await store.loadTransactions()
-        }
-    }
-
-    const onChangeTransactionsPage = async (value: number) => {
-        store.changeState('transactionsCurrentPage', value)
-        await store.loadTransactions()
-    }
-
-    const onSwitchTransactionsOrdering = async (value: TransactionsOrdering) => {
-        store.changeState('transactionsOrdering', value)
-        store.changeState('transactionsCurrentPage', 1)
-        await store.loadTransactions()
-    }
 
     return (
         <>
@@ -165,60 +112,9 @@ function CurrencyInner(): JSX.Element {
                 <Stats />
             </section>
 
-            <section className="section section--large">
-                <header className="section__header">
-                    <h2 className="section-title">
-                        {intl.formatMessage({
-                            id: 'CURRENCY_PAIRS_LIST_HEADER_TITLE',
-                        })}
-                    </h2>
-                </header>
+            <CurrencyPairs />
 
-                <div className="card card--small card--flat">
-                    <PairsList
-                        isLoading={store.isPairsLoading}
-                        offset={store.pairsLimit * (store.pairsCurrentPage - 1)}
-                        ordering={store.pairsOrdering}
-                        pairs={store.relatedPairs}
-                        onSwitchOrdering={onSwitchPairsOrdering}
-                    />
-
-                    <Pagination
-                        currentPage={store.pairsCurrentPage}
-                        totalPages={store.pairsTotalPages}
-                        onNext={onPairsNextPage}
-                        onPrev={onPairsPrevPage}
-                        onSubmit={onChangePairsPage}
-                    />
-                </div>
-            </section>
-
-            <section className="section section--large">
-                <header className="section__header">
-                    <h2 className="section-title">
-                        {intl.formatMessage({
-                            id: 'CURRENCY_TRANSACTIONS_LIST_HEADER_TITLE',
-                        })}
-                    </h2>
-                </header>
-
-                <div className="card card--small card--flat">
-                    <TransactionsList
-                        isLoading={store.isTransactionsLoading}
-                        ordering={store.transactionsOrdering}
-                        transactions={store.transactions}
-                        onSwitchOrdering={onSwitchTransactionsOrdering}
-                    />
-
-                    <Pagination
-                        currentPage={store.transactionsCurrentPage}
-                        totalPages={store.transactionsTotalPages}
-                        onNext={onTransactionsNextPage}
-                        onPrev={onTransactionsPrevPage}
-                        onSubmit={onChangeTransactionsPage}
-                    />
-                </div>
-            </section>
+            <CurrencyTransactions />
         </>
     )
 }

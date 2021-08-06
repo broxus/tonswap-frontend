@@ -4,7 +4,7 @@ import {
     TvlGraphModel,
     VolumeGraphModel,
 } from '@/modules/Chart/types'
-import { TransactionsInfoResponse, TransactionsOrdering } from '@/modules/Transactions/types'
+import { EventType, TransactionsInfoResponse, TransactionsOrdering } from '@/modules/Transactions/types'
 
 export type PairsOrdering =
     | 'tvlascending'
@@ -88,6 +88,7 @@ export type PairStoreState = {
     isVolumeGraphLoading: boolean;
     timeframe: Timeframe;
     transactionsCurrentPage: number;
+    transactionsEventsType: EventType[];
     transactionsLimit: number;
     transactionsOrdering?: TransactionsOrdering | undefined;
 }

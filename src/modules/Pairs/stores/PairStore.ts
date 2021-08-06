@@ -396,6 +396,9 @@ export class PairStore {
                 ordering: this.transactionsOrdering,
                 poolAddress: this.address,
             }
+            if (this.transactionsEvents.length > 0) {
+                body.eventType = this.transactionsEvents
+            }
             const response = await fetch(`${API_URL}/transactions`, {
                 body: JSON.stringify(body),
                 headers: {
@@ -429,6 +432,13 @@ export class PairStore {
      */
     public get transactionsCurrentPage(): PairStoreState['transactionsCurrentPage'] {
         return this.state.transactionsCurrentPage
+    }
+
+    /**
+     *
+     */
+    public get transactionsEvents(): PairStoreState['transactionsEventsType'] {
+        return this.state.transactionsEventsType
     }
 
     /**

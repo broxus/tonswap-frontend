@@ -266,4 +266,9 @@ export default {
     TRANSACTION_EVENT_WITHDRAW: 'Remove {leftSymbol} and {rightSymbol}',
     TRANSACTION_EVENT_SWAP_LEFT_TO_RIGHT: 'Swap {leftSymbol} to {rightSymbol}',
     TRANSACTION_EVENT_SWAP_RIGHT_TO_LEFT: 'Swap {rightSymbol} to {leftSymbol}',
+    TRANSACTIONS_LIST_EVENT_ALL: 'All',
+    TRANSACTIONS_LIST_EVENT_SWAPS: 'Swaps',
+    TRANSACTIONS_LIST_EVENT_DEPOSIT: 'Adds',
+    TRANSACTIONS_LIST_EVENT_WITHDRAW: 'Removes',
+
 }
