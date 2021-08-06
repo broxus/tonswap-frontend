@@ -2,7 +2,8 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 
-import { BuilderTokenList, FilterField } from '@/modules/Builder/components'
+import { BuilderTokensList } from '@/modules/Builder/components/BuilderTokensList'
+import { FilterField } from '@/modules/Builder/components/FilterField'
 import { useBuilderStore } from '@/modules/Builder/stores/BuilderStore'
 
 import './index.scss'
@@ -18,7 +19,7 @@ export function Builder(): JSX.Element {
         return () => {
             builder.dispose()
         }
-    })
+    }, [])
 
     return (
         <section className="builder section section--large">
@@ -38,9 +39,9 @@ export function Builder(): JSX.Element {
                 </div>
             </header>
 
-            <div className="card card--small">
+            <div className="card card--small card--flat">
                 <div className="card__wrap">
-                    <BuilderTokenList />
+                    <BuilderTokensList />
                 </div>
             </div>
         </section>

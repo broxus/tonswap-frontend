@@ -1,68 +1,9 @@
 .farming-list {
-    --farming-list-grid-template: 30% 1fr 1fr 200px 85px 70px;
-
-    display: flex;
-    flex-direction: column;
-    min-height: 400px;
-    overflow-x: scroll;
-    width: 100%;
-
-    &::-webkit-scrollbar {
-        width: 0;
-    }
-
-    &__header,
-    &__row {
-        align-items: center;
-        border-bottom: 1px solid rgb(255, 255, 255, 8%);
-        column-gap: 10px;
-        padding: 10px 0;
-
-        @media only screen and (min-width: 960px) {
-            display: grid;
-            grid-template-columns: var(--farming-list-grid-template);
-        }
-    }
-
-    @media only screen and (max-width: 959px) {
-        &__header {
-            display: none;
-        }
+    &.list {
+        --list-grid-template: minmax(30%, 60%) minmax(120px, 160px) minmax(120px, 160px) minmax(120px, 160px) 85px 70px;
     }
 
     &__cell {
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 20px;
-
-        &-inner {
-            align-items: center;
-            column-gap: 10px;
-            display: flex;
-
-            &-leader {
-                column-gap: 10px;
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                padding-top: 8px;
-
-                &-term {
-                    color: rgba(255, 255, 255, 48%);
-                    font-size: 14px;
-
-                    @media only screen and (min-width: 960px) {
-                        display: none;
-                    }
-                }
-
-                &-value { width: 100%; }
-            }
-        }
-
-        &--right {
-            text-align: right;
-        }
         &--expanded {
             align-items: center;
             background-color: #303552;
@@ -86,12 +27,6 @@
 
     &__trigger-cell {
         cursor: pointer;
-    }
-
-    &__header {
-        color: rgba(255, 255, 255, 48%);
-        font-size: 14px;
-        text-align: center;
     }
 
     &__token-name {

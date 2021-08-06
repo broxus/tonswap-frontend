@@ -1,0 +1,48 @@
+@import '~@/styles/_mix';
+
+.pagination {
+    align-items: center;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+
+    &__txt {
+        font-size: 14px;
+        letter-spacing: 0.75px;
+        line-height: 20px;
+    }
+
+    &__input {
+        @include input-reset;
+
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #ffffff;
+        font-size: 14px;
+        height: 40px;
+        letter-spacing: 0.75px;
+        line-height: 20px;
+        margin: 0 10px;
+        text-align: center;
+        width: 64px;
+
+        &:focus { border-color: #ffffff; }
+    }
+
+    &__btn.btn {
+        background: rgba(197, 228, 243, 0.16);
+        border: none;
+        border-radius: 0;
+        height: 40px;
+        margin-left: 10px;
+        outline: none;
+        padding: 0;
+        width: 40px;
+
+        &:hover:not(:disabled) {
+            background-color: #c5e4f3;
+            svg { fill: #293166; }
+        }
+
+        svg { fill: #c5e4f3; }
+    }
+}

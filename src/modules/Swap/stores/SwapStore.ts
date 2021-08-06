@@ -12,8 +12,6 @@ import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
 import { DexAbi, checkPair, TokenWallet } from '@/misc'
 import {
     DEFAULT_DECIMALS,
-    DEFAULT_LEFT_TOKEN_ROOT,
-    DEFAULT_RIGHT_TOKEN_ROOT,
     DEFAULT_SWAP_BILL,
     DEFAULT_SWAP_STORE_DATA,
     DEFAULT_SWAP_STORE_STATE,
@@ -91,16 +89,6 @@ export class SwapStore {
             handleSlippageChange: action.bound,
             handleTokensChange: action.bound,
             handleWalletAccountChange: action.bound,
-        })
-
-        reaction(() => this.tokensCache.tokens, () => {
-            if (!this.leftToken || this.leftToken.root === DEFAULT_LEFT_TOKEN_ROOT) {
-                this.changeData('leftToken', this.tokensCache.get(DEFAULT_LEFT_TOKEN_ROOT))
-            }
-
-            if (!this.rightToken || this.rightToken.root === DEFAULT_RIGHT_TOKEN_ROOT) {
-                this.changeData('rightToken', this.tokensCache.get(DEFAULT_RIGHT_TOKEN_ROOT))
-            }
         })
     }
 
@@ -292,7 +280,7 @@ export class SwapStore {
      * Manually revert tokens direction
      */
     public toggleTokensDirection(): void {
-        if (this.isLoading) {
+        if (this.isLoading || this.isSwapping) {
             return
         }
 
@@ -379,8 +367,8 @@ export class SwapStore {
 
             this.changeState('isEnoughLiquidity', !leftBN.isZero() && !rightBN.isZero())
 
-            const leftDecimals = this.leftToken?.decimals ?? DEFAULT_DECIMALS
-            const rightDecimals = this.rightToken?.decimals ?? DEFAULT_DECIMALS
+            const leftDecimals = this.leftToken?.decimals || DEFAULT_DECIMALS
+            const rightDecimals = this.rightToken?.decimals || DEFAULT_DECIMALS
 
             if (this.isEnoughLiquidity && this.direction === SwapDirection.RTL) {
                 if (this.isRightAmountValid) {
@@ -1130,8 +1118,8 @@ export class SwapStore {
 }
 
 
-const Swap = new SwapStore()
+const SwapStoreSingleton = new SwapStore()
 
-export function useSwap(): SwapStore {
-    return Swap
+export function useSwapStore(): SwapStore {
+    return SwapStoreSingleton
 }

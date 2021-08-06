@@ -14,7 +14,7 @@ import {
     SwapTransaction,
 } from '@/modules/Swap/components'
 import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
-import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { TokensList } from '@/modules/TokensList'
 
 import './index.scss'
@@ -22,7 +22,7 @@ import './index.scss'
 
 export function Swap(): JSX.Element {
     const intl = useIntl()
-    const swap = useSwap()
+    const swap = useSwapStore()
     const form = useSwapForm()
 
     return (
@@ -67,7 +67,7 @@ export function Swap(): JSX.Element {
                                     className={classNames('swap-icon', {
                                         disabled: swap.isLoading || swap.isSwapping,
                                     })}
-                                    onClick={swap.toggleTokensDirection}
+                                    onClick={form.toggleTokensDirection}
                                 >
                                     <Icon icon="reverse" />
                                 </div>

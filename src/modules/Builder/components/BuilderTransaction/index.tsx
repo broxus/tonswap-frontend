@@ -4,7 +4,6 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { useCreateTokenStore } from '@/modules/Builder/stores/CreateTokenStore'
-import { CreateTokenTransactionProp } from '@/modules/Builder/types'
 
 
 type Props = {
@@ -26,7 +25,7 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
             <div className="popup__wrap">
                 <button
                     type="button"
-                    className="btn popup-close btn-icon"
+                    className="btn btn-icon popup-close"
                     onClick={onDismiss}
                 >
                     <Icon icon="close" />
@@ -36,7 +35,7 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                         id: 'BUILDER_CREATE_TRANSACTION_RECEIPT_POPUP_TITLE',
                     })}
                 </h2>
-                {creatingToken.transaction[CreateTokenTransactionProp.SUCCESS] ? (
+                {creatingToken.transaction.success ? (
                     <>
                         <div className="popup-main">
                             <div className="popup-main__name">
@@ -51,10 +50,10 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                                 __html: intl.formatMessage({
                                     id: 'BUILDER_CREATE_TRANSACTION_RECEIPT_SUCCESSFUL_NOTE',
                                 }, {
-                                    transactionHash: creatingToken.transaction[CreateTokenTransactionProp.HASH],
-                                    address: creatingToken.transaction[CreateTokenTransactionProp.ROOT],
-                                    name: creatingToken.transaction[CreateTokenTransactionProp.NAME],
-                                    symbol: creatingToken.transaction[CreateTokenTransactionProp.SYMBOL],
+                                    transactionHash: creatingToken.transaction.hash,
+                                    address: creatingToken.transaction.root,
+                                    name: creatingToken.transaction.name,
+                                    symbol: creatingToken.transaction.symbol,
                                 }, {
                                     ignoreTag: true,
                                 }),

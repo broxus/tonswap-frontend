@@ -35,6 +35,10 @@ export type FarmingStoreData = {
     tokensCache: Map<string, FullContractState>;
 }
 
+export type FarmingStoreState = {
+    isLoading: boolean;
+}
+
 export type FarmingPoolStoreData = {
     adminDeposit: (string | undefined)[];
     adminWalletAddress: (string | undefined)[];

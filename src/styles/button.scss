@@ -59,11 +59,18 @@
         opacity: 0.5;
     }
 
+    &.btn-md {
+        font-size: 20px;
+        letter-spacing: 0.15px;
+        line-height: 48px;
+        padding: 0 24px;
+    }
+
     &.btn-lg {
         font-size: 20px;
         letter-spacing: 0.15px;
         line-height: 56px;
-        padding: 16px 20px;
+        padding: 0 20px;
     }
 
     &.btn-block {
@@ -94,6 +101,13 @@
         opacity: 0.5;
     }
 
+    &.btn-md {
+        font-size: 20px;
+        letter-spacing: 0.15px;
+        line-height: 48px;
+        padding: 0 24px;
+    }
+
     &.btn-lg {
         font-size: 20px;
         letter-spacing: 0.15px;
@@ -121,7 +135,6 @@
     display: inline-flex;
     height: auto;
     justify-content: center;
-    margin-left: 7px;
     opacity: 0.5;
     padding: 0;
     transition: opacity 0.15s ease-in-out;
@@ -131,6 +144,10 @@
     &:hover {
         color: #ffffff;
         opacity: 1;
+    }
+
+    &.btn-md {
+        padding: 0 24px;
     }
 }
 

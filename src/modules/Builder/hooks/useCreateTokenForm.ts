@@ -1,7 +1,7 @@
 import * as React from 'react'
 
-import { CreateTokenStoreData } from '@/modules/Builder/types'
 import { useCreateTokenStore } from '@/modules/Builder/stores/CreateTokenStore'
+import { CreateTokenStoreData } from '@/modules/Builder/types'
 
 
 type CreateTokenFormShape = {

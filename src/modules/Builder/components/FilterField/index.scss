@@ -1,9 +1,9 @@
 .filter-field {
     input {
-        width: 100%;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        font-size: 16px;
         height: 44px;
         padding: 8px 12px;
-        font-size: 16px;
-        border: 1px solid rgba(255, 255, 255, 0.24);
+        width: 100%;
     }
 }

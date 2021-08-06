@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { useSwapSettings } from '@/modules/Swap/hooks/useSwapSettings'
 
 import './index.scss'
@@ -11,7 +11,7 @@ import './index.scss'
 
 function Settings(): JSX.Element {
     const intl = useIntl()
-    const swap = useSwap()
+    const swap = useSwapStore()
     const settings = useSwapSettings()
 
     return (

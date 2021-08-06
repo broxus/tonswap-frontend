@@ -1,0 +1,30 @@
+.pair-tokens {
+    &-icons {
+        position: relative;
+        z-index: 2;
+
+        img {
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+        }
+
+        img + svg,
+        svg + img,
+        svg + svg,
+        img + img {
+            margin-left: -8px;
+            z-index: 2;
+        }
+    }
+
+    &-icon {
+        height: 32px;
+        width: 32px;
+    }
+
+    &-icons--small &-icon {
+        height: 24px;
+        width: 24px;
+    }
+}

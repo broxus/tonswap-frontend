@@ -63,7 +63,7 @@ export class PoolStore {
 
     /**
      * Last deposit liquidity transaction result data
-     * @type {DepositLiquidityResult | undefined}
+     * @type {DepositLiquidityReceipt | undefined}
      * @protected
      */
     protected depositLiquidityReceipt: DepositLiquidityReceipt | undefined = undefined

@@ -1,19 +1,20 @@
 import {
-    action, IReactionDisposer, makeAutoObservable, reaction,
+    IReactionDisposer,
+    action,
+    makeAutoObservable,
+    reaction,
 } from 'mobx'
 import ton, { Address, Contract } from 'ton-inpage-provider'
 
+import { isAddressValid, TokenAbi } from '@/misc'
 import {
     BuilderStoreData,
-    BuilderStoreDataProp,
     BuilderStoreState,
-    BuilderStoreStateProp,
     Token,
 } from '@/modules/Builder/types'
 import { DEFAULT_BUILDER_STORE_DATA, DEFAULT_BUILDER_STORE_STATE } from '@/modules/Builder/constants'
-import { useWallet, WalletService } from '@/stores/WalletService'
-import { TokenAbi } from '@/misc'
 import { getTokenFromLocalStorage, saveTokenToLocalStorage } from '@/modules/Builder/utils'
+import { useWallet, WalletService } from '@/stores/WalletService'
 
 
 export class BuilderStore {
@@ -75,36 +76,42 @@ export class BuilderStore {
 
     public async filterTokens(): Promise<void> {
         try {
-            this.changeState(BuilderStoreStateProp.IS_LOADING, false)
+            this.changeState('isLoading', true)
 
             if (this.data.filter === '') {
-                await this.loadTokensData().then(tokens => {
-                    this.changeData(BuilderStoreDataProp.TOKENS, tokens)
-                })
-
+                const tokens = await this.loadTokensData()
+                this.changeData('tokens', tokens)
                 return
             }
 
             const token = await this.loadTokenData(this.data.filter)
 
             if (token && token.root_owner_address.toString() === this.wallet.address) {
-                if (!getTokenFromLocalStorage().some((tokenFromLS: string) => tokenFromLS === this.data.filter)) {
+                if (
+                    !getTokenFromLocalStorage().some(
+                        (tokenFromLS: string) => tokenFromLS === this.data.filter,
+                    )
+                ) {
                     saveTokenToLocalStorage(this.data.filter)
                 }
 
-                this.changeData(BuilderStoreDataProp.TOKENS, [
-                    { ...token, name: atob(token.name), symbol: atob(token.symbol) },
+                this.changeData('tokens', [
+                    {
+                        ...token,
+                        name: atob(token.name),
+                        symbol: atob(token.symbol),
+                    },
                 ])
             }
             else {
-                this.changeData(BuilderStoreDataProp.TOKENS, [])
+                this.changeData('tokens', [])
             }
-
-            this.changeState(BuilderStoreStateProp.IS_LOADING, false)
         }
         catch (e) {
-            this.changeData(BuilderStoreDataProp.TOKENS, [])
-            this.changeState(BuilderStoreStateProp.IS_LOADING, false)
+            this.changeData('tokens', [])
+        }
+        finally {
+            this.changeState('isLoading', false)
         }
     }
 
@@ -113,34 +120,45 @@ export class BuilderStore {
             this.reset()
         }
 
-        await this.loadTokensData().then(tokens => {
-            this.changeData(BuilderStoreDataProp.TOKENS, tokens)
-
-        })
+        try {
+            const tokens = await this.loadTokensData()
+            this.changeData('tokens', tokens)
+        }
+        catch (e) {}
     }
 
     /**
      * Loads tokens data from localStorage
      * @protected
      */
-    protected async loadTokensData(): Promise<(Token)[]> {
-        const tokenRoots: string[] = getTokenFromLocalStorage().filter((token: string) => /^[0][:][0-9a-fA-F]{64}/.test(token))
+    protected async loadTokensData(): Promise<Token[]> {
+        const tokenRoots: string[] = getTokenFromLocalStorage().filter(
+            (token: string) => isAddressValid(token),
+        )
 
-        this.changeState(BuilderStoreStateProp.IS_LOADING, true)
+        this.changeState('isLoading', true)
 
+        let tokens: Token[] = []
 
-        const tokens = (await Promise.all(tokenRoots.map(tokenRoot => this.loadTokenData(tokenRoot))))
-            .map((token, index) => ({
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                ...token, name: atob(token!.name), symbol: atob(token!.symbol), root: tokenRoots[index],
+        try {
+            const result = await Promise.all(tokenRoots.map(tokenRoot => this.loadTokenData(tokenRoot)))
+            tokens = (result.filter((token, idx) => {
+                const _token = { ...token, root: tokenRoots[idx] }
+                return (
+                    Object.keys({ ..._token }).length > 1
+                    && _token?.root !== undefined
+                    && _token.root_owner_address?.toString() === this.wallet.address
+                )
+            }) as Token[]).map(token => ({
+                ...token,
+                name: atob((token as Token).name),
+                symbol: atob((token as Token).symbol),
             }))
-            .filter(
-                token => Object.keys(token).length > 1
-                    && token.root !== undefined
-                    && token.root_owner_address?.toString() === this.wallet.address,
-            ) as Token[]
-
-        this.changeState(BuilderStoreStateProp.IS_LOADING, false)
+        }
+        catch (e) {}
+        finally {
+            this.changeState('isLoading', false)
+        }
 
         return tokens
     }
@@ -170,7 +188,7 @@ export class BuilderStore {
                 .getDetails({ _answer_id: 0 })
                 .call({ cachedState: state })
 
-            return { ...value0, root }
+            return { ...value0, root } as unknown as Token
         }
 
         return undefined

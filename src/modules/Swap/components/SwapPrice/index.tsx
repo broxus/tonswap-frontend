@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
-import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { SwapDirection } from '@/modules/Swap/types'
 import { useWallet } from '@/stores/WalletService'
 import { amount } from '@/utils'
@@ -14,7 +14,7 @@ import './index.scss'
 
 function Price(): JSX.Element | null {
     const intl = useIntl()
-    const swap = useSwap()
+    const swap = useSwapStore()
     const wallet = useWallet()
 
     const onClickReverse = () => {

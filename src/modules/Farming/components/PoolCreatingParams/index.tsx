@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { useCreateFarmPoolStore } from '@/modules/Farming/stores/CreateFarmPoolStore'
 import { farmDeposit, farmSpeed } from '@/modules/Farming/utils'
 
@@ -39,14 +40,9 @@ function CreatingParams(): JSX.Element {
                                 })}
                             </div>
                             <div>
-                                <a
-                                    href={`https://ton-explorer.com/accounts/${creatingPool.farmToken.root}`}
-                                    title="Open in explorer"
-                                    target="_blank"
-                                    rel="nofollow noopener noreferrer"
-                                >
+                                <AccountExplorerLink address={creatingPool.farmToken.root}>
                                     {creatingPool.farmToken.symbol}
-                                </a>
+                                </AccountExplorerLink>
                             </div>
                         </div>
                     )}
@@ -140,14 +136,11 @@ function CreatingParams(): JSX.Element {
                                         })}
                                     </div>
                                     <div>
-                                        <a
-                                            href={`https://ton-explorer.com/accounts/${token.root}`}
-                                            title="Open in explorer"
-                                            target="_blank"
-                                            rel="nofollow noopener noreferrer"
-                                        >
-                                            {token.symbol}
-                                        </a>
+                                        {token.root !== undefined && (
+                                            <AccountExplorerLink address={token.root}>
+                                                {token.symbol}
+                                            </AccountExplorerLink>
+                                        )}
                                     </div>
                                 </div>
                             )}

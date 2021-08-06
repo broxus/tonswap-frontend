@@ -13,5 +13,12 @@
 
 .main {
     display: flex;
+    flex-direction: column;
     flex-grow: 1;
+    padding: 72px 16px;
+    width: 100%;
+
+    @media only screen and (max-width: 767px) {
+        padding: 32px 16px;
+    }
 }

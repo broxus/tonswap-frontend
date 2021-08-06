@@ -13,10 +13,10 @@ function SubmitButton(): JSX.Element {
     const creatingToken = useCreateTokenStore()
 
     const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
-        disabled: creatingToken.isBuilding,
+        disabled: creatingToken.isCreating,
     }
     let buttonText = intl.formatMessage({ id: 'BUILDER_CREATE_BTN_TEXT_SUBMIT' })
-    const showSpinner = creatingToken.isBuilding
+    const showSpinner = creatingToken.isCreating
 
 
     switch (true) {
