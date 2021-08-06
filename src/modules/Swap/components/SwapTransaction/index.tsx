@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { amount } from '@/utils'
 
 
@@ -15,7 +15,7 @@ type Props = {
 
 function Transaction({ onDismiss }: Props): JSX.Element | null {
     const intl = useIntl()
-    const swap = useSwap()
+    const swap = useSwapStore()
 
     if (swap.transaction == null) {
         return null

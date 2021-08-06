@@ -1,9 +1,10 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 
+import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { PoolForm } from '@/modules/Farming/components/PoolForm'
 import { FarmPool } from '@/modules/Farming/types'
-import { amount, sliceAddress } from '@/utils'
+import { amount } from '@/utils'
 
 import './index.scss'
 
@@ -121,14 +122,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                         })}
                     </div>
                     <div>
-                        <a
-                            href={`https://ton-explorer.com/accounts/${pool.address}`}
-                            title="Open in explorer"
-                            target="_blank"
-                            rel="nofollow noopener noreferrer"
-                        >
-                            {sliceAddress(pool.address)}
-                        </a>
+                        <AccountExplorerLink address={pool.address} />
                     </div>
                 </div>
                 <div className="farming-pool-details-table__row">
@@ -138,14 +132,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                         })}
                     </div>
                     <div>
-                        <a
-                            href={`https://ton-explorer.com/accounts/${pool.owner}`}
-                            title="Open in explorer"
-                            target="_blank"
-                            rel="nofollow noopener noreferrer"
-                        >
-                            {sliceAddress(pool.owner)}
-                        </a>
+                        <AccountExplorerLink address={pool.owner} />
                     </div>
                 </div>
                 <div className="farming-pool-details-table__row">
@@ -155,14 +142,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                         })}
                     </div>
                     <div>
-                        <a
-                            href={`https://ton-explorer.com/accounts/${pool.tokenRoot}`}
-                            title="Open in explorer"
-                            target="_blank"
-                            rel="nofollow noopener noreferrer"
-                        >
-                            {sliceAddress(pool.tokenRoot)}
-                        </a>
+                        <AccountExplorerLink address={pool.tokenRoot} />
                     </div>
                 </div>
                 {pool.rewardTokenSymbol.map((symbol, idx) => (
@@ -176,14 +156,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 })}
                             </div>
                             <div>
-                                <a
-                                    href={`https://ton-explorer.com/accounts/${pool.rewardTokenRoot[idx]}`}
-                                    title="Open in explorer"
-                                    target="_blank"
-                                    rel="nofollow noopener noreferrer"
-                                >
-                                    {sliceAddress(pool.rewardTokenRoot[idx])}
-                                </a>
+                                <AccountExplorerLink address={pool.rewardTokenRoot[idx]} />
                             </div>
                         </div>
                     </React.Fragment>
@@ -236,14 +209,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 })}
                             </div>
                             <div>
-                                <a
-                                    href={`https://ton-explorer.com/accounts/${pool.userDataAddress}`}
-                                    title="Open in explorer"
-                                    target="_blank"
-                                    rel="nofollow noopener noreferrer"
-                                >
-                                    {sliceAddress(pool.userDataAddress)}
-                                </a>
+                                <AccountExplorerLink address={pool.userDataAddress} />
                             </div>
                         </div>
                     </>

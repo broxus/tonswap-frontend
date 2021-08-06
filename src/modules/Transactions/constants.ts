@@ -1,0 +1,6 @@
+export const EVENTS_MESSAGES = {
+    swaplefttoright: 'TRANSACTION_EVENT_SWAP_LEFT_TO_RIGHT',
+    swaprighttoleft: 'TRANSACTION_EVENT_SWAP_RIGHT_TO_LEFT',
+    deposit: 'TRANSACTION_EVENT_DEPOSIT',
+    withdraw: 'TRANSACTION_EVENT_WITHDRAW',
+}

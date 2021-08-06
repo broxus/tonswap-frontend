@@ -15,7 +15,7 @@ import './index.scss'
 export function Farming(): JSX.Element {
     const intl = useIntl()
     const wallet = useWallet()
-    const farming = useFarmingStore()
+    const store = useFarmingStore()
 
     const connect = async () => {
         await wallet.connect()
@@ -23,10 +23,10 @@ export function Farming(): JSX.Element {
 
     React.useEffect(() => {
         (async () => {
-            await farming.init()
+            await store.init()
         })()
         return () => {
-            farming.dispose().catch(reason => error(reason))
+            store.dispose().catch(reason => error(reason))
         }
     }, [])
 
@@ -95,9 +95,12 @@ export function Farming(): JSX.Element {
                         </div>
                     </div>
                 ) : (
-                    <div className="card card--small">
+                    <div className="card card--small card--flat">
                         <div className="card__wrap">
-                            <PoolsList />
+                            <PoolsList
+                                isLoading={store.isLoading}
+                                pools={store.pools}
+                            />
                         </div>
                     </div>
                 ))}

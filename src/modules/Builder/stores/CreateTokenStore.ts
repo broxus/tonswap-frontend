@@ -1,23 +1,27 @@
 import {
-    action, IReactionDisposer, makeAutoObservable, reaction,
+    IReactionDisposer,
+    action,
+    makeAutoObservable,
+    reaction,
 } from 'mobx'
 import * as E from 'fp-ts/Either'
 import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
 
-import { DEFAULT_CREATE_TOKEN_STORE_DATA, DEFAULT_CREATE_TOKEN_STORE_STATE } from '@/modules/Builder/constants'
+import { DexConstants, TokenAbi } from '@/misc'
+import {
+    DEFAULT_CREATE_TOKEN_STORE_DATA,
+    DEFAULT_CREATE_TOKEN_STORE_STATE,
+} from '@/modules/Builder/constants'
 import {
     CreateTokenStoreData,
-    CreateTokenStoreDataProp,
     CreateTokenStoreState,
-    CreateTokenStoreStateProp,
-    CreateTokenTransactionProp,
     CreateTokenTransactionResult,
     CreateTokenSuccessResult,
     CreateTokenFailureResult,
 } from '@/modules/Builder/types'
-import { useWallet, WalletService } from '@/stores/WalletService'
-import { DexConstants, TokenAbi } from '@/misc'
 import { saveTokenToLocalStorage } from '@/modules/Builder/utils'
+import { useWallet, WalletService } from '@/stores/WalletService'
+
 
 export class CreateTokenStore {
 
@@ -138,18 +142,18 @@ export class CreateTokenStore {
      */
     protected handleCreateTokenSuccess({ input, transaction }: CreateTokenSuccessResult): void {
         this.transactionResult = {
-            [CreateTokenTransactionProp.HASH]: transaction.id.hash,
-            [CreateTokenTransactionProp.ROOT]: input.token_root.toString(),
-            [CreateTokenTransactionProp.NAME]: this.name,
-            [CreateTokenTransactionProp.SYMBOL]: this.symbol,
-            [CreateTokenTransactionProp.SUCCESS]: true,
+            hash: transaction.id.hash,
+            name: this.name,
+            root: input.token_root.toString(),
+            success: true,
+            symbol: this.symbol,
         }
 
-        this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
+        this.changeState('isCreating', false)
 
-        this.data[CreateTokenStoreDataProp.NAME] = ''
-        this.data[CreateTokenStoreDataProp.SYMBOL] = ''
-        this.data[CreateTokenStoreDataProp.DECIMALS] = ''
+        this.changeData('decimals', '')
+        this.changeData('name', '')
+        this.changeData('symbol', '')
 
         saveTokenToLocalStorage(input.token_root.toString())
     }
@@ -161,13 +165,13 @@ export class CreateTokenStore {
      */
     protected handleCreateTokenFailure(_?: CreateTokenFailureResult): void {
         this.transactionResult = {
-            [CreateTokenTransactionProp.SUCCESS]: false,
+            success: false,
         }
 
-        this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
-        this.data[CreateTokenStoreDataProp.NAME] = ''
-        this.data[CreateTokenStoreDataProp.SYMBOL] = ''
-        this.data[CreateTokenStoreDataProp.DECIMALS] = ''
+        this.changeState('isCreating', false)
+        this.changeData('decimals', '')
+        this.changeData('name', '')
+        this.changeData('symbol', '')
     }
 
     /**
@@ -182,7 +186,7 @@ export class CreateTokenStore {
             || !this.symbol
             || !this.decimals
         ) {
-            this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
+            this.changeState('isCreating', false)
             return
         }
 
@@ -192,7 +196,7 @@ export class CreateTokenStore {
             ) + 1
         ).toString()
 
-        this.changeState(CreateTokenStoreStateProp.IS_CREATING, true)
+        this.changeState('isCreating', true)
 
         try {
             await new Contract(TokenAbi.Factory, DexConstants.TokenFactoryAddress).methods.Token({
@@ -209,7 +213,7 @@ export class CreateTokenStore {
             })
         }
         catch (reason) {
-            this.changeState(CreateTokenStoreStateProp.IS_CREATING, false)
+            this.changeState('isCreating', false)
         }
 
         const owner = new Contract(TokenAbi.TokenRootDeployCallbacks, new Address(this.wallet.address))
@@ -268,30 +272,30 @@ export class CreateTokenStore {
 
     /**
      *
-     * @returns {CreateTokenStoreData[CreateTokenStoreDataProp.NAME]}
+     * @returns {CreateTokenStoreData['decimals']}
      */
-    public get name(): CreateTokenStoreData[CreateTokenStoreDataProp.NAME] {
-        return this.data[CreateTokenStoreDataProp.NAME]
+    public get decimals(): CreateTokenStoreData['decimals'] {
+        return this.data.decimals
     }
 
     /**
      *
-     * @returns {CreateTokenStoreData[CreateTokenStoreDataProp.SYMBOL]}
+     * @returns {CreateTokenStoreData['name']}
      */
-    public get symbol(): CreateTokenStoreData[CreateTokenStoreDataProp.SYMBOL] {
-        return this.data[CreateTokenStoreDataProp.SYMBOL]
+    public get name(): CreateTokenStoreData['name'] {
+        return this.data.name
     }
 
     /**
      *
-     * @returns {CreateTokenStoreData[CreateTokenStoreDataProp.NAME]}
+     * @returns {CreateTokenStoreData['symbol']}
      */
-    public get decimals(): CreateTokenStoreData[CreateTokenStoreDataProp.DECIMALS] {
-        return this.data[CreateTokenStoreDataProp.DECIMALS]
+    public get symbol(): CreateTokenStoreData['symbol'] {
+        return this.data.symbol
     }
 
-    public get isBuilding(): CreateTokenStoreState[CreateTokenStoreStateProp.IS_CREATING] {
-        return this.state[CreateTokenStoreStateProp.IS_CREATING]
+    public get isCreating(): CreateTokenStoreState['isCreating'] {
+        return this.state.isCreating
     }
 
     public get transaction(): CreateTokenTransactionResult | undefined {

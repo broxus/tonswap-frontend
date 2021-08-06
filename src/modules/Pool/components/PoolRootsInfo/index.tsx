@@ -2,8 +2,8 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { usePool } from '@/modules/Pool/stores/PoolStore'
-import { sliceAddress } from '@/utils'
 import { useDexAccount } from '@/stores/DexAccountService'
 
 
@@ -24,14 +24,7 @@ function RootsInfo(): JSX.Element {
                         </span>
                     </div>
                     <div className="list-bill__val">
-                        <a
-                            href={`https://ton-explorer.com/accounts/${dex.address}`}
-                            title="Open in explorer"
-                            target="_blank"
-                            rel="nofollow noopener noreferrer"
-                        >
-                            {sliceAddress(dex.address)}
-                        </a>
+                        <AccountExplorerLink address={dex.address} />
                     </div>
                 </div>
             ) : null}
@@ -45,14 +38,7 @@ function RootsInfo(): JSX.Element {
                         </span>
                     </div>
                     <div className="list-bill__val">
-                        <a
-                            href={`https://ton-explorer.com/accounts/${pool.lpRoot}`}
-                            title="Open in explorer"
-                            target="_blank"
-                            rel="nofollow noopener noreferrer"
-                        >
-                            {sliceAddress(pool.lpRoot)}
-                        </a>
+                        <AccountExplorerLink address={pool.lpRoot} />
                     </div>
                 </div>
             ) : null}
@@ -66,14 +52,7 @@ function RootsInfo(): JSX.Element {
                         </span>
                     </div>
                     <div className="list-bill__val">
-                        <a
-                            href={`https://ton-explorer.com/accounts/${pool.pairAddress}`}
-                            title="Open in explorer"
-                            target="_blank"
-                            rel="nofollow noopener noreferrer"
-                        >
-                            {sliceAddress(pool.pairAddress)}
-                        </a>
+                        <AccountExplorerLink address={pool.pairAddress} />
                     </div>
                 </div>
             ) : null}

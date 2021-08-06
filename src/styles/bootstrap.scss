@@ -15,10 +15,10 @@
 }
 
 hr {
-    margin: 1rem 0;
-    color: inherit;
     background-color: currentColor;
     border: 0;
+    color: inherit;
+    margin: 1rem 0;
     opacity: 0.25;
 }
 
@@ -32,10 +32,10 @@ h4, .h4,
 h3, .h3,
 h2, .h2,
 h1, .h1 {
-    margin-top: 0;
-    margin-bottom: 0.5rem;
     font-weight: 500;
     line-height: 1.2;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
 }
 
 h1, .h1 {
@@ -87,24 +87,24 @@ h6, .h6 {
 }
 
 p {
-    margin-top: 0;
     margin-bottom: 1rem;
+    margin-top: 0;
 }
 
 abbr[title],
 abbr[data-bs-original-title] {
-    text-decoration: underline;
-    -webkit-text-decoration: underline dotted;
-    text-decoration: underline dotted;
     cursor: help;
+    -webkit-text-decoration: underline dotted;
+    text-decoration: underline;
+    text-decoration: underline dotted;
     -webkit-text-decoration-skip-ink: none;
     text-decoration-skip-ink: none;
 }
 
 address {
-    margin-bottom: 1rem;
     font-style: normal;
     line-height: inherit;
+    margin-bottom: 1rem;
 }
 
 ol,
@@ -115,8 +115,8 @@ ul {
 ol,
 ul,
 dl {
-    margin-top: 0;
     margin-bottom: 1rem;
+    margin-top: 0;
 }
 
 ol ol,
@@ -149,15 +149,15 @@ small, .small {
 }
 
 mark, .mark {
-    padding: 0.2em;
     background-color: #fcf8e3;
+    padding: 0.2em;
 }
 
 sub,
 sup {
-    position: relative;
     font-size: 0.75em;
     line-height: 0;
+    position: relative;
     vertical-align: baseline;
 }
 
@@ -188,29 +188,29 @@ pre,
 code,
 kbd,
 samp {
+    direction: ltr;
     font-family: Consolas, monospace;
     font-size: 1em;
-    direction: ltr;
     unicode-bidi: bidi-override;
 }
 
 pre {
     display: block;
-    margin-top: 0;
-    margin-bottom: 1rem;
-    overflow: auto;
     font-size: 0.875em;
+    margin-bottom: 1rem;
+    margin-top: 0;
+    overflow: auto;
 }
 
 pre code {
-    font-size: inherit;
     color: inherit;
+    font-size: inherit;
     word-break: normal;
 }
 
 code {
-    font-size: 0.875em;
     color: #d63384;
+    font-size: 0.875em;
     word-wrap: break-word;
 }
 
@@ -219,17 +219,17 @@ a > code {
 }
 
 kbd {
-    padding: 0.2rem 0.4rem;
-    font-size: 0.875em;
-    color: #fff;
     background-color: #212529;
     border-radius: 0.2rem;
+    color: #ffffff;
+    font-size: 0.875em;
+    padding: 0.2rem 0.4rem;
 }
 
 kbd kbd {
-    padding: 0;
     font-size: 1em;
     font-weight: 700;
+    padding: 0;
 }
 
 figure {
@@ -242,14 +242,14 @@ svg {
 }
 
 table {
-    caption-side: bottom;
     border-collapse: collapse;
+    caption-side: bottom;
 }
 
 caption {
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
     color: #6c757d;
+    padding-bottom: 0.5rem;
+    padding-top: 0.5rem;
     text-align: left;
 }
 
@@ -287,10 +287,10 @@ button,
 select,
 optgroup,
 textarea {
-    margin: 0;
     font-family: inherit;
     font-size: inherit;
     line-height: inherit;
+    margin: 0;
 }
 
 button,
@@ -298,7 +298,7 @@ select {
     text-transform: none;
 }
 
-[role=button] {
+[role="button"] {
     cursor: pointer;
 }
 
@@ -311,22 +311,22 @@ select {
 }
 
 button,
-[type=button],
-[type=reset],
-[type=submit] {
+[type="button"],
+[type="reset"],
+[type="submit"] {
     -webkit-appearance: button;
 }
 
 button:not(:disabled),
-[type=button]:not(:disabled),
-[type=reset]:not(:disabled),
-[type=submit]:not(:disabled) {
+[type="button"]:not(:disabled),
+[type="reset"]:not(:disabled),
+[type="submit"]:not(:disabled) {
     cursor: pointer;
 }
 
 ::-moz-focus-inner {
-    padding: 0;
     border-style: none;
+    padding: 0;
 }
 
 textarea {
@@ -334,19 +334,19 @@ textarea {
 }
 
 fieldset {
+    border: 0;
+    margin: 0;
     min-width: 0;
     padding: 0;
-    margin: 0;
-    border: 0;
 }
 
 legend {
     float: left;
-    width: 100%;
-    padding: 0;
-    margin-bottom: 0.5rem;
     font-size: calc(1.275rem + 0.3vw);
     line-height: inherit;
+    margin-bottom: 0.5rem;
+    padding: 0;
+    width: 100%;
 }
 
 @media (min-width: 1200px) {
@@ -374,9 +374,9 @@ legend + * {
     height: auto;
 }
 
-[type=search] {
-    outline-offset: -2px;
+[type="search"] {
     -webkit-appearance: textfield;
+    outline-offset: -2px;
 }
 
 [type="tel"],
@@ -400,8 +400,8 @@ legend + * {
 }
 
 ::-webkit-file-upload-button {
-    font: inherit;
     -webkit-appearance: button;
+    font: inherit;
 }
 
 output {
@@ -413,8 +413,8 @@ iframe {
 }
 
 summary {
-    display: list-item;
     cursor: pointer;
+    display: list-item;
 }
 
 progress {

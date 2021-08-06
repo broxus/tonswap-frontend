@@ -1,12 +1,15 @@
 import * as React from 'react'
-import { BuilderStoreData } from '@/modules/Builder/types'
+
 import { useBuilderStore } from '@/modules/Builder/stores/BuilderStore'
+import { BuilderStoreData } from '@/modules/Builder/types'
 import { debounce } from '@/utils'
 
+
 type FilterFormShape = {
-    onChangeData: <K extends keyof BuilderStoreData>(key: K) => (value: BuilderStoreData[K]) => void;
     debouncedFilter: () => void;
+    onChangeData: <K extends keyof BuilderStoreData>(key: K) => (value: BuilderStoreData[K]) => void;
 }
+
 
 export function useFilterForm(): FilterFormShape {
     const builder = useBuilderStore()

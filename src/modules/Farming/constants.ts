@@ -6,12 +6,17 @@ import {
     FarmingPoolStoreData,
     FarmingPoolStoreState,
     FarmingStoreData,
+    FarmingStoreState,
 } from '@/modules/Farming/types'
 
 
 export const DEFAULT_FARMING_STORE_DATA: FarmingStoreData = {
     pools: [],
     tokensCache: new Map<string, FullContractState>(),
+}
+
+export const DEFAULT_FARMING_STORE_STATE: FarmingStoreState = {
+    isLoading: false,
 }
 
 export const DEFAULT_FARMING_POOL_STORE_DATA: FarmingPoolStoreData = {

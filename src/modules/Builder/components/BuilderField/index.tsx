@@ -2,15 +2,18 @@ import * as React from 'react'
 import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 
+
 type Props = {
     disabled?: boolean;
     label: string;
     type?: string;
     isValid?: boolean;
     pattern?: string;
+    placeholder?: string;
     value?: string;
     onChange?: (value: string) => void;
 };
+
 
 function Field({ type = 'text', isValid = true, ...props }: Props): JSX.Element {
     const valueWasChanged = React.useRef<boolean>(false)
@@ -36,6 +39,7 @@ function Field({ type = 'text', isValid = true, ...props }: Props): JSX.Element 
                     disabled={props.disabled}
                     type={type}
                     className="form-input"
+                    placeholder={props.placeholder}
                     value={props.value}
                     pattern={props.pattern}
                     onChange={onChange}

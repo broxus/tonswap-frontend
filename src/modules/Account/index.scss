@@ -1,51 +1,51 @@
 .tools {
     position: absolute;
-    top: 13px;
     right: 20px;
+    top: 13px;
 
     &__bar {
-        display: flex;
         align-items: center;
+        display: flex;
         justify-content: space-between;
     }
 
     @media only screen and (max-width: 767px) {
-        position: static;
-        padding: 12px 16px;
         background: linear-gradient(0deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08));
+        padding: 12px 16px;
+        position: static;
     }
 }
 
 button.tools-btn {
     @media only screen and (max-width: 767px) {
+        background-color: #c5e4f3;
+        color: #293166;
         display: block;
         width: 100%;
-        background-color: #C5E4F3;
-        color: #293166;
     }
 }
 
 .tools-ton {
-    padding: 10px 16px;
-    font-size: 14px;
-    line-height: 20px;
+    color: #ffffff;
     flex-wrap: wrap;
-    letter-spacing: .75px;
-    color: #fff;
+    font-size: 14px;
+    letter-spacing: 0.75px;
+    line-height: 20px;
+    padding: 10px 16px;
 
     @media only screen and (max-width: 767px) {
-        padding-left: 0;
         display: none;
+        padding-left: 0;
     }
 }
 
 .tools-wallet {
-    display: flex;
     align-items: center;
+    background: rgba(197, 228, 243, 0.16);
+    color: #c5e4f3;
+    display: flex;
     justify-content: center;
     padding: 8px 16px;
-    background: rgba(197, 228, 243, 0.16);
-    color: #C5E4F3;
 
     &:hover {
         background: rgba(197, 228, 243, 1);
@@ -53,9 +53,9 @@ button.tools-btn {
     }
 
     &__ava {
-        width: 24px;
         height: 24px;
         margin-right: 10px;
+        width: 24px;
 
         img {
             width: 100%;
@@ -63,22 +63,22 @@ button.tools-btn {
     }
 
     &__id {
-        white-space: nowrap;
         font-size: 14px;
+        letter-spacing: 0.75px;
         line-height: 20px;
-        letter-spacing: .75px;
+        white-space: nowrap;
     }
 }
 
 button.tools-context,
 button.tools-exit {
-    display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 3px;
-    margin-left: 10px;
+    background: rgba(197, 228, 243, 0.16);
     border-radius: 0;
-    background: rgba(197, 228, 243, .16);
+    display: flex;
+    justify-content: center;
+    margin-left: 10px;
+    padding: 3px;
 
     svg {
         fill: #c5e4f3;
@@ -100,8 +100,8 @@ button.tools-exit {
 }
 
 button.tools-context {
-    margin: 0;
     display: none;
+    margin: 0;
 
     @media only screen and (max-width: 767px) {
         display: flex;

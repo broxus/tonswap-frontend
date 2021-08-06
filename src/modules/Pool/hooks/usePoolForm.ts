@@ -1,8 +1,10 @@
 import * as React from 'react'
+import { reaction } from 'mobx'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { usePool } from '@/modules/Pool/stores/PoolStore'
 import { PoolStoreData, TokenSide } from '@/modules/Pool/types'
-import { TokenCache } from '@/stores/TokensCacheService'
+import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 import { debounce, error } from '@/utils'
 
 
@@ -20,6 +22,12 @@ type PoolFormShape = {
 
 export function usePoolForm(): PoolFormShape {
     const pool = usePool()
+    const {
+        leftTokenAddress,
+        rightTokenAddress,
+    } = useParams<{ leftTokenAddress: string, rightTokenAddress: string }>()
+    const history = useHistory()
+    const tokensCache = useTokensCache()
 
     const [isTokenListShown, setTokenListVisible] = React.useState(false)
 
@@ -54,10 +62,25 @@ export function usePoolForm(): PoolFormShape {
     }
 
     const onSelectToken = (token: TokenCache) => {
-        if (tokenSide) {
-            pool.changeData(tokenSide, token)
-            hideTokensList()
+        let pathname = '/pool'
+        if (tokenSide === 'leftToken') {
+            const rightTokenRoot = (pool.rightToken?.root !== undefined && pool.rightToken.root !== token.root)
+                ? `/${pool.rightToken.root}`
+                : ''
+            pathname += `/${token.root}${rightTokenRoot}`
         }
+        else if (
+            tokenSide === 'rightToken'
+            && pool.leftToken?.root !== undefined
+            && pool.leftToken.root !== token.root
+        ) {
+            pathname += `/${pool.leftToken.root}/${token.root}`
+        }
+        else if (tokenSide) {
+            pool.changeData(tokenSide, token)
+        }
+        history.push({ pathname })
+        hideTokensList()
     }
 
     const onDismissTransactionReceipt = () => {
@@ -68,10 +91,39 @@ export function usePoolForm(): PoolFormShape {
         (async () => {
             await pool.init()
         })()
+
+        // Initial update tokens state by the given uri params and after list of the tokens loaded
+        const tokensListDisposer = reaction(() => tokensCache.tokens, () => {
+            if (
+                (!pool.leftToken || pool.leftToken.root !== leftTokenAddress)
+                && tokensCache.get(leftTokenAddress) !== undefined
+            ) {
+                pool.changeData('leftToken', tokensCache.get(leftTokenAddress))
+            }
+
+            if (
+                (!pool.rightToken || pool.rightToken.root !== rightTokenAddress)
+                && tokensCache.get(rightTokenAddress) !== undefined
+            ) {
+                pool.changeData('rightToken', tokensCache.get(rightTokenAddress))
+            }
+        })
+
         return () => {
             pool.dispose().catch(reason => error(reason))
+            tokensListDisposer()
         }
     }, [])
+
+    // Update tokens state after change the uri params
+    React.useEffect(() => {
+        if (leftTokenAddress !== undefined && tokensCache.get(leftTokenAddress) !== undefined) {
+            pool.changeData('leftToken', tokensCache.get(leftTokenAddress))
+        }
+        if (rightTokenAddress !== undefined && tokensCache.get(rightTokenAddress) !== undefined) {
+            pool.changeData('rightToken', tokensCache.get(rightTokenAddress))
+        }
+    }, [leftTokenAddress, rightTokenAddress])
 
     return {
         isTokenListShown,

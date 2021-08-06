@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { useSwap } from '@/modules/Swap/stores/SwapStore'
+import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 
 type SwapSettingsShape = {
     popupRef: React.RefObject<HTMLDivElement>;
@@ -14,7 +14,7 @@ type SwapSettingsShape = {
 
 
 export function useSwapSettings(): SwapSettingsShape {
-    const swap = useSwap()
+    const swap = useSwapStore()
 
     const popupRef = React.useRef<HTMLDivElement>(null)
 

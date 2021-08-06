@@ -24,9 +24,9 @@ export function Item({ pool }: Props): JSX.Element {
 
     return (
         <>
-            <div className="farming-list__row">
-                <div className="farming-list__trigger-cell" onClick={toggleExpand}>
-                    <div className="farming-list__cell-inner">
+            <div className="list__row">
+                <div className="list__trigger-cell farming-list__trigger-cell" onClick={toggleExpand}>
+                    <div className="list__cell-inner">
                         <UserAvatar address={pool.tokenRoot} small />
                         <div>
                             <h3 className="farming-list__token-name">
@@ -56,27 +56,27 @@ export function Item({ pool }: Props): JSX.Element {
                         </div>
                     </div>
                 </div>
-                <div className="farming-list__cell farming-list__cell--right">
-                    <div className="farming-list__cell-inner-leader">
-                        <div className="farming-list__cell-inner-leader-term">
+                <div className="list__cell list__cell--right">
+                    <div className="list__cell-inner-leader">
+                        <div className="list__cell-inner-leader-term">
                             {intl.formatMessage({
                                 id: 'FARMING_LIST_HEADER_TVL_CELL',
                             })}
                         </div>
-                        <div className="farming-list__cell-inner-leader-value">
+                        <div className="list__cell-inner-leader-value">
                             $
                             {amount(pool.TVL, 0) || 0}
                         </div>
                     </div>
                 </div>
-                <div className="farming-list__cell farming-list__cell--right">
-                    <div className="farming-list__cell-inner-leader">
-                        <div className="farming-list__cell-inner-leader-term">
+                <div className="list__cell list__cell--right">
+                    <div className="list__cell-inner-leader">
+                        <div className="list__cell-inner-leader-term">
                             {intl.formatMessage({
                                 id: 'FARMING_LIST_HEADER_APY_CELL',
                             })}
                         </div>
-                        <div className="farming-list__cell-inner-leader-value">
+                        <div className="list__cell-inner-leader-value">
                             {amount(pool.APY, 0) || 0}
                             %
                         </div>
@@ -84,14 +84,14 @@ export function Item({ pool }: Props): JSX.Element {
                 </div>
                 <Observer>
                     {() => (
-                        <div className="farming-list__cell farming-list__cell--right">
-                            <div className="farming-list__cell-inner-leader">
-                                <div className="farming-list__cell-inner-leader-term">
+                        <div className="list__cell list__cell--right">
+                            <div className="list__cell-inner-leader">
+                                <div className="list__cell-inner-leader-term">
                                     {intl.formatMessage({
                                         id: 'FARMING_LIST_HEADER_REWARD_CELL',
                                     })}
                                 </div>
-                                <div className="farming-list__cell-inner-leader-value">
+                                <div className="list__cell-inner-leader-value">
                                     {pool.userReward.map((reward, idx) => (
                                         <div key={pool.rewardTokenSymbol[idx]}>
                                             {amount(
@@ -107,14 +107,14 @@ export function Item({ pool }: Props): JSX.Element {
                         </div>
                     )}
                 </Observer>
-                <div className="farming-list__cell farming-list__cell--right">
-                    <div className="farming-list__cell-inner-leader">
-                        <div className="farming-list__cell-inner-leader-term">
+                <div className="list__cell list__cell--right">
+                    <div className="list__cell-inner-leader">
+                        <div className="list__cell-inner-leader-term">
                             {intl.formatMessage({
                                 id: 'FARMING_LIST_HEADER_SHARE_CELL',
                             })}
                         </div>
-                        <div className="farming-list__cell-inner-leader-value">
+                        <div className="list__cell-inner-leader-value">
                             {amount(pool.userShare, 4) || 0}
                             %
                         </div>
@@ -122,7 +122,7 @@ export function Item({ pool }: Props): JSX.Element {
                 </div>
                 <div
                     className={classNames([
-                        'farming-list__cell',
+                        'list__cell',
                         'farming-list__cell--pool',
                         'farming-list__trigger-cell',
                     ], {
@@ -130,13 +130,14 @@ export function Item({ pool }: Props): JSX.Element {
                     })}
                     onClick={toggleExpand}
                 >
-                    <div className="farming-list__cell-inner-leader">
-                        <div className="farming-list__cell-inner-leader-value">
+                    <div className="list__cell-inner-leader">
+                        <div className="list__cell-inner-leader-value">
                             <UserAvatar address={pool.address} small />
                         </div>
                     </div>
                 </div>
             </div>
+
             {isExpand && (
                 <PoolDetails pool={pool} />
             )}

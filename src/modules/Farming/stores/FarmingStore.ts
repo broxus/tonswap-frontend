@@ -6,10 +6,12 @@ import {
     reaction,
     runInAction,
 } from 'mobx'
-import ton, { Address, Contract, TransactionId } from 'ton-inpage-provider'
+import ton, {
+    Address,
+    Contract,
+    TransactionId,
+} from 'ton-inpage-provider'
 
-import { DEFAULT_FARMING_STORE_DATA } from '@/modules/Farming/constants'
-import { FarmingStoreData, FarmPool } from '@/modules/Farming/types'
 import {
     Dex,
     DexConstants,
@@ -17,6 +19,8 @@ import {
     FarmAbi,
     TokenWallet,
 } from '@/misc'
+import { DEFAULT_FARMING_STORE_DATA, DEFAULT_FARMING_STORE_STATE } from '@/modules/Farming/constants'
+import { FarmingStoreData, FarmingStoreState, FarmPool } from '@/modules/Farming/types'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { filterEmpty, loadUniWTON } from '@/modules/Farming/utils'
 
@@ -28,6 +32,12 @@ export class FarmingStore {
      * @protected
      */
     protected data: FarmingStoreData = DEFAULT_FARMING_STORE_DATA
+
+    /**
+     *
+     * @protected
+     */
+    protected state: FarmingStoreState = DEFAULT_FARMING_STORE_STATE
 
     /**
      *
@@ -109,6 +119,8 @@ export class FarmingStore {
         let buffer: FarmPool[] = [],
             currentTx = beforeTx
 
+        this.state.isLoading = true
+
         // eslint-disable-next-line no-constant-condition
         while (true) {
             // eslint-disable-next-line no-await-in-loop
@@ -116,6 +128,9 @@ export class FarmingStore {
             buffer = buffer.concat(pools)
             currentTx = txId
             if (isEnd || buffer.length >= size) {
+                runInAction(() => {
+                    this.state.isLoading = false
+                })
                 break
             }
         }
@@ -452,6 +467,7 @@ export class FarmingStore {
                     }))).filter(filterEmpty)),
             ),
         )).reduce<FarmPool[]>((acc, x) => acc.concat(x), new Array<FarmPool>())
+
         return {
             pools,
             isEnd: (
@@ -523,8 +539,20 @@ export class FarmingStore {
     /**
      *
      */
-    public get pools(): FarmPool[] {
+    public get pools(): FarmingStoreData['pools'] {
         return this.data.pools
+    }
+
+    /*
+     * Memoized store state values
+     * ----------------------------------------------------------------------------------
+     */
+
+    /**
+     *
+     */
+    public get isLoading(): FarmingStoreState['isLoading'] {
+        return this.state.isLoading
     }
 
     /*

@@ -1,15 +1,14 @@
 import * as React from 'react'
-import { useIntl } from 'react-intl'
 import { Observer } from 'mobx-react-lite'
+import { useIntl } from 'react-intl'
 
 import {
     BuilderField,
     BuilderSubmitButton,
     BuilderTransaction,
 } from '@/modules/Builder/components'
-import { useCreateTokenStore } from '@/modules/Builder/stores/CreateTokenStore'
 import { useCreateTokenForm } from '@/modules/Builder/hooks/useCreateTokenForm'
-import { CreateTokenStoreDataProp } from '@/modules/Builder/types'
+import { useCreateTokenStore } from '@/modules/Builder/stores/CreateTokenStore'
 
 
 export function Create(): JSX.Element {
@@ -25,16 +24,21 @@ export function Create(): JSX.Element {
                         <h2 className="card-title">{intl.formatMessage({ id: 'BUILDER_CREATE_HEADER_TITLE' })}</h2>
                     </div>
 
-                    <div className="form">
+                    <div className="form form-builder">
                         <Observer>
                             {() => (
                                 <BuilderField
                                     key="nameField"
-                                    disabled={creatingToken.isBuilding}
-                                    label={intl.formatMessage({ id: 'BUILDER_CREATE_FIELD_LABEL_NAME' })}
+                                    disabled={creatingToken.isCreating}
+                                    label={intl.formatMessage({
+                                        id: 'BUILDER_CREATE_FIELD_LABEL_NAME',
+                                    })}
+                                    placeholder={intl.formatMessage({
+                                        id: 'BUILDER_CREATE_FIELD_PLACEHOLDER_NAME',
+                                    })}
                                     isValid={creatingToken.name.length > 0 && creatingToken.name.length < 255}
                                     value={creatingToken.name}
-                                    onChange={creatingTokenForm.onChangeData(CreateTokenStoreDataProp.NAME)}
+                                    onChange={creatingTokenForm.onChangeData('name')}
                                 />
                             )}
                         </Observer>
@@ -43,11 +47,16 @@ export function Create(): JSX.Element {
                             {() => (
                                 <BuilderField
                                     key="symbolField"
-                                    disabled={creatingToken.isBuilding}
-                                    label={intl.formatMessage({ id: 'BUILDER_CREATE_FIELD_LABEL_SYMBOL' })}
+                                    disabled={creatingToken.isCreating}
+                                    label={intl.formatMessage({
+                                        id: 'BUILDER_CREATE_FIELD_LABEL_SYMBOL',
+                                    })}
+                                    placeholder={intl.formatMessage({
+                                        id: 'BUILDER_CREATE_FIELD_PLACEHOLDER_SYMBOL',
+                                    })}
                                     isValid={creatingToken.symbol.length > 0 && creatingToken.symbol.length < 255}
                                     value={creatingToken.symbol}
-                                    onChange={creatingTokenForm.onChangeData(CreateTokenStoreDataProp.SYMBOL)}
+                                    onChange={creatingTokenForm.onChangeData('symbol')}
                                 />
                             )}
                         </Observer>
@@ -56,16 +65,21 @@ export function Create(): JSX.Element {
                             {() => (
                                 <BuilderField
                                     key="decimalsField"
-                                    disabled={creatingToken.isBuilding}
-                                    label={intl.formatMessage({ id: 'BUILDER_CREATE_FIELD_LABEL_DECIMALS' })}
                                     type="number"
+                                    disabled={creatingToken.isCreating}
+                                    label={intl.formatMessage({
+                                        id: 'BUILDER_CREATE_FIELD_LABEL_DECIMALS',
+                                    })}
+                                    placeholder={intl.formatMessage({
+                                        id: 'BUILDER_CREATE_FIELD_PLACEHOLDER_DECIMALS',
+                                    })}
                                     isValid={
                                         creatingToken.decimals.length > 0
                                         && (+creatingToken.decimals > 0 && +creatingToken.decimals <= 18)
                                     }
                                     pattern="^[0-9]+$"
                                     value={creatingToken.decimals}
-                                    onChange={creatingTokenForm.onChangeData(CreateTokenStoreDataProp.DECIMALS)}
+                                    onChange={creatingTokenForm.onChangeData('decimals')}
                                 />
                             )}
                         </Observer>

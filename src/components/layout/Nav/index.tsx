@@ -12,70 +12,42 @@ export function Nav(): JSX.Element {
         <nav className="main-nav">
             <ul>
                 <li>
-                    <NavLink
-                        activeClassName="active"
-                        to="/swap"
-                    >
+                    <NavLink to="/swap">
                         {intl.formatMessage({
                             id: 'NAV_LINK_TEXT_SWAP',
                         })}
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink
-                        activeClassName="active"
-                        to="/pool"
-                    >
+                    <NavLink to="/pool">
                         {intl.formatMessage({
                             id: 'NAV_LINK_TEXT_POOL',
                         })}
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink
-                        activeClassName="active"
-                        to="/tokens"
-                    >
+                    <NavLink to="/tokens">
                         {intl.formatMessage({
                             id: 'NAV_LINK_TEXT_TOKENS',
                         })}
-                        <sup>
-                            {intl.formatMessage({
-                                id: 'NAV_LINK_SOON_HINT',
-                            })}
-                        </sup>
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink
-                        activeClassName="active"
-                        to="/pairs"
-                    >
+                    <NavLink to="/pairs">
                         {intl.formatMessage({
                             id: 'NAV_LINK_TEXT_PAIRS',
                         })}
-                        <sup>
-                            {intl.formatMessage({
-                                id: 'NAV_LINK_SOON_HINT',
-                            })}
-                        </sup>
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink
-                        activeClassName="active"
-                        to="/farming"
-                    >
+                    <NavLink to="/farming">
                         {intl.formatMessage({
                             id: 'NAV_LINK_TEXT_FARMING',
                         })}
                     </NavLink>
                 </li>
                 <li>
-                    <NavLink
-                        activeClassName="active"
-                        to="/builder"
-                    >
+                    <NavLink to="/builder">
                         {intl.formatMessage({
                             id: 'NAV_LINK_TEXT_BUILDER',
                         })}

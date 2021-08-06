@@ -9,6 +9,10 @@
         padding: 32px;
     }
 
+    &--flat {
+        border-radius: 0;
+    }
+
     &__header {
         align-items: center;
         display: flex;

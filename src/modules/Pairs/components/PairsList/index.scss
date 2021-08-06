@@ -1,0 +1,22 @@
+.pairs-list {
+    &.list {
+        --list-grid-template: 50px minmax(30%, 60%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
+    }
+
+    &__token {
+        &-name {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            margin: 0;
+            white-space: nowrap;
+        }
+    }
+
+    &__token-subname {
+        font-size: 12px;
+        letter-spacing: 0.4px;
+        line-height: 16px;
+        opacity: 0.5;
+    }
+}

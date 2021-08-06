@@ -12,12 +12,16 @@ import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
 import messages from '@/lang/en'
 import { Account } from '@/modules/Account'
-import Farming from '@/pages/farming'
-import CreateFarmPool from '@/pages/farming/create'
-import Pool from '@/pages/pool'
 import Builder from '@/pages/builder'
 import CreateToken from '@/pages/builder/create'
+import Farming from '@/pages/farming'
+import CreateFarmPool from '@/pages/farming/create'
+import Pairs from '@/pages/pairs'
+import Pair from '@/pages/pairs/item'
+import Pool from '@/pages/pool'
 import Swap from '@/pages/swap'
+import Tokens from '@/pages/tokens'
+import Token from '@/pages/tokens/item'
 import { noop } from '@/utils'
 
 import './App.scss'
@@ -40,10 +44,10 @@ export function App(): JSX.Element {
                             <Route exact path="/">
                                 <Redirect exact to="/swap" />
                             </Route>
-                            <Route exact path="/swap">
+                            <Route path="/swap/:leftTokenAddress([0][:][0-9a-f]{64})?/:rightTokenAddress([0][:][0-9a-f]{64})?">
                                 <Swap />
                             </Route>
-                            <Route exact path="/pool">
+                            <Route exact path="/pool/:leftTokenAddress([0][:][0-9a-f]{64})?/:rightTokenAddress([0][:][0-9a-f]{64})?">
                                 <Pool />
                             </Route>
                             <Route exact path="/farming">
@@ -51,6 +55,18 @@ export function App(): JSX.Element {
                             </Route>
                             <Route exact path="/farming/create">
                                 <CreateFarmPool />
+                            </Route>
+                            <Route exact path="/tokens">
+                                <Tokens />
+                            </Route>
+                            <Route exact path="/tokens/:address">
+                                <Token />
+                            </Route>
+                            <Route exact path="/pairs">
+                                <Pairs />
+                            </Route>
+                            <Route exact path="/pairs/:poolAddress">
+                                <Pair />
                             </Route>
                             <Route exact path="/builder">
                                 <Builder />
