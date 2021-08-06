@@ -1,12 +1,21 @@
 import * as React from 'react'
 import {
     createChart,
+    ChartOptions,
+    DeepPartial,
     IChartApi,
     ISeriesApi,
     SeriesType,
 } from 'lightweight-charts'
 
-import { chartStyles } from '@/modules/Chart/styles'
+import {
+    areaOptions,
+    areaStyles,
+    candlesticksStyles,
+    chartOptions,
+    histogramOptions,
+    histogramStyles,
+} from '@/modules/Chart/styles'
 import {
     CandlestickGraphShape,
     CommonGraphShape,
@@ -17,6 +26,7 @@ import { debounce } from '@/utils'
 
 type Props = {
     data: CommonGraphShape[] | CandlestickGraphShape[];
+    options?: DeepPartial<ChartOptions>;
     timeframe: Timeframe;
     type: SeriesType;
     load: (from?: number, to?: number) => Promise<void>;
@@ -25,6 +35,7 @@ type Props = {
 
 export function Chart({
     data,
+    options,
     timeframe,
     type,
     load,
@@ -82,67 +93,23 @@ export function Chart({
             chart.current = createChart(chartRef.current, {
                 height: chartRef.current.clientHeight,
                 width: chartRef.current.clientWidth,
-                timeScale: {
-                    secondsVisible: false,
-                    timeVisible: true,
-                },
-                ...chartStyles,
+                ...chartOptions,
+                ...options,
             })
 
             if (type === 'Area') {
-                chart.current?.applyOptions({
-                    rightPriceScale: {
-                        autoScale: true,
-                        borderVisible: false,
-                    },
-                    grid: {
-                        horzLines: {
-                            color: 'rgba(255, 255, 255, 0.05)',
-                        },
-                        vertLines: {
-                            color: 'rgba(0, 0, 0, 0)',
-                        },
-                    },
-                })
-                setSeries(chart.current?.addAreaSeries({
-                    topColor: 'rgba(197, 228, 243, 0.16)',
-                    bottomColor: 'rgba(197, 228, 243, 0)',
-                    lineColor: '#c5e4f3',
-                    lineWidth: 1,
-                }))
+                chart.current?.applyOptions(areaOptions)
+                setSeries(chart.current?.addAreaSeries(areaStyles))
             }
             else if (type === 'Bar') {
                 setSeries(chart.current?.addBarSeries())
             }
             else if (type === 'Candlestick') {
-                setSeries(chart.current?.addCandlestickSeries())
+                setSeries(chart.current?.addCandlestickSeries(candlesticksStyles))
             }
             else if (type === 'Histogram') {
-                chart.current?.applyOptions({
-                    rightPriceScale: {
-                        autoScale: true,
-                        borderVisible: false,
-                    },
-                    grid: {
-                        horzLines: {
-                            color: 'rgba(255, 255, 255, 0.05)',
-                        },
-                        vertLines: {
-                            color: 'rgba(0, 0, 0, 0)',
-                        },
-                    },
-                })
-                setSeries(chart.current?.addHistogramSeries({
-                    color: '#c5e4f3',
-                    priceFormat: {
-                        type: 'volume',
-                    },
-                    priceScaleId: '',
-                    scaleMargins: {
-                        top: 0,
-                        bottom: 0.03,
-                    },
-                }))
+                chart.current?.applyOptions(histogramOptions)
+                setSeries(chart.current?.addHistogramSeries(histogramStyles))
             }
             else if (type === 'Line') {
                 setSeries(chart.current?.addLineSeries())
@@ -156,13 +123,15 @@ export function Chart({
                 await load?.()
 
                 if (chart.current !== undefined) {
-                    chart.current?.timeScale().resetTimeScale()
-                    chart.current?.timeScale().scrollToRealTime()
-                    chart.current?.timeScale().fitContent()
+                    setTimeout(() => {
+                        chart.current?.timeScale().resetTimeScale()
+                        // chart.current?.timeScale().scrollToRealTime()
+                        chart.current?.timeScale().fitContent()
+                    }, 10)
                 }
             }
         })()
-    }, [timeframe])
+    }, [data, chart.current, timeframe])
 
     React.useEffect(() => {
         if (chart.current !== undefined) {

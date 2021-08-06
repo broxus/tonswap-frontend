@@ -112,11 +112,12 @@ function CurrencyInner(): JSX.Element {
                 <Stats />
             </section>
 
-            <CurrencyPairs />
+            <CurrencyPairs key="pairs" />
 
-            <CurrencyTransactions />
+            <CurrencyTransactions key="transactions" />
         </>
     )
 }
+
 
 export const Currency = observer(CurrencyInner)

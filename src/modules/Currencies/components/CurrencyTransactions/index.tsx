@@ -4,15 +4,15 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Pagination } from '@/components/common/Pagination'
+import { useCurrencyStore } from '@/modules/Currencies/providers/CurrencyStoreProvider'
 import { TransactionsList } from '@/modules/Transactions/components'
 import { EventTypeFilter, TransactionsOrdering } from '@/modules/Transactions/types'
-import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 function Transactions(): JSX.Element {
     const intl = useIntl()
-    const store = usePairStore()
+    const store = useCurrencyStore()
 
     const onNextPage = async () => {
         if (store.transactionsCurrentPage < store.transactionsTotalPages) {

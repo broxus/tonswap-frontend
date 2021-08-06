@@ -202,6 +202,28 @@ export function Stats(): JSX.Element {
                                             })}
                                         </a>
                                     </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'ohlcv',
+                                        })}
+                                    >
+                                        <a onClick={toggleGraph('ohlcv')}>
+                                            {baseToken?.symbol}
+                                            /
+                                            {counterToken?.symbol}
+                                        </a>
+                                    </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'ohlcv-inverse',
+                                        })}
+                                    >
+                                        <a onClick={toggleGraph('ohlcv-inverse')}>
+                                            {counterToken?.symbol}
+                                            /
+                                            {baseToken?.symbol}
+                                        </a>
+                                    </li>
                                 </ul>
                             </>
                         )}
@@ -228,6 +250,34 @@ export function Stats(): JSX.Element {
                                     timeframe={store.timeframe}
                                     type="Area"
                                     load={store.loadTvlGraph}
+                                />
+                            )}
+
+                            {store.graph === 'ohlcv' && (
+                                <Chart
+                                    key="ohlcvGraph"
+                                    data={store.ohlcvGraphData}
+                                    timeframe={store.timeframe}
+                                    type="Candlestick"
+                                    load={store.loadOhlcvGraph}
+                                />
+                            )}
+
+                            {store.graph === 'ohlcv-inverse' && (
+                                <Chart
+                                    key="ohlcvInverseGraph"
+                                    data={store.ohlcvGraphData}
+                                    options={{
+                                        localization: {
+                                            priceFormatter: (value: number) => (1 / value).toFixed(2),
+                                        },
+                                        rightPriceScale: {
+                                            invertScale: true,
+                                        },
+                                    }}
+                                    timeframe={store.timeframe}
+                                    type="Candlestick"
+                                    load={store.loadOhlcvGraph}
                                 />
                             )}
                         </div>

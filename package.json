@@ -14,6 +14,7 @@
     "dependencies": {
         "@broxus/await-semaphore": "^0.1.4",
         "@types/lodash.isequal": "^4.5.5",
+        "@types/lodash.uniqby":  "^4.7.6",
         "@types/luxon": "^1.27.1",
         "@types/react": "^17.0.16",
         "@types/react-dom": "^17.0.9",
@@ -23,6 +24,7 @@
         "fp-ts": "^2.11.1",
         "lightweight-charts": "^3.5.0",
         "lodash.isequal": "^4.5.0",
+        "lodash.uniqby": "^4.7.0",
         "luxon": "^2.0.1",
         "mobx": "^6.3.2",
         "mobx-react-lite": "^3.2.0",

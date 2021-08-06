@@ -144,4 +144,5 @@ function Transactions(): JSX.Element {
     )
 }
 
+
 export const PairTransactions = observer(Transactions)

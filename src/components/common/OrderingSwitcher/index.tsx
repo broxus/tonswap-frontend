@@ -6,7 +6,7 @@ import './index.scss'
 
 type Props<T> = {
     ascending: T;
-    children: React.ReactChild;
+    children: React.ReactChild | React.ReactChild[];
     descending: T;
     value: T | undefined;
     onSwitch: (value: T) => void;

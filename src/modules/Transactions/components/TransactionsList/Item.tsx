@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { useIntl } from 'react-intl'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
+import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 import { TransactionInfo } from '@/modules/Transactions/types'
 import { EVENTS_MESSAGES } from '@/modules/Transactions/constants'
 import { useTokensCache } from '@/stores/TokensCacheService'
@@ -50,7 +51,9 @@ export function Item({ transaction }: Props): JSX.Element {
     return (
         <div className="list__row">
             <div className="list__cell list__cell--left">
-                {transactionEvent}
+                <TransactionExplorerLink id={transaction.transactionHash}>
+                    {transactionEvent}
+                </TransactionExplorerLink>
             </div>
             <div className="list__cell list__cell--right">
                 {totalValue}
@@ -65,7 +68,9 @@ export function Item({ transaction }: Props): JSX.Element {
                 <AccountExplorerLink address={transaction.userAddress} />
             </div>
             <div className="list__cell list__cell--right hide-540">
-                {DateTime.fromSeconds(transaction.timestampBlock).toRelative()}
+                <TransactionExplorerLink id={transaction.transactionHash}>
+                    {DateTime.fromSeconds(transaction.timestampBlock).toRelative()}
+                </TransactionExplorerLink>
             </div>
         </div>
     )

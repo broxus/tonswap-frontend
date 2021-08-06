@@ -80,7 +80,7 @@ export type PairStoreData = {
 }
 
 export type PairStoreState = {
-    graph: 'ohlcv' | 'tvl' | 'volume'
+    graph: 'ohlcv' | 'ohlcv-inverse' | 'tvl' | 'volume'
     isLoading: boolean;
     isOhlcvGraphLoading: boolean;
     isTransactionsLoading: boolean;

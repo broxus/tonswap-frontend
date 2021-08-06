@@ -5,23 +5,23 @@ import { sliceAddress } from '@/utils'
 
 
 type Props = {
-    address: string;
     children?: React.ReactChild | React.ReactChild[] | null;
     className?: string;
+    id: string;
 }
 
-export function AccountExplorerLink({ address, children, className }: Props): JSX.Element {
+export function TransactionExplorerLink({ children, className, id }: Props): JSX.Element {
     const intl = useIntl()
 
     return (
         <a
             className={className}
-            href={`https://ton-explorer.com/accounts/${address}`}
+            href={`https://ton-explorer.com/transactions/${id}`}
             title={intl.formatMessage({ id: 'OPEN_IN_EXPLORER' })}
             target="_blank"
             rel="noopener noreferrer"
         >
-            {children || sliceAddress(address)}
+            {children || sliceAddress(id)}
         </a>
     )
 }

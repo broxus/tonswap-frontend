@@ -6,6 +6,7 @@ import {
     makeAutoObservable,
     reaction,
 } from 'mobx'
+import uniqBy from 'lodash.uniqby'
 
 import { API_URL } from '@/constants'
 import {
@@ -362,7 +363,7 @@ export class CurrencyStore {
      *
      */
     public get volumeGraphData(): CommonGraphShape[] {
-        return this.graphData.volume.map<CommonGraphShape>(item => ({
+        return uniqBy(this.graphData.volume, 'timestamp').map<CommonGraphShape>(item => ({
             time: (item.timestamp / 1000) as UTCTimestamp,
             value: item.data,
         }))
@@ -372,7 +373,7 @@ export class CurrencyStore {
      *
      */
     public get tvlGraphData(): CommonGraphShape[] {
-        return this.graphData.tvl.map<CommonGraphShape>(item => ({
+        return uniqBy(this.graphData.tvl, 'timestamp').map<CommonGraphShape>(item => ({
             time: (item.timestamp / 1000) as UTCTimestamp,
             value: item.data,
         }))

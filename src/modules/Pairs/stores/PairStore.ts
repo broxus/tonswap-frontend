@@ -1,8 +1,12 @@
 import { UTCTimestamp } from 'lightweight-charts'
 import { DateTime } from 'luxon'
 import {
-    action, IReactionDisposer, makeAutoObservable, reaction,
+    IReactionDisposer,
+    action,
+    makeAutoObservable,
+    reaction,
 } from 'mobx'
+import uniqBy from 'lodash.uniqby'
 
 import { API_URL } from '@/constants'
 import {
@@ -341,7 +345,7 @@ export class PairStore {
      *
      */
     public get ohlcvGraphData(): CandlestickGraphShape[] {
-        return this.graphData.ohlcv.map<CandlestickGraphShape>(item => ({
+        return uniqBy(this.graphData.ohlcv, 'timestamp').map<CandlestickGraphShape>(item => ({
             close: item.close,
             high: item.high,
             low: item.low,
@@ -354,7 +358,7 @@ export class PairStore {
      *
      */
     public get volumeGraphData(): CommonGraphShape[] {
-        return this.graphData.volume.map<CommonGraphShape>(item => ({
+        return uniqBy(this.graphData.volume, 'timestamp').map<CommonGraphShape>(item => ({
             time: (item.timestamp / 1000) as UTCTimestamp,
             value: item.data,
         }))
@@ -364,7 +368,7 @@ export class PairStore {
      *
      */
     public get tvlGraphData(): CommonGraphShape[] {
-        return this.graphData.tvl.map<CommonGraphShape>(item => ({
+        return uniqBy(this.graphData.tvl, 'timestamp').map<CommonGraphShape>(item => ({
             time: (item.timestamp / 1000) as UTCTimestamp,
             value: item.data,
         }))
