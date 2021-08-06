@@ -1,10 +1,10 @@
 import * as React from 'react'
+import classNames from 'classnames'
 
-import { UserAvatar } from '@/components/common/UserAvatar'
 import { TokenCache } from '@/stores/TokensCacheService'
 
 import './index.scss'
-import classNames from 'classnames'
+import { TokenIcon } from '@/components/common/TokenIcon'
 
 
 type Props = {
@@ -21,24 +21,20 @@ export function PairIcons({ leftToken, rightToken, small }: Props): JSX.Element 
                 'pair-tokens-icons--small': small,
             })}
         >
-            {leftToken?.icon !== undefined ? (
-                <img
-                    src={leftToken.icon}
-                    alt={leftToken.name}
-                    className="pair-tokens-icon"
-                />
-            ) : leftToken?.root !== undefined && (
-                <UserAvatar address={leftToken.root} small />
-            )}
-            {rightToken?.icon !== undefined ? (
-                <img
-                    src={rightToken.icon}
-                    alt={rightToken.name}
-                    className="pair-tokens-icon"
-                />
-            ) : rightToken?.root !== undefined && (
-                <UserAvatar address={rightToken.root} small />
-            )}
+            <TokenIcon
+                address={leftToken?.root}
+                className="pair-tokens-icon"
+                name={leftToken?.name}
+                small
+                uri={leftToken?.icon}
+            />
+            <TokenIcon
+                address={rightToken?.root}
+                className="pair-tokens-icon"
+                name={rightToken?.name}
+                small
+                uri={rightToken?.icon}
+            />
         </div>
     )
 }

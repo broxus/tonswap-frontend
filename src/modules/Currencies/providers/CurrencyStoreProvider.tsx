@@ -21,7 +21,6 @@ export function CurrencyStoreProvider({ address, children }: Props): JSX.Element
         (async () => {
             try {
                 await store.load()
-                await store.loadGraph()
                 await store.loadPairs()
                 await store.loadTransactions()
             }

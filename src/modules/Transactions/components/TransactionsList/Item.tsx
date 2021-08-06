@@ -55,16 +55,16 @@ export function Item({ transaction }: Props): JSX.Element {
             <div className="list__cell list__cell--right">
                 {totalValue}
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-824">
                 {leftValue}
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-824">
                 {rightValue}
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-824">
                 <AccountExplorerLink address={transaction.userAddress} />
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-540">
                 {DateTime.fromSeconds(transaction.timestampBlock).toRelative()}
             </div>
         </div>

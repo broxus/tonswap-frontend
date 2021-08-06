@@ -3,8 +3,9 @@
         align-items: flex-end;
         column-gap: 16px;
         display: flex;
-        flex-direction: row;
+        flex-wrap: wrap;
         justify-content: space-between;
+        row-gap: 32px;
     }
 
     &__header-actions {
@@ -27,5 +28,21 @@
             letter-spacing: 0.25px;
             line-height: 20px;
         }
+
+        &-price {
+            align-items: center;
+            column-gap: 10px;
+            display: flex !important;
+            flex-direction: row;
+        }
+    }
+
+    &__tokens-prices {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
     }
 }

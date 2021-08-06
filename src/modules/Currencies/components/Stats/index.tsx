@@ -20,6 +20,10 @@ export function Stats(): JSX.Element {
         store.changeState('graph', graph)
     }
 
+    const toggleTimeframe = (value: CurrencyStoreState['timeframe']) => () => {
+        store.changeState('timeframe', value)
+    }
+
     return (
         <div className="currency-stats">
             <div className="currency-stats__sidebar">
@@ -92,41 +96,62 @@ export function Stats(): JSX.Element {
                 <header className="currency-stats__chart-actions">
                     <Observer>
                         {() => (
-                            <ul className="tabs">
-                                <li
-                                    className={classNames({
-                                        active: store.graph === 'prices',
-                                    })}
-                                >
-                                    <a onClick={toggleGraph('prices')}>
-                                        {intl.formatMessage({
-                                            id: 'CURRENCY_GRAPH_TAB_PRICES',
+                            <>
+                                <ul className="tabs">
+                                    <li
+                                        className={classNames({
+                                            active: store.timeframe === 'D1',
                                         })}
-                                    </a>
-                                </li>
-                                <li
-                                    className={classNames({
-                                        active: store.graph === 'volume',
-                                    })}
-                                >
-                                    <a onClick={toggleGraph('volume')}>
-                                        {intl.formatMessage({
-                                            id: 'CURRENCY_GRAPH_TAB_VOLUME',
+                                    >
+                                        <a onClick={toggleTimeframe('D1')}>
+                                            D
+                                        </a>
+                                    </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.timeframe === 'H1',
                                         })}
-                                    </a>
-                                </li>
-                                <li
-                                    className={classNames({
-                                        active: store.graph === 'tvl',
-                                    })}
-                                >
-                                    <a onClick={toggleGraph('tvl')}>
-                                        {intl.formatMessage({
-                                            id: 'CURRENCY_GRAPH_TAB_TVL',
+                                    >
+                                        <a onClick={toggleTimeframe('H1')}>H</a>
+                                    </li>
+                                </ul>
+
+                                <ul className="tabs">
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'prices',
                                         })}
-                                    </a>
-                                </li>
-                            </ul>
+                                    >
+                                        <a onClick={toggleGraph('prices')}>
+                                            {intl.formatMessage({
+                                                id: 'CURRENCY_GRAPH_TAB_PRICES',
+                                            })}
+                                        </a>
+                                    </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'volume',
+                                        })}
+                                    >
+                                        <a onClick={toggleGraph('volume')}>
+                                            {intl.formatMessage({
+                                                id: 'CURRENCY_GRAPH_TAB_VOLUME',
+                                            })}
+                                        </a>
+                                    </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'tvl',
+                                        })}
+                                    >
+                                        <a onClick={toggleGraph('tvl')}>
+                                            {intl.formatMessage({
+                                                id: 'CURRENCY_GRAPH_TAB_TVL',
+                                            })}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </>
                         )}
                     </Observer>
                 </header>
@@ -140,7 +165,7 @@ export function Stats(): JSX.Element {
                                     data={store.pricesGraphData}
                                     timeframe={store.timeframe}
                                     type="Candlestick"
-                                    load={store.loadGraph}
+                                    load={store.loadPricesGraph}
                                 />
                             )}
 
@@ -150,7 +175,7 @@ export function Stats(): JSX.Element {
                                     data={store.tvlGraphData}
                                     timeframe={store.timeframe}
                                     type="Area"
-                                    load={store.loadGraph}
+                                    load={store.loadTvlGraph}
                                 />
                             )}
 
@@ -160,7 +185,7 @@ export function Stats(): JSX.Element {
                                     data={store.volumeGraphData}
                                     timeframe={store.timeframe}
                                     type="Histogram"
-                                    load={store.loadGraph}
+                                    load={store.loadVolumeGraph}
                                 />
                             )}
                         </div>

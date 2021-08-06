@@ -220,6 +220,7 @@ export default {
     PAIRS_LIST_HEADER_VOLUME7_CELL: 'Volume 7D',
     PAIRS_LIST_HEADER_TVL_CELL: 'TVL',
     PAIR_BREADCRUMB_ROOT: 'Pairs',
+    PAIR_TOKEN_PRICE: '1 {symbolLeft} = {amount} {symbolRight}',
     PAIR_ADD_LIQUIDITY_BTN_TEXT: 'Add Liquidity',
     PAIR_TRADE_BTN_TEXT: 'Trade',
     PAIR_STATS_TTL_TERM: 'Total Tokens Locked',

@@ -30,7 +30,7 @@ export function PairsList({
     return (
         <div className="pairs-list list">
             <div className="list__header">
-                <div className="list__cell list__cell--left">#</div>
+                <div className="list__cell list__cell--left hide-540">#</div>
                 <div className="list__cell list__cell--left">
                     {intl.formatMessage({
                         id: 'PAIRS_LIST_HEADER_PAIR_CELL',
@@ -48,7 +48,7 @@ export function PairsList({
                         })}
                     </OrderingSwitcher>
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-824">
                     <OrderingSwitcher<PairsOrdering>
                         ascending="volume7dascending"
                         descending="volume7ddescending"
@@ -60,7 +60,7 @@ export function PairsList({
                         })}
                     </OrderingSwitcher>
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-540">
                     <OrderingSwitcher<PairsOrdering>
                         ascending="tvlascending"
                         descending="tvldescending"

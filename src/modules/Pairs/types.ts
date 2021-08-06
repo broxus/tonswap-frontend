@@ -19,8 +19,10 @@ export type PairInfo = {
     fee24h: string;
     feeAllTime: string;
     leftLocked: string;
+    leftPrice: string;
     meta: PairMeta;
     rightLocked: string;
+    rightPrice: string;
     tvl: string;
     tvlChange: string;
     volume7d: string;
@@ -79,9 +81,11 @@ export type PairStoreData = {
 
 export type PairStoreState = {
     graph: 'ohlcv' | 'tvl' | 'volume'
-    isGraphLoading: boolean;
     isLoading: boolean;
+    isOhlcvGraphLoading: boolean;
     isTransactionsLoading: boolean;
+    isTvlGraphLoading: boolean;
+    isVolumeGraphLoading: boolean;
     timeframe: Timeframe;
     transactionsCurrentPage: number;
     transactionsLimit: number;

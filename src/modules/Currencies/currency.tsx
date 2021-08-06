@@ -7,7 +7,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Icon } from '@/components/common/Icon'
 import { Pagination } from '@/components/common/Pagination'
-import { UserAvatar } from '@/components/common/UserAvatar'
+import { TokenIcon } from '@/components/common/TokenIcon'
 import { Stats } from '@/modules/Currencies/components/Stats'
 import { PairsList } from '@/modules/Pairs/components'
 import { useCurrencyStore } from '@/modules/Currencies/providers/CurrencyStoreProvider'
@@ -103,32 +103,19 @@ function CurrencyInner(): JSX.Element {
                 <header className="currency-page__header">
                     <div>
                         <div className="currency-page__token">
-                            {token !== undefined ? (
-                                <>
-                                    {token.icon !== undefined && (
-                                        <img
-                                            src={token.icon}
-                                            alt={token.name}
-                                            className="currency-page__token-icon"
-                                        />
-                                    )}
-                                    <div className="currency-page__token-name">
-                                        {token.name}
-                                        <span>
-                                            {token.symbol}
-                                        </span>
-                                    </div>
-                                </>
-                            ) : (
-                                <>
-                                    {store.currency?.currency !== undefined && (
-                                        <UserAvatar address={store.currency?.address} small />
-                                    )}
-                                    <div className="currency-page__token-name">
-                                        {store.currency?.currency}
-                                    </div>
-                                </>
-                            )}
+                            <TokenIcon
+                                address={token?.root}
+                                className="currency-page__token-icon"
+                                name={token?.symbol}
+                                small
+                                uri={token?.icon}
+                            />
+                            <div className="currency-page__token-name">
+                                {token?.name || store.currency?.currency}
+                                <span>
+                                    {token?.symbol}
+                                </span>
+                            </div>
                         </div>
                         <div className="currency-page__price">
                             <div className="currency-page__price-currency-cost">

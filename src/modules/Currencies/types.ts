@@ -67,10 +67,12 @@ export type CurrencyStoreData = {
 
 export type CurrencyStoreState = {
     graph: 'prices' | 'tvl' | 'volume'
-    isGraphLoading: boolean;
     isLoading: boolean;
     isPairsLoading: boolean;
+    isPricesGraphLoading: boolean;
     isTransactionsLoading: boolean;
+    isTvlGraphLoading: boolean;
+    isVolumeGraphLoading: boolean;
     pairsCurrentPage: number;
     pairsLimit: number;
     pairsOrdering: PairsOrdering;

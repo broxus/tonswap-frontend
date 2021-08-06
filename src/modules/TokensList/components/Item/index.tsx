@@ -2,7 +2,7 @@ import * as React from 'react'
 import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 
-import { UserAvatar } from '@/components/common/UserAvatar'
+import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokenFormattedBalance } from '@/hooks/useTokenFormattedBalance'
 import { TokenCache } from '@/stores/TokensCacheService'
 
@@ -32,9 +32,12 @@ export const Item = observer(({ disabled, token, onSelect }: Props) => {
         >
             <div className="popup-item__left">
                 <div className="popup-item__icon">
-                    {token.icon
-                        ? <img src={token.icon} alt={token.symbol} />
-                        : <UserAvatar address={token.root} small />}
+                    <TokenIcon
+                        address={token.root}
+                        name={token.symbol}
+                        small
+                        uri={token.icon}
+                    />
                 </div>
                 <div className="popup-item__main">
                     <div className="popup-item__name" title={token.symbol}>

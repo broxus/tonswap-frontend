@@ -16,19 +16,16 @@
         align-items: center;
         border-bottom: 1px solid rgb(255, 255, 255, 8%);
         column-gap: 10px;
+        display: grid;
+        grid-template-columns: var(--list-grid-template);
         padding: 10px 0;
         text-decoration: none !important;
-
-        @media only screen and (min-width: 960px) {
-            display: grid;
-            grid-template-columns: var(--list-grid-template);
-        }
     }
 
-    @media only screen and (max-width: 959px) {
-        &__header {
-            display: none;
-        }
+    &__header {
+        color: rgba(255, 255, 255, 48%);
+        font-size: 14px;
+        text-align: center;
     }
 
     &__cell {
@@ -64,12 +61,6 @@
         &--left { text-align: left; }
         &--right { text-align: right; }
         &--center { text-align: center; }
-    }
-
-    &__header {
-        color: rgba(255, 255, 255, 48%);
-        font-size: 14px;
-        text-align: center;
     }
 }
 

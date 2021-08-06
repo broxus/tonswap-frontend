@@ -54,7 +54,7 @@ export function Chart({
                 )
             }
         }
-    }, 50), [series, chart.current])
+    }, 50), [chart.current, series, timeframe])
 
     const listener = React.useRef<typeof handler>()
 
@@ -92,11 +92,8 @@ export function Chart({
             if (type === 'Area') {
                 chart.current?.applyOptions({
                     rightPriceScale: {
+                        autoScale: true,
                         borderVisible: false,
-                        scaleMargins: {
-                            top: 0.3,
-                            bottom: 0.25,
-                        },
                     },
                     grid: {
                         horzLines: {
@@ -108,7 +105,7 @@ export function Chart({
                     },
                 })
                 setSeries(chart.current?.addAreaSeries({
-                    topColor: 'rgba(197,228,243,0.16)',
+                    topColor: 'rgba(197, 228, 243, 0.16)',
                     bottomColor: 'rgba(197, 228, 243, 0)',
                     lineColor: '#c5e4f3',
                     lineWidth: 1,
@@ -123,11 +120,8 @@ export function Chart({
             else if (type === 'Histogram') {
                 chart.current?.applyOptions({
                     rightPriceScale: {
+                        autoScale: true,
                         borderVisible: false,
-                        scaleMargins: {
-                            top: 0.3,
-                            bottom: 0.25,
-                        },
                     },
                     grid: {
                         horzLines: {
@@ -145,7 +139,7 @@ export function Chart({
                     },
                     priceScaleId: '',
                     scaleMargins: {
-                        top: 0.3,
+                        top: 0,
                         bottom: 0.03,
                     },
                 }))
@@ -157,6 +151,20 @@ export function Chart({
     }, [chartRef.current])
 
     React.useEffect(() => {
+        (async () => {
+            if (data.length === 0) {
+                await load?.()
+
+                if (chart.current !== undefined) {
+                    chart.current?.timeScale().resetTimeScale()
+                    chart.current?.timeScale().scrollToRealTime()
+                    chart.current?.timeScale().fitContent()
+                }
+            }
+        })()
+    }, [timeframe])
+
+    React.useEffect(() => {
         if (chart.current !== undefined) {
             if (listener.current !== undefined) {
                 chart.current?.timeScale().unsubscribeVisibleTimeRangeChange(listener.current)
@@ -166,15 +174,7 @@ export function Chart({
             listener.current = handler
             chart.current?.timeScale().subscribeVisibleTimeRangeChange(listener.current)
         }
-    }, [series, data])
-
-    React.useEffect(() => {
-        (async () => {
-            if (data.length === 0) {
-                await load?.()
-            }
-        })()
-    }, [])
+    }, [data, series, timeframe])
 
     return <div ref={chartRef} className="chart" />
 }

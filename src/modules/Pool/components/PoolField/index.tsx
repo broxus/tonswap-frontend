@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { UserAvatar } from '@/components/common/UserAvatar'
+import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokenFormattedBalance } from '@/hooks/useTokenFormattedBalance'
 import { TokenCache } from '@/stores/TokensCacheService'
 import { formatAmount } from '@/utils'
@@ -112,11 +112,12 @@ function Field({
                         onClick={props.onToggleTokensList}
                     >
                         <span className="form-drop__logo">
-                            {token.icon ? (
-                                <img src={token.icon} alt={token.symbol} />
-                            ) : (
-                                <UserAvatar address={token.root} small />
-                            )}
+                            <TokenIcon
+                                address={token.root}
+                                name={token.symbol}
+                                small
+                                uri={token.icon}
+                            />
                         </span>
                         <span className="form-drop__name">
                             {token.symbol}

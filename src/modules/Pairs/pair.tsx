@@ -1,4 +1,5 @@
 import * as React from 'react'
+import BigNumber from 'bignumber.js'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 import { Link, NavLink } from 'react-router-dom'
@@ -14,6 +15,9 @@ import { TransactionsOrdering } from '@/modules/Transactions/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
 
 import './pair.scss'
+import { getComputedDefaultPerPrice } from '@/modules/Swap/utils'
+import { amount } from '@/utils'
+import { TokenIcon } from '@/components/common/TokenIcon'
 
 
 function PairInner(): JSX.Element {
@@ -28,6 +32,29 @@ function PairInner(): JSX.Element {
     const counterToken = React.useMemo(() => (
         store.pair?.meta.counterAddress ? tokensCache.get(store.pair.meta.counterAddress) : undefined
     ), [store.pair?.meta.counterAddress, tokensCache.tokens])
+
+    const priceLeftToRight = React.useMemo(
+        () => ((baseToken !== undefined && counterToken !== undefined)
+            ? getComputedDefaultPerPrice(
+                new BigNumber(store.pair?.leftPrice || '0'),
+                baseToken?.decimals,
+                new BigNumber(store.pair?.rightPrice || '0').shiftedBy(-counterToken?.decimals),
+                baseToken?.decimals,
+            ) : '0'),
+        [baseToken, counterToken, store.pair],
+    )
+
+    const priceRightToLeft = React.useMemo(
+        () => ((baseToken !== undefined && counterToken !== undefined)
+            ? getComputedDefaultPerPrice(
+                new BigNumber(store.pair?.rightPrice || '0'),
+                counterToken?.decimals,
+                new BigNumber(store.pair?.leftPrice || '0').shiftedBy(-baseToken?.decimals),
+                counterToken?.decimals,
+            ) : '0'),
+        [baseToken, counterToken, store.pair],
+    )
+
 
     const onTransactionsNextPage = async () => {
         if (store.transactionsCurrentPage < store.transactionsTotalPages) {
@@ -53,7 +80,6 @@ function PairInner(): JSX.Element {
         store.changeState('transactionsCurrentPage', 1)
         await store.loadTransactions()
     }
-
 
     return (
         <>
@@ -88,6 +114,46 @@ function PairInner(): JSX.Element {
                                 {counterToken?.symbol}
                             </div>
                         </div>
+                        {(baseToken !== undefined && counterToken !== undefined) && (
+                            <div className="pair-page__tokens-prices">
+                                <Link
+                                    to={`/tokens/${baseToken.root}`}
+                                    className="btn btn-s btn-dark pair-page__token-price"
+                                >
+                                    <TokenIcon
+                                        address={baseToken?.root}
+                                        name={baseToken?.symbol}
+                                        small
+                                        uri={baseToken?.icon}
+                                    />
+                                    {intl.formatMessage({
+                                        id: 'PAIR_TOKEN_PRICE',
+                                    }, {
+                                        amount: amount(priceLeftToRight, counterToken.decimals),
+                                        symbolLeft: baseToken.symbol,
+                                        symbolRight: counterToken.symbol,
+                                    })}
+                                </Link>
+                                <Link
+                                    to={`/tokens/${counterToken.root}`}
+                                    className="btn btn-s btn-dark pair-page__token-price"
+                                >
+                                    <TokenIcon
+                                        address={counterToken?.root}
+                                        name={counterToken?.symbol}
+                                        small
+                                        uri={counterToken?.icon}
+                                    />
+                                    {intl.formatMessage({
+                                        id: 'PAIR_TOKEN_PRICE',
+                                    }, {
+                                        amount: amount(priceRightToLeft, baseToken?.decimals),
+                                        symbolLeft: counterToken.symbol,
+                                        symbolRight: baseToken.symbol,
+                                    })}
+                                </Link>
+                            </div>
+                        )}
                     </div>
                     <div className="pair-page__header-actions">
                         {store.pair?.meta.poolAddress !== undefined && (

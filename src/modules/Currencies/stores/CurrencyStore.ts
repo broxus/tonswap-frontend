@@ -1,6 +1,11 @@
 import { UTCTimestamp } from 'lightweight-charts'
 import { DateTime } from 'luxon'
-import { action, makeAutoObservable } from 'mobx'
+import {
+    IReactionDisposer,
+    action,
+    makeAutoObservable,
+    reaction,
+} from 'mobx'
 
 import { API_URL } from '@/constants'
 import {
@@ -42,7 +47,16 @@ export class CurrencyStore {
 
     constructor(protected readonly address: string) {
         makeAutoObservable(this, {
-            loadGraph: action.bound,
+            loadPricesGraph: action.bound,
+            loadTvlGraph: action.bound,
+            loadVolumeGraph: action.bound,
+        })
+
+        this.#timeframeDisposer = reaction(() => this.timeframe, () => {
+            this.changeState('isPricesGraphLoading', false)
+            this.changeState('isTvlGraphLoading', false)
+            this.changeState('isVolumeGraphLoading', false)
+            this.changeData('graphData', DEFAULT_CURRENCY_STORE_DATA.graphData)
         })
     }
 
@@ -62,6 +76,13 @@ export class CurrencyStore {
      */
     public changeState<K extends keyof CurrencyStoreState>(key: K, value: CurrencyStoreState[K]): void {
         this.state[key] = value
+    }
+
+    /**
+     *
+     */
+    public dispose(): void {
+        this.#timeframeDisposer?.()
     }
 
     /**
@@ -150,8 +171,8 @@ export class CurrencyStore {
     /**
      *
      */
-    public get isGraphLoading(): CurrencyStoreState['isGraphLoading'] {
-        return this.state.isGraphLoading
+    public get isPricesGraphLoading(): CurrencyStoreState['isPricesGraphLoading'] {
+        return this.state.isPricesGraphLoading
     }
 
     /**
@@ -159,13 +180,13 @@ export class CurrencyStore {
      * @param {number} [from]
      * @param {number} [to]
      */
-    public async loadGraph(from?: number, to?: number): Promise<void> {
-        if (this.isGraphLoading) {
+    public async loadPricesGraph(from?: number, to?: number): Promise<void> {
+        if (this.isPricesGraphLoading) {
             return
         }
 
         try {
-            this.changeState('isGraphLoading', true)
+            this.changeState('isPricesGraphLoading', true)
 
             const body: CurrencyGraphRequest = {
                 from: from || DateTime.local().minus({
@@ -178,7 +199,7 @@ export class CurrencyStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-            const response = await fetch(`${API_URL}/currencies/${this.address}/${this.graph}`, {
+            const response = await fetch(`${API_URL}/currencies/${this.address}/prices`, {
                 body: JSON.stringify(body),
                 headers: {
                     Accept: 'application/json',
@@ -189,23 +210,117 @@ export class CurrencyStore {
             })
 
             if (response.ok) {
-                if (this.graph === 'prices') {
-                    const result: OhlcvGraphModel[] = await response.json()
-                    this.changeGraphData('prices', result.concat(this.graphData.prices))
-                }
-                else if (this.graph === 'tvl') {
-                    const result: TvlGraphModel[] = await response.json()
-                    this.changeGraphData('tvl', result.concat(this.graphData.tvl))
-                }
-                else if (this.graph === 'volume') {
-                    const result: VolumeGraphModel[] = await response.json()
-                    this.changeGraphData('volume', result.concat(this.graphData.volume))
-                }
+                const result: OhlcvGraphModel[] = await response.json()
+                this.changeGraphData('prices', result.concat(this.graphData.prices))
             }
         }
         catch (e) {}
         finally {
-            this.changeState('isGraphLoading', false)
+            this.changeState('isPricesGraphLoading', false)
+        }
+    }
+
+    /**
+     *
+     */
+    public get isVolumeGraphLoading(): CurrencyStoreState['isVolumeGraphLoading'] {
+        return this.state.isVolumeGraphLoading
+    }
+
+    /**
+     *
+     * @param {number} [from]
+     * @param {number} [to]
+     */
+    public async loadVolumeGraph(from?: number, to?: number): Promise<void> {
+        if (this.isVolumeGraphLoading) {
+            return
+        }
+
+        try {
+            this.changeState('isVolumeGraphLoading', true)
+
+            const body: CurrencyGraphRequest = {
+                from: from || DateTime.local().minus({
+                    days: this.timeframe === 'D1' ? 30 : 7,
+                }).toUTC(undefined, {
+                    keepLocalTime: false,
+                }).toMillis(),
+                timeframe: this.timeframe,
+                to: to || DateTime.local().toUTC(undefined, {
+                    keepLocalTime: false,
+                }).toMillis(),
+            }
+            const response = await fetch(`${API_URL}/currencies/${this.address}/volume`, {
+                body: JSON.stringify(body),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+                mode: 'cors',
+            })
+
+            if (response.ok) {
+                const result: VolumeGraphModel[] = await response.json()
+                this.changeGraphData('volume', result.concat(this.graphData.volume))
+            }
+        }
+        catch (e) {}
+        finally {
+            this.changeState('isVolumeGraphLoading', false)
+        }
+    }
+
+    /**
+     *
+     */
+    public get isTvlGraphLoading(): CurrencyStoreState['isTvlGraphLoading'] {
+        return this.state.isTvlGraphLoading
+    }
+
+    /**
+     *
+     * @param {number} [from]
+     * @param {number} [to]
+     */
+    public async loadTvlGraph(from?: number, to?: number): Promise<void> {
+        if (this.isTvlGraphLoading) {
+            return
+        }
+
+        try {
+            this.changeState('isTvlGraphLoading', true)
+
+            const body: CurrencyGraphRequest = {
+                from: from || DateTime.local().minus({
+                    days: this.timeframe === 'D1' ? 30 : 7,
+                }).toUTC(undefined, {
+                    keepLocalTime: false,
+                }).toMillis(),
+                timeframe: this.timeframe,
+                to: to || DateTime.local().toUTC(undefined, {
+                    keepLocalTime: false,
+                }).toMillis(),
+            }
+            const response = await fetch(`${API_URL}/currencies/${this.address}/tvl`, {
+                body: JSON.stringify(body),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+                mode: 'cors',
+            })
+
+            if (response.ok) {
+                const result: TvlGraphModel[] = await response.json()
+                this.changeGraphData('tvl', result.concat(this.graphData.tvl))
+            }
+        }
+        catch (e) {}
+        finally {
+            this.changeState('isTvlGraphLoading', false)
         }
     }
 
@@ -424,5 +539,12 @@ export class CurrencyStore {
     public get transactionsTotalPages(): CurrencyStoreData['transactionsData']['totalCount'] {
         return Math.ceil(this.data.transactionsData.totalCount / this.transactionsLimit)
     }
+
+    /*
+     * Internal reaction disposers
+     * ----------------------------------------------------------------------------------
+     */
+
+    #timeframeDisposer: IReactionDisposer | undefined
 
 }

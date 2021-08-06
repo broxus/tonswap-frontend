@@ -1,9 +1,12 @@
 import { UTCTimestamp } from 'lightweight-charts'
 import { DateTime } from 'luxon'
-import { action, makeAutoObservable } from 'mobx'
+import {
+    action, IReactionDisposer, makeAutoObservable, reaction,
+} from 'mobx'
 
 import { API_URL } from '@/constants'
 import {
+    CandlestickGraphShape,
     CommonGraphShape,
     OhlcvGraphModel,
     TvlGraphModel,
@@ -43,7 +46,16 @@ export class PairStore {
 
     constructor(protected readonly address: string) {
         makeAutoObservable(this, {
-            loadGraph: action.bound,
+            loadOhlcvGraph: action.bound,
+            loadTvlGraph: action.bound,
+            loadVolumeGraph: action.bound,
+        })
+
+        this.#timeframeDisposer = reaction(() => this.timeframe, () => {
+            this.changeState('isOhlcvGraphLoading', false)
+            this.changeState('isTvlGraphLoading', false)
+            this.changeState('isVolumeGraphLoading', false)
+            this.changeData('graphData', DEFAULT_PAIR_STORE_DATA.graphData)
         })
     }
 
@@ -68,8 +80,8 @@ export class PairStore {
     /**
      *
      */
-    public get isLoading(): PairStoreState['isLoading'] {
-        return this.state.isLoading
+    public dispose(): void {
+        this.#timeframeDisposer?.()
     }
 
     /**
@@ -80,6 +92,13 @@ export class PairStore {
      */
     protected changeGraphData<K extends keyof PairStoreGraphData>(key: K, value: PairStoreGraphData[K]): void {
         this.data.graphData[key] = value
+    }
+
+    /**
+     *
+     */
+    public get isLoading(): PairStoreState['isLoading'] {
+        return this.state.isLoading
     }
 
     /**
@@ -144,8 +163,8 @@ export class PairStore {
     /**
      *
      */
-    public get isGraphLoading(): PairStoreState['isGraphLoading'] {
-        return this.state.isGraphLoading
+    public get isOhlcvGraphLoading(): PairStoreState['isOhlcvGraphLoading'] {
+        return this.state.isOhlcvGraphLoading
     }
 
     /**
@@ -153,17 +172,17 @@ export class PairStore {
      * @param {number} [from]
      * @param {number} [to]
      */
-    public async loadGraph(from?: number, to?: number): Promise<void> {
-        if (this.isGraphLoading) {
+    public async loadOhlcvGraph(from?: number, to?: number): Promise<void> {
+        if (this.isOhlcvGraphLoading) {
             return
         }
 
         try {
-            this.changeState('isGraphLoading', true)
+            this.changeState('isOhlcvGraphLoading', true)
 
             const body: PairGraphRequest = {
                 from: from || DateTime.local().minus({
-                    days: 7,
+                    days: this.timeframe === 'D1' ? 30 : 7,
                 }).toUTC(undefined, {
                     keepLocalTime: false,
                 }).toMillis(),
@@ -172,7 +191,7 @@ export class PairStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-            const response = await fetch(`${API_URL}/pairs/address/${this.address}/${this.state.graph}`, {
+            const response = await fetch(`${API_URL}/pairs/address/${this.address}/ohlcv`, {
                 body: JSON.stringify(body),
                 headers: {
                     Accept: 'application/json',
@@ -183,23 +202,117 @@ export class PairStore {
             })
 
             if (response.ok) {
-                if (this.graph === 'ohlcv') {
-                    const result: OhlcvGraphModel[] = await response.json()
-                    this.changeGraphData('ohlcv', result.concat(this.graphData.ohlcv))
-                }
-                else if (this.graph === 'tvl') {
-                    const result: TvlGraphModel[] = await response.json()
-                    this.changeGraphData('tvl', result.concat(this.graphData.tvl))
-                }
-                else if (this.graph === 'volume') {
-                    const result: VolumeGraphModel[] = await response.json()
-                    this.changeGraphData('volume', result.concat(this.graphData.volume))
-                }
+                const result: OhlcvGraphModel[] = await response.json()
+                this.changeGraphData('ohlcv', result.concat(this.graphData.ohlcv))
             }
         }
         catch (e) {}
         finally {
-            this.changeState('isGraphLoading', false)
+            this.changeState('isOhlcvGraphLoading', false)
+        }
+    }
+
+    /**
+     *
+     */
+    public get isTvlGraphLoading(): PairStoreState['isTvlGraphLoading'] {
+        return this.state.isTvlGraphLoading
+    }
+
+    /**
+     *
+     * @param {number} [from]
+     * @param {number} [to]
+     */
+    public async loadTvlGraph(from?: number, to?: number): Promise<void> {
+        if (this.isTvlGraphLoading) {
+            return
+        }
+
+        try {
+            this.changeState('isTvlGraphLoading', true)
+
+            const body: PairGraphRequest = {
+                from: from || DateTime.local().minus({
+                    days: this.timeframe === 'D1' ? 30 : 7,
+                }).toUTC(undefined, {
+                    keepLocalTime: false,
+                }).toMillis(),
+                timeframe: this.timeframe,
+                to: to || DateTime.local().toUTC(undefined, {
+                    keepLocalTime: false,
+                }).toMillis(),
+            }
+            const response = await fetch(`${API_URL}/pairs/address/${this.address}/tvl`, {
+                body: JSON.stringify(body),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+                mode: 'cors',
+            })
+
+            if (response.ok) {
+                const result: TvlGraphModel[] = await response.json()
+                this.changeGraphData('tvl', result.concat(this.graphData.tvl))
+            }
+        }
+        catch (e) {}
+        finally {
+            this.changeState('isTvlGraphLoading', false)
+        }
+    }
+
+    /**
+     *
+     */
+    public get isVolumeGraphLoading(): PairStoreState['isVolumeGraphLoading'] {
+        return this.state.isVolumeGraphLoading
+    }
+
+    /**
+     *
+     * @param {number} [from]
+     * @param {number} [to]
+     */
+    public async loadVolumeGraph(from?: number, to?: number): Promise<void> {
+        if (this.isVolumeGraphLoading) {
+            return
+        }
+
+        try {
+            this.changeState('isVolumeGraphLoading', true)
+
+            const body: PairGraphRequest = {
+                from: from || DateTime.local().minus({
+                    days: this.timeframe === 'D1' ? 30 : 7,
+                }).toUTC(undefined, {
+                    keepLocalTime: false,
+                }).toMillis(),
+                timeframe: this.timeframe,
+                to: to || DateTime.local().toUTC(undefined, {
+                    keepLocalTime: false,
+                }).toMillis(),
+            }
+            const response = await fetch(`${API_URL}/pairs/address/${this.address}/volume`, {
+                body: JSON.stringify(body),
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                method: 'POST',
+                mode: 'cors',
+            })
+
+            if (response.ok) {
+                const result: VolumeGraphModel[] = await response.json()
+                this.changeGraphData('volume', result.concat(this.graphData.volume))
+            }
+        }
+        catch (e) {}
+        finally {
+            this.changeState('isVolumeGraphLoading', false)
         }
     }
 
@@ -222,6 +335,19 @@ export class PairStore {
      */
     public get graphData(): PairStoreData['graphData'] {
         return this.data.graphData
+    }
+
+    /**
+     *
+     */
+    public get ohlcvGraphData(): CandlestickGraphShape[] {
+        return this.graphData.ohlcv.map<CandlestickGraphShape>(item => ({
+            close: item.close,
+            high: item.high,
+            low: item.low,
+            open: item.open,
+            time: (item.timestamp / 1000) as UTCTimestamp,
+        }))
     }
 
     /**
@@ -326,5 +452,11 @@ export class PairStore {
         return Math.ceil(this.data.transactionsData.totalCount / this.transactionsLimit)
     }
 
+    /*
+     * Internal reaction disposers
+     * ----------------------------------------------------------------------------------
+     */
+
+    #timeframeDisposer: IReactionDisposer | undefined
 
 }

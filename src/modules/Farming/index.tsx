@@ -38,14 +38,7 @@ export function Farming(): JSX.Element {
                         id: 'FARMING_HEADER_TITLE',
                     })}
                 </h2>
-                <div
-                    style={{
-                        alignItems: 'center',
-                        columnGap: 20,
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                    }}
-                >
+                <div className="section__header-actions">
                     <a
                         href="https://docs.tonbridge.io/ton-swap/yield-farming-guide/farming-guide"
                         target="_blank"
@@ -86,11 +79,13 @@ export function Farming(): JSX.Element {
                         <div>
                             <button
                                 type="button"
-                                className="btn btn-light btn-lg swap-form-submit btn-block"
+                                className="btn btn-light btn-lg btn-block swap-form-submit"
                                 onClick={connect}
                                 disabled={wallet.isConnecting}
                             >
-                                Connect to a wallet
+                                {intl.formatMessage({
+                                    id: 'WALLET_BTN_TEXT_CONNECT',
+                                })}
                             </button>
                         </div>
                     </div>

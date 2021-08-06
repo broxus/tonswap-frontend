@@ -41,10 +41,12 @@ export const DEFAULT_CURRENCY_STORE_DATA: CurrencyStoreData = {
 
 export const DEFAULT_CURRENCY_STORE_STATE: CurrencyStoreState = {
     graph: 'prices',
-    isGraphLoading: false,
     isLoading: false,
     isPairsLoading: false,
+    isPricesGraphLoading: false,
     isTransactionsLoading: false,
+    isVolumeGraphLoading: false,
+    isTvlGraphLoading: false,
     pairsCurrentPage: 1,
     pairsLimit: 10,
     pairsOrdering: 'tvldescending',

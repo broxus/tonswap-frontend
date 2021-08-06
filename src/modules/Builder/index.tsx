@@ -29,8 +29,8 @@ export function Builder(): JSX.Element {
                         id: 'BUILDER_HEADER_TITLE',
                     })}
                 </h2>
-                <div className="actions">
-                    <FilterField className="actions__filter" />
+                <div className="section__header-actions">
+                    <FilterField className="filter" />
                     <Link to="/builder/create" className="btn btn-light">
                         {intl.formatMessage({
                             id: 'BUILDER_HEADER_CREATE_LINK_TEXT',

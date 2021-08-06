@@ -38,22 +38,22 @@ export function TransactionsList({
                         id: 'TRANSACTIONS_LIST_HEADER_TOTAL_VALUE_CELL',
                     })}
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-824">
                     {intl.formatMessage({
                         id: 'TRANSACTIONS_LIST_HEADER_LEFT_TOKEN_CELL',
                     })}
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-824">
                     {intl.formatMessage({
                         id: 'TRANSACTIONS_LIST_HEADER_RIGHT_TOKEN_CELL',
                     })}
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-824">
                     {intl.formatMessage({
                         id: 'TRANSACTIONS_LIST_HEADER_ACCOUNT_CELL',
                     })}
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-540">
                     <OrderingSwitcher<TransactionsOrdering>
                         ascending="blocktimeascending"
                         descending="blocktimedescending"

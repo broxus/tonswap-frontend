@@ -3,7 +3,7 @@ import classNames from 'classnames'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { UserAvatar } from '@/components/common/UserAvatar'
+import { TokenIcon } from '@/components/common/TokenIcon'
 import { Chart } from '@/modules/Chart'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { PairStoreState } from '@/modules/Pairs/types'
@@ -47,8 +47,12 @@ export function Stats(): JSX.Element {
         [counterToken, store.pair?.rightLocked],
     )
 
-    const toggleGraph = (graph: PairStoreState['graph']) => () => {
-        store.changeState('graph', graph)
+    const toggleGraph = (value: PairStoreState['graph']) => () => {
+        store.changeState('graph', value)
+    }
+
+    const toggleTimeframe = (value: PairStoreState['timeframe']) => () => {
+        store.changeState('timeframe', value)
     }
 
     return (
@@ -64,15 +68,13 @@ export function Stats(): JSX.Element {
                         <div className="pair-stats__ttl">
                             <div>
                                 <div className="pair-stats__token">
-                                    {baseToken?.icon !== undefined ? (
-                                        <img
-                                            src={baseToken.icon}
-                                            alt={baseToken.name}
-                                            className="pair-stats__token-icon"
-                                        />
-                                    ) : baseToken?.root !== undefined && (
-                                        <UserAvatar address={baseToken.root} small />
-                                    )}
+                                    <TokenIcon
+                                        address={baseToken?.root}
+                                        className="pair-stats__token-icon"
+                                        name={baseToken?.symbol}
+                                        small
+                                        uri={baseToken?.icon}
+                                    />
                                     <div className="pair-stats__token-name">
                                         {baseToken?.symbol || store.pair?.meta.base}
                                     </div>
@@ -83,15 +85,13 @@ export function Stats(): JSX.Element {
                             </div>
                             <div>
                                 <div className="pair-stats__token">
-                                    {counterToken?.icon !== undefined ? (
-                                        <img
-                                            src={counterToken.icon}
-                                            alt={counterToken.name}
-                                            className="pair-stats__token-icon"
-                                        />
-                                    ) : counterToken?.root !== undefined && (
-                                        <UserAvatar address={counterToken.root} small />
-                                    )}
+                                    <TokenIcon
+                                        address={counterToken?.root}
+                                        className="pair-stats__token-icon"
+                                        name={counterToken?.symbol}
+                                        small
+                                        uri={counterToken?.icon}
+                                    />
                                     <div className="pair-stats__token-name">
                                         {counterToken?.symbol || store.pair?.meta.counter}
                                     </div>
@@ -160,30 +160,50 @@ export function Stats(): JSX.Element {
                 <header className="pair-stats__chart-actions">
                     <Observer>
                         {() => (
-                            <ul className="tabs">
-                                <li
-                                    className={classNames({
-                                        active: store.graph === 'volume',
-                                    })}
-                                >
-                                    <a onClick={toggleGraph('volume')}>
-                                        {intl.formatMessage({
-                                            id: 'PAIR_GRAPH_TAB_VOLUME',
+                            <>
+                                <ul className="tabs">
+                                    <li
+                                        className={classNames({
+                                            active: store.timeframe === 'D1',
                                         })}
-                                    </a>
-                                </li>
-                                <li
-                                    className={classNames({
-                                        active: store.graph === 'tvl',
-                                    })}
-                                >
-                                    <a onClick={toggleGraph('tvl')}>
-                                        {intl.formatMessage({
-                                            id: 'PAIR_GRAPH_TAB_TVL',
+                                    >
+                                        <a onClick={toggleTimeframe('D1')}>
+                                            D
+                                        </a>
+                                    </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.timeframe === 'H1',
                                         })}
-                                    </a>
-                                </li>
-                            </ul>
+                                    >
+                                        <a onClick={toggleTimeframe('H1')}>H</a>
+                                    </li>
+                                </ul>
+                                <ul className="tabs">
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'volume',
+                                        })}
+                                    >
+                                        <a onClick={toggleGraph('volume')}>
+                                            {intl.formatMessage({
+                                                id: 'PAIR_GRAPH_TAB_VOLUME',
+                                            })}
+                                        </a>
+                                    </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'tvl',
+                                        })}
+                                    >
+                                        <a onClick={toggleGraph('tvl')}>
+                                            {intl.formatMessage({
+                                                id: 'PAIR_GRAPH_TAB_TVL',
+                                            })}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </>
                         )}
                     </Observer>
                 </header>
@@ -197,7 +217,7 @@ export function Stats(): JSX.Element {
                                     data={store.volumeGraphData}
                                     timeframe={store.timeframe}
                                     type="Histogram"
-                                    load={store.loadGraph}
+                                    load={store.loadVolumeGraph}
                                 />
                             )}
 
@@ -207,7 +227,7 @@ export function Stats(): JSX.Element {
                                     data={store.tvlGraphData}
                                     timeframe={store.timeframe}
                                     type="Area"
-                                    load={store.loadGraph}
+                                    load={store.loadTvlGraph}
                                 />
                             )}
                         </div>

@@ -1,8 +1,11 @@
 .currency-stats {
-    column-gap: 10px;
     display: flex;
-    flex-direction: row;
+    gap: 10px;
     margin-top: 32px;
+
+    @media only screen and (max-width: 824px) {
+        flex-wrap: wrap;
+    }
 
     &__sidebar {
         display: flex;
@@ -10,6 +13,10 @@
         flex-shrink: 0;
         row-gap: 10px;
         width: 270px;
+
+        @media only screen and (max-width: 824px) {
+            width: 100%;
+        }
     }
 
     &__sidebar-item {
@@ -24,6 +31,10 @@
         padding: 32px;
         width: 100%;
 
+        @media only screen and (max-width: 824px) {
+            padding: 16px;
+        }
+
         .chart {
             min-height: 314px;
         }
@@ -32,7 +43,7 @@
             align-items: center;
             display: flex;
             flex-direction: row;
-            justify-content: flex-end;
+            justify-content: space-between;
             margin-bottom: 24px;
         }
     }

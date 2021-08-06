@@ -53,6 +53,13 @@
         }
     }
 
+    &__header-actions {
+        align-items: center;
+        column-gap: 20px;
+        display: flex;
+        justify-content: space-between;
+    }
+
     &--small { max-width: 520px; }
     &--large { max-width: 1200px; }
 
@@ -157,5 +164,17 @@
     &::before {
         border-top-color: #eb4361;
         top: 7.5px;
+    }
+}
+
+.hide-824 {
+    @media only screen and (max-width: 824px) {
+        display: none;
+    }
+}
+
+.hide-540 {
+    @media only screen and (max-width: 540px) {
+        display: none;
     }
 }

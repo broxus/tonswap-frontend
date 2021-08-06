@@ -2,7 +2,7 @@ import * as React from 'react'
 import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 
-import { UserAvatar } from '@/components/common/UserAvatar'
+import { TokenIcon } from '@/components/common/TokenIcon'
 import { CurrencyInfo } from '@/modules/Currencies/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { getChangesDirection, parseCurrencyBillions } from '@/utils'
@@ -25,15 +25,17 @@ export function Item({ currency, idx }: Props): JSX.Element {
 
     return (
         <Link to={`/tokens/${currency.address}`} className="list__row">
-            <div className="list__cell">{idx}</div>
+            <div className="list__cell hide-540">{idx}</div>
             <div className="list__cell">
                 <div className="list__cell-inner">
                     <div>
-                        {token?.icon !== undefined ? (
-                            <img src={token.icon} alt={token.name} className="currency-page__token-icon" />
-                        ) : (
-                            <UserAvatar address={currency?.address} small />
-                        )}
+                        <TokenIcon
+                            address={token?.root}
+                            className="currency-page__token-icon"
+                            name={token?.symbol}
+                            small
+                            uri={token?.icon}
+                        />
                     </div>
                     <div>
                         <h3 className="currencies-list__token-name">
@@ -45,10 +47,10 @@ export function Item({ currency, idx }: Props): JSX.Element {
                     </div>
                 </div>
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-540">
                 {price}
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-824">
                 <div
                     className={classNames('changes-direction', {
                         'changes-direction-up': getChangesDirection(currency.priceChange) > 0,
@@ -62,7 +64,7 @@ export function Item({ currency, idx }: Props): JSX.Element {
             <div className="list__cell list__cell--right">
                 {volume24h}
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-824">
                 {tvl}
             </div>
         </Link>

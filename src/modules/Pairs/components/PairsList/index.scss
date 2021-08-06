@@ -1,6 +1,14 @@
 .pairs-list {
     &.list {
         --list-grid-template: 50px minmax(30%, 60%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
+
+        @media only screen and (max-width: 824px) {
+            --list-grid-template: 50px minmax(30%, 60%) minmax(100px, 120px) minmax(100px, 120px);
+        }
+
+        @media only screen and (max-width: 540px) {
+            --list-grid-template: minmax(40%, 65%) minmax(120px, 140px);
+        }
     }
 
     &__token {

@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 
+import { PairIcons } from '@/modules/Pairs/components/PairIcons'
 import { PairInfo } from '@/modules/Pairs/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { parseCurrencyBillions } from '@/utils'
-import { PairIcons } from '@/modules/Pairs/components/PairIcons'
 
 
 type Props = {
@@ -31,7 +31,7 @@ export function Item({ pair, idx }: Props): JSX.Element {
 
     return (
         <Link to={`/pairs/${pair.meta.poolAddress}`} className="list__row">
-            <div className="list__cell">{idx}</div>
+            <div className="list__cell hide-540">{idx}</div>
             <div className="list__cell">
                 <div className="list__cell-inner">
                     <div>
@@ -53,10 +53,10 @@ export function Item({ pair, idx }: Props): JSX.Element {
             <div className="list__cell list__cell--right">
                 {volume24h}
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-824">
                 {volume7d}
             </div>
-            <div className="list__cell list__cell--right">
+            <div className="list__cell list__cell--right hide-540">
                 {tvl}
             </div>
         </Link>

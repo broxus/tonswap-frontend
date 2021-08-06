@@ -30,18 +30,18 @@ export function CurrenciesList({
     return (
         <div className="currencies-list list">
             <div className="list__header">
-                <div className="list__cell list__cell--left">#</div>
+                <div className="list__cell list__cell--left hide-540">#</div>
                 <div className="list__cell list__cell--left">
                     {intl.formatMessage({
                         id: 'CURRENCIES_LIST_HEADER_NAME_CELL',
                     })}
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-540">
                     {intl.formatMessage({
                         id: 'CURRENCIES_LIST_HEADER_PRICE_CELL',
                     })}
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-824">
                     {intl.formatMessage({
                         id: 'CURRENCIES_LIST_HEADER_PRICE_CHANGE_CELL',
                     })}
@@ -51,7 +51,7 @@ export function CurrenciesList({
                         id: 'CURRENCIES_LIST_HEADER_VOLUME24_CELL',
                     })}
                 </div>
-                <div className="list__cell list__cell--right">
+                <div className="list__cell list__cell--right hide-824">
                     <OrderingSwitcher
                         ascending="tvlascending"
                         descending="tvldescending"

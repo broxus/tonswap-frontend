@@ -21,11 +21,11 @@ export function PairStoreProvider({ address, children }: Props): JSX.Element {
         (async () => {
             try {
                 await store.load()
-                await store.loadGraph()
                 await store.loadTransactions()
             }
             catch (e) {}
         })()
+        return () => store.dispose()
     }, [address])
 
     return (
