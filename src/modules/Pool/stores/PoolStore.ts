@@ -888,7 +888,9 @@ export class PoolStore {
             const address = await checkPair(this.leftToken.root, this.rightToken.root)
             this.changePoolData('pair', { address: address?.toString() })
         }
-        catch (e) {}
+        catch (e) {
+            error(e)
+        }
 
         if (!this.pairAddress) {
             this.setStep(AddLiquidityStep.CREATE_POOL)
@@ -1535,7 +1537,7 @@ export class PoolStore {
      */
 
     public get dexLeftBalance(): string {
-        return this.leftToken ? this.dex.balances?.get(this.leftToken?.root) || '0' : '0'
+        return this.leftToken !== undefined ? (this.dex.balances?.get(this.leftToken?.root) || '0') : '0'
     }
 
     public get isDexLeftBalanceValid(): boolean {
@@ -1552,7 +1554,7 @@ export class PoolStore {
     }
 
     public get dexRightBalance(): string {
-        return this.rightToken ? this.dex.balances?.get(this.rightToken?.root) || '0' : '0'
+        return this.rightToken !== undefined ? (this.dex.balances?.get(this.rightToken?.root) || '0') : '0'
     }
 
     public get isDexRightBalanceValid(): boolean {

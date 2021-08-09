@@ -188,7 +188,7 @@ export class SwapStore {
             return
         }
 
-        const deployGrams = this.rightToken?.balance ? '0' : '100000000'
+        const deployGrams = this.rightToken?.balance !== undefined ? '0' : '100000000'
 
         const pairWallet = await TokenWallet.walletAddress({
             root: new Address(this.leftToken?.root),

@@ -266,7 +266,7 @@ export function Stats(): JSX.Element {
                             {store.graph === 'ohlcv-inverse' && (
                                 <Chart
                                     key="ohlcvInverseGraph"
-                                    data={store.ohlcvGraphData}
+                                    data={store.ohlcvGraphInverseData}
                                     options={{
                                         localization: {
                                             priceFormatter: (value: number) => (1 / value).toFixed(2),

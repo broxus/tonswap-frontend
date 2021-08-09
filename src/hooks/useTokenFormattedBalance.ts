@@ -37,7 +37,7 @@ export function useTokenFormattedBalance(
         formatBalance(
             token?.balance || '0',
             token?.decimals,
-            dexAccountBalance,
+            dexAccountBalance || '0',
         ) || '0',
     )
 
@@ -47,9 +47,9 @@ export function useTokenFormattedBalance(
         setBalance(formatBalance(
             token?.balance || '0',
             token?.decimals,
-            dexAccountBalance,
+            dexAccountBalance || '0',
         ) || '0')
-    }, [token?.balance])
+    }, [dexAccountBalance, token?.balance])
 
     React.useEffect(() => {
         if (token) {
@@ -63,7 +63,7 @@ export function useTokenFormattedBalance(
                         setBalance(formatBalance(
                             token?.balance || '0',
                             token?.decimals,
-                            dexAccountBalance,
+                            dexAccountBalance || '0',
                         ) || '0')
                         setFetchingTo(false)
                     }

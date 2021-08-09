@@ -143,25 +143,48 @@ export function Pool(): JSX.Element {
                 </div>
             </div>
 
-            {pool.isDexAccountDataAvailable && (
-                <PoolDexAccountData key="dexAccount" />
-            )}
+            <Observer>
+                {() => (
+                    <>
+                        {pool.isDexAccountDataAvailable && (
+                            <PoolDexAccountData key="dexAccount" />
+                        )}
 
-            <PoolRootsInfo key="rootsInfo" />
+                    </>
+                )}
+            </Observer>
 
-            <PoolDepositLiquidityTransaction
-                key="transaction"
-                onDismiss={form.onDismissTransactionReceipt}
-            />
+            <Observer>
+                {() => (
+                    <PoolRootsInfo key="rootsInfo" />
 
-            {(form.isTokenListShown && form.tokenSide) && (
-                <TokensList
-                    key="tokensList"
-                    currentToken={pool[form.tokenSide]}
-                    onDismiss={form.hideTokensList}
-                    onSelectToken={form.onSelectToken}
-                />
-            )}
+                )}
+            </Observer>
+
+            <Observer>
+                {() => (
+                    <PoolDepositLiquidityTransaction
+                        key="transaction"
+                        onDismiss={form.onDismissTransactionReceipt}
+                    />
+
+                )}
+            </Observer>
+
+            <Observer>
+                {() => (
+                    <>
+                        {(form.isTokenListShown && form.tokenSide) && (
+                            <TokensList
+                                key="tokensList"
+                                currentToken={pool[form.tokenSide]}
+                                onDismiss={form.hideTokensList}
+                                onSelectToken={form.onSelectToken}
+                            />
+                        )}
+                    </>
+                )}
+            </Observer>
         </section>
     )
 }

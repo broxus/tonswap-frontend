@@ -357,6 +357,19 @@ export class PairStore {
     /**
      *
      */
+    public get ohlcvGraphInverseData(): CandlestickGraphShape[] {
+        return this.ohlcvGraphData.map<CandlestickGraphShape>(item => ({
+            ...item,
+            close: item.open,
+            high: item.low,
+            low: item.high,
+            open: item.close,
+        }))
+    }
+
+    /**
+     *
+     */
     public get volumeGraphData(): CommonGraphShape[] {
         return uniqBy(this.graphData.volume, 'timestamp').map<CommonGraphShape>(item => ({
             time: (item.timestamp / 1000) as UTCTimestamp,

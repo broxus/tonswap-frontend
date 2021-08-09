@@ -2,7 +2,8 @@ import {
     AreaSeriesPartialOptions,
     CandlestickSeriesPartialOptions,
     ChartOptions,
-    DeepPartial, HistogramSeriesPartialOptions,
+    DeepPartial,
+    HistogramSeriesPartialOptions,
 } from 'lightweight-charts'
 
 
@@ -86,8 +87,8 @@ export const histogramOptions: DeepPartial<ChartOptions> = {
     rightPriceScale: {
         borderVisible: false,
         scaleMargins: {
-            top: 0.3,
-            bottom: 0.25,
+            bottom: 0,
+            top: 0.875,
         },
     },
 }
@@ -97,10 +98,10 @@ export const histogramStyles: HistogramSeriesPartialOptions = {
     priceFormat: {
         type: 'volume',
     },
-    priceScaleId: '',
+    // priceScaleId: '',
     scaleMargins: {
         bottom: 0.05,
-        top: 0.6,
+        top: 0.8,
     },
 }
 

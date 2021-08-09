@@ -105,6 +105,7 @@ export class DexAccountService {
 
         await this.syncNonce()
         await this.syncBalances()
+        await this.syncWallets()
         this.runBalancesUpdater()
     }
 

@@ -114,24 +114,18 @@ export function Chart({
             else if (type === 'Line') {
                 setSeries(chart.current?.addLineSeries())
             }
+            chart.current?.timeScale().fitContent()
         }
     }, [chartRef.current])
 
     React.useEffect(() => {
-        (async () => {
-            if (data.length === 0) {
+        if (data.length === 0) {
+            (async () => {
                 await load?.()
-
-                if (chart.current !== undefined) {
-                    setTimeout(() => {
-                        chart.current?.timeScale().resetTimeScale()
-                        // chart.current?.timeScale().scrollToRealTime()
-                        chart.current?.timeScale().fitContent()
-                    }, 10)
-                }
-            }
-        })()
-    }, [data, chart.current, timeframe])
+                chart.current?.timeScale().fitContent()
+            })()
+        }
+    }, [data])
 
     React.useEffect(() => {
         if (chart.current !== undefined) {
