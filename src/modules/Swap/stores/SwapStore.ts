@@ -543,7 +543,7 @@ export class SwapStore {
                 }
 
                 if (this.isRightAmountValid) {
-                    if (this.amount && this.expectedAmount) {
+                    if (this.amount && this.expectedAmount && this.pairContract) {
                         const priceLeftToRight = getComputedNoRightAmountPerPrice(
                             this.amount,
                             this.expectedAmount,
@@ -572,23 +572,40 @@ export class SwapStore {
                             this.changeData('priceRightToLeft', priceRightToLeft.toString())
                         }
 
+                        const {
+                            numerator,
+                            denominator,
+                        } = await this.pairContract.methods.getFeeParams({
+                            _answer_id: 0,
+                        }).call()
+
                         if (this.pair.roots?.left?.toString() === this.leftToken?.root) {
                             runInAction(() => {
                                 this.bill.priceImpact = getComputedPriceImpact(
-                                    new BigNumber(leftBalance).div(rightBalance),
-                                    new BigNumber(leftBalance)
-                                        .plus(this.amount || '0')
-                                        .div(new BigNumber(rightBalance).minus(this.expectedAmount || '0')),
+                                    new BigNumber(rightBalance)
+                                        .div(leftBalance)
+                                        .times(
+                                            new BigNumber(this.amount || '0')
+                                                // @ts-ignore
+                                                .times(denominator - numerator)
+                                                .div(denominator),
+                                        ),
+                                    new BigNumber(this.expectedAmount || '0'),
                                 )
                             })
                         }
                         else {
                             runInAction(() => {
                                 this.bill.priceImpact = getComputedPriceImpact(
-                                    new BigNumber(rightBalance).div(leftBalance),
-                                    new BigNumber(rightBalance)
-                                        .plus(this.amount || '0')
-                                        .div(new BigNumber(leftBalance).minus(this.expectedAmount || '0')),
+                                    new BigNumber(leftBalance)
+                                        .div(rightBalance)
+                                        .times(
+                                            new BigNumber(this.amount || '0')
+                                                // @ts-ignore
+                                                .times(denominator - numerator)
+                                                .div(denominator),
+                                        ),
+                                    new BigNumber(this.expectedAmount || '0'),
                                 )
                             })
                         }
