@@ -33,7 +33,7 @@ export const DEFAULT_PAIR_STORE_DATA: PairStoreData = {
 }
 
 export const DEFAULT_PAIR_STORE_STATE: PairStoreState = {
-    graph: 'volume',
+    graph: 'ohlcv',
     isLoading: false,
     isOhlcvGraphLoading: false,
     isTransactionsLoading: false,

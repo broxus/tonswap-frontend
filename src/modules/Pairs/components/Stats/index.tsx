@@ -182,28 +182,6 @@ export function Stats(): JSX.Element {
                                 <ul className="tabs">
                                     <li
                                         className={classNames({
-                                            active: store.graph === 'volume',
-                                        })}
-                                    >
-                                        <a onClick={toggleGraph('volume')}>
-                                            {intl.formatMessage({
-                                                id: 'PAIR_GRAPH_TAB_VOLUME',
-                                            })}
-                                        </a>
-                                    </li>
-                                    <li
-                                        className={classNames({
-                                            active: store.graph === 'tvl',
-                                        })}
-                                    >
-                                        <a onClick={toggleGraph('tvl')}>
-                                            {intl.formatMessage({
-                                                id: 'PAIR_GRAPH_TAB_TVL',
-                                            })}
-                                        </a>
-                                    </li>
-                                    <li
-                                        className={classNames({
                                             active: store.graph === 'ohlcv',
                                         })}
                                     >
@@ -222,6 +200,28 @@ export function Stats(): JSX.Element {
                                             {counterToken?.symbol}
                                             /
                                             {baseToken?.symbol}
+                                        </a>
+                                    </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'volume',
+                                        })}
+                                    >
+                                        <a onClick={toggleGraph('volume')}>
+                                            {intl.formatMessage({
+                                                id: 'PAIR_GRAPH_TAB_VOLUME',
+                                            })}
+                                        </a>
+                                    </li>
+                                    <li
+                                        className={classNames({
+                                            active: store.graph === 'tvl',
+                                        })}
+                                    >
+                                        <a onClick={toggleGraph('tvl')}>
+                                            {intl.formatMessage({
+                                                id: 'PAIR_GRAPH_TAB_TVL',
+                                            })}
                                         </a>
                                     </li>
                                 </ul>

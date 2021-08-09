@@ -1,6 +1,7 @@
 import * as React from 'react'
 import {
     createChart,
+    AutoscaleInfo,
     ChartOptions,
     DeepPartial,
     IChartApi,
@@ -138,9 +139,9 @@ export function Chart({
             let seriesMaxValue: number | undefined
             series?.setData(data)
             data.forEach(d => {
-                const testValue = (d as CommonGraphShape).value
-                if (testValue !== undefined) {
-                    const parsed = parseFloat(testValue)
+                const { value } = d as CommonGraphShape
+                if (value !== undefined) {
+                    const parsed = parseFloat(value)
                     if (seriesMaxValue !== undefined) {
                         if (seriesMaxValue < parsed) {
                             seriesMaxValue = parsed
@@ -152,13 +153,17 @@ export function Chart({
                 }
             })
             series?.applyOptions({
-                autoscaleInfoProvider: original => {
+                autoscaleInfoProvider: (
+                    original: () => AutoscaleInfo | null,
+                ): AutoscaleInfo | null => {
                     const res = original()
                     if (res !== null && seriesMaxValue !== undefined) {
-                        if (res.priceRange.maxValue < seriesMaxValue) res.priceRange.maxValue = seriesMaxValue
+                        if (res.priceRange.maxValue < seriesMaxValue) {
+                            res.priceRange.maxValue = seriesMaxValue
+                        }
                     }
                     return res
-                }
+                },
             })
             listener.current = handler
             chart.current?.timeScale().subscribeVisibleTimeRangeChange(listener.current)
