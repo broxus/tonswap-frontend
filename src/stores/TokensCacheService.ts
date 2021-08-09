@@ -144,7 +144,7 @@ export class TokensCacheService {
      * @param {string} root
      * @param {string} balance
      */
-    public updateTokenBalance(root: string, balance: string): void {
+    public updateTokenBalance(root: string, balance: string | undefined): void {
         const token = this.tokens.find(t => t.root === root)
         if (token) {
             token.balance = balance
@@ -186,7 +186,7 @@ export class TokensCacheService {
                 this.updateTokenBalance(token.root, walletTokenBalance)
             }
             catch (e) {
-                this.updateTokenBalance(token.root, '0')
+                this.updateTokenBalance(token.root, undefined)
             }
         }
 
