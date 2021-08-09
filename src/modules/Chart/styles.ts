@@ -86,10 +86,10 @@ export const histogramOptions: DeepPartial<ChartOptions> = {
     },
     rightPriceScale: {
         borderVisible: false,
-        scaleMargins: {
-            bottom: 0,
-            top: 0.875,
-        },
+        // scaleMargins: {
+        //     bottom: 0,
+        //     top: 0.875,
+        // },
     },
 }
 
@@ -99,9 +99,9 @@ export const histogramStyles: HistogramSeriesPartialOptions = {
         type: 'volume',
     },
     // priceScaleId: '',
-    scaleMargins: {
-        bottom: 0.05,
-        top: 0.8,
-    },
+    // scaleMargins: {
+    //     bottom: 0.05,
+    //     top: 0.8,
+    // },
 }
 

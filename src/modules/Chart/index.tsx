@@ -114,6 +114,7 @@ export function Chart({
             else if (type === 'Line') {
                 setSeries(chart.current?.addLineSeries())
             }
+            chart.current?.timeScale().resetTimeScale()
             chart.current?.timeScale().fitContent()
         }
     }, [chartRef.current])
@@ -122,6 +123,7 @@ export function Chart({
         if (data.length === 0) {
             (async () => {
                 await load?.()
+                chart.current?.timeScale().resetTimeScale()
                 chart.current?.timeScale().fitContent()
             })()
         }
@@ -133,7 +135,31 @@ export function Chart({
                 chart.current?.timeScale().unsubscribeVisibleTimeRangeChange(listener.current)
                 listener.current = undefined
             }
+            let seriesMaxValue: number | undefined
             series?.setData(data)
+            data.forEach(d => {
+                const testValue = (d as CommonGraphShape).value
+                if (testValue !== undefined) {
+                    const parsed = parseFloat(testValue)
+                    if (seriesMaxValue !== undefined) {
+                        if (seriesMaxValue < parsed) {
+                            seriesMaxValue = parsed
+                        }
+                    }
+                    else {
+                        seriesMaxValue = parsed
+                    }
+                }
+            })
+            series?.applyOptions({
+                autoscaleInfoProvider: original => {
+                    const res = original()
+                    if (res !== null && seriesMaxValue !== undefined) {
+                        if (res.priceRange.maxValue < seriesMaxValue) res.priceRange.maxValue = seriesMaxValue
+                    }
+                    return res
+                }
+            })
             listener.current = handler
             chart.current?.timeScale().subscribeVisibleTimeRangeChange(listener.current)
         }
