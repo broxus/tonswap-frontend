@@ -1176,12 +1176,18 @@ export class PoolStore {
         this.changeState('isSyncPairBalances', true)
 
         try {
-            const balances = await Dex.pairBalances(new Address(this.pairAddress))
+            const { left, lp, right } = await Dex.pairBalances(new Address(this.pairAddress))
+            const isInverted = this.pairRoots?.left.toString() !== this.leftToken?.root
+
             this.changePoolData('pair', {
                 ...this.pool.pair,
-                balances,
+                balances: {
+                    left: isInverted ? right : left,
+                    lp,
+                    right: isInverted ? left : right,
+                },
             })
-            this.changePoolData('isPoolEmpty', balances.lp === '0')
+            this.changePoolData('isPoolEmpty', lp === '0')
         }
         catch (e) {
             error('DEX account balances error', e)
@@ -1394,15 +1400,23 @@ export class PoolStore {
                 this.changePoolData('newRight', newRightBN.toFixed())
 
                 if (this.leftToken && this.rightToken) {
-                    this.changePoolData('newLeftPrice', newLeftBN.shiftedBy(-this.leftToken.decimals)
-                        .dividedBy(newRightBN.shiftedBy(-this.rightToken.decimals))
-                        .decimalPlaces(this.leftToken.decimals, BigNumber.ROUND_UP)
-                        .toFixed())
+                    this.changePoolData(
+                        'newLeftPrice',
+                        newLeftBN
+                            .shiftedBy(-this.leftToken.decimals)
+                            .dividedBy(newRightBN.shiftedBy(-this.rightToken.decimals))
+                            .decimalPlaces(this.leftToken.decimals, BigNumber.ROUND_UP)
+                            .toFixed(),
+                    )
 
-                    this.changePoolData('newRightPrice', newRightBN.shiftedBy(-this.rightToken.decimals)
-                        .dividedBy(newLeftBN.shiftedBy(-this.leftToken.decimals))
-                        .decimalPlaces(this.rightToken.decimals, BigNumber.ROUND_UP)
-                        .toFixed())
+                    this.changePoolData(
+                        'newRightPrice',
+                        newRightBN
+                            .shiftedBy(-this.rightToken.decimals)
+                            .dividedBy(newLeftBN.shiftedBy(-this.leftToken.decimals))
+                            .decimalPlaces(this.rightToken.decimals, BigNumber.ROUND_UP)
+                            .toFixed(),
+                    )
                 }
             }
             else {
