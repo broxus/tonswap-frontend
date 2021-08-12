@@ -66,7 +66,7 @@ export default {
     POOL_STEP_NOTE_LEAD_CHECK_PAIR: 'Checking pool...',
     POOL_STEP_NOTE_LEAD_CONNECT_ACCOUNT: 'Account not connected',
     POOL_STEP_NOTE_LEAD_CONNECTING_ACCOUNT: 'Connecting account...',
-    POOL_STEP_NOTE_LEAD_POOL_NOT_EXIST: 'Pool not exist',
+    POOL_STEP_NOTE_LEAD_POOL_NOT_EXIST: 'Pool doesn\'t exist',
     POOL_STEP_NOTE_LEAD_POOL_NOT_CONNECTED: 'Pool not connected',
     POOL_STEP_NOTE_LEAD_POOL_CONNECTING: 'Pool connecting...',
     POOL_STEP_NOTE_LEAD_POOL_CREATING: 'Creating pool...',

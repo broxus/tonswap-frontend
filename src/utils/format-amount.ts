@@ -9,8 +9,8 @@ export function formatAmount(value: string = '0', decimals: number = 18): string
     }
 
     if (result.decimalPlaces() > decimals) {
-        return result.dp(decimals, BigNumber.ROUND_DOWN).toString()
+        return result.dp(decimals, BigNumber.ROUND_DOWN).toFixed()
     }
 
-    return result.toString()
+    return result.toFixed()
 }

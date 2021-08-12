@@ -1340,40 +1340,55 @@ export class PoolStore {
                     this.changePoolData('shareChangePercent', '100.0')
                 }
                 else {
-                    this.changePoolData('sharePercent', new BigNumber(this.poolShare || '0')
-                        .plus(this.lpWalletBalance || '0')
-                        .multipliedBy(100)
-                        .dividedBy(new BigNumber(pairLp).plus(this.poolShare || '0'))
-                        .decimalPlaces(8, BigNumber.ROUND_DOWN)
-                        .toFixed())
-                    this.changePoolData('currentSharePercent', new BigNumber(this.lpWalletBalance || '0')
-                        .multipliedBy(100)
-                        .dividedBy(new BigNumber(pairLp))
-                        .decimalPlaces(8, BigNumber.ROUND_DOWN)
-                        .toFixed())
+                    this.changePoolData(
+                        'sharePercent',
+                        new BigNumber(this.poolShare || '0')
+                            .plus(this.lpWalletBalance || '0')
+                            .multipliedBy(100)
+                            .dividedBy(new BigNumber(pairLp).plus(this.poolShare || '0'))
+                            .decimalPlaces(8, BigNumber.ROUND_DOWN)
+                            .toFixed(),
+                    )
+                    this.changePoolData(
+                        'currentSharePercent',
+                        new BigNumber(this.lpWalletBalance || '0')
+                            .multipliedBy(100)
+                            .dividedBy(new BigNumber(pairLp))
+                            .decimalPlaces(8, BigNumber.ROUND_DOWN)
+                            .toFixed(),
+                    )
 
                     if (this.leftToken) {
-                        this.changePoolData('currentShareLeft', new BigNumber(this.lpWalletBalance || '0')
-                            .times(new BigNumber(pairLeft))
-                            .dividedBy(new BigNumber(pairLp))
-                            .decimalPlaces(0, BigNumber.ROUND_DOWN)
-                            .shiftedBy(-this.leftToken.decimals)
-                            .toString())
+                        this.changePoolData(
+                            'currentShareLeft',
+                            new BigNumber(this.lpWalletBalance || '0')
+                                .times(new BigNumber(pairLeft))
+                                .dividedBy(new BigNumber(pairLp))
+                                .decimalPlaces(0, BigNumber.ROUND_DOWN)
+                                .shiftedBy(-this.leftToken.decimals)
+                                .toFixed(),
+                        )
                     }
 
                     if (this.rightToken) {
-                        this.changePoolData('currentShareRight', new BigNumber(this.lpWalletBalance || '0')
-                            .times(new BigNumber(pairRight))
-                            .dividedBy(new BigNumber(pairLp))
-                            .decimalPlaces(0, BigNumber.ROUND_DOWN)
-                            .shiftedBy(-this.rightToken.decimals)
-                            .toString())
+                        this.changePoolData(
+                            'currentShareRight',
+                            new BigNumber(this.lpWalletBalance || '0')
+                                .times(new BigNumber(pairRight))
+                                .dividedBy(new BigNumber(pairLp))
+                                .decimalPlaces(0, BigNumber.ROUND_DOWN)
+                                .shiftedBy(-this.rightToken.decimals)
+                                .toFixed(),
+                        )
                     }
 
-                    this.changePoolData('shareChangePercent', new BigNumber(this.sharePercent || '0')
-                        .minus(this.currentSharePercent || '0')
-                        .decimalPlaces(8, BigNumber.ROUND_DOWN)
-                        .toFixed())
+                    this.changePoolData(
+                        'shareChangePercent',
+                        new BigNumber(this.sharePercent || '0')
+                            .minus(this.currentSharePercent || '0')
+                            .decimalPlaces(8, BigNumber.ROUND_DOWN)
+                            .toFixed(),
+                    )
                 }
 
 
