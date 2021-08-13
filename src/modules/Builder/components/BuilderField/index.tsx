@@ -8,6 +8,7 @@ type Props = {
     label: string;
     type?: string;
     isValid?: boolean;
+    readOnly?: boolean;
     pattern?: string;
     placeholder?: string;
     value?: string;
@@ -41,6 +42,7 @@ function Field({ type = 'text', isValid = true, ...props }: Props): JSX.Element 
                     className="form-input"
                     placeholder={props.placeholder}
                     value={props.value}
+                    readOnly={props.readOnly}
                     pattern={props.pattern}
                     onChange={onChange}
                 />

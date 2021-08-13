@@ -3,12 +3,12 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 
-import { useBuilderStore } from '@/modules/Builder/stores/BuilderStore'
-import { Item } from '@/modules/Builder/components/BuilderTokensList/Item'
 import { useWallet } from '@/stores/WalletService'
+import { Item } from '@/modules/Builder/components/BuilderTokensList/Item'
+import { useBuilderStore } from '@/modules/Builder/stores/BuilderStore'
+import { ContentLoader } from '@/components/common/ContentLoader'
 
 import './index.scss'
-import { ContentLoader } from '@/components/common/ContentLoader'
 
 
 export function TokensList(): JSX.Element {

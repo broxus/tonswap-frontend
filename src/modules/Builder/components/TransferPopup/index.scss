@@ -1,0 +1,18 @@
+.transfer-popup {
+    .warning-block {
+        .text {
+            color: #EB4361;
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 20px;
+
+            &--bold {
+                font-weight: bold;
+            }
+
+            &:not(:last-child) {
+                margin-bottom: 10px;
+            }
+        }
+    }
+}

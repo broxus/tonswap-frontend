@@ -194,6 +194,49 @@
     }
 }
 
+.btn-red {
+    @include btn-reset;
+
+    background-color: #EB4361;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.25px;
+    line-height: 44px;
+    padding: 0 16px;
+    text-align: center;
+
+    &:hover {
+        background-color: darken(#EB4361, 10%);
+        color: white;
+    }
+
+    &:disabled {
+        background-color: #EB4361;
+        color: white;
+        opacity: 0.5;
+    }
+
+    &.btn-lg {
+        font-size: 20px;
+        letter-spacing: 0.15px;
+        line-height: 56px;
+        padding: 0 20px;
+    }
+
+    &.btn-s {
+        font-size: 14px;
+        letter-spacing: 0.75px;
+        line-height: 20px;
+        padding: 8px 16px;
+    }
+
+    &.btn-block {
+        display: block;
+        width: 100%;
+    }
+}
+
 .btn--empty {
     @include btn-reset;
 

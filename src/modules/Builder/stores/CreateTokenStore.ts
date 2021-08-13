@@ -1,6 +1,6 @@
 import {
-    IReactionDisposer,
     action,
+    IReactionDisposer,
     makeAutoObservable,
     reaction,
 } from 'mobx'
@@ -13,11 +13,11 @@ import {
     DEFAULT_CREATE_TOKEN_STORE_STATE,
 } from '@/modules/Builder/constants'
 import {
+    CreateTokenFailureResult,
     CreateTokenStoreData,
     CreateTokenStoreState,
-    CreateTokenTransactionResult,
     CreateTokenSuccessResult,
-    CreateTokenFailureResult,
+    CreateTokenTransactionResult,
 } from '@/modules/Builder/types'
 import { saveTokenToLocalStorage } from '@/modules/Builder/utils'
 import { useWallet, WalletService } from '@/stores/WalletService'

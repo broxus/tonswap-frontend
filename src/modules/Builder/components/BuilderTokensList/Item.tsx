@@ -1,6 +1,6 @@
 import * as React from 'react'
+import { Link } from 'react-router-dom'
 
-import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Token } from '@/modules/Builder/types'
 
 
@@ -8,11 +8,10 @@ type Props = {
     token: Token;
 }
 
-
 export function Item({ token }: Props): JSX.Element {
     return (
-        <AccountExplorerLink address={token.root} className="list__row">
-            <div className="list__cell list__cell--left">
+        <Link to={`/builder/${token.root}`} className="list__row list__row--pointer">
+            <div className="list__cell list__cell--center">
                 {token.name}
             </div>
             <div className="list__cell list__cell--center">
@@ -24,6 +23,6 @@ export function Item({ token }: Props): JSX.Element {
             <div className="list__cell list__cell--center">
                 {token.total_supply}
             </div>
-        </AccountExplorerLink>
+        </Link>
     )
 }
