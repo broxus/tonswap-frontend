@@ -25,6 +25,7 @@ import Token from '@/pages/tokens/item'
 import { noop } from '@/utils'
 
 import './App.scss'
+import { ManageToken } from '@/modules/Builder/manageToken'
 
 
 export function App(): JSX.Element {
@@ -73,6 +74,9 @@ export function App(): JSX.Element {
                             </Route>
                             <Route path="/builder/create">
                                 <CreateToken />
+                            </Route>
+                            <Route exact path="/builder/:tokenRoot">
+                                <ManageToken />
                             </Route>
                         </Switch>
                     </main>

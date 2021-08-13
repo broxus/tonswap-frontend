@@ -20,3 +20,48 @@
         font-weight: 400;
     }
 }
+
+.manage-token {
+    .card-parts {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        column-gap: 40px;
+
+        &__part {
+            flex-grow: 1;
+        }
+    }
+
+    .card-block {
+        margin-bottom: 32px;
+        padding: 12px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+
+        &--alert {
+            border: 1px solid #EB4361;
+        }
+
+        &__title {
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        &__action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            &__name {
+                font-size: 1.6rem;
+                font-weight: bold;
+            }
+
+            &__description {
+                margin-top: 4px;
+                font-size: 1.4rem;
+            }
+        }
+    }
+}
