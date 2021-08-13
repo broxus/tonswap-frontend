@@ -1,7 +1,7 @@
 import {
     Address,
-    FullContractState,
     DecodedAbiFunctionInputs,
+    FullContractState,
     Transaction,
 } from 'ton-inpage-provider'
 
@@ -33,6 +33,22 @@ export type CreateTokenTransactionResult = {
     root?: string;
     success: boolean;
     symbol?: string;
+}
+
+export type ManageTokenStoreData = {
+    token?: Token,
+    tokenCache?: FullContractState,
+    targetAddress: string;
+    targetWalletBalance: string;
+    amountToMint: string;
+    newOwnerAddress: string;
+}
+
+export type ManageTokenStoreState = {
+    tokenRoot: string,
+    isLoading: boolean,
+    isMinting: boolean,
+    isTransfer: boolean,
 }
 
 export type Token = {

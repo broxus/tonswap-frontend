@@ -44,6 +44,27 @@ const baseConfig = {
             ts: 'never',
             tsx: 'never',
         }],
+        'import/order': ['error', {
+            'newlines-between': 'always',
+            groups: [
+                ['builtin', 'external'],
+                'internal',
+                ['parent', 'sibling'],
+                'index'
+            ],
+            pathGroups: [
+                {
+                    pattern: '@/**',
+                    group: 'internal'
+                }
+            ],
+            pathGroupsExcludedImportTypes: ['builtin']
+        }],
+        'sort-imports': ['error', {
+            allowSeparatedGroups: true,
+            ignoreCase: true,
+            ignoreDeclarationSort: true,
+        }],
 
         // Style
         'array-bracket-spacing': 'warn',

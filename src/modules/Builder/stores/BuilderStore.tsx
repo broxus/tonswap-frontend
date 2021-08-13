@@ -1,6 +1,6 @@
 import {
-    IReactionDisposer,
     action,
+    IReactionDisposer,
     makeAutoObservable,
     reaction,
 } from 'mobx'

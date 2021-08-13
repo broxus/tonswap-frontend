@@ -10,7 +10,7 @@ export function getComputedPriceImpact(
         .abs()
         .times(100)
         .dp(2, BigNumber.ROUND_UP)
-        .toString()
+        .toFixed()
 }
 
 export function getComputedDefaultPerPrice(

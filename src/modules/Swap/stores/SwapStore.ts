@@ -199,7 +199,7 @@ export class SwapStore {
             Math.floor(
                 Math.random() * (Number.MAX_SAFE_INTEGER - 1),
             ) + 1,
-        ).toString()
+        ).toFixed()
 
         const {
             value0: payload,
@@ -398,8 +398,8 @@ export class SwapStore {
                     rightDecimals,
                 ))
 
-                const leftDecimalsM = new BigNumber(10).pow(this.leftToken?.decimals || 0).toString()
-                const rightDecimalsM = new BigNumber(10).pow(this.rightToken?.decimals || 0).toString()
+                const leftDecimalsM = new BigNumber(10).pow(this.leftToken?.decimals || 0).toFixed()
+                const rightDecimalsM = new BigNumber(10).pow(this.rightToken?.decimals || 0).toFixed()
 
                 if (
                     (
@@ -414,7 +414,7 @@ export class SwapStore {
                             new BigNumber(this.rightAmount)
                                 .times(rightDecimalsM)
                                 .dp(0, BigNumber.ROUND_DOWN)
-                                .toString()
+                                .toFixed()
                         )
 
                         this.bill.minExpectedAmount = (
@@ -422,7 +422,7 @@ export class SwapStore {
                                 .div(100)
                                 .times(new BigNumber(100).minus(this.slippage))
                                 .dp(0, BigNumber.ROUND_DOWN)
-                                .toString()
+                                .toFixed()
                         )
                     })
 
@@ -443,13 +443,13 @@ export class SwapStore {
                         const newBPool = new BigNumber(bPool)
                             .minus(this.expectedAmount || '0')
                             .dp(0, BigNumber.ROUND_DOWN)
-                            .toString()
+                            .toFixed()
 
                         const newAPool = new BigNumber(aPool)
                             .times(bPool)
                             .div(newBPool)
                             .dp(0, BigNumber.ROUND_DOWN)
-                            .toString()
+                            .toFixed()
 
                         const expectedAmount = new BigNumber(newAPool)
                             .minus(aPool)
@@ -481,9 +481,9 @@ export class SwapStore {
                         }
                         else {
                             runInAction(() => {
-                                this.bill.amount = expectedAmount.toString()
-                                this.bill.fee = expectedFee.toString()
-                                this.data.leftAmount = expectedAmount.div(leftDecimalsM).toString()
+                                this.bill.amount = expectedAmount.toFixed()
+                                this.bill.fee = expectedFee.toFixed()
+                                this.data.leftAmount = expectedAmount.div(leftDecimalsM).toFixed()
                             })
                         }
                     }
@@ -497,7 +497,7 @@ export class SwapStore {
                         this.bill.amount = new BigNumber(this.leftAmount || '0')
                             .times(leftDecimalsM)
                             .dp(0, BigNumber.ROUND_DOWN)
-                            .toString()
+                            .toFixed()
                     })
 
                     if (this.pairContract) {
@@ -511,14 +511,14 @@ export class SwapStore {
                         }).call()
 
                         runInAction(() => {
-                            this.bill.fee = expectedFee.toString()
-                            this.bill.expectedAmount = expectedAmount.toString()
+                            this.bill.fee = expectedFee
+                            this.bill.expectedAmount = expectedAmount
                             this.bill.minExpectedAmount = (
                                 new BigNumber(this.expectedAmount || '0')
                                     .div(100)
                                     .times(new BigNumber(100).minus(this.slippage))
                                     .dp(0, BigNumber.ROUND_DOWN)
-                                    .toString()
+                                    .toFixed()
                             )
                         })
 
@@ -555,7 +555,7 @@ export class SwapStore {
                             && !priceLeftToRight.isNaN()
                             && priceLeftToRight.gt(0)
                         ) {
-                            this.changeData('priceLeftToRight', priceLeftToRight.toString())
+                            this.changeData('priceLeftToRight', priceLeftToRight.toFixed())
                         }
 
                         const priceRightToLeft = getComputedNoRightAmountPerPrice(
@@ -569,7 +569,7 @@ export class SwapStore {
                             && !priceRightToLeft.isNaN()
                             && priceRightToLeft.gt(0)
                         ) {
-                            this.changeData('priceRightToLeft', priceRightToLeft.toString())
+                            this.changeData('priceRightToLeft', priceRightToLeft.toFixed())
                         }
 
                         const {
@@ -653,7 +653,7 @@ export class SwapStore {
             this.changeData('slippage', '0.5')
         }
         else {
-            this.changeData('slippage', val.toString())
+            this.changeData('slippage', val.toFixed())
         }
 
         if (this.expectedAmount) {
@@ -661,7 +661,7 @@ export class SwapStore {
                 .div(100)
                 .times(new BigNumber(100).minus(this.slippage))
                 .dp(0, BigNumber.ROUND_DOWN)
-                .toString()
+                .toFixed()
         }
     }
 
