@@ -149,7 +149,6 @@ export function Pool(): JSX.Element {
                         {pool.isDexAccountDataAvailable && (
                             <PoolDexAccountData key="dexAccount" />
                         )}
-
                     </>
                 )}
             </Observer>
@@ -157,7 +156,6 @@ export function Pool(): JSX.Element {
             <Observer>
                 {() => (
                     <PoolRootsInfo key="rootsInfo" />
-
                 )}
             </Observer>
 
@@ -167,7 +165,6 @@ export function Pool(): JSX.Element {
                         key="transaction"
                         onDismiss={form.onDismissTransactionReceipt}
                     />
-
                 )}
             </Observer>
 
