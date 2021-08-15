@@ -38,7 +38,7 @@ function DexAccountData(): JSX.Element | null {
     }
 
     return (
-        <div className="list-bill">
+        <div className="list-bill list-bill--pool">
             <div className="list-bill__row">
                 <div className="list-bill__info">
                     {intl.formatMessage({

@@ -1,7 +1,7 @@
 import { Mutex } from '@broxus/await-semaphore'
 import {
-    ObservableMap,
     makeAutoObservable,
+    ObservableMap,
     reaction,
     runInAction,
 } from 'mobx'
@@ -9,7 +9,7 @@ import ton, { Address, Subscription } from 'ton-inpage-provider'
 
 import { TokenWallet } from '@/misc/token-wallet'
 import { TokensListService, useTokensList } from '@/stores/TokensListService'
-import { WalletService, useWallet } from '@/stores/WalletService'
+import { useWallet, WalletService } from '@/stores/WalletService'
 import { debug, error } from '@/utils'
 
 
@@ -119,6 +119,14 @@ export class TokensCacheService {
      */
     public get tokens(): TokenCache[] {
         return this.data.tokens
+    }
+
+    /**
+     * Returns list of the cached tokens root addresses.
+     * @returns {string[]}
+     */
+    public get roots(): string[] {
+        return this.tokens.map(token => token.root)
     }
 
     /**

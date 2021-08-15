@@ -11,6 +11,7 @@ import {
     PairsStoreData,
     PairsStoreState,
 } from '@/modules/Pairs/types'
+import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 
 
 export class PairsStore {
@@ -27,7 +28,7 @@ export class PairsStore {
      */
     protected state: PairsStoreState = DEFAULT_PAIRS_STORE_STATE
 
-    constructor() {
+    constructor(protected readonly tokensCache: TokensCacheService) {
         makeAutoObservable(this)
     }
 
@@ -102,10 +103,13 @@ export class PairsStore {
      */
 
     /**
-     *
+     * @returns {PairsStoreData['pairs']}
      */
     public get pairs(): PairsStoreData['pairs'] {
-        return this.data.pairs
+        return this.data.pairs.filter(({ meta }) => (
+            this.tokensCache.roots.includes(meta.baseAddress)
+            && this.tokensCache.roots.includes(meta.counterAddress)
+        ))
     }
 
     /*
@@ -156,7 +160,7 @@ export class PairsStore {
 }
 
 
-const Pairs = new PairsStore()
+const Pairs = new PairsStore(useTokensCache())
 
 export function usePairsStore(): PairsStore {
     return Pairs

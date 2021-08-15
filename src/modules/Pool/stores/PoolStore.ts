@@ -2,10 +2,10 @@ import BigNumber from 'bignumber.js'
 import * as E from 'fp-ts/Either'
 import isEqual from 'lodash.isequal'
 import {
-    IReactionDisposer,
     action,
+    IReactionDisposer,
     makeAutoObservable,
-    reaction,
+    reaction, runInAction,
 } from 'mobx'
 import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
 
@@ -363,6 +363,13 @@ export class PoolStore {
         this.cleanDepositLiquidityResult()
         this.changeState('isDepositingLiquidity', true)
 
+        try {
+            await this.dex.syncNonce()
+        }
+        catch (e) {
+            error('Nonce sync error', e)
+        }
+
         const owner = new Contract(DexAbi.Callbacks, new Address(this.wallet.address))
 
         let stream = this.#transactionSubscriber?.transactions(
@@ -639,7 +646,7 @@ export class PoolStore {
      * @param {DepositLiquiditySuccessResult['transaction']} transaction
      * @protected
      */
-    protected handleLiquiditySuccess({ input, transaction }: DepositLiquiditySuccessResult): void {
+    protected async handleLiquiditySuccess({ input, transaction }: DepositLiquiditySuccessResult): Promise<void> {
         if (
             !transaction
             || !this.wallet.address
@@ -648,10 +655,16 @@ export class PoolStore {
             || !this.rightToken
             || !this.pairBalances
             || !this.lpRoot
-            || !this.lpWalletBalance
             || !this.lpDecimals
         ) {
             return
+        }
+
+        try {
+            await this.syncLpBalance()
+        }
+        catch (e) {
+            error('Transaction LP Wallet balance error', e)
         }
 
         const leftDecimals = this.leftToken.decimals
@@ -684,7 +697,7 @@ export class PoolStore {
             this.isPoolEmpty
                 ? '100.0'
                 : new BigNumber(poolShare)
-                    .plus(lpWalletBalance)
+                    .plus(lpWalletBalance || '0')
                     .multipliedBy(100)
                     .dividedBy(new BigNumber(pairLpBalance).plus(poolShare))
                     .decimalPlaces(8, BigNumber.ROUND_DOWN)
@@ -694,7 +707,7 @@ export class PoolStore {
             'currentSharePercent',
             this.isPoolEmpty
                 ? '0.0'
-                : new BigNumber(lpWalletBalance)
+                : new BigNumber(lpWalletBalance || '0')
                     .multipliedBy(100)
                     .dividedBy(new BigNumber(pairLpBalance))
                     .decimalPlaces(8, BigNumber.ROUND_DOWN)
@@ -745,32 +758,34 @@ export class PoolStore {
         this.changePoolData('newLeftPrice', newLeftPrice)
         this.changePoolData('newRightPrice', newRightPrice)
 
-        this.depositLiquidityReceipt = {
-            success: true,
-            successData: {
-                leftDecimals,
-                rightDecimals,
-                leftDeposit,
-                rightDeposit,
-                hash: transaction.id.hash,
-                leftSymbol,
-                rightSymbol,
-                lpDecimals,
-                lpRoot,
-                newLeft,
-                newRight,
-                newLeftPrice,
-                newRightPrice,
-                currentSharePercent,
-                share: poolShare,
-                shareChangePercent,
-                sharePercent,
-            },
-            errorData: undefined,
-        }
+        runInAction(() => {
+            this.depositLiquidityReceipt = {
+                success: true,
+                successData: {
+                    leftDecimals,
+                    rightDecimals,
+                    leftDeposit,
+                    rightDeposit,
+                    hash: transaction.id.hash,
+                    leftSymbol,
+                    rightSymbol,
+                    lpDecimals,
+                    lpRoot,
+                    newLeft,
+                    newRight,
+                    newLeftPrice,
+                    newRightPrice,
+                    currentSharePercent,
+                    share: poolShare,
+                    shareChangePercent,
+                    sharePercent,
+                },
+                errorData: undefined,
+            }
 
-        this.data.leftAmount = ''
-        this.data.rightAmount = ''
+            this.data.leftAmount = ''
+            this.data.rightAmount = ''
+        })
         this.setStep(AddLiquidityStep.CHECK_PAIR)
         this.unsubscribeTransactionSubscriber().catch(reason => error(reason))
     }
@@ -785,16 +800,20 @@ export class PoolStore {
             return
         }
 
-        this.depositLiquidityReceipt = {
-            success: false,
-            errorData: {
-                leftSymbol: this.leftToken.symbol,
-                rightSymbol: this.rightToken.symbol,
-            },
-            successData: undefined,
-        }
-        this.changeData('leftAmount', '')
-        this.changeData('rightAmount', '')
+        runInAction(() => {
+            this.depositLiquidityReceipt = {
+                success: false,
+                errorData: {
+                    leftSymbol: (this.leftToken as TokenCache).symbol,
+                    rightSymbol: (this.rightToken as TokenCache).symbol,
+                },
+                successData: undefined,
+            }
+
+            this.data.leftAmount = ''
+            this.data.rightAmount = ''
+        })
+
         this.changeState('isDepositingLiquidity', false)
     }
 

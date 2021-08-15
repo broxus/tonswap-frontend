@@ -11,6 +11,7 @@ import {
     CurrenciesStoreData,
     CurrenciesStoreState,
 } from '@/modules/Currencies/types'
+import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 
 
 export class CurrenciesStore {
@@ -27,7 +28,7 @@ export class CurrenciesStore {
      */
     protected state: CurrenciesStoreState = DEFAULT_CURRENCIES_STORE_STATE
 
-    constructor() {
+    constructor(protected readonly tokensCache: TokensCacheService) {
         makeAutoObservable(this)
     }
 
@@ -99,10 +100,12 @@ export class CurrenciesStore {
      */
 
     /**
-     *
+     * @returns {CurrenciesStoreData['currencies']}
      */
     public get currencies(): CurrenciesStoreData['currencies'] {
-        return this.data.currencies
+        return this.data.currencies.filter(
+            currency => this.tokensCache.roots.includes(currency.address),
+        )
     }
 
     /*
@@ -153,7 +156,7 @@ export class CurrenciesStore {
 }
 
 
-const Currencies = new CurrenciesStore()
+const Currencies = new CurrenciesStore(useTokensCache())
 
 export function useCurrenciesStore(): CurrenciesStore {
     return Currencies

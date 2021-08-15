@@ -126,6 +126,23 @@ export class DexAccountService {
     }
 
     /**
+     * Sync DEX account nonce
+     * @protected
+     * @returns {Promise<void>}
+     */
+    public async syncNonce(): Promise<void> {
+        if (!this.address) {
+            return
+        }
+
+        const nonce = await Dex.accountNonce(new Address(this.address))
+
+        runInAction(() => {
+            this.data.nonce = (parseInt(nonce, 10) + 1).toString()
+        })
+    }
+
+    /**
      * Sync DEX account wallets
      * @returns {Promise<void>}
      */
@@ -218,23 +235,6 @@ export class DexAccountService {
         this.#balancesInterval = setInterval(async () => {
             await this.syncBalances()
         }, 5000)
-    }
-
-    /**
-     * Sync DEX account nonce
-     * @protected
-     * @returns {Promise<void>}
-     */
-    protected async syncNonce(): Promise<void> {
-        if (!this.address) {
-            return
-        }
-
-        const nonce = await Dex.accountNonce(new Address(this.address))
-
-        runInAction(() => {
-            this.data.nonce = (parseInt(nonce, 10) + 1).toString()
-        })
     }
 
     /**
