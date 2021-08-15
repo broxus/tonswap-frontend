@@ -46,3 +46,8 @@ export const DEFAULT_CREATE_FARM_POOL_STORE_DATA: CreateFarmPoolStoreData = {
 export const DEFAULT_CREATE_FARM_POOL_STORE_STATE: CreateFarmPoolStoreState = {
     isCreating: false,
 }
+
+export const OWNERS_WHITE_LIST = [
+    '0:963fb292d374584ffbc22bcd4ced88e2c1d6449df143739a77d0d26a7d610472',
+    '0:de364b2ebc86bd2d7cd2d7ac5b17d5c55e2335400e54b2984b66aad5c87188bc',
+]
