@@ -11,7 +11,8 @@ import {
     CurrenciesStoreData,
     CurrenciesStoreState,
 } from '@/modules/Currencies/types'
-import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
+import { getImportedTokens, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
+import { DexConstants } from '@/misc'
 
 
 export class CurrenciesStore {
@@ -71,9 +72,11 @@ export class CurrenciesStore {
         this.changeState('isLoading', true)
 
         const body: CurrenciesRequest = {
+            currencyAddresses: getImportedTokens(),
             limit: this.limit,
             offset: this.currentPage >= 1 ? (this.currentPage - 1) * this.limit : 0,
             ordering: this.ordering,
+            whiteListUri: DexConstants.TokenListURI,
         }
         const response = await fetch(`${API_URL}/currencies`, {
             body: JSON.stringify(body),

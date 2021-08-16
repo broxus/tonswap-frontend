@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
@@ -17,7 +18,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
     const intl = useIntl()
     const pool = usePool()
 
-    return pool.transaction ? (
+    return pool.transaction ? ReactDOM.createPortal(
         <div className="popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
@@ -190,7 +191,8 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                     })}
                 </button>
             </div>
-        </div>
+        </div>,
+        document.body,
     ) : null
 }
 

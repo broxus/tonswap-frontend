@@ -11,7 +11,8 @@ import {
     PairsStoreData,
     PairsStoreState,
 } from '@/modules/Pairs/types'
-import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
+import { getImportedTokens, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
+import { DexConstants } from '@/misc'
 
 
 export class PairsStore {
@@ -74,9 +75,11 @@ export class PairsStore {
         this.changeState('isLoading', true)
 
         const body: PairsRequest = {
+            currencyAddresses: getImportedTokens(),
             limit: this.limit,
             offset: this.currentPage >= 1 ? (this.currentPage - 1) * this.limit : 0,
             ordering: this.ordering,
+            whiteListUri: DexConstants.TokenListURI,
         }
         const response = await fetch(`${API_URL}/pairs`, {
             body: JSON.stringify(body),

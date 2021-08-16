@@ -1,16 +1,15 @@
 import { Mutex } from '@broxus/await-semaphore'
 import {
     makeAutoObservable,
-    ObservableMap,
     reaction,
     runInAction,
 } from 'mobx'
 import ton, { Address, Subscription } from 'ton-inpage-provider'
 
-import { TokenWallet } from '@/misc/token-wallet'
+import { isAddressValid, TokenWallet } from '@/misc'
 import { TokensListService, useTokensList } from '@/stores/TokensListService'
 import { useWallet, WalletService } from '@/stores/WalletService'
-import { debug, error } from '@/utils'
+import { debug, error, storage } from '@/utils'
 
 
 export type TokenCache = {
@@ -28,7 +27,14 @@ export type TokenCache = {
 
 export type TokensCacheData = {
     tokens: TokenCache[];
-    tokensMap: ObservableMap<string, TokenCache>;
+    tokensMap: Record<string, TokenCache>;
+}
+
+export const IMPORTED_TOKENS_STORAGE_KEY = 'imported_tokens'
+
+
+export function getImportedTokens(): string[] {
+    return JSON.parse(storage.get(IMPORTED_TOKENS_STORAGE_KEY) || '[]')
 }
 
 
@@ -41,7 +47,7 @@ export class TokensCacheService {
      */
     protected data: TokensCacheData = {
         tokens: [],
-        tokensMap: new ObservableMap<string, TokenCache>(),
+        tokensMap: {},
     }
 
     constructor(
@@ -49,33 +55,34 @@ export class TokensCacheService {
         protected readonly tokensList: TokensListService,
     ) {
         makeAutoObservable(this)
+
         // When the Tokens List Service has loaded the list of
         // available tokens, we will start creating a token map
         reaction(
             () => [this.tokensList.time, this.wallet.address],
-            (
+            async (
                 [time, address],
                 [prevTime, prevAddress],
             ) => {
                 if (time !== prevTime || address !== prevAddress) {
-                    this.build()
+                    await this.build()
                 }
             },
             { delay: 100 },
         )
 
         // Update tokens map when tokens list was changed
-        reaction(() => this.data.tokens, tokens => {
+        reaction(() => this.tokens, tokens => {
             if (tokens.length === 0) {
-                this.data.tokensMap.clear()
+                this.data.tokensMap = {}
                 return
             }
 
-            const entries: [string, TokenCache][] = []
+            const entries: TokensCacheData['tokensMap'] = {}
             tokens.forEach(token => {
-                entries.push([token.root, token])
+                entries[token.root] = token
             })
-            this.data.tokensMap.replace(entries)
+            this.data.tokensMap = entries
         })
 
         this.#tokensBalancesSubscribers = new Map<string, Subscription<'contractStateChanged'>>()
@@ -85,9 +92,9 @@ export class TokensCacheService {
     /**
      * Create a tokens list based on the loaded list of
      * tokens in the related `TokensListCache` service.
-     * @private
+     * @protected
      */
-    protected build(): void {
+    protected async build(): Promise<void> {
         if (this.tokensList.tokens.length === 0) {
             return
         }
@@ -104,11 +111,18 @@ export class TokensCacheService {
                 name: token.name,
                 root: token.address,
                 symbol: token.symbol,
-                updatedAt: -1,
+                updatedAt: Date.now(),
                 wallet: undefined,
             }
             tokens.push(cache)
         })
+
+        const importedTokens = getImportedTokens()
+
+        if (importedTokens.length > 0) {
+            const results = await Promise.all(importedTokens.map(root => TokenWallet.getTokenData(root)))
+            tokens.push(...results as unknown as TokenCache[])
+        }
 
         this.data.tokens = tokens
     }
@@ -135,7 +149,7 @@ export class TokensCacheService {
      * @returns {TokenCache}
      */
     public get(key: string): TokenCache | undefined {
-        return this.data.tokensMap.get(key)
+        return this.data.tokensMap[key]
     }
 
     /**
@@ -143,7 +157,60 @@ export class TokensCacheService {
      * @param {TokenCache} token
      */
     public store(token: TokenCache): void {
-        this.data.tokens.push(token)
+        const tokens = this.tokens.slice()
+        tokens.push(token)
+        this.data.tokens = tokens
+    }
+
+    /**
+     * Check if token was stored to the cache.
+     * @param {string} root
+     * @returns {boolean}
+     */
+    public isStored(root: string): boolean {
+        return this.get(root) !== undefined
+    }
+
+    /**
+     * Search token by the given query string.
+     * Query string can be a token symbol, name or address.
+     * @param {string} query
+     * @returns {TokenCache[]}
+     */
+    public async search(query: string): Promise<TokenCache[]> {
+        const filtered = this.tokens.filter(token => (
+            token.symbol?.toLowerCase?.().indexOf(query?.toLowerCase?.()) > -1
+            || token.name?.toLowerCase?.().indexOf(query?.toLowerCase?.()) > -1
+            || token.root?.toLowerCase?.().indexOf(query?.toLowerCase?.()) > -1
+        ))
+
+        if (filtered.length === 0 && isAddressValid(query)) {
+            const token = await TokenWallet.getTokenData(query)
+            if (token !== undefined) {
+                filtered.push(token as unknown as TokenCache)
+            }
+        }
+
+        return filtered
+    }
+
+    /**
+     * Import custom token to the list.
+     * Saves token root address to the localStorage.
+     * @param {TokenCache} token
+     */
+    public import(token: TokenCache): void {
+        try {
+            const importedTokens = getImportedTokens()
+            if (!importedTokens.includes(token.root)) {
+                importedTokens.push(token.root)
+                storage.set(IMPORTED_TOKENS_STORAGE_KEY, JSON.stringify(importedTokens))
+            }
+            this.store(token)
+        }
+        catch (e) {
+            error('Can\'t import token', e)
+        }
     }
 
     /**
@@ -317,7 +384,7 @@ export class TokensCacheService {
      * @param {string} walletAddress
      * @returns {Promise<void>}
      */
-    private async updateTokenWalletAddress(root: string, walletAddress: string): Promise<void> {
+    protected async updateTokenWalletAddress(root: string, walletAddress: string): Promise<void> {
         if (!root || !walletAddress) {
             return
         }

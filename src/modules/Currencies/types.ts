@@ -38,9 +38,11 @@ export type CurrenciesStoreState = {
 }
 
 export type CurrenciesRequest = {
+    currencyAddresses?: string[];
     limit: number;
     offset: number;
-    ordering: CurrenciesOrdering;
+    ordering?: CurrenciesOrdering;
+    whiteListUri?: string;
 }
 
 export type CurrencyResponse = CurrencyInfo

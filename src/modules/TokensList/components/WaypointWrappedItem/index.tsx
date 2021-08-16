@@ -15,7 +15,7 @@ export function WaypointWrappedItem(props: Props): JSX.Element {
         <Waypoint onPositionChange={onPositionChange}>
             <div
                 className="popup-item-wrapper"
-                style={{ height: visible ? '' : 60 }}
+                style={{ height: visible ? '' : 60, minHeight: visible ? '' : 60 }}
             >
                 {visible && (
                     <Item {...props} />

@@ -44,7 +44,7 @@ export function ManageToken(): JSX.Element {
                     })}
                 </h2>
             </header>
-            <div className="card">
+            <div className="card card--flat">
                 <div className="card__wrap">
                     <Observer>
                         {() => (managingToken.isLoading ? (

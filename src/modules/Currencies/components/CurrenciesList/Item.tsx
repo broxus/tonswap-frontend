@@ -28,10 +28,10 @@ export function Item({ currency, idx }: Props): JSX.Element {
             <div className="list__cell hide-540">{idx}</div>
             <div className="list__cell">
                 <div className="list__cell-inner">
-                    <div>
+                    <div className="currencies-list__token-icon-wrapper">
                         <TokenIcon
                             address={currency.address}
-                            className="currency-page__token-icon"
+                            className="currencies-list__token-icon"
                             name={token?.symbol}
                             small
                             uri={token?.icon}

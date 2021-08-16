@@ -27,7 +27,9 @@ export function Item({ pool }: Props): JSX.Element {
             <div className="list__row">
                 <div className="list__trigger-cell farming-list__trigger-cell" onClick={toggleExpand}>
                     <div className="list__cell-inner">
-                        <UserAvatar address={pool.tokenRoot} small />
+                        <div className="farming-list__token-icon-wrapper">
+                            <UserAvatar address={pool.tokenRoot} small />
+                        </div>
                         <div>
                             <h3 className="farming-list__token-name">
                                 {pool.tokenSymbol}
