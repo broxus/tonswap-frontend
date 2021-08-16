@@ -1,4 +1,5 @@
 import * as React from 'react'
+import classNames from 'classnames'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
@@ -7,6 +8,7 @@ import { WaypointWrappedItem } from '@/modules/TokensList/components'
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 
 import './index.scss'
+import * as ReactDOM from 'react-dom'
 
 
 type Props = {
@@ -20,7 +22,29 @@ export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.El
     const intl = useIntl()
     const tokensCache = useTokensCache()
 
-    return (
+    const [query, setSearchQuery] = React.useState<string>()
+    const [searchResults, setSearchResults] = React.useState<TokenCache[]>([])
+
+    const tokens = React.useMemo(() => (
+        (query !== undefined || searchResults.length > 0)
+            ? searchResults
+            : tokensCache.tokens
+    ), [query, searchResults, tokensCache.tokens])
+
+    const onChangeSearchInput = React.useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target
+        if (value.length > 0) {
+            setSearchQuery(value)
+            const results = await tokensCache.search(value)
+            setSearchResults(results)
+        }
+        else {
+            setSearchQuery(undefined)
+            setSearchResults([])
+        }
+    }, [query, searchResults])
+
+    return ReactDOM.createPortal(
         <div className="popup">
             <div onClick={onDismiss} className="popup-overlay" />
             <div className="popup__wrap popup__wrap--list">
@@ -43,23 +67,36 @@ export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.El
                         placeholder={intl.formatMessage({
                             id: 'TOKENS_LIST_POPUP_FIELD_SEARCH_PLACEHOLDER',
                         })}
+                        value={query}
+                        onChange={onChangeSearchInput}
                     />
                 </form>
                 <Observer>
                     {() => (
-                        <div className="popup-list">
-                            {tokensCache.tokens.map(token => (
+                        <div
+                            className={classNames('popup-list', {
+                                'popup-list__no-results': tokens.length === 0,
+                            })}
+                        >
+                            {tokens.length > 0 ? tokens.map(token => (
                                 <WaypointWrappedItem
                                     key={token.root}
                                     disabled={currentToken?.root === token.root}
                                     token={token}
                                     onSelect={props.onSelectToken}
                                 />
-                            ))}
+                            )) : (
+                                <div className="popup-search__message">
+                                    {intl.formatMessage({
+                                        id: 'TOKENS_LIST_POPUP_NO_RESULTS',
+                                    })}
+                                </div>
+                            )}
                         </div>
                     )}
                 </Observer>
             </div>
-        </div>
+        </div>,
+        document.body,
     )
 }

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
@@ -21,7 +22,7 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
         return null
     }
 
-    return (
+    return ReactDOM.createPortal(
         <div className="popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
@@ -114,7 +115,8 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                     })}
                 </button>
             </div>
-        </div>
+        </div>,
+        document.body,
     )
 }
 

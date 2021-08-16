@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import { reaction } from 'mobx'
 import { observer } from 'mobx-react-lite'
@@ -30,7 +31,7 @@ function ConnectingModal(): JSX.Element | null {
         wallet.cancelConnecting()
     }
 
-    return isOpen ? (
+    return isOpen ? ReactDOM.createPortal(
         <div className="popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
@@ -86,7 +87,8 @@ function ConnectingModal(): JSX.Element | null {
                     </a>
                 )}
             </div>
-        </div>
+        </div>,
+        document.body,
     ) : null
 }
 

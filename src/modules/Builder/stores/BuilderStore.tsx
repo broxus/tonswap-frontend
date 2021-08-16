@@ -6,11 +6,10 @@ import {
 } from 'mobx'
 import ton, { Address, Contract } from 'ton-inpage-provider'
 
-import { isAddressValid, TokenAbi } from '@/misc'
+import { CustomToken, isAddressValid, TokenAbi } from '@/misc'
 import {
     BuilderStoreData,
     BuilderStoreState,
-    Token,
 } from '@/modules/Builder/types'
 import { DEFAULT_BUILDER_STORE_DATA, DEFAULT_BUILDER_STORE_STATE } from '@/modules/Builder/constants'
 import { getTokenFromLocalStorage, saveTokenToLocalStorage } from '@/modules/Builder/utils'
@@ -131,14 +130,14 @@ export class BuilderStore {
      * Loads tokens data from localStorage
      * @protected
      */
-    protected async loadTokensData(): Promise<Token[]> {
+    protected async loadTokensData(): Promise<CustomToken[]> {
         const tokenRoots: string[] = getTokenFromLocalStorage().filter(
             (token: string) => isAddressValid(token),
         )
 
         this.changeState('isLoading', true)
 
-        let tokens: Token[] = []
+        let tokens: CustomToken[] = []
 
         try {
             const result = await Promise.all(tokenRoots.map(tokenRoot => this.loadTokenData(tokenRoot)))
@@ -149,10 +148,10 @@ export class BuilderStore {
                     && _token?.root !== undefined
                     && _token.root_owner_address?.toString() === this.wallet.address
                 )
-            }) as Token[]).map(token => ({
+            }) as CustomToken[]).map(token => ({
                 ...token,
-                name: atob((token as Token).name),
-                symbol: atob((token as Token).symbol),
+                name: atob(token.name),
+                symbol: atob(token.symbol),
             }))
         }
         catch (e) {}
@@ -167,7 +166,7 @@ export class BuilderStore {
      * Loads token data by address
      * @protected
      */
-    protected async loadTokenData(root: string): Promise<Token | undefined> {
+    protected async loadTokenData(root: string): Promise<CustomToken | undefined> {
         let state = this.data.tokensCache.get(root.toString())
         const address = new Address(root)
         const token = new Contract(TokenAbi.Root, address)
@@ -188,7 +187,7 @@ export class BuilderStore {
                 .getDetails({ _answer_id: 0 })
                 .call({ cachedState: state })
 
-            return { ...value0, root } as unknown as Token
+            return { ...value0, root } as unknown as CustomToken
         }
 
         return undefined
@@ -218,7 +217,7 @@ export class BuilderStore {
         this.state = DEFAULT_BUILDER_STORE_STATE
     }
 
-    public get tokens(): Token[] {
+    public get tokens(): CustomToken[] {
         return this.data.tokens
     }
 

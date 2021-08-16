@@ -11,20 +11,23 @@
         }
     }
 
+    .list__cell-inner > * {
+        overflow: hidden;
+    }
+
     &__token {
+        &-icons-wrapper {
+            min-width: 40px;
+        }
+
         &-name {
             font-size: 14px;
             font-weight: 500;
             line-height: 20px;
             margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
             white-space: nowrap;
         }
-    }
-
-    &__token-subname {
-        font-size: 12px;
-        letter-spacing: 0.4px;
-        line-height: 16px;
-        opacity: 0.5;
     }
 }

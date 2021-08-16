@@ -1,6 +1,7 @@
-import {
+import ton, {
     Address,
     Contract,
+    DecodedAbiFunctionOutputs,
     FullContractState,
     TransactionId,
 } from 'ton-inpage-provider'
@@ -9,13 +10,23 @@ import { TokenAbi } from '@/misc/abi'
 import { debug } from '@/utils'
 
 
-export type WalletAddressRequest = {
-    root: Address;
-    owner: Address;
+export type CustomToken = {
+    decimals: number;
+    name: string;
+    symbol: string;
+    total_supply: string;
+    root: string;
+    root_owner_address: Address;
+    root_public_key: string;
 }
 
 export type BalanceWalletRequest = {
     wallet: Address;
+}
+
+export type WalletAddressRequest = {
+    root: Address;
+    owner: Address;
 }
 
 function params<TRequired>(): <TOptional>(o: TOptional) => Partial<TOptional> & TRequired;
@@ -89,14 +100,45 @@ export class TokenWallet {
         root: Address,
         state?: FullContractState,
     ): Promise<Address> {
-        const rootContract = new Contract(TokenAbi.Root, root)
         const {
             value0: { root_owner_address },
-        } = await rootContract.methods.getDetails({
-            _answer_id: 0,
-        }).call({ cachedState: state })
+        } = await TokenWallet.getDetails(root, state)
 
         return root_owner_address
+    }
+
+    public static getDetails(
+        root: Address,
+        state?: FullContractState,
+    ): Promise<DecodedAbiFunctionOutputs<typeof TokenAbi.Root, 'getDetails'>> {
+        const rootContract = new Contract(TokenAbi.Root, root)
+        return rootContract.methods.getDetails({
+            _answer_id: 0,
+        }).call({ cachedState: state })
+    }
+
+    public static async getTokenData(root: string): Promise<CustomToken | undefined> {
+        const address = new Address(root)
+
+        const { state } = await ton.getFullContractState({ address })
+
+        if (!state) {
+            return undefined
+        }
+
+        if (state.isDeployed) {
+            const { value0 } = await TokenWallet.getDetails(address, state)
+
+            return {
+                ...value0,
+                decimals: parseInt(value0.decimals, 10),
+                name: decodeURIComponent(escape(atob(value0.name))),
+                symbol: decodeURIComponent(escape(atob(value0.symbol))),
+                root,
+            } as unknown as CustomToken
+        }
+
+        return undefined
     }
 
     public static async decimal(

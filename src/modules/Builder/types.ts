@@ -1,15 +1,14 @@
 import {
-    Address,
     DecodedAbiFunctionInputs,
     FullContractState,
     Transaction,
 } from 'ton-inpage-provider'
 
-import { TokenAbi } from '@/misc'
+import { CustomToken, TokenAbi } from '@/misc'
 
 export type BuilderStoreData = {
     filter: string;
-    tokens: Token[];
+    tokens: CustomToken[];
     tokensCache: Map<string, FullContractState>;
 }
 
@@ -36,8 +35,8 @@ export type CreateTokenTransactionResult = {
 }
 
 export type ManageTokenStoreData = {
-    token?: Token,
-    tokenCache?: FullContractState,
+    token?: CustomToken;
+    tokenCache?: FullContractState;
     targetAddress: string;
     targetWalletBalance: string;
     amountToMint: string;
@@ -49,16 +48,6 @@ export type ManageTokenStoreState = {
     isLoading: boolean,
     isMinting: boolean,
     isTransfer: boolean,
-}
-
-export type Token = {
-    decimals: number;
-    name: string;
-    symbol: string;
-    total_supply: string;
-    root: string;
-    root_owner_address: Address;
-    root_public_key: string;
 }
 
 export type CreateTokenSuccessResult = {

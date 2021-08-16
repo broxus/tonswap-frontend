@@ -52,10 +52,12 @@ export type PairsStoreState = {
 }
 
 export type PairsRequest = {
+    currencyAddresses?: string[];
     currencyAddress?: string;
     limit: number;
     offset: number;
     ordering?: PairsOrdering;
+    whiteListUri?: string;
 }
 
 export type PairResponse = PairInfo

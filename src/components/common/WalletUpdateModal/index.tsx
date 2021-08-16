@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import { observer } from 'mobx-react-lite'
 import ton from 'ton-inpage-provider'
 import { useIntl } from 'react-intl'
@@ -39,7 +40,7 @@ function UpdateModal(): JSX.Element | null {
         return null
     }
 
-    return (
+    return ReactDOM.createPortal(
         <div className="popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
@@ -75,7 +76,8 @@ function UpdateModal(): JSX.Element | null {
                     })}
                 </a>
             </div>
-        </div>
+        </div>,
+        document.body,
     )
 }
 
