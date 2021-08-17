@@ -111,7 +111,7 @@ export class TokensCacheService {
                 name: token.name,
                 root: token.address,
                 symbol: token.symbol,
-                updatedAt: Date.now(),
+                updatedAt: -1,
                 wallet: undefined,
             }
             tokens.push(cache)
@@ -124,7 +124,9 @@ export class TokensCacheService {
             tokens.push(...results as unknown as TokenCache[])
         }
 
-        this.data.tokens = tokens
+        runInAction(() => {
+            this.data.tokens = tokens
+        })
     }
 
     /**
@@ -250,7 +252,9 @@ export class TokensCacheService {
             try {
                 await this.updateTokenWalletAddress(token.root, this.wallet.address)
             }
-            catch (e) {}
+            catch (e) {
+                error('Update token wallet address error', e)
+            }
         }
 
         if (token.wallet) {
@@ -261,6 +265,7 @@ export class TokensCacheService {
                 this.updateTokenBalance(token.root, walletTokenBalance)
             }
             catch (e) {
+                error('Update token balance error', e)
                 this.updateTokenBalance(token.root, undefined)
             }
         }
