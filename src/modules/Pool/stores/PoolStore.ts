@@ -1377,11 +1377,11 @@ export class PoolStore {
                             .toFixed(),
                     )
 
-                    if (this.leftToken) {
+                    if (this.leftToken !== undefined) {
                         this.changePoolData(
                             'currentShareLeft',
                             new BigNumber(this.lpWalletBalance || '0')
-                                .times(new BigNumber(pairLeft))
+                                .times(new BigNumber(isInverted ? pairRight : pairLeft))
                                 .dividedBy(new BigNumber(pairLp))
                                 .decimalPlaces(0, BigNumber.ROUND_DOWN)
                                 .shiftedBy(-this.leftToken.decimals)
@@ -1389,11 +1389,11 @@ export class PoolStore {
                         )
                     }
 
-                    if (this.rightToken) {
+                    if (this.rightToken !== undefined) {
                         this.changePoolData(
                             'currentShareRight',
                             new BigNumber(this.lpWalletBalance || '0')
-                                .times(new BigNumber(pairRight))
+                                .times(new BigNumber(isInverted ? pairLeft : pairRight))
                                 .dividedBy(new BigNumber(pairLp))
                                 .decimalPlaces(0, BigNumber.ROUND_DOWN)
                                 .shiftedBy(-this.rightToken.decimals)
