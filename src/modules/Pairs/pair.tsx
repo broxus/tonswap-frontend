@@ -32,27 +32,34 @@ function PairInner(): JSX.Element {
     ), [store.pair?.meta.counterAddress, tokensCache.tokens])
 
     const priceLeftToRight = React.useMemo(
-        () => ((baseToken !== undefined && counterToken !== undefined)
-            ? getComputedDefaultPerPrice(
-                new BigNumber(store.pair?.rightLocked || '0'),
-                counterToken?.decimals,
-                new BigNumber(store.pair?.leftLocked || '0').shiftedBy(-baseToken?.decimals),
-                counterToken?.decimals,
-            ) : '0'),
+        () => {
+            const price = ((baseToken !== undefined && counterToken !== undefined)
+                ? getComputedDefaultPerPrice(
+                    new BigNumber(store.pair?.rightLocked || '0'),
+                    counterToken?.decimals,
+                    new BigNumber(store.pair?.leftLocked || '0').shiftedBy(-baseToken?.decimals),
+                    counterToken?.decimals,
+                ) : '0')
+
+            return new BigNumber(price).isNaN() ? '0' : price
+        },
         [baseToken, counterToken, store.pair],
     )
 
     const priceRightToLeft = React.useMemo(
-        () => ((baseToken !== undefined && counterToken !== undefined)
-            ? getComputedDefaultPerPrice(
-                new BigNumber(store.pair?.leftLocked || '0'),
-                baseToken?.decimals,
-                new BigNumber(store.pair?.rightLocked || '0').shiftedBy(-counterToken?.decimals),
-                baseToken?.decimals,
-            ) : '0'),
+        () => {
+            const price = (baseToken !== undefined && counterToken !== undefined)
+                ? getComputedDefaultPerPrice(
+                    new BigNumber(store.pair?.leftLocked || '0'),
+                    baseToken?.decimals,
+                    new BigNumber(store.pair?.rightLocked || '0').shiftedBy(-counterToken?.decimals),
+                    baseToken?.decimals,
+                ) : '0'
+
+            return new BigNumber(price).isNaN() ? '0' : price
+        },
         [baseToken, counterToken, store.pair],
     )
-
 
     return (
         <>
@@ -94,15 +101,15 @@ function PairInner(): JSX.Element {
                                     className="btn btn-s btn-dark pair-page__token-price"
                                 >
                                     <TokenIcon
-                                        address={baseToken?.root}
-                                        name={baseToken?.symbol}
+                                        address={baseToken.root}
+                                        name={baseToken.symbol}
                                         small
-                                        uri={baseToken?.icon}
+                                        uri={baseToken.icon}
                                     />
                                     {intl.formatMessage({
                                         id: 'PAIR_TOKEN_PRICE',
                                     }, {
-                                        amount: amount(priceLeftToRight, counterToken.decimals),
+                                        amount: amount(priceLeftToRight, counterToken.decimals) || 0,
                                         symbolLeft: baseToken.symbol,
                                         symbolRight: counterToken.symbol,
                                     })}
@@ -112,15 +119,15 @@ function PairInner(): JSX.Element {
                                     className="btn btn-s btn-dark pair-page__token-price"
                                 >
                                     <TokenIcon
-                                        address={counterToken?.root}
-                                        name={counterToken?.symbol}
+                                        address={counterToken.root}
+                                        name={counterToken.symbol}
                                         small
                                         uri={counterToken?.icon}
                                     />
                                     {intl.formatMessage({
                                         id: 'PAIR_TOKEN_PRICE',
                                     }, {
-                                        amount: amount(priceRightToLeft, baseToken?.decimals),
+                                        amount: amount(priceRightToLeft, baseToken.decimals) || 0,
                                         symbolLeft: counterToken.symbol,
                                         symbolRight: baseToken.symbol,
                                     })}

@@ -18,6 +18,10 @@
         }
     }
 
+    .list__cell-inner > * {
+        overflow: hidden;
+    }
+
     &__cell {
         &--expanded {
             align-items: center;
@@ -44,26 +48,34 @@
         cursor: pointer;
     }
 
-    &__token-name {
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 20px;
-        margin: 0;
-        white-space: nowrap;
-    }
+    &__token {
+        &-icon-wrapper {
+            min-width: 24px;
+        }
 
-    &__token-status {
-        &--expired {
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 12px;
+        &-name {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        &--active {
-            color: rgba(120, 255, 120, 0.35);
-            font-size: 12px;
-        }
-        &--awaiting {
-            color: rgba(170, 210, 255, 0.35);
-            font-size: 12px;
+
+        &-status {
+            &--expired {
+                color: rgba(255, 255, 255, 0.35);
+                font-size: 12px;
+            }
+            &--active {
+                color: rgba(120, 255, 120, 0.35);
+                font-size: 12px;
+            }
+            &--awaiting {
+                color: rgba(170, 210, 255, 0.35);
+                font-size: 12px;
+            }
         }
     }
 }

@@ -54,6 +54,10 @@ export default {
 
     TOKENS_LIST_POPUP_TITLE: 'Select a token',
     TOKENS_LIST_POPUP_FIELD_SEARCH_PLACEHOLDER: 'Enter a token name or address...',
+    TOKENS_LIST_POPUP_NO_RESULTS: 'No results found',
+    TOKENS_LIST_POPUP_BTN_TEXT_IMPORT_TOKEN: 'Import',
+    TOKENS_LIST_POPUP_IMPORT_TOKEN_TITLE: 'Import token',
+    TOKENS_LIST_POPUP_IMPORT_TOKEN_WARNING: 'This token doesn\'t appear on the active token list(s). Make sure this is the token that you want to trade.',
 
     POOL_HEADER_TITLE: 'Add Liquidity',
     POOL_FIELD_TOKEN_WALLET_BALANCE: 'Balance: {balance}',

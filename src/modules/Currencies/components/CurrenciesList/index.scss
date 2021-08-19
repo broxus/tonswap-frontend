@@ -11,22 +11,42 @@
         }
     }
 
-    &__token-name {
-        font-size: 14px;
-        font-weight: 500;
-        line-height: 20px;
-        margin: 0;
-        white-space: nowrap;
+    .list__cell-inner > * {
+        overflow: hidden;
     }
 
-    &__token-subname {
-        font-size: 12px;
-        letter-spacing: 0.4px;
-        line-height: 16px;
-        opacity: 0.5;
+    &__token {
+        &-icon {
+            height: 24px;
+            width: 24px;
+            &-wrapper {
+                min-width: 24px;
+            }
+        }
+
+        &-name {
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 20px;
+            margin: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        &-subname {
+            font-size: 12px;
+            letter-spacing: 0.4px;
+            line-height: 16px;
+            opacity: 0.5;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     }
 
     .content-loader {
         min-height: 570px;
     }
+
 }

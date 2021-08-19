@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 import { ContentLoader } from '@/components/common/ContentLoader'
 import { OrderingSwitcher } from '@/components/common/OrderingSwitcher'
 import { Item } from '@/modules/Currencies/components/CurrenciesList/Item'
-import { CurrencyInfo, CurrenciesOrdering } from '@/modules/Currencies/types'
+import { CurrenciesOrdering, CurrencyInfo } from '@/modules/Currencies/types'
 
 import './index.scss'
 

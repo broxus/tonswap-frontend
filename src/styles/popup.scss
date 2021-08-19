@@ -79,6 +79,10 @@ button.popup-close {
     justify-content: flex-start;
     padding: 16px;
 
+    &.warning {
+        border-color: #e6ac00;
+    }
+
     &.nb { border: 0 none; }
 
     &__ava {

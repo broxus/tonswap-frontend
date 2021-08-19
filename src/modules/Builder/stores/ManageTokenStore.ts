@@ -4,10 +4,13 @@ import {
 import ton, { Address, Contract } from 'ton-inpage-provider'
 import BigNumber from 'bignumber.js'
 
-import { DEFAULT_MANAGE_TOKEN_STORE_DATA, DEFAULT_MANAGE_TOKEN_STORE_STATE } from '@/modules/Builder/constants'
-import { ManageTokenStoreData, ManageTokenStoreState, Token } from '@/modules/Builder/types'
+import { CustomToken, TokenAbi, TokenWallet } from '@/misc'
+import {
+    DEFAULT_MANAGE_TOKEN_STORE_DATA,
+    DEFAULT_MANAGE_TOKEN_STORE_STATE,
+} from '@/modules/Builder/constants'
+import { ManageTokenStoreData, ManageTokenStoreState } from '@/modules/Builder/types'
 import { useWallet, WalletService } from '@/stores/WalletService'
-import { TokenAbi, TokenWallet } from '@/misc'
 import { error } from '@/utils'
 
 export class ManageTokenStore {
@@ -50,7 +53,7 @@ export class ManageTokenStore {
         this.changeState('isLoading', false)
     }
 
-    protected async loadTokenData(): Promise<Token | undefined> {
+    protected async loadTokenData(): Promise<CustomToken | undefined> {
         let state = this.data.tokenCache
         const address = new Address(this.state.tokenRoot)
         const token = new Contract(TokenAbi.Root, address)
@@ -77,7 +80,7 @@ export class ManageTokenStore {
                 symbol: atob(value0.symbol),
                 total_supply: new BigNumber(value0.total_supply).shiftedBy(-value0.decimals).toFixed(),
                 root: this.state.tokenRoot,
-            } as unknown as Token
+            } as unknown as CustomToken
         }
 
         return undefined
@@ -178,7 +181,7 @@ export class ManageTokenStore {
         this.state = DEFAULT_MANAGE_TOKEN_STORE_STATE
     }
 
-    public get token(): Token | undefined {
+    public get token(): CustomToken | undefined {
         return this.data.token
     }
 

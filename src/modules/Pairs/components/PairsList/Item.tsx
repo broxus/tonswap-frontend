@@ -34,7 +34,7 @@ export function Item({ pair, idx }: Props): JSX.Element {
             <div className="list__cell hide-540">{idx}</div>
             <div className="list__cell">
                 <div className="list__cell-inner">
-                    <div>
+                    <div className="pairs-list__token-icons-wrapper">
                         <PairIcons
                             leftToken={baseToken}
                             rightToken={counterToken}

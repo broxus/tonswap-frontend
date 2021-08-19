@@ -1353,7 +1353,18 @@ export class TokenAbi {
                     { name: '_answer_id', type: 'uint32' },
                 ],
                 outputs: [
-                    { components: [{ name: 'name', type: 'bytes' }, { name: 'symbol', type: 'bytes' }, { name: 'decimals', type: 'uint8' }, { name: 'root_public_key', type: 'uint256' }, { name: 'root_owner_address', type: 'address' }, { name: 'total_supply', type: 'uint128' }], name: 'value0', type: 'tuple' },
+                    {
+                        components: [
+                            { name: 'name', type: 'bytes' },
+                            { name: 'symbol', type: 'bytes' },
+                            { name: 'decimals', type: 'uint8' },
+                            { name: 'root_public_key', type: 'uint256' },
+                            { name: 'root_owner_address', type: 'address' },
+                            { name: 'total_supply', type: 'uint128' },
+                        ],
+                        name: 'value0',
+                        type: 'tuple',
+                    },
                 ],
             },
             {
@@ -1941,7 +1952,7 @@ export class TokenAbi {
         ],
         events: [
         ],
-    } as const
+    } as const;
 
     static TokenRootDeployCallbacks = {
         'ABI version': 2,
@@ -1971,7 +1982,7 @@ export class TokenAbi {
         ],
         events: [
         ],
-    } as const
+    } as const;
 
 }
 

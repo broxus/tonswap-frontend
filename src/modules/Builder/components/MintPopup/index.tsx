@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import { useParams } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
@@ -23,7 +24,7 @@ function Popup({ onDismiss }: Props): JSX.Element {
     const managingToken = useManageTokenStore(rootToken)
     const mintForm = useMintForm()
 
-    return (
+    return ReactDOM.createPortal(
         <div className="popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
@@ -60,7 +61,8 @@ function Popup({ onDismiss }: Props): JSX.Element {
                     <MintSubmitButton closePopup={onDismiss} />
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     )
 }
 
