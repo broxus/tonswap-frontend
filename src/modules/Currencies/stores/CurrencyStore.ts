@@ -1,28 +1,15 @@
 import { UTCTimestamp } from 'lightweight-charts'
 import { DateTime } from 'luxon'
 import {
-    IReactionDisposer,
     action,
+    IReactionDisposer,
     makeAutoObservable,
     reaction,
 } from 'mobx'
 import uniqBy from 'lodash.uniqby'
 
 import { API_URL } from '@/constants'
-import {
-    DEFAULT_CURRENCY_STORE_DATA,
-    DEFAULT_CURRENCY_STORE_STATE,
-} from '@/modules/Currencies/constants'
-import {
-    CurrencyStoreData,
-    CurrencyStoreState,
-    CurrencyResponse,
-    CurrencyGraphRequest,
-    CurrencyStoreGraphData,
-} from '@/modules/Currencies/types'
-import { PairsRequest, PairsResponse } from '@/modules/Pairs/types'
-import { TransactionsInfoResponse, TransactionsRequest } from '@/modules/Transactions/types'
-import { parseCurrencyBillions } from '@/utils'
+import { DexConstants } from '@/misc'
 import {
     CandlestickGraphShape,
     CommonGraphShape,
@@ -30,6 +17,21 @@ import {
     TvlGraphModel,
     VolumeGraphModel,
 } from '@/modules/Chart/types'
+import {
+    DEFAULT_CURRENCY_STORE_DATA,
+    DEFAULT_CURRENCY_STORE_STATE,
+} from '@/modules/Currencies/constants'
+import {
+    CurrencyGraphRequest,
+    CurrencyResponse,
+    CurrencyStoreData,
+    CurrencyStoreGraphData,
+    CurrencyStoreState,
+} from '@/modules/Currencies/types'
+import { PairsRequest, PairsResponse } from '@/modules/Pairs/types'
+import { TransactionsInfoResponse, TransactionsRequest } from '@/modules/Transactions/types'
+import { getImportedTokens } from '@/stores/TokensCacheService'
+import { parseCurrencyBillions } from '@/utils'
 
 
 export class CurrencyStore {
@@ -478,12 +480,14 @@ export class CurrencyStore {
             this.changeState('isTransactionsLoading', true)
 
             const body: TransactionsRequest = {
+                currencyAddresses: getImportedTokens(),
                 currencyAddress: this.address,
                 limit: this.transactionsLimit,
                 offset: this.transactionsCurrentPage >= 1
                     ? (this.transactionsCurrentPage - 1) * this.transactionsLimit
                     : 0,
                 ordering: this.transactionsOrdering,
+                whiteListUri: DexConstants.TokenListURI,
             }
             if (this.transactionsEvents.length > 0) {
                 body.eventType = this.transactionsEvents

@@ -1,14 +1,15 @@
 import { UTCTimestamp } from 'lightweight-charts'
 import { DateTime } from 'luxon'
 import {
-    IReactionDisposer,
     action,
+    IReactionDisposer,
     makeAutoObservable,
     reaction,
 } from 'mobx'
 import uniqBy from 'lodash.uniqby'
 
 import { API_URL } from '@/constants'
+import { DexConstants } from '@/misc'
 import {
     CandlestickGraphShape,
     CommonGraphShape,
@@ -31,6 +32,7 @@ import {
     TransactionsInfoResponse,
     TransactionsRequest,
 } from '@/modules/Transactions/types'
+import { getImportedTokens } from '@/stores/TokensCacheService'
 import { parseCurrencyBillions } from '@/utils'
 
 
@@ -406,12 +408,14 @@ export class PairStore {
             this.changeState('isTransactionsLoading', true)
 
             const body: TransactionsRequest = {
+                currencyAddresses: getImportedTokens(),
                 limit: this.transactionsLimit,
                 offset: this.transactionsCurrentPage >= 1
                     ? (this.transactionsCurrentPage - 1) * this.transactionsLimit
                     : 0,
                 ordering: this.transactionsOrdering,
                 poolAddress: this.address,
+                whiteListUri: DexConstants.TokenListURI,
             }
             if (this.transactionsEvents.length > 0) {
                 body.eventType = this.transactionsEvents

@@ -34,6 +34,7 @@ export type EventTypeFilter = 'all' | 'swaps' | 'deposit' | 'withdraw'
 export type TransactionsRequest = {
     createdAtGe?: number;
     createdAtLe?: number;
+    currencyAddresses?: string[];
     currencyAddress?: string;
     eventType?: EventType[];
     leftAmountGe?: string;
@@ -47,6 +48,7 @@ export type TransactionsRequest = {
     tvGe?: string;
     tvLe?: string;
     userAddress?: string;
+    whiteListUri?: string;
 }
 
 export type TransactionInfoResponse = TransactionInfo
