@@ -215,6 +215,10 @@ const baseConfig = {
         'react/react-in-jsx-scope': 'warn',
         'react/self-closing-comp': 'warn',
         'react/no-danger': 'off',
+        'react/function-component-definition': ['error', {
+            'namedComponents': 'function-declaration',
+            'unnamedComponents': 'function-expression',
+        }]
     },
     settings: {
         'import/resolver': {

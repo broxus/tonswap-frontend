@@ -56,7 +56,7 @@ export function Account(): JSX.Element | null {
                                 <div className="tools-wallet__ava">
                                     <UserAvatar
                                         address={wallet.address as string}
-                                        small
+                                        size="small"
                                     />
                                 </div>
                                 <div className="tools-wallet__id">

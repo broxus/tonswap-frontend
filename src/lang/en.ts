@@ -4,7 +4,7 @@ export default {
 
     NAV_LINK_SOON_HINT: ' soon',
     NAV_LINK_TEXT_SWAP: 'Swap',
-    NAV_LINK_TEXT_POOL: 'Pool',
+    NAV_LINK_TEXT_POOLS: 'Pools',
     NAV_LINK_TEXT_TOKENS: 'Tokens',
     NAV_LINK_TEXT_PAIRS: 'Pairs',
     NAV_LINK_TEXT_FARMING: 'Farming',
@@ -69,6 +69,35 @@ export default {
     TOKENS_LIST_POPUP_BTN_TEXT_IMPORT_TOKEN: 'Import',
     TOKENS_LIST_POPUP_IMPORT_TOKEN_TITLE: 'Import token',
     TOKENS_LIST_POPUP_IMPORT_TOKEN_WARNING: 'This token doesn’t appear on the active token list(s). Make sure this is the token that you want to trade.',
+
+    POOLS_LIST_CONNECT_ACCOUNT_NOTE: 'You need to connect account, before you can continue. Account connection for this wallet occurs only once. You will not need to go through this procedure in the future.',
+    POOLS_LIST_CONNECT_ACCOUNT_BUTTON: 'Connect account',
+    POOLS_LIST_CONNECT_WALLET_TITLE: 'Your liquidity positions will appear here.',
+    POOLS_LIST_CONNECT_WALLET_BUTTON: 'Connect to a wallet',
+    POOLS_LIST_TITLE: 'Pools Overview',
+    POOLS_LIST_HEADER_BUTTON: 'New position',
+    POOLS_LIST_FAV_TITLE: 'Favorite pools',
+    POOLS_LIST_FILTER_PLACEHOLDER: 'Searching…',
+    POOLS_LIST_TABLE_PAIR: 'Pair',
+    POOLS_LIST_TABLE_LP_TOKENS: 'LP tokens',
+    POOLS_LIST_TABLE_LEFT_TOKEN: 'Left token',
+    POOLS_LIST_TABLE_RIGHT_TOKEN: 'Right token',
+    POOLS_LIST_TOTAL_BALANCE_TITLE: 'Total balance, {name}',
+    POOLS_LIST_TOTAL_APPORTIONMENT: 'Total apportionment',
+    POOLS_LIST_TOTAL_COMMISSION_REWARD: 'Total commission reward',
+    POOLS_LIST_BURN_BUTTON: 'Burn Liquidity',
+    POOLS_LIST_ADD_BUTTON: 'Add liquidity',
+    POOLS_LIST_WALLET_BALANCE: 'Wallet balance',
+    POOLS_LIST_AMOUNT: 'Amount, {name}',
+    POOLS_LIST_APPORTIONMENT: 'Apportionment',
+    POOLS_LIST_NOTHING_FOUND: 'Nothing found',
+    POOLS_LIST_EMPTY_TABLE: 'Favorite pools will be displayed here',
+    POOLS_LIST_TOKEN_BALANCE: '{value} {symbol}',
+
+    POOLS_LIST_ITEM_NOT_FOUND: 'Pool not found',
+    POOLS_LIST_ITEM_TITLE: '{symbol} Liquidity pool',
+
+    FILTER_FORM_BUTTON: 'Filter',
 
     POOL_HEADER_TITLE: 'Add Liquidity',
     POOL_FIELD_TOKEN_WALLET_BALANCE: 'Balance: {balance}',
@@ -225,6 +254,15 @@ export default {
     FARMING_CREATE_POOL_VALID_STATE_DEPOSIT_NOTE: 'You need to deposit full amount of {tokensDeposits} to pool address before it becomes active.',
     FARMING_CREATE_BTN_TEXT_SUBMIT: 'Create pool',
 
+    POOL_FARMINGS_TITLE: 'Farming pools',
+    POOL_FARMINGS_FARMING_POOL: 'Farming pool',
+    POOL_FARMINGS_REWARD: 'Reward',
+    POOL_FARMINGS_TVL: 'TVL',
+    POOL_FARMINGS_TVL_CHANGE: 'TVL change',
+    POOL_FARMINGS_APR: 'APR',
+    POOL_FARMINGS_SHARE: 'Share',
+    POOL_FARMINGS_YOUR_REWARD: 'Your reward',
+
     CURRENCIES_HEADER_TITLE: 'All tokens',
     CURRENCIES_WATCHLIST_HEADER_TITLE: 'My tokens watchlist',
     CURRENCIES_LIST_HEADER_NAME_CELL: 'Name',
@@ -348,5 +386,5 @@ export default {
     TRANSACTIONS_LIST_EVENT_SWAPS: 'Swaps',
     TRANSACTIONS_LIST_EVENT_DEPOSIT: 'Adds',
     TRANSACTIONS_LIST_EVENT_WITHDRAW: 'Removes',
-
+    TRANSACTIONS_LIST_NO_TRANSACTIONS: 'No transactions',
 }

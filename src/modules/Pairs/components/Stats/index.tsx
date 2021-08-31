@@ -4,6 +4,7 @@ import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { TokenIcon } from '@/components/common/TokenIcon'
+import { TvlChange } from '@/components/common/TvlChange'
 import { Chart } from '@/modules/Chart'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { PairStoreState } from '@/modules/Pairs/types'
@@ -72,7 +73,7 @@ export function Stats(): JSX.Element {
                                         address={baseToken?.root}
                                         className="pair-stats__token-icon"
                                         name={baseToken?.symbol}
-                                        small
+                                        size="small"
                                         uri={baseToken?.icon}
                                     />
                                     <div className="pair-stats__token-name">
@@ -89,7 +90,7 @@ export function Stats(): JSX.Element {
                                         address={counterToken?.root}
                                         className="pair-stats__token-icon"
                                         name={counterToken?.symbol}
-                                        small
+                                        size="small"
                                         uri={counterToken?.icon}
                                     />
                                     <div className="pair-stats__token-name">
@@ -113,15 +114,10 @@ export function Stats(): JSX.Element {
                         <strong>{store.formattedTvl}</strong>
                     </div>
                     {store.pair?.tvlChange !== undefined && (
-                        <div
-                            className={classNames('changes-direction', {
-                                'changes-direction-up': getChangesDirection(store.pair.tvlChange) > 0,
-                                'changes-direction-down': getChangesDirection(store.pair.tvlChange) < 0,
-                            })}
-                        >
-                            {store.pair.tvlChange}
-                            %
-                        </div>
+                        <TvlChange
+                            changesDirection={getChangesDirection(store.pair.tvlChange)}
+                            priceChange={store.pair.tvlChange}
+                        />
                     )}
                 </div>
                 <div className="pair-stats__sidebar-item">
@@ -134,15 +130,10 @@ export function Stats(): JSX.Element {
                         <strong>{store.formattedVolume24h}</strong>
                     </div>
                     {store.pair?.volumeChange24h !== undefined && (
-                        <div
-                            className={classNames('changes-direction', {
-                                'changes-direction-up': getChangesDirection(store.pair.volumeChange24h) > 0,
-                                'changes-direction-down': getChangesDirection(store.pair.volumeChange24h) < 0,
-                            })}
-                        >
-                            {store.pair.volumeChange24h}
-                            %
-                        </div>
+                        <TvlChange
+                            changesDirection={getChangesDirection(store.pair.volumeChange24h)}
+                            priceChange={store.pair.volumeChange24h}
+                        />
                     )}
                 </div>
                 <div className="pair-stats__sidebar-item">

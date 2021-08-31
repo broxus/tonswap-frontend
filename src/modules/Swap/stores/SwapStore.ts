@@ -14,7 +14,7 @@ import ton, {
     Subscriber,
 } from 'ton-inpage-provider'
 
-import { API_URL, CROSS_PAIR_EXCHANGE_WHITE_LIST } from '@/constants'
+import { CROSS_PAIR_EXCHANGE_WHITE_LIST } from '@/constants'
 import { checkPair, DexAbi, TokenWallet } from '@/misc'
 import { CrossPairsRequest, PairsResponse } from '@/modules/Pairs/types'
 import {
@@ -52,6 +52,7 @@ import {
 } from '@/modules/Swap/utils'
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
+import { SwapApi, useSwapApi } from '@/modules/Swap/hooks/useApi'
 import {
     debounce,
     debug,
@@ -82,6 +83,8 @@ export class SwapStore {
      * @protected
      */
     protected transactionReceipt: SwapTransactionReceipt | undefined = undefined
+
+    protected readonly api: SwapApi = useSwapApi()
 
     constructor(
         protected readonly wallet: WalletService,
@@ -2026,23 +2029,19 @@ export class SwapStore {
             return undefined
         }
 
-        const request = (fromCurrencyAddress: string) => fetch(`${API_URL}/pairs/cross_pairs`, {
-            body: JSON.stringify({
-                fromCurrencyAddress,
-                toCurrencyAddresses: CROSS_PAIR_EXCHANGE_WHITE_LIST,
-            } as CrossPairsRequest),
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            method: 'POST',
-            mode: 'cors',
-        })
+        const request = (fromCurrencyAddress: string) => (
+            this.api.crossPairs({}, {
+                body: JSON.stringify({
+                    fromCurrencyAddress,
+                    toCurrencyAddresses: CROSS_PAIR_EXCHANGE_WHITE_LIST,
+                } as CrossPairsRequest),
+            })
+        )
 
         try {
             return await Promise.all([
-                request(this.leftToken.root).then(response => response.json()),
-                request(this.rightToken.root).then(response => response.json()),
+                request(this.leftToken.root),
+                request(this.rightToken.root),
             ])
         }
         catch (e) {

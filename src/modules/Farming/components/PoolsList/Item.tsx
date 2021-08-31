@@ -2,12 +2,12 @@ import * as React from 'react'
 import classNames from 'classnames'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
+import BigNumber from 'bignumber.js'
 
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { PoolDetails } from '@/modules/Farming/components/PoolDetails'
 import { FarmPool } from '@/modules/Farming/types'
 import { amount } from '@/utils'
-import BigNumber from "bignumber.js";
 
 
 type Props = {
@@ -29,7 +29,7 @@ export function Item({ pool }: Props): JSX.Element {
                 <div className="list__trigger-cell farming-list__trigger-cell" onClick={toggleExpand}>
                     <div className="list__cell-inner">
                         <div className="farming-list__token-icon-wrapper">
-                            <UserAvatar address={pool.tokenRoot} small />
+                            <UserAvatar address={pool.tokenRoot} size="small" />
                         </div>
                         <div>
                             <h3 className="farming-list__token-name">
@@ -135,7 +135,7 @@ export function Item({ pool }: Props): JSX.Element {
                 >
                     <div className="list__cell-inner-leader">
                         <div className="list__cell-inner-leader-value">
-                            <UserAvatar address={pool.address} small />
+                            <UserAvatar address={pool.address} size="small" />
                         </div>
                     </div>
                 </div>

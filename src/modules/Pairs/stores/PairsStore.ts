@@ -1,16 +1,15 @@
 import { makeAutoObservable } from 'mobx'
 
-import { API_URL } from '@/constants'
 import {
     DEFAULT_PAIRS_STORE_DATA,
     DEFAULT_PAIRS_STORE_STATE,
 } from '@/modules/Pairs/constants'
 import {
     PairsRequest,
-    PairsResponse,
     PairsStoreData,
     PairsStoreState,
 } from '@/modules/Pairs/types'
+import { PairsApi, usePairsApi } from '@/modules/Pairs/hooks/useApi'
 import { getImportedTokens, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { DexConstants } from '@/misc'
 
@@ -29,7 +28,10 @@ export class PairsStore {
      */
     protected state: PairsStoreState = DEFAULT_PAIRS_STORE_STATE
 
-    constructor(protected readonly tokensCache: TokensCacheService) {
+    constructor(
+        protected readonly tokensCache: TokensCacheService,
+        protected readonly api: PairsApi,
+    ) {
         makeAutoObservable(this)
     }
 
@@ -81,22 +83,11 @@ export class PairsStore {
             ordering: this.ordering,
             whiteListUri: DexConstants.TokenListURI,
         }
-        const response = await fetch(`${API_URL}/pairs`, {
+        const result = await this.api.pairs({}, {
             body: JSON.stringify(body),
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            method: 'POST',
-            mode: 'cors',
         })
-
-        if (response.ok) {
-            const result: PairsResponse = await response.json()
-            this.changeData('pairs', result.pairs)
-            this.changeData('totalCount', result.totalCount)
-        }
-
+        this.changeData('pairs', result.pairs)
+        this.changeData('totalCount', result.totalCount)
         this.changeState('isLoading', false)
     }
 
@@ -163,7 +154,7 @@ export class PairsStore {
 }
 
 
-const Pairs = new PairsStore(useTokensCache())
+const Pairs = new PairsStore(useTokensCache(), usePairsApi())
 
 export function usePairsStore(): PairsStore {
     return Pairs

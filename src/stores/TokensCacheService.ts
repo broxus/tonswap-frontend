@@ -209,6 +209,20 @@ export class TokensCacheService {
         }
     }
 
+    public async fetchAndImportIfNotExist(root: string): Promise<void> {
+        let token = this.get(root)
+
+        if (token) {
+            return
+        }
+
+        token = await TokenWallet.getTokenData(root)
+
+        if (token) {
+            this.import(token)
+        }
+    }
+
     /**
      * Search token by the given query string.
      * Query string can be a token symbol, name or address.

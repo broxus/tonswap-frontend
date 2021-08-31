@@ -319,6 +319,7 @@ export class Dex {
         rightRoot: Address,
         lpRoot: Address,
         amount: string,
+        payloadId?: string,
     ): Promise<TransactionId> {
         const pairAddress = await Dex.pairAddress(leftRoot, rightRoot)
         const lpWalletPair = await TokenWallet.walletAddress({ root: lpRoot, owner: pairAddress })
@@ -351,7 +352,7 @@ export class Dex {
             && rightWalletUserState.isDeployed
         const pairContract = new Contract(DexAbi.Pair, pairAddress)
         const { value0: withdrawPayload } = await pairContract.methods.buildWithdrawLiquidityPayload({
-            id: new Date().getTime(),
+            id: payloadId || new Date().getTime().toString(),
             deploy_wallet_grams: allDeployed ? '0' : '100000000',
         }).call()
         return TokenWallet.send({

@@ -3,7 +3,6 @@ import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { Pagination } from '@/components/common/Pagination'
 import { useCurrencyStore } from '@/modules/Currencies/providers/CurrencyStoreProvider'
 import { TransactionsList } from '@/modules/Transactions/components'
 import { EventTypeFilter, TransactionsOrdering } from '@/modules/Transactions/types'
@@ -124,22 +123,19 @@ function Transactions(): JSX.Element {
                 </div>
             </header>
 
-            <div className="card card--small card--flat">
-                <TransactionsList
-                    isLoading={store.isTransactionsLoading}
-                    ordering={store.transactionsOrdering}
-                    transactions={store.transactions}
-                    onSwitchOrdering={onSwitchOrdering}
-                />
-
-                <Pagination
-                    currentPage={store.transactionsCurrentPage}
-                    totalPages={store.transactionsTotalPages}
-                    onNext={onNextPage}
-                    onPrev={onPrevPage}
-                    onSubmit={onChangePage}
-                />
-            </div>
+            <TransactionsList
+                isLoading={store.isTransactionsLoading}
+                ordering={store.transactionsOrdering}
+                transactions={store.transactions}
+                onSwitchOrdering={onSwitchOrdering}
+                pagination={{
+                    currentPage: store.transactionsCurrentPage,
+                    totalPages: store.transactionsTotalPages,
+                    onNext: onNextPage,
+                    onPrev: onPrevPage,
+                    onSubmit: onChangePage,
+                }}
+            />
         </section>
     )
 }

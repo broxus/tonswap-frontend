@@ -6,4 +6,12 @@
         padding: 8px 12px;
         width: 100%;
     }
+
+    &_size_s {
+        input {
+            height: 36px;
+            font-size: 14px;
+            font-weight: 400;
+        }
+    }
 }

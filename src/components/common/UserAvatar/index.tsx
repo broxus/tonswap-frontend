@@ -4,7 +4,7 @@ import * as React from 'react'
 type Props = {
     address: string;
     className?: string;
-    small?: boolean;
+    size?: 'small' | 'xsmall';
 }
 
 
@@ -107,10 +107,22 @@ const circles = [
     },
 ]
 
-export function UserAvatar({ address, small, className }: Props): JSX.Element {
+export function UserAvatar({ address, size, className }: Props): JSX.Element {
     const hash = address.split(':')[1] ?? []
 
-    const size = small === true ? 24 : 36
+    let pxSize: number
+
+    switch (size) {
+        case 'small':
+            pxSize = 24
+            break
+        case 'xsmall':
+            pxSize = 20
+            break
+        default:
+            pxSize = 36
+    }
+
 
     const colors: string[] = []
     for (let i = 0; i < 16; i++) {
@@ -126,8 +138,8 @@ export function UserAvatar({ address, small, className }: Props): JSX.Element {
 
     return (
         <svg
-            width={size}
-            height={size}
+            width={pxSize}
+            height={pxSize}
             viewBox="0 0 36 36"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

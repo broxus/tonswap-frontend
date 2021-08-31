@@ -8,11 +8,13 @@ import { Address, TransactionId } from 'ton-inpage-provider'
 
 import { Dex, getDexAccount } from '@/misc'
 import { useWallet, WalletService } from '@/stores/WalletService'
+import { debounce, timeoutPromise } from '@/utils'
 
+export type Balances = Map<string, string>
 
 export type DexAccountData = {
     address?: string;
-    balances?: Map<string, string>;
+    balances?: Balances;
     nonce?: string;
     wallets?: Map<string, Address>;
 }
@@ -88,6 +90,29 @@ export class DexAccountService {
         await this.connect()
     }
 
+    public async checkConnect(timeout: number = 60000): Promise<void> {
+        return timeoutPromise<void>(new Promise((resolve, reject) => {
+            const check = debounce(async () => {
+                if (this.isConnected) {
+                    resolve()
+                    return
+                }
+
+                try {
+                    await this.connect()
+                }
+                catch (e) {
+                    reject(e)
+                }
+                finally {
+                    check()
+                }
+            }, 5000)
+
+            check()
+        }), timeout)
+    }
+
     /**
      * Connect to the DEX account and sync nonce, balances, and run balances updater
      * @returns {Promise<void>}
@@ -103,6 +128,10 @@ export class DexAccountService {
             return
         }
 
+        await this.sync()
+    }
+
+    public async sync(): Promise<void> {
         await this.syncNonce()
         await this.syncBalances()
         await this.syncWallets()
@@ -188,6 +217,10 @@ export class DexAccountService {
         return this.wallets?.get(root)
     }
 
+    public getBalance(address: Address): string | undefined {
+        return this.balances?.get(address.toString())
+    }
+
     /**
      * Returns DEX account address
      */
@@ -214,6 +247,10 @@ export class DexAccountService {
      */
     public get wallets(): DexAccountData['wallets'] {
         return this.data.wallets
+    }
+
+    public get isConnected(): boolean {
+        return Boolean(this.address)
     }
 
     /**

@@ -1,0 +1,35 @@
+.changes-direction {
+    color: #ffffff;
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.75px;
+    line-height: 20px;
+    opacity: 0.7;
+    padding-left: 24px;
+    position: relative;
+
+    &::before {
+        border: 5px solid transparent;
+        content: '';
+        display: block;
+        left: 5px;
+        position: absolute;
+    }
+}
+.changes-direction-up {
+    color: #4ab44a;
+    opacity: 1;
+    &::before {
+        border-bottom-color: #4ab44a;
+        top: 2px;
+    }
+}
+.changes-direction-down {
+    color: #eb4361;
+    opacity: 1;
+    &::before {
+        border-top-color: #eb4361;
+        top: 7.5px;
+    }
+}

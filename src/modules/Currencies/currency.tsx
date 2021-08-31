@@ -1,12 +1,13 @@
 import * as React from 'react'
-import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
+import { Breadcrumb } from '@/components/common/Breadcrumb'
+import { TvlChange } from '@/components/common/TvlChange'
 import { CurrencyPairs } from '@/modules/Currencies/components/CurrencyPairs'
 import { CurrencyTransactions } from '@/modules/Currencies/components/CurrencyTransactions'
 import { Stats } from '@/modules/Currencies/components/Stats'
@@ -29,23 +30,19 @@ function CurrencyInner(): JSX.Element {
     return (
         <>
             <section className="section section--large">
-                <ul className="breadcrumb">
-                    <li>
-                        <NavLink to="/tokens">
-                            {intl.formatMessage({
-                                id: 'CURRENCY_BREADCRUMB_ROOT',
-                            })}
-                        </NavLink>
-                    </li>
-                    <li>
-                        <span>
-                            {store.currency?.currency}
-                            <span>
-                                {sliceAddress(store.currency?.address)}
-                            </span>
-                        </span>
-                    </li>
-                </ul>
+                <Breadcrumb
+                    items={[{
+                        link: '/tokens',
+                        title: intl.formatMessage({ id: 'CURRENCY_BREADCRUMB_ROOT' }),
+                    }, {
+                        title: (
+                            <>
+                                {store.currency?.currency}
+                                <span>{sliceAddress(store.currency?.address)}</span>
+                            </>
+                        ),
+                    }]}
+                />
 
                 <header className="currency-page__header">
                     <div>
@@ -54,7 +51,7 @@ function CurrencyInner(): JSX.Element {
                                 address={token?.root}
                                 className="currency-page__token-icon"
                                 name={token?.symbol}
-                                small
+                                size="small"
                                 uri={token?.icon}
                             />
                             <div className="currency-page__token-name">
@@ -69,15 +66,10 @@ function CurrencyInner(): JSX.Element {
                                 {store.formattedPrice}
                             </div>
                             {store.currency?.priceChange !== undefined && (
-                                <div
-                                    className={classNames('changes-direction', {
-                                        'changes-direction-up': getChangesDirection(store.currency.priceChange) > 0,
-                                        'changes-direction-down': getChangesDirection(store.currency.priceChange) < 0,
-                                    })}
-                                >
-                                    {store.currency.priceChange}
-                                    %
-                                </div>
+                                <TvlChange
+                                    changesDirection={getChangesDirection(store.currency.priceChange)}
+                                    priceChange={store.currency.priceChange}
+                                />
                             )}
                         </div>
                     </div>
@@ -91,7 +83,7 @@ function CurrencyInner(): JSX.Element {
                             </AccountExplorerLink>
                             <Link
                                 className="btn btn-md btn-secondary"
-                                to={`/pool/${store.currency?.address}`}
+                                to={`/pool/create/${store.currency?.address}`}
                             >
                                 {intl.formatMessage({
                                     id: 'CURRENCY_ADD_LIQUIDITY_BTN_TEXT',

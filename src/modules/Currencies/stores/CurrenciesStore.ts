@@ -1,18 +1,17 @@
 import { makeAutoObservable } from 'mobx'
 
-import { API_URL } from '@/constants'
 import {
     DEFAULT_CURRENCIES_STORE_DATA,
     DEFAULT_CURRENCIES_STORE_STATE,
 } from '@/modules/Currencies/constants'
 import {
     CurrenciesRequest,
-    CurrenciesResponse,
     CurrenciesStoreData,
     CurrenciesStoreState,
 } from '@/modules/Currencies/types'
 import { getImportedTokens, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { DexConstants } from '@/misc'
+import { CurrenciesApi, useCurrenciesApi } from '@/modules/Currencies/hooks/useApi'
 
 
 export class CurrenciesStore {
@@ -29,7 +28,10 @@ export class CurrenciesStore {
      */
     protected state: CurrenciesStoreState = DEFAULT_CURRENCIES_STORE_STATE
 
-    constructor(protected readonly tokensCache: TokensCacheService) {
+    constructor(
+        protected readonly tokensCache: TokensCacheService,
+        protected readonly api: CurrenciesApi,
+    ) {
         makeAutoObservable(this)
     }
 
@@ -78,22 +80,12 @@ export class CurrenciesStore {
             ordering: this.ordering,
             whiteListUri: DexConstants.TokenListURI,
         }
-        const response = await fetch(`${API_URL}/currencies`, {
+
+        const result = await this.api.currencies({}, {
             body: JSON.stringify(body),
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            method: 'POST',
-            mode: 'cors',
         })
-
-        if (response.ok) {
-            const result: CurrenciesResponse = await response.json()
-            this.changeData('currencies', result.currencies)
-            this.changeData('totalCount', result.totalCount)
-        }
-
+        this.changeData('currencies', result.currencies)
+        this.changeData('totalCount', result.totalCount)
         this.changeState('isLoading', false)
     }
 
@@ -159,7 +151,7 @@ export class CurrenciesStore {
 }
 
 
-const Currencies = new CurrenciesStore(useTokensCache())
+const Currencies = new CurrenciesStore(useTokensCache(), useCurrenciesApi())
 
 export function useCurrenciesStore(): CurrenciesStore {
     return Currencies
