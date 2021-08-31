@@ -5,9 +5,9 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
-import { useTokenFormattedBalance } from '@/hooks/useTokenFormattedBalance'
+import { useField } from '@/hooks/useField'
 import { TokenCache } from '@/stores/TokensCacheService'
-import { formatAmount } from '@/utils'
+import { useTokenFormattedBalance } from '@/hooks/useTokenFormattedBalance'
 
 
 type Props = {
@@ -32,33 +32,18 @@ function Field({
     ...props
 }: Props): JSX.Element {
     const intl = useIntl()
-
-    const field = useTokenFormattedBalance(token, {
-        dexAccountBalance,
+    const field = useField(props)
+    const balance = useTokenFormattedBalance(token, {
         subscriberPrefix: 'field',
+        dexAccountBalance,
     })
-
-    const onBlur: React.FocusEventHandler<HTMLInputElement> = event => {
-        const { value } = event.target
-        const validatedAmount = formatAmount(value, token?.decimals)
-        if (props.value !== validatedAmount && validatedAmount != null) {
-            props.onChange?.(validatedAmount)
-        }
-        else if (validatedAmount == null) {
-            props.onChange?.('')
-        }
-    }
-
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
-        const { value } = event.target
-        props.onChange?.(value)
-    }
 
     return (
         <fieldset
             className={classNames('form-fieldset', {
-                alert: !isValid && !props.disabled,
+                invalid: !isValid,
                 caution: props.isCaution,
+                checking: balance.isFetching,
             })}
         >
             <div className="form-fieldset__header">
@@ -68,7 +53,7 @@ function Field({
                         {intl.formatMessage({
                             id: 'POOL_FIELD_TOKEN_WALLET_BALANCE',
                         }, {
-                            balance: field.balance,
+                            balance: balance.value,
                         })}
                     </div>
                 )}
@@ -80,8 +65,8 @@ function Field({
                     placeholder="0.0"
                     value={props.value}
                     readOnly={props.readOnly}
-                    onBlur={onBlur}
-                    onChange={onChange}
+                    onBlur={field.onBlur}
+                    onChange={field.onChange}
                     onKeyPress={props.onKeyPress}
                 />
                 {!token ? (

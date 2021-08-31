@@ -29,7 +29,7 @@ function Field({ type = 'text', isValid = true, ...props }: Props): JSX.Element 
     return (
         <fieldset
             className={classNames('form-fieldset', {
-                alert: valueWasChanged.current && !isValid,
+                invalid: valueWasChanged.current && !isValid,
             })}
         >
             <div className="form-fieldset__header">

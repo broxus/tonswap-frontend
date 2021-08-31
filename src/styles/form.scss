@@ -49,6 +49,8 @@
     }
 }
 
+.form-label { display: block; }
+
 .form-fieldset {
     border: 1px solid rgba(255, 255, 255, 0.16);
     display: block;
@@ -57,18 +59,28 @@
     outline: none;
     padding: 10px 16px 10px 20px;
 
-    &.alert {
-        border-color: #eb4361;
+    &--small {
+        height: 72px;
+    }
+
+    &--dark {
+        background-color: rgba(0, 0, 0, 0.08);
     }
 
     &.checking {
         animation: 1.5s linear 0s infinite alternate checking;
         border: 1px solid rgba(255, 255, 255, 0.16);
+        box-shadow: 0 0 2px 0 rgba(255, 255, 255, 0.16);
     }
 
     &.caution {
         border-color: #e6ac00;
         box-shadow: 0 0 2px 0 #e6ac00;
+    }
+
+    &.invalid {
+        border-color: #eb4361;
+        box-shadow: 0 0 2px 0 #eb4361;
     }
 
     &__header {
@@ -110,6 +122,9 @@
     cursor: text;
     font-size: 24px;
     font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
     &::-webkit-input-placeholder {
         color: #ffffff;
@@ -219,7 +234,6 @@ button.form-submit {
     padding-top: 0;
 
     > * {
-        display: inline-block;
         margin: 0;
     }
 

@@ -2,6 +2,7 @@
     "extends": ["stylelint-config-standard", "stylelint-config-prettier"],
     "plugins": ["stylelint-order"],
     "rules": {
+        "at-rule-no-unknown": null,
         "block-no-empty": [true, {
             "ignore": ["comments", "hook"]
         }],

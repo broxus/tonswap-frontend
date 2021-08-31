@@ -4,16 +4,18 @@ import {
     runInAction,
 } from 'mobx'
 import ton, {
+    Contract,
     ContractState,
     FullContractState,
+    hasTonProvider,
     Permissions,
     Subscription,
     Transaction,
-    hasTonProvider,
 } from 'ton-inpage-provider'
 
 import { connectToWallet } from '@/misc/helpers'
-import { error, debug } from '@/utils'
+import { debug, error } from '@/utils'
+import { DexAbi } from '@/misc'
 
 
 export type Account = Permissions['accountInteraction']
@@ -101,9 +103,9 @@ export class WalletService {
     /**
      * Wallet initializing. It runs
      * @returns {Promise<void>}
-     * @private
+     * @protected
      */
-    private async init(): Promise<void> {
+    protected async init(): Promise<void> {
         const hasProvider = await hasTonProvider()
 
         if (!hasProvider) {
@@ -209,7 +211,7 @@ export class WalletService {
 
     /**
      * Reset wallet data to defaults
-     * @private
+     * @protected
      */
     protected reset(): void {
         this.data = DEFAULT_WALLET_DATA
@@ -222,9 +224,9 @@ export class WalletService {
      * Run it when account was changed or disconnected.
      * @param {Account} [account]
      * @returns {Promise<void>}
-     * @private
+     * @protected
      */
-    private async handleAccountChange(account?: Account): Promise<void> {
+    protected async handleAccountChange(account?: Account): Promise<void> {
         if (this.#contractSubscriber) {
             if (account) {
                 try {
@@ -311,6 +313,12 @@ export class WalletService {
         return this.data.contract
     }
 
+    public get walletContractCallbacks(): Contract<typeof DexAbi.Callbacks> | undefined {
+        return this.account?.address !== undefined
+            ? new Contract(DexAbi.Callbacks, this.account?.address)
+            : undefined
+    }
+
     /**
      * Returns computed last successful transaction data
      * @returns {WalletData['transaction']}
@@ -347,7 +355,7 @@ export class WalletService {
     /**
      * Internal instance of the Ton Subscription for Contract updates
      * @type {Subscription<'contractStateChanged'> | undefined}
-     * @private
+     * @protected
      */
     #contractSubscriber: Subscription<'contractStateChanged'> | undefined
 

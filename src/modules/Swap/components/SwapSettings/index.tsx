@@ -44,6 +44,7 @@ function Settings(): JSX.Element {
                             type="text"
                             className="swap-settings__input"
                             value={swap.slippage}
+                            onBlur={settings.onBlur}
                             onChange={settings.onChange}
                         />
                     </div>
@@ -73,7 +74,7 @@ function Settings(): JSX.Element {
                                 type="radio"
                                 name="percent"
                                 value="1.0"
-                                checked={swap.slippage === '1'}
+                                checked={swap.slippage === '1.0'}
                                 onChange={settings.onChange}
                             />
                             <span className="swap-settings__radio-txt">1.0%</span>
@@ -84,5 +85,6 @@ function Settings(): JSX.Element {
         </div>
     )
 }
+
 
 export const SwapSettings = observer(Settings)

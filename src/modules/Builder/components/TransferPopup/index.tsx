@@ -57,7 +57,7 @@ function Popup({ onDismiss }: Props): JSX.Element {
                 />
                 <div style={{ display: 'flex', columnGap: '10px' }}>
                     <TransferSubmitButton closePopup={onDismiss} />
-                    <button className="btn btn-light btn-lg form-submit btn-block" onClick={onDismiss} type="button">
+                    <button className="btn btn-primary btn-lg form-submit btn-block" onClick={onDismiss} type="button">
                         {intl.formatMessage({
                             id: 'BUILDER_MANAGE_TOKEN_TRANSFER_BTN_TEXT_CANCEL',
                         })}

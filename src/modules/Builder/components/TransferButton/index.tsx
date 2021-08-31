@@ -11,7 +11,7 @@ function Button(): JSX.Element {
 
     return (
         <>
-            <button className="btn btn-red" type="button" onClick={transferForm.showTransferPopup}>
+            <button className="btn btn-danger" type="button" onClick={transferForm.showTransferPopup}>
                 {intl.formatMessage({
                     id: 'BUILDER_MANAGE_TOKEN_TRANSFER_OWNERSHIP_BTN_TEXT',
                 })}

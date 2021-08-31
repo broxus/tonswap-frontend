@@ -155,22 +155,22 @@ export class TokensCacheService {
     }
 
     /**
-     * Add a new token to the tokens list.
-     * @param {TokenCache} token
-     */
-    public store(token: TokenCache): void {
-        const tokens = this.tokens.slice()
-        tokens.push(token)
-        this.data.tokens = tokens
-    }
-
-    /**
      * Check if token was stored to the cache.
      * @param {string} root
      * @returns {boolean}
      */
-    public isStored(root: string): boolean {
+    public has(root: string): boolean {
         return this.get(root) !== undefined
+    }
+
+    /**
+     * Add a new token to the tokens list.
+     * @param {TokenCache} token
+     */
+    public add(token: TokenCache): void {
+        const tokens = this.tokens.slice()
+        tokens.push(token)
+        this.data.tokens = tokens
     }
 
     /**
@@ -208,7 +208,7 @@ export class TokensCacheService {
                 importedTokens.push(token.root)
                 storage.set(IMPORTED_TOKENS_STORAGE_KEY, JSON.stringify(importedTokens))
             }
-            this.store(token)
+            this.add(token)
         }
         catch (e) {
             error('Can\'t import token', e)
