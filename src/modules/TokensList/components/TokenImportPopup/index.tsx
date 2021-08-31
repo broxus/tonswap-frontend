@@ -24,7 +24,7 @@ export function TokenImportPopup({ token, onDismiss, onImport }: Props): JSX.Ele
     }
 
     return ReactDOM.createPortal(
-        <div key="importing" className="popup">
+        <div className="popup">
             <div onClick={onDismiss} className="popup-overlay" />
             <div className="popup__wrap">
                 <button
@@ -60,7 +60,7 @@ export function TokenImportPopup({ token, onDismiss, onImport }: Props): JSX.Ele
 
                 <button
                     type="button"
-                    className="btn btn-md btn-light btn-block"
+                    className="btn btn-md btn-primary btn-block"
                     onClick={onSubmit}
                 >
                     {intl.formatMessage({

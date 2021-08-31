@@ -3,10 +3,8 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { SwapDirection } from '@/modules/Swap/types'
-import { useWallet } from '@/stores/WalletService'
 import { amount } from '@/utils'
 
 import './index.scss'
@@ -15,20 +13,60 @@ import './index.scss'
 function Price(): JSX.Element | null {
     const intl = useIntl()
     const swap = useSwapStore()
-    const wallet = useWallet()
+
+    if (swap.leftToken === undefined || swap.rightToken === undefined) {
+        return null
+    }
 
     const onClickReverse = () => {
         swap.togglePriceDirection()
     }
 
-    return (wallet.address && swap.leftToken && swap.rightToken) ? (
-        <div className="form-row">
+    return (
+        <div className="form-row swap-price">
             <div>
-                {intl.formatMessage({
-                    id: 'SWAP_PRICE_LABEL',
-                })}
+                {(() => {
+                    switch (true) {
+                        case swap.pair !== undefined && swap.isCrossExchangeAvailable:
+                            return (
+                                <button
+                                    type="button"
+                                    className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"
+                                    onClick={swap.toggleSwapExchangeMode}
+                                >
+                                    {intl.formatMessage({
+                                        id: swap.isCrossExchangeMode
+                                            ? 'SWAP_PRICE_DIRECT_EXCHANGE_MODE_LABEL'
+                                            : 'SWAP_PRICE_CROSS_EXCHANGE_MODE_LABEL',
+                                    })}
+                                </button>
+                            )
+
+                        case !swap.pair !== undefined && swap.isCrossExchangeAvailable:
+                            return (
+                                <div
+                                    className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"
+                                >
+                                    {intl.formatMessage({
+                                        id: 'SWAP_PRICE_CROSS_EXCHANGE_MODE_ONLY_LABEL',
+                                    })}
+                                </div>
+                            )
+
+                        default:
+                            return (
+                                <div
+                                    className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"
+                                >
+                                    {intl.formatMessage({
+                                        id: 'SWAP_PRICE_LABEL',
+                                    })}
+                                </div>
+                            )
+                    }
+                })()}
             </div>
-            <div>
+            <div className="swap-price-details">
                 {swap.priceDirection === SwapDirection.RTL ? (
                     <span
                         key={SwapDirection.RTL}
@@ -39,7 +77,7 @@ function Price(): JSX.Element | null {
                                 value: swap.priceLeftToRight
                                     ? amount(
                                         swap.priceLeftToRight || '0',
-                                        swap.priceDecimalsLeft ?? DEFAULT_DECIMALS,
+                                        swap.leftToken.decimals,
                                     )
                                     : '--',
                                 leftSymbol: swap.leftToken.symbol,
@@ -59,7 +97,7 @@ function Price(): JSX.Element | null {
                                 value: swap.priceRightToLeft
                                     ? amount(
                                         swap.priceRightToLeft || '0',
-                                        swap.priceDecimalsRight ?? DEFAULT_DECIMALS,
+                                        swap.rightToken.decimals,
                                     )
                                     : '--',
                                 leftSymbol: swap.rightToken.symbol,
@@ -72,14 +110,14 @@ function Price(): JSX.Element | null {
                 )}
                 <button
                     type="button"
-                    className="btn form-row__btn swap-price-reverse__btn"
+                    className="btn form-row__btn swap-price__reverse-btn"
                     onClick={onClickReverse}
                 >
                     <Icon icon="reverseHorizontal" />
                 </button>
             </div>
         </div>
-    ) : null
+    )
 }
 
 export const SwapPrice = observer(Price)

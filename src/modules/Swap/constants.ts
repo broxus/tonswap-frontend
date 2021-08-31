@@ -1,6 +1,7 @@
 import {
     SwapBill,
     SwapDirection,
+    SwapExchangeMode,
     SwapStoreData,
     SwapStoreState,
 } from '@/modules/Swap/types'
@@ -23,23 +24,27 @@ export const DEFAULT_SWAP_BILL: SwapBill = {
 }
 
 export const DEFAULT_SWAP_STORE_DATA: SwapStoreData = {
+    bestCrossExchangeRoute: undefined,
+    crossPairs: [],
     leftAmount: '',
     leftToken: undefined,
-    priceDecimalsLeft: undefined,
-    priceDecimalsRight: undefined,
     priceLeftToRight: undefined,
     priceRightToLeft: undefined,
     rightAmount: '',
     rightToken: undefined,
+    routes: [],
     slippage: '0.5',
 }
 
 export const DEFAULT_SWAP_STORE_STATE: SwapStoreState = {
     direction: SwapDirection.LTR,
+    exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+    isCalculating: false,
+    isConfirmationAwait: false,
+    isCrossExchangeCalculating: false,
+    isCrossExchangePreparing: false,
     isEnoughLiquidity: false,
-    isLoading: false,
+    isPairChecking: false,
     isSwapping: false,
-    isValid: false,
-    pairExist: true,
     priceDirection: SwapDirection.LTR,
 }

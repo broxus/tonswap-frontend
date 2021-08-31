@@ -29,7 +29,7 @@ export function Account(): JSX.Element | null {
                         <button
                             key="guest"
                             type="button"
-                            className="btn btn-dark tools-btn"
+                            className="btn btn-secondary tools-btn"
                             disabled={wallet.isConnecting}
                             aria-disabled={wallet.isConnecting}
                             onClick={connect}

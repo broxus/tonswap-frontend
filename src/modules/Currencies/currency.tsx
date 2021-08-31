@@ -90,7 +90,7 @@ function CurrencyInner(): JSX.Element {
                                 <Icon icon="externalLink" />
                             </AccountExplorerLink>
                             <Link
-                                className="btn btn-md btn-dark"
+                                className="btn btn-md btn-secondary"
                                 to={`/pool/${store.currency?.address}`}
                             >
                                 {intl.formatMessage({
@@ -98,7 +98,7 @@ function CurrencyInner(): JSX.Element {
                                 })}
                             </Link>
                             <Link
-                                className="btn btn-md btn-light"
+                                className="btn btn-md btn-primary"
                                 to={`/swap/${store.currency?.address}`}
                             >
                                 {intl.formatMessage({

@@ -31,7 +31,7 @@ export function Builder(): JSX.Element {
                 </h2>
                 <div className="section__header-actions">
                     <FilterField className="filter" />
-                    <Link to="/builder/create" className="btn btn-light">
+                    <Link to="/builder/create" className="btn btn-primary">
                         {intl.formatMessage({
                             id: 'BUILDER_HEADER_CREATE_LINK_TEXT',
                         })}
