@@ -6,6 +6,7 @@ import { Icon } from '@/components/common/Icon'
 import { useWallet } from '@/stores/WalletService'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { useBalanceValidation } from '@/hooks/useBalanceValidation'
+import { SwapDirection } from '@/modules/Swap/types'
 
 
 function SubmitButton(): JSX.Element {
@@ -13,7 +14,7 @@ function SubmitButton(): JSX.Element {
     const wallet = useWallet()
     const swap = useSwapStore()
 
-    if (swap.isSwapping || swap.isPairChecking || swap.isCalculating) {
+    if (swap.isSwapping || swap.isCrossExchangePreparing || swap.isCrossExchangeCalculating) {
         return (
             <button
                 type="button"
@@ -21,13 +22,15 @@ function SubmitButton(): JSX.Element {
                 aria-disabled="true"
                 disabled
             >
-                <Icon icon="loader" className="spin" />
+                <div className="popup-main__loader">
+                    <Icon icon="loader" />
+                </div>
             </button>
         )
     }
 
     const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
-        disabled: !swap.isDirectSwapValid || swap.isLoading,
+        disabled: !swap.isCrossExchangeSwapValid || swap.isLoading,
     }
     let buttonText: React.ReactNode = intl.formatMessage({ id: 'SWAP_BTN_TEXT_SUBMIT' })
 
@@ -49,21 +52,27 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case swap.pair === undefined || !swap.isEnoughLiquidity:
+        case !swap.isCrossExchangeAvailable:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
-                id: 'SWAP_BTN_TEXT_NOT_ENOUGH_LIQUIDITY',
+                id: 'SWAP_BTN_TEXT_ROUTE_DOES_NOT_EXIST',
             })
             break
 
-        case swap.leftAmount.length === 0 || swap.rightAmount.length === 0:
+        case swap.leftAmount.length === 0 && swap.direction === SwapDirection.LTR:
+        case swap.rightAmount.length === 0 && swap.direction === SwapDirection.RTL:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_ENTER_AN_AMOUNT',
             })
             break
 
-        case !useBalanceValidation(swap.leftToken, swap.leftAmount):
+        case !useBalanceValidation(
+            swap.leftToken,
+            swap.direction === SwapDirection.LTR
+                ? swap.leftAmount
+                : swap.bestCrossExchangeRoute?.leftAmount,
+        ):
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_INSUFFICIENT_TOKEN_BALANCE',
@@ -81,7 +90,7 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case swap.isDirectSwapValid:
+        case swap.isCrossExchangeSwapValid:
             buttonProps.onClick = () => {
                 swap.changeState('isConfirmationAwait', true)
             }
@@ -102,4 +111,4 @@ function SubmitButton(): JSX.Element {
     )
 }
 
-export const SwapSubmitButton = observer(SubmitButton)
+export const CrossExchangeSubmitButton = observer(SubmitButton)

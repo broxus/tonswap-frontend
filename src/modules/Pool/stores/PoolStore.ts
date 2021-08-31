@@ -1636,11 +1636,11 @@ export class PoolStore {
      */
 
     public get isLeftAmountValid(): boolean {
-        return isAmountValid(this.leftAmount, this.leftToken?.decimals)
+        return isAmountValid(new BigNumber(this.leftAmount), this.leftToken?.decimals)
     }
 
     public get isRightAmountValid(): boolean {
-        return isAmountValid(this.rightAmount, this.rightToken?.decimals)
+        return isAmountValid(new BigNumber(this.rightAmount), this.rightToken?.decimals)
     }
 
     public get leftAmount(): PoolStoreData['leftAmount'] {

@@ -73,7 +73,7 @@ function Transaction({ onDismiss }: Props): JSX.Element | null {
                 )}
                 <button
                     type="button"
-                    className="btn btn-light btn-block popup-btn"
+                    className="btn btn-primary btn-block popup-btn"
                     onClick={onDismiss}
                 >
                     {intl.formatMessage({

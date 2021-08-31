@@ -10,10 +10,10 @@ import { TokenIcon } from '@/components/common/TokenIcon'
 import { PairIcons } from '@/modules/Pairs/components/PairIcons'
 import { PairTransactions } from '@/modules/Pairs/components/PairTransactions'
 import { Stats } from '@/modules/Pairs/components/Stats'
-import { getComputedDefaultPerPrice } from '@/modules/Swap/utils'
+import { getDefaultPerPrice } from '@/modules/Swap/utils'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amount } from '@/utils'
+import { amount, isAmountValid } from '@/utils'
 
 import './pair.scss'
 
@@ -33,15 +33,15 @@ function PairInner(): JSX.Element {
 
     const priceLeftToRight = React.useMemo(
         () => {
-            const price = ((baseToken !== undefined && counterToken !== undefined)
-                ? getComputedDefaultPerPrice(
+            const price = (baseToken !== undefined && counterToken !== undefined)
+                ? getDefaultPerPrice(
                     new BigNumber(store.pair?.rightLocked || '0'),
                     counterToken?.decimals,
                     new BigNumber(store.pair?.leftLocked || '0').shiftedBy(-baseToken?.decimals),
                     counterToken?.decimals,
-                ) : '0')
+                ) : new BigNumber('0')
 
-            return new BigNumber(price).isNaN() ? '0' : price
+            return isAmountValid(price) ? price.toFixed() : '0'
         },
         [baseToken, counterToken, store.pair],
     )
@@ -49,14 +49,14 @@ function PairInner(): JSX.Element {
     const priceRightToLeft = React.useMemo(
         () => {
             const price = (baseToken !== undefined && counterToken !== undefined)
-                ? getComputedDefaultPerPrice(
+                ? getDefaultPerPrice(
                     new BigNumber(store.pair?.leftLocked || '0'),
                     baseToken?.decimals,
                     new BigNumber(store.pair?.rightLocked || '0').shiftedBy(-counterToken?.decimals),
                     baseToken?.decimals,
-                ) : '0'
+                ) : new BigNumber('0')
 
-            return new BigNumber(price).isNaN() ? '0' : price
+            return isAmountValid(price) ? price.toFixed() : '0'
         },
         [baseToken, counterToken, store.pair],
     )
@@ -98,7 +98,7 @@ function PairInner(): JSX.Element {
                             <div className="pair-page__tokens-prices">
                                 <Link
                                     to={`/tokens/${baseToken.root}`}
-                                    className="btn btn-s btn-dark pair-page__token-price"
+                                    className="btn btn-s btn-secondary pair-page__token-price"
                                 >
                                     <TokenIcon
                                         address={baseToken.root}
@@ -116,7 +116,7 @@ function PairInner(): JSX.Element {
                                 </Link>
                                 <Link
                                     to={`/tokens/${counterToken.root}`}
-                                    className="btn btn-s btn-dark pair-page__token-price"
+                                    className="btn btn-s btn-secondary pair-page__token-price"
                                 >
                                     <TokenIcon
                                         address={counterToken.root}
@@ -145,7 +145,7 @@ function PairInner(): JSX.Element {
                             </AccountExplorerLink>
                         )}
                         <Link
-                            className="btn btn-md btn-dark"
+                            className="btn btn-md btn-secondary"
                             to={`/pool/${baseToken?.root || store.pair?.meta.baseAddress}/${counterToken?.root || store.pair?.meta.counterAddress}`}
                         >
                             {intl.formatMessage({
@@ -153,7 +153,7 @@ function PairInner(): JSX.Element {
                             })}
                         </Link>
                         <Link
-                            className="btn btn-md btn-light"
+                            className="btn btn-md btn-primary"
                             to={`/swap/${baseToken?.root || store.pair?.meta.baseAddress}/${counterToken?.root || store.pair?.meta.counterAddress}`}
                         >
                             {intl.formatMessage({

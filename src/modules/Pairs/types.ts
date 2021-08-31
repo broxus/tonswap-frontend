@@ -60,6 +60,11 @@ export type PairsRequest = {
     whiteListUri?: string;
 }
 
+export type CrossPairsRequest = {
+    fromCurrencyAddress: string;
+    toCurrencyAddresses: string[];
+}
+
 export type PairResponse = PairInfo
 
 export type PairsResponse = {

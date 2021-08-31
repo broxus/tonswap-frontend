@@ -19,7 +19,7 @@ function Button(): JSX.Element {
 
     return (
         <>
-            <button className="btn btn-light" type="button" onClick={onClick}>
+            <button className="btn btn-primary" type="button" onClick={onClick}>
                 {intl.formatMessage({
                     id: 'BUILDER_MANAGE_TOKEN_MINT_BTN_TEXT',
                 })}

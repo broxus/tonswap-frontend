@@ -1,19 +1,19 @@
 import BigNumber from 'bignumber.js'
 
 
-function isValid(amount: BigNumber): boolean {
+function isValid(value: BigNumber): boolean {
     return (
-        amount.isPositive()
-        && amount.isFinite()
-        && !amount.isNaN()
-        && !amount.isZero()
+        value.isPositive()
+        && value.isFinite()
+        && !value.isNaN()
+        && !value.isZero()
     )
 }
 
 
-export function isAmountValid(value: BigNumber | string = '0', decimals: number = 18): boolean {
-    if (value instanceof BigNumber) {
-        return isValid(value)
+export function isAmountValid(value: BigNumber, decimals?: number | undefined): boolean {
+    if (decimals !== undefined) {
+        return isValid(value.decimalPlaces(decimals, BigNumber.ROUND_DOWN))
     }
-    return isValid(new BigNumber(value || '0').decimalPlaces(decimals, BigNumber.ROUND_DOWN))
+    return isValid(value)
 }

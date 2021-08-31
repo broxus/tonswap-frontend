@@ -1,5 +1,6 @@
 @import '_mix';
 
+
 .btn {
     background-color: transparent;
     border: 1px solid transparent;
@@ -28,6 +29,52 @@
         color: initial;
         text-decoration: none;
     }
+
+    &:disabled {
+        background-color: rgba(197, 228, 243, 0.16) !important;
+        color: #c5e4f3 !important;
+        cursor: not-allowed !important;
+        opacity: 0.5 !important;
+    }
+
+    &.btn-xs {
+        font-size: 14px;
+        letter-spacing: 0.75px;
+        line-height: 32px;
+        min-height: 32px;
+        padding: 0 12px;
+    }
+
+    &.btn-s {
+        font-size: 14px;
+        letter-spacing: 0.75px;
+        line-height: 36px;
+        padding: 0 16px;
+    }
+
+    &.btn-md {
+        font-size: 20px;
+        letter-spacing: 0.15px;
+        line-height: 48px;
+        min-height: 48px;
+        padding: 0 24px;
+    }
+
+    &.btn-lg {
+        font-size: 20px;
+        letter-spacing: 0.15px;
+        line-height: 56px;
+        min-height: 56px;
+        padding: 0 20px;
+    }
+
+    &.btn-block {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        width: 100%;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -36,102 +83,87 @@
     }
 }
 
-.btn-dark {
-    @include btn-reset;
-
-    background-color: rgba(197, 228, 243, 0.16);
-    color: #c5e4f3;
-    font-size: 16px;;
-    font-weight: bold;
-    letter-spacing: 0.25px;
-    line-height: 44px;
-    padding: 0 16px;
-    text-align: center;
-
-    &:hover {
-        background: rgba(197, 228, 243, 1);
-        color: #293166;
-    }
-
-    &:disabled {
-        background-color: rgba(197, 228, 243, 0.16);
-        color: #c5e4f3;
-        opacity: 0.5;
-    }
-
-    &.btn-md {
-        font-size: 20px;
-        letter-spacing: 0.15px;
-        line-height: 48px;
-        padding: 0 24px;
-    }
-
-    &.btn-lg {
-        font-size: 20px;
-        letter-spacing: 0.15px;
-        line-height: 56px;
-        padding: 0 20px;
-    }
-
-    &.btn-s {
-        font-size: 14px;
-        letter-spacing: 0.75px;
-        line-height: 20px;
-        padding: 8px 16px;
-    }
-
-    &.btn-block {
-        display: block;
-        width: 100%;
-    }
-}
-
-.btn-light {
+.btn-primary {
     @include btn-reset;
 
     background-color: #c5e4f3;
     color: #293166;
     font-size: 16px;
-    font-weight: bold;
-    letter-spacing: 0.25px;
+    font-weight: 700;
     line-height: 44px;
+    min-height: 44px;
     padding: 0 16px;
-    text-align: center;
 
     &:hover {
         background-color: darken(#c5e4f3, 10%);
     }
+}
 
-    &:disabled {
-        background-color: rgba(197, 228, 243, 0.16);
+.btn-secondary {
+    @include btn-reset;
+
+    background-color: rgba(197, 228, 243, 0.16);
+    color: #c5e4f3;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 44px;
+    min-height: 44px;
+    padding: 0 16px;
+
+    &:hover {
+        background: #c5e4f3;
+        color: #293166;
+    }
+}
+
+.btn-tertiary {
+    @include btn-reset;
+
+    background-color: rgba(197, 228, 243, 0.16);
+    color: #c5e4f3;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 44px;
+    min-height: 44px;
+    padding: 0 16px;
+
+    &:hover {
+        background-color: rgba(197, 228, 243, 0.24);
         color: #c5e4f3;
-        opacity: 0.5;
     }
+}
 
-    &.btn-md {
-        font-size: 20px;
-        letter-spacing: 0.15px;
-        line-height: 48px;
-        padding: 0 24px;
+.btn-danger {
+    @include btn-reset;
+
+    background-color: #eb4361;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 44px;
+    min-height: 44px;
+    padding: 0 16px;
+
+    &:hover {
+        background-color: darken(#eb4361, 10%);
+        color: #ffffff;
     }
+}
 
-    &.btn-lg {
-        font-size: 20px;
-        letter-spacing: 0.15px;
-        line-height: 56px;
-        padding: 0 20px;
-    }
+.btn--empty {
+    @include btn-reset;
 
-    &.btn-s {
-        font-size: 14px;
-        letter-spacing: 0.75px;
-        line-height: 20px;
-        padding: 8px 16px;
-    }
+    border: 1px solid rgba(255, 255, 255, 0.48);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 44px;
+    min-height: 44px;
+    padding: 0 16px;
 
-    &.btn-block {
-        display: block;
-        width: 100%;
+    &:hover {
+        border-color: rgba(255, 255, 255, 0.78);
+        color: #ffffff;
     }
 }
 
@@ -155,120 +187,5 @@
 
     &.btn-md {
         padding: 0 24px;
-    }
-}
-
-.btn--grey {
-    @include btn-reset;
-
-    background-color: rgba(197, 228, 243, 0.16);
-    color: #c5e4f3;
-    font-size: 14px;
-    font-weight: bold;
-    letter-spacing: 0.75px;
-    line-height: 40px;
-    padding: 0 16px;
-    text-align: center;
-
-    &:hover {
-        background-color: rgba(197, 228, 243, 1);
-        color: #293166;
-    }
-
-    &:disabled {
-        background-color: rgba(197, 228, 243, 0.16);
-        color: #c5e4f3;
-        opacity: 0.5;
-    }
-
-    &.btn-lg {
-        font-size: 20px;
-        letter-spacing: 0.15px;
-        line-height: 56px;
-        padding: 0 20px;
-    }
-
-    &.btn-block {
-        display: block;
-        width: 100%;
-    }
-}
-
-.btn-red {
-    @include btn-reset;
-
-    background-color: #EB4361;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    letter-spacing: 0.25px;
-    line-height: 44px;
-    padding: 0 16px;
-    text-align: center;
-
-    &:hover {
-        background-color: darken(#EB4361, 10%);
-        color: white;
-    }
-
-    &:disabled {
-        background-color: #EB4361;
-        color: white;
-        opacity: 0.5;
-    }
-
-    &.btn-lg {
-        font-size: 20px;
-        letter-spacing: 0.15px;
-        line-height: 56px;
-        padding: 0 20px;
-    }
-
-    &.btn-s {
-        font-size: 14px;
-        letter-spacing: 0.75px;
-        line-height: 20px;
-        padding: 8px 16px;
-    }
-
-    &.btn-block {
-        display: block;
-        width: 100%;
-    }
-}
-
-.btn--empty {
-    @include btn-reset;
-
-    border: 1px solid rgba(197, 228, 243, 0.32);
-    color: #c5e4f3;
-    font-size: 14px;
-    font-weight: bold;
-    letter-spacing: 0.75px;
-    line-height: 28px;
-    padding: 0 15px;
-    text-align: center;
-
-    &:hover {
-        background-color: rgba(197, 228, 243, 1);
-        color: #293166;
-    }
-
-    &:disabled {
-        background-color: rgba(197, 228, 243, 0.16);
-        color: #c5e4f3;
-        opacity: 0.5;
-    }
-
-    &.btn-lg {
-        font-size: 20px;
-        letter-spacing: 0.15px;
-        line-height: 56px;
-        padding: 0 20px;
-    }
-
-    &.btn-block {
-        display: block;
-        width: 100%;
     }
 }

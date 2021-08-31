@@ -1,3 +1,5 @@
+@import '_mix';
+
 .popup {
     height: 100%;
     left: 0;
@@ -7,17 +9,22 @@
     z-index: 900;
 
     &__wrap {
-        backdrop-filter: blur(80px);
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(40, 42, 55, 0.9);
         box-shadow: 0 8px 16px rgba(43, 51, 56, 0.08);
         left: 50%;
-        max-width: 420px;
+        max-width: 480px;
         padding: 20px 20px 28px;
         position: absolute;
         top: 128px;
         transform: translateX(-50%);
         width: 100%;
         z-index: 2;
+
+        @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
+        }
     }
 
     .amount {
@@ -51,8 +58,8 @@ button.popup-close {
     height: 40px;
     opacity: 0.5;
     position: absolute;
-    right: 0;
-    top: 0;
+    right: 10px;
+    top: 12px;
     width: 40px;
     z-index: 2;
 
@@ -62,9 +69,9 @@ button.popup-close {
 }
 
 .popup-title {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: bold;
-    line-height: 32px;
+    line-height: 24px;
     margin-bottom: 20px;
 
     &.center {
@@ -84,6 +91,8 @@ button.popup-close {
     }
 
     &.nb { border: 0 none; }
+
+    &.np { padding: 0; }
 
     &__ava {
         background-color: rgba(255, 255, 255, 0.5);
@@ -131,16 +140,16 @@ button.popup-close {
 
 .popup-txt {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 12px;
+    font-size: 14px;
     letter-spacing: 0.4px;
-    line-height: 16px;
+    line-height: 20px;
     margin: 20px 0;
 
     &.lg {
         color: #ffffff;
-        font-size: 14px;
+        font-size: 18px;
         letter-spacing: 0.75px;
-        line-height: 20px;
+        line-height: 24px;
     }
 
     &.center {
@@ -176,4 +185,13 @@ button.popup-close {
     &:last-child {
         margin-bottom: 0;
     }
+}
+
+.popup-actions {
+    align-items: center;
+    column-gap: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 48px;
 }

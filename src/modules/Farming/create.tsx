@@ -202,7 +202,7 @@ export function Create(): JSX.Element {
                             {() => (
                                 <button
                                     type="button"
-                                    className="btn btn-light btn-lg form-submit btn-block"
+                                    className="btn btn-primary btn-lg form-submit btn-block"
                                     aria-disabled={creatingPool.isCreating || !creatingPool.isValid}
                                     disabled={creatingPool.isCreating || !creatingPool.isValid}
                                     onClick={create}

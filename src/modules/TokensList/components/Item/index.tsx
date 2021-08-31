@@ -18,7 +18,7 @@ export type Props = {
 export const Item = observer(({ disabled, token, onSelect }: Props) => {
     const intl = useIntl()
     const tokensCache = useTokensCache()
-    const { balance } = useTokenFormattedBalance(token, {
+    const balance = useTokenFormattedBalance(token, {
         subscriberPrefix: 'list',
     })
 
@@ -36,7 +36,7 @@ export const Item = observer(({ disabled, token, onSelect }: Props) => {
         setImportingTo(false)
     }
 
-    const isStored = tokensCache.isStored(token.root)
+    const isStored = tokensCache.has(token.root)
 
     return (
         <>
@@ -67,13 +67,13 @@ export const Item = observer(({ disabled, token, onSelect }: Props) => {
                 </div>
                 {isStored ? (
                     <div className="popup-item__right">
-                        {balance}
+                        {balance.value}
                     </div>
                 ) : (
                     <div className="popup-item__right">
                         <button
                             type="button"
-                            className="btn btn-s btn-light"
+                            className="btn btn-s btn-primary"
                             onClick={onImporting}
                         >
                             {intl.formatMessage({
@@ -91,6 +91,5 @@ export const Item = observer(({ disabled, token, onSelect }: Props) => {
                 />
             )}
         </>
-
     )
 })
