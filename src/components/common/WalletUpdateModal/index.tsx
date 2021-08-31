@@ -66,7 +66,7 @@ function UpdateModal(): JSX.Element | null {
                     }}
                 />
                 <a
-                    className="btn btn--grey btn-block popup-btn"
+                    className="btn btn-tertiary btn-block popup-btn"
                     href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk"
                     target="_blank"
                     rel="nofollow noopener noreferrer"

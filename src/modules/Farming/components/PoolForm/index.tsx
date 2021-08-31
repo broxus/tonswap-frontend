@@ -81,7 +81,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                             </div>
                             <button
                                 type="button"
-                                className="btn btn-s btn-light"
+                                className="btn btn-s btn-primary"
                                 disabled={!isDepositValid(
                                     farmingPool.userDeposit,
                                     farmingPool.userWalletBalance,
@@ -97,7 +97,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                             </button>
                             <button
                                 type="button"
-                                className="btn btn-s btn-light"
+                                className="btn btn-s btn-primary"
                                 disabled={!isWithdrawUnclaimedValid(
                                     pool.userReward,
                                     pool.userBalance,
@@ -143,7 +143,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                                 </div>
                                                 <button
                                                     type="button"
-                                                    className="btn btn-s btn-light"
+                                                    className="btn btn-s btn-primary"
                                                     disabled={!isDepositValid(
                                                         adminDeposit,
                                                         adminWalletBalance,
@@ -178,7 +178,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                             <div className="farming-pool-form__actions">
                                 <button
                                     type="button"
-                                    className="btn btn-light btn-s swap-acc-table-frame__submit"
+                                    className="btn btn-primary btn-s swap-acc-table-frame__submit"
                                     disabled={farmingPool.isAdminWithdrawUnclaiming}
                                     onClick={farmingPool.adminWithdrawUnclaimed}
                                 >

@@ -4,15 +4,15 @@ import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 import { error, formatBalance } from '@/utils'
 
 
-type TokenFormattedBalanceOptions = {
+export type TokenFormattedBalanceOptions = {
     dexAccountBalance?: string;
     subscriberPrefix?: string;
     watchOnMount?: boolean;
     unwatchOnUnmount?: boolean;
 }
 
-type TokenFormattedBalanceShape = {
-    balance: string;
+export type TokenFormattedBalanceShape = {
+    value: string;
     isFetching: boolean;
 }
 
@@ -96,5 +96,5 @@ export function useTokenFormattedBalance(
         }
     }, [token])
 
-    return { balance, isFetching }
+    return { value: balance, isFetching }
 }

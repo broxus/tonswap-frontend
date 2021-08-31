@@ -1,6 +1,9 @@
+import BigNumber from 'bignumber.js'
 import * as React from 'react'
 
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
+import { isAmountValid } from '@/utils'
+
 
 type SwapSettingsShape = {
     popupRef: React.RefObject<HTMLDivElement>;
@@ -9,6 +12,7 @@ type SwapSettingsShape = {
     show: () => void;
     hide: () => void;
     handleOuterClick: (event: MouseEvent | TouchEvent) => void;
+    onBlur: React.FormEventHandler<HTMLInputElement>;
     onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -40,6 +44,13 @@ export function useSwapSettings(): SwapSettingsShape {
         }
     }
 
+    const onBlur: React.FormEventHandler<HTMLInputElement> = event => {
+        const value = new BigNumber(event.currentTarget.value || 0)
+        if (!isAmountValid(value)) {
+            swap.changeData('slippage', '0.5')
+        }
+    }
+
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         swap.changeData('slippage', event.target.value)
     }
@@ -61,6 +72,7 @@ export function useSwapSettings(): SwapSettingsShape {
         show,
         hide,
         handleOuterClick,
+        onBlur,
         onChange,
     }
 }

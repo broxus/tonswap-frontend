@@ -42,18 +42,18 @@ export class TokensListService {
     /**
      * Current state of the token list data
      * @type {TokensListData}
-     * @private
+     * @protected
      */
-    private data: TokensListData = {
+    protected data: TokensListData = {
         tokens: [],
     }
 
     /**
      * Current state of the token list
      * @type {TokensListState}
-     * @private
+     * @protected
      */
-    private state: TokensListState = {
+    protected state: TokensListState = {
         isFetching: false,
     }
 
@@ -65,7 +65,6 @@ export class TokensListService {
     /**
      * Fetch tokens list manifest by the given URI
      * @param {string} uri
-     * @private
      */
     public fetch(uri: string): void {
         if (this.isFetching) {

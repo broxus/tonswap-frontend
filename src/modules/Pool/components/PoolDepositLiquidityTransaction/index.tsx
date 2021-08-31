@@ -183,7 +183,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                 )}
                 <button
                     type="button"
-                    className="btn btn-light btn-block"
+                    className="btn btn-primary btn-block"
                     onClick={onDismiss}
                 >
                     {intl.formatMessage({

@@ -7,13 +7,10 @@
     margin-bottom: 32px;
 
     li {
-        a {
-            color: rgba(255, 255, 255, 0.48);
-            margin-right: 40px;
+        &:not(:last-child) {
+            margin-right: 30px;
             position: relative;
-            text-decoration: none;
 
-            &:hover { color: #ffffff; }
             &::after {
                 border: 5px solid transparent;
                 border-left-color: rgba(255, 255, 255, 0.75);
@@ -21,9 +18,16 @@
                 display: block;
                 margin-top: -5px;
                 position: absolute;
-                right: -25px;
+                right: -23px;
                 top: 50%;
             }
+        }
+
+        a {
+            color: rgba(255, 255, 255, 0.48);
+            text-decoration: none;
+
+            &:hover { color: #ffffff; }
         }
 
         span {

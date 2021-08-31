@@ -6,7 +6,9 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { useBalanceValidation } from '@/hooks/useBalanceValidation'
 import {
+    CrossExchangeSubmitButton,
     SwapBill,
+    SwapConfirmationPopup,
     SwapField,
     SwapPrice,
     SwapSettings,
@@ -52,10 +54,13 @@ export function Swap(): JSX.Element {
                                         swap.leftToken,
                                         swap.leftAmount,
                                     )}
-                                    readOnly={swap.isLoading || swap.isSwapping}
+                                    readOnly={swap.isSwapping}
                                     token={swap.leftToken}
-                                    value={swap.leftAmount}
-                                    onChange={form.onChangeData('leftAmount')}
+                                    value={swap.isCrossExchangeMode
+                                        ? swap.crossExchangeLeftAmount
+                                        : swap.leftAmount}
+                                    onKeyUp={form.onKeyUp}
+                                    onChange={form.onChangeLeftAmount}
                                     onToggleTokensList={form.showTokensList('leftToken')}
                                 />
                             )}
@@ -85,10 +90,13 @@ export function Swap(): JSX.Element {
                                     isValid={swap.rightAmount.length > 0
                                         ? swap.isEnoughLiquidity
                                         : true}
-                                    readOnly={swap.isLoading || swap.isSwapping}
+                                    readOnly={swap.isSwapping}
                                     token={swap.rightToken}
-                                    value={swap.rightAmount}
-                                    onChange={form.onChangeData('rightAmount')}
+                                    value={swap.isCrossExchangeMode
+                                        ? swap.crossExchangeRightAmount
+                                        : swap.rightAmount}
+                                    onKeyUp={form.onKeyUp}
+                                    onChange={form.onChangeRightAmount}
                                     onToggleTokensList={form.showTokensList('rightToken')}
                                 />
                             )}
@@ -96,17 +104,47 @@ export function Swap(): JSX.Element {
 
                         <SwapPrice key="price" />
 
-                        <SwapSubmitButton key="submitButton" />
+                        <Observer>
+                            {() => (swap.isCrossExchangeMode ? (
+                                <CrossExchangeSubmitButton key="crossExchangeSubmitButton" />
+                            ) : (
+                                <SwapSubmitButton key="submitButton" />
+                            ))}
+                        </Observer>
                     </div>
                 </div>
             </div>
 
-            <SwapBill key="bill" />
+            <Observer>
+                {() => (
+                    <SwapBill
+                        key="bill"
+                        fee={swap.fee}
+                        isCrossExchangeAvailable={swap.isCrossExchangeAvailable}
+                        isCrossExchangeMode={swap.isCrossExchangeMode}
+                        leftToken={swap.leftToken}
+                        minExpectedAmount={swap.minExpectedAmount}
+                        priceImpact={swap.priceImpact}
+                        rightToken={swap.rightToken}
+                        slippage={swap.isCrossExchangeMode
+                            ? swap.bestCrossExchangeRoute?.slippage
+                            : swap.slippage}
+                        tokens={swap.bestCrossExchangeRoute?.tokens}
+                    />
+                )}
+            </Observer>
 
-            <SwapTransaction
-                key="transaction"
-                onDismiss={form.onDismissTransactionReceipt}
-            />
+            <SwapTransaction key="transaction" />
+
+            <Observer>
+                {() => (
+                    <>
+                        {swap.isConfirmationAwait && (
+                            <SwapConfirmationPopup key="confirmationPopup" />
+                        )}
+                    </>
+                )}
+            </Observer>
 
             {(form.isTokenListShown && form.tokenSide != null) && (
                 <TokensList
