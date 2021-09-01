@@ -1,14 +1,13 @@
 import { DecodedAbiFunctionInputs, Transaction } from 'ton-inpage-provider'
 
 import { DexAbi, PairBalances, PairTokenRoots } from '@/misc'
-import { TokenCache } from '@/stores/TokensCacheService'
 
 
 export type PoolStoreData = {
     leftAmount: string;
-    leftToken?: TokenCache;
+    leftToken?: string;
     rightAmount: string;
-    rightToken?: TokenCache;
+    rightToken?: string;
 }
 
 export type TokenSide = 'leftToken' | 'rightToken'

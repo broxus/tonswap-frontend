@@ -31,7 +31,7 @@ function Field({
     ...props
 }: Props): JSX.Element {
     const intl = useIntl()
-    const field = useField(props)
+    const field = useField({ token, ...props })
     const balance = useTokenFormattedBalance(token, {
         subscriberPrefix: 'field',
     })
@@ -40,18 +40,18 @@ function Field({
         <label className="form-label" htmlFor={props.id}>
             <fieldset
                 className={classNames('form-fieldset', {
-                    invalid: !isValid && !props.disabled,
+                    invalid: !isValid,
                     checking: balance.isFetching && !props.disabled,
                 })}
             >
                 <div className="form-fieldset__header">
                     <div>{props.label}</div>
-                    {token && (
+                    {token !== undefined && (
                         <div>
                             {intl.formatMessage({
                                 id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
                             }, {
-                                balance: balance.value,
+                                balance: balance.value || token.balance,
                             })}
                         </div>
                     )}

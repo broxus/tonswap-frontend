@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-function isBignumberValid(value: BigNumber): boolean {
+export function isNumberValid(value: BigNumber): boolean {
     return (
         value.isPositive()
         && value.isFinite()

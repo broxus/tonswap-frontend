@@ -7,6 +7,7 @@ import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { SwapBill } from '@/modules/Swap/components/SwapBill'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
+import { SwapDirection } from '@/modules/Swap/types'
 
 import './index.scss'
 
@@ -16,6 +17,16 @@ function ConfirmationPopup(): JSX.Element {
     const swap = useSwapStore()
 
     const [minExpectedAmount, setMinExpectedAmount] = React.useState(swap.minExpectedAmount)
+    const [leftAmount, setLeftAmount] = React.useState(
+        () => ((swap.isCrossExchangeMode && swap.direction !== SwapDirection.LTR)
+            ? swap.bestCrossExchangeRoute?.leftAmount
+            : swap.leftAmount),
+    )
+    const [rightAmount, setRightAmount] = React.useState(
+        () => ((swap.isCrossExchangeMode && swap.direction !== SwapDirection.RTL)
+            ? swap.bestCrossExchangeRoute?.rightAmount
+            : swap.rightAmount),
+    )
 
     const isChanged = React.useMemo(
         () => minExpectedAmount !== swap.minExpectedAmount,
@@ -24,6 +35,12 @@ function ConfirmationPopup(): JSX.Element {
 
     const onUpdate = () => {
         setMinExpectedAmount(swap.minExpectedAmount)
+        setLeftAmount((swap.isCrossExchangeMode && swap.direction !== SwapDirection.LTR)
+            ? swap.bestCrossExchangeRoute?.leftAmount
+            : swap.leftAmount)
+        setRightAmount((swap.isCrossExchangeMode && swap.direction !== SwapDirection.RTL)
+            ? swap.bestCrossExchangeRoute?.rightAmount
+            : swap.rightAmount)
     }
 
     const onDismiss = () => {
@@ -31,6 +48,7 @@ function ConfirmationPopup(): JSX.Element {
     }
 
     const onSubmit = async () => {
+        swap.changeState('isConfirmationAwait', false)
         if (swap.isCrossExchangeMode) {
             await swap.crossExchangeSwap()
         }
@@ -69,9 +87,7 @@ function ConfirmationPopup(): JSX.Element {
                             className="form-input"
                             readOnly
                             type="text"
-                            value={swap.isCrossExchangeMode
-                                ? swap.crossExchangeLeftAmount
-                                : swap.leftAmount}
+                            value={leftAmount}
                         />
                         <div className="btn form-drop">
                             <span className="form-drop__logo">
@@ -102,9 +118,7 @@ function ConfirmationPopup(): JSX.Element {
                             className="form-input"
                             readOnly
                             type="text"
-                            value={swap.isCrossExchangeMode
-                                ? swap.crossExchangeRightAmount
-                                : swap.rightAmount}
+                            value={rightAmount}
                         />
                         <div className="btn form-drop">
                             <span className="form-drop__logo">
@@ -150,7 +164,9 @@ function ConfirmationPopup(): JSX.Element {
                         minExpectedAmount={minExpectedAmount}
                         priceImpact={swap.priceImpact}
                         rightToken={swap.rightToken}
-                        slippage={swap.slippage}
+                        slippage={swap.isCrossExchangeMode
+                            ? swap.bestCrossExchangeRoute?.slippage
+                            : swap.slippage}
                         tokens={swap.bestCrossExchangeRoute?.tokens}
                     />
                 )}

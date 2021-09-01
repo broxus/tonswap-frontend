@@ -1,10 +1,10 @@
 import * as React from 'react'
 import classNames from 'classnames'
 
+import { TokenIcon } from '@/components/common/TokenIcon'
 import { TokenCache } from '@/stores/TokensCacheService'
 
 import './index.scss'
-import { TokenIcon } from '@/components/common/TokenIcon'
 
 
 type Props = {

@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { IntlProvider } from 'react-intl'
 import {
-    BrowserRouter as Router,
-    Switch,
     Redirect,
     Route,
+    BrowserRouter as Router,
+    Switch,
 } from 'react-router-dom'
 
 import { WalletConnectingModal } from '@/components/common/WalletConnectingModal'
@@ -12,6 +12,7 @@ import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
 import messages from '@/lang/en'
 import { Account } from '@/modules/Account'
+import { ManageToken } from '@/modules/Builder/manageToken'
 import Builder from '@/pages/builder'
 import CreateToken from '@/pages/builder/create'
 import Farming from '@/pages/farming'
@@ -25,7 +26,6 @@ import Token from '@/pages/tokens/item'
 import { noop } from '@/utils'
 
 import './App.scss'
-import { ManageToken } from '@/modules/Builder/manageToken'
 
 
 export function App(): JSX.Element {

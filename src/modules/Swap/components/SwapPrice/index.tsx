@@ -27,7 +27,7 @@ function Price(): JSX.Element | null {
             <div>
                 {(() => {
                     switch (true) {
-                        case swap.pair !== undefined && swap.isCrossExchangeAvailable:
+                        case swap.pair !== undefined && swap.isCrossExchangeMode:
                             return (
                                 <button
                                     type="button"
@@ -35,14 +35,31 @@ function Price(): JSX.Element | null {
                                     onClick={swap.toggleSwapExchangeMode}
                                 >
                                     {intl.formatMessage({
-                                        id: swap.isCrossExchangeMode
-                                            ? 'SWAP_PRICE_DIRECT_EXCHANGE_MODE_LABEL'
+                                        id: 'SWAP_PRICE_DIRECT_EXCHANGE_MODE_LABEL',
+                                    })}
+                                </button>
+                            )
+
+                        case swap.pair !== undefined
+                                && swap.isCrossExchangeAvailable
+                                && swap.bestCrossExchangeRoute !== undefined:
+                        case swap.pair !== undefined && !swap.isEnoughLiquidity && swap.isCrossExchangeAvailable:
+                            return (
+                                <button
+                                    type="button"
+                                    className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"
+                                    onClick={swap.toggleSwapExchangeMode}
+                                >
+                                    {intl.formatMessage({
+                                        // eslint-disable-next-line no-nested-ternary
+                                        id: !swap.isEnoughLiquidity
+                                            ? 'SWAP_PRICE_CROSS_EXCHANGE_AVAILABLE_LABEL'
                                             : 'SWAP_PRICE_CROSS_EXCHANGE_MODE_LABEL',
                                     })}
                                 </button>
                             )
 
-                        case !swap.pair !== undefined && swap.isCrossExchangeAvailable:
+                        case swap.pair === undefined && swap.isCrossExchangeAvailable && swap.isCrossExchangeMode:
                             return (
                                 <div
                                     className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"

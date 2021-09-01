@@ -33,7 +33,7 @@ import {
     TokenSide,
 } from '@/modules/Pool/types'
 import { DexAccountService, useDexAccount } from '@/stores/DexAccountService'
-import { TokenCache } from '@/stores/TokensCacheService'
+import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { debounce, error, isAmountValid } from '@/utils'
 
@@ -70,6 +70,7 @@ export class PoolStore {
 
     constructor(
         protected readonly wallet: WalletService,
+        protected readonly tokensCache: TokensCacheService,
         protected readonly dex: DexAccountService,
     ) {
         makeAutoObservable<
@@ -1647,16 +1648,16 @@ export class PoolStore {
         return this.data.leftAmount
     }
 
-    public get leftToken(): PoolStoreData['leftToken'] {
-        return this.data.leftToken
+    public get leftToken(): TokenCache | undefined {
+        return this.data.leftToken !== undefined ? this.tokensCache.get(this.data.leftToken) : undefined
     }
 
     public get rightAmount(): PoolStoreData['rightAmount'] {
         return this.data.rightAmount
     }
 
-    public get rightToken(): PoolStoreData['rightToken'] {
-        return this.data.rightToken
+    public get rightToken(): TokenCache | undefined {
+        return this.data.rightToken !== undefined ? this.tokensCache.get(this.data.rightToken) : undefined
     }
 
     /*
@@ -1826,10 +1827,7 @@ export class PoolStore {
 }
 
 
-const Pool = new PoolStore(
-    useWallet(),
-    useDexAccount(),
-)
+const Pool = new PoolStore(useWallet(), useTokensCache(), useDexAccount())
 
 export function usePool(): PoolStore {
     return Pool

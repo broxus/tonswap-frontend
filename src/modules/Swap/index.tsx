@@ -17,6 +17,7 @@ import {
 } from '@/modules/Swap/components'
 import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
+import { SwapDirection } from '@/modules/Swap/types'
 import { TokensList } from '@/modules/TokensList'
 
 import './index.scss'
@@ -52,11 +53,13 @@ export function Swap(): JSX.Element {
                                     })}
                                     isValid={useBalanceValidation(
                                         swap.leftToken,
-                                        swap.leftAmount,
+                                        swap.isCrossExchangeMode
+                                            ? swap.bestCrossExchangeRoute?.leftAmount || '0'
+                                            : swap.leftAmount,
                                     )}
                                     readOnly={swap.isSwapping}
                                     token={swap.leftToken}
-                                    value={swap.isCrossExchangeMode
+                                    value={(swap.isCrossExchangeMode && swap.direction === SwapDirection.RTL)
                                         ? swap.crossExchangeLeftAmount
                                         : swap.leftAmount}
                                     onKeyUp={form.onKeyUp}
@@ -87,12 +90,12 @@ export function Swap(): JSX.Element {
                                     label={intl.formatMessage({
                                         id: 'SWAP_FIELD_LABEL_RIGHT',
                                     })}
-                                    isValid={swap.rightAmount.length > 0
+                                    isValid={(swap.rightAmount.length > 0 && !swap.isCrossExchangeMode)
                                         ? swap.isEnoughLiquidity
                                         : true}
                                     readOnly={swap.isSwapping}
                                     token={swap.rightToken}
-                                    value={swap.isCrossExchangeMode
+                                    value={(swap.isCrossExchangeMode && swap.direction === SwapDirection.LTR)
                                         ? swap.crossExchangeRightAmount
                                         : swap.rightAmount}
                                     onKeyUp={form.onKeyUp}
@@ -127,7 +130,7 @@ export function Swap(): JSX.Element {
                         priceImpact={swap.priceImpact}
                         rightToken={swap.rightToken}
                         slippage={swap.isCrossExchangeMode
-                            ? swap.bestCrossExchangeRoute?.slippage
+                            ? swap.crossExchangeSlippage
                             : swap.slippage}
                         tokens={swap.bestCrossExchangeRoute?.tokens}
                     />

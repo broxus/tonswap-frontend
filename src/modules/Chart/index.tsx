@@ -1,8 +1,8 @@
 import * as React from 'react'
 import {
-    createChart,
     AutoscaleInfo,
     ChartOptions,
+    createChart,
     DeepPartial,
     IChartApi,
     ISeriesApi,

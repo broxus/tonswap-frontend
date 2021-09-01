@@ -37,7 +37,7 @@ export function SwapBill({
 
     return (
         <div className="list-bill">
-            {(isCrossExchangeMode && isCrossExchangeAvailable) && (
+            {(isCrossExchangeMode && isCrossExchangeAvailable && tokens !== undefined && tokens.length > 0) && (
                 <div key="route" className="list-bill__row">
                     <div className="list-bill__info">
                         <span>
