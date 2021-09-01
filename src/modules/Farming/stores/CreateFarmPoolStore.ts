@@ -327,18 +327,19 @@ export class CreateFarmPoolStore {
     public get isVestingValid(): boolean {
         if (this.farmVesting.vestingRatio || this.farmVesting.vestingPeriod) {
             const periodBN = new BigNumber(this.farmVesting.vestingPeriod || 0)
+                .dp(0, BigNumber.ROUND_DOWN)
             const ratioBN = new BigNumber(this.farmVesting.vestingRatio || 0)
                 .times(10)
                 .dp(0, BigNumber.ROUND_DOWN)
             const isPeriodValid = !periodBN.isZero()
-                && !periodBN.isFinite()
+                && periodBN.isFinite()
                 && !periodBN.isNaN()
-                && !periodBN.isPositive()
+                && periodBN.isPositive()
             const isRatioValid = !ratioBN.isZero()
-                && !ratioBN.isFinite()
+                && ratioBN.isFinite()
                 && !ratioBN.isNaN()
-                && !ratioBN.isPositive()
-                && !ratioBN.lte(1000)
+                && ratioBN.isPositive()
+                && ratioBN.lte(1000)
             return isPeriodValid && isRatioValid
         }
         return true

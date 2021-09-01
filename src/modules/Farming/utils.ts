@@ -2,7 +2,9 @@ import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
 import ton, { Address, Contract } from 'ton-inpage-provider'
 
-import { Farm, FarmAbi, TokenWallet } from '@/misc'
+import {
+    Farm, FarmAbi, TokenWallet, UserPendingReward,
+} from '@/misc'
 
 
 export async function loadUniWTON(): Promise<BigNumber> {
@@ -181,11 +183,15 @@ export async function depositToken(
     return { newUserBalance, newPoolBalance }
 }
 
-export function isWithdrawUnclaimedValid(userReward: (string | undefined)[], userBalance: string | undefined): boolean {
-    return (
-        userReward.map(a => (new BigNumber(a || '0').isZero())).findIndex(a => !a) >= 0
+export function isWithdrawUnclaimedValid(
+    userReward: UserPendingReward | undefined,
+    userBalance: string | undefined,
+): boolean {
+    return userReward ? (
+        userReward._vested.map(a => (new BigNumber(a || '0').isZero())).findIndex(a => !a) >= 0
+        || userReward._pool_debt.map(a => (new BigNumber(a || '0').isZero())).findIndex(a => !a) >= 0
         || !(new BigNumber(userBalance || '0').isZero())
-    )
+    ) : false
 }
 
 export async function executeAction(
