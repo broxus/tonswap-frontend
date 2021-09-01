@@ -1990,7 +1990,6 @@ export class FarmAbi {
 
     static Fabric = {
         'ABI version': 2,
-        version: '2.1',
         header: ['time', 'expire'],
         functions: [
             {
@@ -2098,21 +2097,10 @@ export class FarmAbi {
                 ],
             },
         ],
-        fields: [
-            { name: '_pubkey', type: 'uint256' },
-            { name: '_timestamp', type: 'uint64' },
-            { name: '_constructorFlag', type: 'bool' },
-            { name: 'pools_count', type: 'uint64' },
-            { name: 'owner', type: 'address' },
-            { name: 'FarmPoolUserDataCode', type: 'cell' },
-            { name: 'FarmPoolCode', type: 'cell' },
-            { name: 'nonce', type: 'uint128' },
-        ],
     } as const;
 
     static Pool = {
         'ABI version': 2,
-        version: '2.1',
         header: ['time', 'expire'],
         functions: [
             {
@@ -2141,10 +2129,36 @@ export class FarmAbi {
             {
                 name: 'getDetails',
                 inputs: [
-                    { name: 'answerId', type: 'uint32' },
+                    { name: '_answer_id', type: 'uint32' },
                 ],
                 outputs: [
-                    { components: [{ name: 'lastRewardTime', type: 'uint32' }, { name: 'farmEndTime', type: 'uint32' }, { name: 'vestingPeriod', type: 'uint32' }, { name: 'vestingRatio', type: 'uint32' }, { name: 'tokenRoot', type: 'address' }, { name: 'tokenWallet', type: 'address' }, { name: 'tokenBalance', type: 'uint128' }, { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'rewardRounds', type: 'tuple[]' }, { name: 'accTonPerShare', type: 'uint256[]' }, { name: 'rewardTokenRoot', type: 'address[]' }, { name: 'rewardTokenWallet', type: 'address[]' }, { name: 'rewardTokenBalance', type: 'uint128[]' }, { name: 'rewardTokenBalanceCumulative', type: 'uint128[]' }, { name: 'unclaimedReward', type: 'uint128[]' }, { name: 'owner', type: 'address' }, { name: 'fabric', type: 'address' }], name: 'value0', type: 'tuple' },
+                    {
+                        components: [
+                            { name: 'lastRewardTime', type: 'uint32' },
+                            { name: 'farmEndTime', type: 'uint32' },
+                            { name: 'vestingPeriod', type: 'uint32' },
+                            { name: 'vestingRatio', type: 'uint32' },
+                            { name: 'tokenRoot', type: 'address' },
+                            { name: 'tokenWallet', type: 'address' },
+                            { name: 'tokenBalance', type: 'uint128' },
+                            {
+                                components: [
+                                    { name: 'startTime', type: 'uint32' },
+                                    { name: 'rewardPerSecond', type: 'uint128[]' }],
+                                name: 'rewardRounds',
+                                type: 'tuple[]',
+                            },
+                            { name: 'accTonPerShare', type: 'uint256[]' },
+                            { name: 'rewardTokenRoot', type: 'address[]' },
+                            { name: 'rewardTokenWallet', type: 'address[]' },
+                            { name: 'rewardTokenBalance', type: 'uint128[]' },
+                            { name: 'rewardTokenBalanceCumulative', type: 'uint128[]' },
+                            { name: 'unclaimedReward', type: 'uint128[]' },
+                            { name: 'owner', type: 'address' },
+                            { name: 'fabric', type: 'address' }],
+                        name: 'value0',
+                        type: 'tuple',
+                    },
                 ],
             },
             {
@@ -2153,27 +2167,6 @@ export class FarmAbi {
                     { name: 'wallet', type: 'address' },
                 ],
                 outputs: [
-                ],
-            },
-            {
-                name: 'encodeDepositPayload',
-                inputs: [
-                    { name: 'deposit_owner', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
-                ],
-                outputs: [
-                    { name: 'deposit_payload', type: 'cell' },
-                ],
-            },
-            {
-                name: 'decodeDepositPayload',
-                inputs: [
-                    { name: 'payload', type: 'cell' },
-                ],
-                outputs: [
-                    { name: 'deposit_owner', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
-                    { name: 'correct', type: 'bool' },
                 ],
             },
             {
@@ -2316,8 +2309,6 @@ export class FarmAbi {
                 inputs: [
                     { name: 'user', type: 'address' },
                     { name: 'amount', type: 'uint128' },
-                    { name: 'reward', type: 'uint128[]' },
-                    { name: 'reward_debt', type: 'uint128[]' },
                 ],
                 outputs: [
                 ],
@@ -2327,18 +2318,24 @@ export class FarmAbi {
                 inputs: [
                     { name: 'user', type: 'address' },
                     { name: 'amount', type: 'uint128' },
-                    { name: 'reward', type: 'uint128[]' },
-                    { name: 'reward_debt', type: 'uint128[]' },
                 ],
                 outputs: [
                 ],
             },
             {
-                name: 'Claim',
+                name: 'Reward',
                 inputs: [
                     { name: 'user', type: 'address' },
-                    { name: 'reward', type: 'uint128[]' },
-                    { name: 'reward_debt', type: 'uint128[]' },
+                    { name: 'amount', type: 'uint128[]' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'RewardDebt',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'amount', type: 'uint128[]' },
                 ],
                 outputs: [
                 ],
@@ -2369,36 +2366,10 @@ export class FarmAbi {
                 ],
             },
         ],
-        fields: [
-            { name: '_pubkey', type: 'uint256' },
-            { name: '_timestamp', type: 'uint64' },
-            { name: '_constructorFlag', type: 'bool' },
-            { name: 'lastRewardTime', type: 'uint32' },
-            { name: 'farmEndTime', type: 'uint32' },
-            { name: 'vestingPeriod', type: 'uint32' },
-            { name: 'vestingRatio', type: 'uint32' },
-            { name: 'tokenRoot', type: 'address' },
-            { name: 'tokenWallet', type: 'address' },
-            { name: 'tokenBalance', type: 'uint128' },
-            { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'rewardRounds', type: 'tuple[]' },
-            { name: 'accTonPerShare', type: 'uint256[]' },
-            { name: 'rewardTokenRoot', type: 'address[]' },
-            { name: 'rewardTokenWallet', type: 'address[]' },
-            { name: 'rewardTokenBalance', type: 'uint128[]' },
-            { name: 'rewardTokenBalanceCumulative', type: 'uint128[]' },
-            { name: 'unclaimedReward', type: 'uint128[]' },
-            { name: 'owner', type: 'address' },
-            { name: 'deposit_nonce', type: 'uint64' },
-            { components: [{ name: 'user', type: 'address' }, { name: 'amount', type: 'uint128' }, { name: 'send_gas_to', type: 'address' }, { name: 'callback_payload', type: 'cell' }], name: 'deposits', type: 'map(uint64,tuple)' },
-            { name: 'userDataCode', type: 'cell' },
-            { name: 'fabric', type: 'address' },
-            { name: 'deploy_nonce', type: 'uint64' },
-        ],
     } as const;
 
     static User = {
         'ABI version': 2,
-        version: '2.1',
         header: ['time', 'expire'],
         functions: [
             {
@@ -2414,7 +2385,7 @@ export class FarmAbi {
             {
                 name: 'getDetails',
                 inputs: [
-                    { name: 'answerId', type: 'uint32' },
+                    { name: '_answer_id', type: 'uint32' },
                 ],
                 outputs: [
                     { components: [{ name: 'pool_debt', type: 'uint128[]' }, { name: 'entitled', type: 'uint128[]' }, { name: 'vestingTime', type: 'uint32' }, { name: 'amount', type: 'uint128' }, { name: 'rewardDebt', type: 'uint128[]' }, { name: 'farmPool', type: 'address' }, { name: 'user', type: 'address' }], name: 'value0', type: 'tuple' },
@@ -2501,21 +2472,6 @@ export class FarmAbi {
             { key: 2, name: 'user', type: 'address' },
         ],
         events: [
-        ],
-        fields: [
-            { name: '_pubkey', type: 'uint256' },
-            { name: '_timestamp', type: 'uint64' },
-            { name: '_constructorFlag', type: 'bool' },
-            { name: 'lastRewardTime', type: 'uint32' },
-            { name: 'vestingPeriod', type: 'uint32' },
-            { name: 'vestingRatio', type: 'uint32' },
-            { name: 'vestingTime', type: 'uint32' },
-            { name: 'amount', type: 'uint128' },
-            { name: 'rewardDebt', type: 'uint128[]' },
-            { name: 'entitled', type: 'uint128[]' },
-            { name: 'pool_debt', type: 'uint128[]' },
-            { name: 'farmPool', type: 'address' },
-            { name: 'user', type: 'address' },
         ],
     } as const;
 

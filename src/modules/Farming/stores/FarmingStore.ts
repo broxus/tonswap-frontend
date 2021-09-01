@@ -19,7 +19,7 @@ import {
     FarmAbi,
     TokenWallet, UserPendingReward,
 } from '@/misc'
-import { DEFAULT_FARMING_STORE_DATA, DEFAULT_FARMING_STORE_STATE } from '@/modules/Farming/constants'
+import { DEFAULT_FARMING_STORE_DATA, DEFAULT_FARMING_STORE_STATE, OWNERS_WHITE_LIST } from '@/modules/Farming/constants'
 import { FarmingStoreData, FarmingStoreState, FarmPool } from '@/modules/Farming/types'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { filterEmpty, loadUniWTON } from '@/modules/Farming/utils'
@@ -75,8 +75,8 @@ export class FarmingStore {
     /**
      *
      */
-    public updatePool(address: string, data: Partial<FarmPool>): void {
-        this.data.pools = this.pools.map(pool => (pool.address === address ? { ...pool, ...data } : pool))
+    public updatePool(tokenRoot: string, data: Partial<FarmPool>): void {
+        this.data.pools = this.pools.map(pool => (pool.tokenRoot === tokenRoot ? { ...pool, ...data } : pool))
     }
 
     /*
@@ -353,11 +353,7 @@ export class FarmingStore {
                                 return (start - new Date().getTime()) < 0
                             })
 
-                            let activePeriod = newPool.data.reward_rounds[0]
-
-                            if (activePeriods.length > 0) {
-                                activePeriod = activePeriods[activePeriods.length - 1]
-                            }
+                            const activePeriod = activePeriods[activePeriods.length - 1]
 
                             if (tokenRoot === DexConstants.UniWTONUSDTLPRootAddress.toString() && wtonPrice) {
                                 try {
@@ -519,10 +515,10 @@ export class FarmingStore {
      *
      */
     public get pools(): FarmingStoreData['pools'] {
-        return this.data.pools /* .filter(pool => (
+        return this.data.pools.filter(pool => (
             OWNERS_WHITE_LIST.includes(pool.owner)
             || pool.owner === this.wallet.address
-        )) */
+        ))
     }
 
     /*

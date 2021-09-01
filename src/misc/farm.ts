@@ -42,24 +42,10 @@ export class Farm {
     public static async poolGetDetails(poolAddress: Address, state?: FullContractState): Promise<PoolDetails> {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
         return (await poolContract.methods.getDetails({
-            answerId: 0,
+            _answer_id: 0,
         }).call({
             cachedState: state,
         })).value0
-    }
-
-    public static async poolDepositPayload(
-        poolAddress: Address,
-        owner: Address,
-        state?: FullContractState,
-    ): Promise<string> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        return (await poolContract.methods.encodeDepositPayload({
-            callback_payload: '',
-            deposit_owner: owner,
-        }).call({
-            cachedState: state,
-        })).deposit_payload
     }
 
     public static async poolClaimReward(
@@ -152,7 +138,7 @@ export class Farm {
         state?: FullContractState): Promise<{ amount: string, rewardDebt: string[] }> {
         const userContract = new Contract(FarmAbi.User, userDataAddress)
         const { value0: { amount, rewardDebt }} = await userContract.methods.getDetails({
-            answerId: 0,
+            _answer_id: 0,
         }).call({
             cachedState: state,
         })

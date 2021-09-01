@@ -4,7 +4,7 @@ export class DexConstants {
 
     static DexRootAddress = new AddressLiteral('0:943bad2e74894aa28ae8ddbe673be09a0f3818fd170d12b4ea8ef1ea8051e940');
 
-    static FarmFabricAddress = new AddressLiteral('0:36c80d0c7049184846852302801a66bdf18ffa362b166efe31d4b6f2d1bcc442');
+    static FarmFabricAddress = new AddressLiteral('0:3d0862b64d31721814d229f1a65f27b11f61ba668bda7a04325c42947c1be8a8');
 
     static WTONRootAddress = new AddressLiteral('0:0ee39330eddb680ce731cd6a443c71d9069db06d149a9bec9569d1eb8d04eb37');
 

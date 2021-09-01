@@ -49,7 +49,6 @@ export class FarmingPoolStore {
             depositToken: action.bound,
             maxDeposit: action.bound,
             withdrawUnclaimed: action.bound,
-            withdrawAll: action.bound,
         })
     }
 
@@ -163,43 +162,6 @@ export class FarmingPoolStore {
         this.changeState('isUserDepositing', true)
 
         try {
-            await executeAction(
-                this.pool.address,
-                this.wallet.address,
-                this.userWalletAddress,
-                () => Farm.poolClaimReward(new Address(this.pool.address), new Address(this.wallet.address || '')),
-                'Reward',
-            )
-
-            if (this.poolUpdateTimeout !== undefined) {
-                clearTimeout(this.poolUpdateTimeout)
-                this.poolUpdateTimeout = undefined
-            }
-
-            await this.syncPool()
-            this.updatePoolTimeTick()
-        }
-        catch (e) {
-            error('Claim error', e)
-        }
-        finally {
-            this.changeState('isUserDepositing', false)
-        }
-    }
-
-    /**
-     *
-     */
-    public async withdrawAll(): Promise<void> {
-        if (
-            this.wallet.address == null
-            || this.isUserDepositing
-            || this.userWalletAddress == null
-        ) { return }
-
-        this.changeState('isUserDepositing', true)
-
-        try {
             const result = await executeAction(
                 this.pool.address,
                 this.wallet.address,
@@ -222,7 +184,7 @@ export class FarmingPoolStore {
             this.updatePoolTimeTick()
         }
         catch (e) {
-            error('Withdraw all error', e)
+            error('Withdraw unclaimed error', e)
         }
         finally {
             this.changeState('isUserDepositing', false)
@@ -330,8 +292,7 @@ export class FarmingPoolStore {
     /**
      *
      */
-    // eslint-disable-next-line class-methods-use-this
-    protected getAdminDeposit(_: number): string | undefined {
+    protected getAdminDeposit(idx: number): string | undefined {
         return undefined
     }
 
@@ -373,8 +334,7 @@ export class FarmingPoolStore {
             .decimalPlaces(0, BigNumber.ROUND_DOWN)
             .toFixed() : '0'
 
-        this.pools.updatePool(this.pool.address, {
-            isActive: (this.pool.farmStart - new Date().getTime()) < 0,
+        this.pools.updatePool(this.pool.tokenRoot, {
             tokenBalance: poolBalance,
             rewardTokenBalance: poolRewardBalance,
             userBalance,
