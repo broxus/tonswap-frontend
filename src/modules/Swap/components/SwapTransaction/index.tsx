@@ -110,8 +110,8 @@ function Transaction(): JSX.Element | null {
                                         ? 'SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE'
                                         : 'SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE',
                                 }, {
-                                    leftSymbol: swap.leftToken?.symbol,
-                                    rightSymbol: swap.rightToken?.symbol,
+                                    leftSymbol: swap.isPairChecking ? swap.rightToken?.symbol : swap.leftToken?.symbol,
+                                    rightSymbol: swap.isPairChecking ? swap.leftToken?.symbol : swap.rightToken?.symbol,
                                     slippage: swap.bestCrossExchangeRoute?.slippage,
                                     tokenSymbol: swap.transaction.receivedSymbol,
                                 }),

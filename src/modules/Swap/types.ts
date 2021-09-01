@@ -10,6 +10,7 @@ export type SwapBill = {
     expectedAmount?: string;
     fee?: string;
     minExpectedAmount?: string;
+    _minExpectedAmount?: string;
     priceImpact?: string;
 }
 
@@ -79,12 +80,12 @@ export type SwapStoreData = {
     bestCrossExchangeRoute?: SwapRoute;
     crossPairs: SwapPair[];
     leftAmount: string;
-    leftToken?: TokenCache;
+    leftToken?: string;
     pair?: SwapPair;
     priceLeftToRight?: string;
     priceRightToLeft?: string;
     rightAmount: string;
-    rightToken?: TokenCache;
+    rightToken?: string;
     routes: SwapRoute[];
     slippage: string;
 }

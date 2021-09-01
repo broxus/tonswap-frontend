@@ -1,4 +1,5 @@
 import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
@@ -8,13 +9,12 @@ import { WaypointWrappedItem } from '@/modules/TokensList/components'
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 
 import './index.scss'
-import * as ReactDOM from 'react-dom'
 
 
 type Props = {
     currentToken?: TokenCache;
     onDismiss?: () => void;
-    onSelectToken?: (token: TokenCache) => void;
+    onSelectToken?: (root: string) => void;
 }
 
 

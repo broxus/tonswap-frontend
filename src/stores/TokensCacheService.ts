@@ -27,7 +27,6 @@ export type TokenCache = {
 
 export type TokensCacheData = {
     tokens: TokenCache[];
-    tokensMap: Record<string, TokenCache>;
 }
 
 export const IMPORTED_TOKENS_STORAGE_KEY = 'imported_tokens'
@@ -47,7 +46,6 @@ export class TokensCacheService {
      */
     protected data: TokensCacheData = {
         tokens: [],
-        tokensMap: {},
     }
 
     constructor(
@@ -71,20 +69,6 @@ export class TokensCacheService {
             { delay: 100 },
         )
 
-        // Update tokens map when tokens list was changed
-        reaction(() => this.tokens, tokens => {
-            if (tokens.length === 0) {
-                this.data.tokensMap = {}
-                return
-            }
-
-            const entries: TokensCacheData['tokensMap'] = {}
-            tokens.forEach(token => {
-                entries[token.root] = token
-            })
-            this.data.tokensMap = entries
-        })
-
         this.#tokensBalancesSubscribers = new Map<string, Subscription<'contractStateChanged'>>()
         this.#tokensBalancesSubscribersMutex = new Mutex()
     }
@@ -99,34 +83,42 @@ export class TokensCacheService {
             return
         }
 
-        const tokens: TokenCache[] = []
-
-        this.tokensList?.tokens.forEach(token => {
-            const cache: TokenCache = {
-                balance: undefined,
-                decimals: token.decimals,
-                icon: token.logoURI,
-                isUpdating: false,
-                isUpdatingWalletAddress: false,
-                name: token.name,
-                root: token.address,
-                symbol: token.symbol,
-                updatedAt: -1,
-                wallet: undefined,
-            }
-            tokens.push(cache)
-        })
+        this.data.tokens = this.tokensList?.tokens.map(token => ({
+            balance: undefined,
+            decimals: token.decimals,
+            icon: token.logoURI,
+            isUpdating: false,
+            isUpdatingWalletAddress: false,
+            name: token.name,
+            root: token.address,
+            symbol: token.symbol,
+            updatedAt: -1,
+            wallet: undefined,
+        }))
 
         const importedTokens = getImportedTokens()
 
         if (importedTokens.length > 0) {
             const results = await Promise.all(importedTokens.map(root => TokenWallet.getTokenData(root)))
-            tokens.push(...results as unknown as TokenCache[])
+            runInAction(() => {
+                const tokens = this.data.tokens.slice()
+                tokens.push(...(results.filter(e => e) as TokenCache[]))
+                this.data.tokens = tokens
+            })
         }
 
-        runInAction(() => {
-            this.data.tokens = tokens
+    }
+
+    /**
+     * Returns tokens map where key is a token root address.
+     * @protected
+     */
+    protected get _byRoot(): Record<string, TokenCache> {
+        const entries: Record<string, TokenCache> = {}
+        this.tokens.forEach(token => {
+            entries[token.root] = token
         })
+        return entries
     }
 
     /**
@@ -146,12 +138,12 @@ export class TokensCacheService {
     }
 
     /**
-     * Returns token by the given key.
-     * @param {string} key
+     * Returns token by the given token root address.
+     * @param {string} root
      * @returns {TokenCache}
      */
-    public get(key: string): TokenCache | undefined {
-        return this.data.tokensMap[key]
+    public get(root: string): TokenCache | undefined {
+        return this._byRoot[root]
     }
 
     /**
@@ -189,7 +181,7 @@ export class TokensCacheService {
         if (filtered.length === 0 && isAddressValid(query)) {
             const token = await TokenWallet.getTokenData(query)
             if (token !== undefined) {
-                filtered.push(token as unknown as TokenCache)
+                filtered.push(token)
             }
         }
 
@@ -223,7 +215,7 @@ export class TokensCacheService {
      */
     public updateTokenBalance(root: string, balance: string | undefined): void {
         const token = this.tokens.find(t => t.root === root)
-        if (token) {
+        if (token !== undefined) {
             token.balance = balance
         }
     }
@@ -234,21 +226,19 @@ export class TokensCacheService {
      * @returns {Promise<void>}
      */
     public async syncToken(root: string): Promise<void> {
-        if (!this.wallet.address) {
+        if (this.wallet.address === undefined) {
             return
         }
 
         const token = this.tokens.find(t => t.root === root)
 
-        if (!token || token.isUpdating || (Date.now() - token.updatedAt < 60 * 1000)) {
+        if (token === undefined || token.isUpdating) {
             return
         }
 
-        runInAction(() => {
-            token.isUpdating = true
-        })
+        token.isUpdating = true
 
-        if (!token.wallet && !token.isUpdatingWalletAddress) {
+        if (token.wallet === undefined && !token.isUpdatingWalletAddress) {
             try {
                 await this.updateTokenWalletAddress(token.root, this.wallet.address)
             }
@@ -257,7 +247,7 @@ export class TokensCacheService {
             }
         }
 
-        if (token.wallet) {
+        if (token.wallet !== undefined) {
             try {
                 const walletTokenBalance = await TokenWallet.balance({
                     wallet: new Address(token.wallet),
@@ -265,7 +255,6 @@ export class TokensCacheService {
                 this.updateTokenBalance(token.root, walletTokenBalance)
             }
             catch (e) {
-                error('Update token balance error', e)
                 this.updateTokenBalance(token.root, undefined)
             }
         }
@@ -283,29 +272,27 @@ export class TokensCacheService {
      * @returns {Promise<void>}
      */
     public async watch(root: string, prefix: string): Promise<void> {
-        if (!this.wallet.address) {
+        if (this.wallet.address === undefined) {
             return
         }
 
         const token = this.tokens.find(t => t.root === root)
 
-        if (!token) {
+        if (token === undefined) {
             return
         }
 
-        if (!token.wallet && !token.isUpdatingWalletAddress) {
-            try {
-                await this.updateTokenWalletAddress(token.root, this.wallet.address)
-            }
-            catch (e) {}
+        try {
+            await this.syncToken(token.root)
         }
+        catch (e) {}
 
-        if (token.wallet) {
+        if (token.wallet !== undefined) {
             const key = `${prefix}-${token.root}`
 
             await this.#tokensBalancesSubscribersMutex.use(async () => {
                 const entry = this.#tokensBalancesSubscribers.get(key)
-                if (entry != null || !token.wallet) {
+                if (entry != null || token.wallet === undefined) {
                     return
                 }
 
@@ -346,13 +333,13 @@ export class TokensCacheService {
      * @returns {Promise<void>}
      */
     public async unwatch(root: string, prefix: string): Promise<void> {
-        if (!this.wallet.address) {
+        if (this.wallet.address === undefined) {
             return
         }
 
         const token = this.tokens.find(t => t.root === root)
 
-        if (!token) {
+        if (token === undefined) {
             return
         }
 
@@ -390,20 +377,18 @@ export class TokensCacheService {
      * @returns {Promise<void>}
      */
     protected async updateTokenWalletAddress(root: string, walletAddress: string): Promise<void> {
-        if (!root || !walletAddress) {
+        if (root === undefined || walletAddress === undefined) {
             return
         }
 
         const token = this.tokens.find(t => t.root === root)
 
-        if (!token) {
+        if (token === undefined) {
             return
         }
 
-        if (!token.wallet) {
-            runInAction(() => {
-                token.isUpdatingWalletAddress = true
-            })
+        if (token.wallet === undefined) {
+            token.isUpdatingWalletAddress = true
 
             try {
                 const address = await TokenWallet.walletAddress({
@@ -415,12 +400,20 @@ export class TokensCacheService {
                     token.wallet = address.toString()
                 })
             }
-            catch (e) {}
+            catch (e) {
+                error('Token wallet address update error', e)
+            }
             finally {
                 runInAction(() => {
                     token.isUpdatingWalletAddress = false
                 })
             }
+
+            runInAction(() => {
+                this.data.tokens = this.tokens.map(
+                    t => (t.root === token.root ? token : t),
+                )
+            })
         }
     }
 

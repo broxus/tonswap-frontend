@@ -102,6 +102,16 @@ export function getSlippageMinExpectedAmount(
         .dp(0, BigNumber.ROUND_DOWN)
 }
 
+export function getCrossExchangeSlippage(value: string, stepsCounts: number): string {
+    return new BigNumber(100)
+        .plus(value)
+        .div(100)
+        .exponentiatedBy(stepsCounts)
+        .minus(1)
+        .times(100)
+        .toFixed()
+}
+
 export function getReducedCrossExchangeFee(iteratee: SwapRouteStep[], isInverted?: boolean): BigNumber {
     const fee = iteratee.reduceRight(
         (acc, step, idx, steps) => (

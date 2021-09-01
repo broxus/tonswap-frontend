@@ -19,6 +19,9 @@ type Props = {
 export function useField({ token, ...props }: Props): FieldShape {
     const onBlur: React.FocusEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
+        if (value.length === 0) {
+            return
+        }
         const validatedAmount = formatAmount(value, token?.decimals)
         if (props.value !== validatedAmount && validatedAmount != null) {
             props.onChange?.(validatedAmount)

@@ -1,9 +1,8 @@
 import * as React from 'react'
 import classNames from 'classnames'
 
-import { camelify } from '@/utils'
-
 import library from '@/components/common/Icon/lib'
+import { camelify } from '@/utils'
 
 import './index.scss'
 

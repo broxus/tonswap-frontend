@@ -134,7 +134,7 @@ export class WalletService {
 
         const currentProviderState = await ton.getProviderState()
 
-        if (!currentProviderState.permissions.accountInteraction) {
+        if (currentProviderState.permissions.accountInteraction === undefined) {
             return
         }
 
@@ -227,8 +227,8 @@ export class WalletService {
      * @protected
      */
     protected async handleAccountChange(account?: Account): Promise<void> {
-        if (this.#contractSubscriber) {
-            if (account) {
+        if (this.#contractSubscriber !== undefined) {
+            if (account !== undefined) {
                 try {
                     await this.#contractSubscriber.unsubscribe()
                 }
@@ -239,7 +239,7 @@ export class WalletService {
             this.#contractSubscriber = undefined
         }
 
-        if (!account) {
+        if (account === undefined) {
             return
         }
 

@@ -12,7 +12,7 @@ import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 export type Props = {
     disabled?: boolean;
     token: TokenCache;
-    onSelect?: (token: TokenCache) => void;
+    onSelect?: (root: string) => void;
 }
 
 export const Item = observer(({ disabled, token, onSelect }: Props) => {
@@ -25,7 +25,7 @@ export const Item = observer(({ disabled, token, onSelect }: Props) => {
     const [isImporting, setImportingTo] = React.useState(false)
 
     const onClick = () => {
-        onSelect?.(token)
+        onSelect?.(token.root)
     }
 
     const onImporting = () => {

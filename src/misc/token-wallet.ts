@@ -11,11 +11,18 @@ import { debug } from '@/utils'
 
 
 export type CustomToken = {
+    balance?: string;
     decimals: number;
+    icon?: string;
+    isUpdating: boolean;
+    isUpdatingWalletAddress: boolean;
     name: string;
-    symbol: string;
-    total_supply: string;
     root: string;
+    symbol: string;
+    updatedAt: number;
+    wallet?: string;
+
+    total_supply: string;
     root_owner_address: Address;
     root_public_key: string;
 }

@@ -10,7 +10,7 @@ import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 type Props = {
     token: TokenCache;
     onDismiss: () => void;
-    onImport?: (token: TokenCache) => void;
+    onImport?: (root: string) => void;
 }
 
 
@@ -20,7 +20,7 @@ export function TokenImportPopup({ token, onDismiss, onImport }: Props): JSX.Ele
 
     const onSubmit = () => {
         tokensCache.import(token)
-        onImport?.(token)
+        onImport?.(token.root)
     }
 
     return ReactDOM.createPortal(

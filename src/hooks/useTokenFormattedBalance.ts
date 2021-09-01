@@ -52,7 +52,7 @@ export function useTokenFormattedBalance(
     }, [dexAccountBalance, token?.balance])
 
     React.useEffect(() => {
-        if (token) {
+        if (token !== undefined) {
             mountedTokens[`${subscriberPrefix}-${token.root}`] = true;
 
             (async () => {
@@ -61,8 +61,8 @@ export function useTokenFormattedBalance(
                     await tokensCache.syncToken(token.root)
                     if (mountedTokens[`${subscriberPrefix}-${token.root}`]) {
                         setBalance(formatBalance(
-                            token?.balance || '0',
-                            token?.decimals,
+                            token.balance || '0',
+                            token.decimals,
                             dexAccountBalance || '0',
                         ) || '0')
                         setFetchingTo(false)
@@ -94,7 +94,7 @@ export function useTokenFormattedBalance(
                 tokensCache.unwatch(token.root, subscriberPrefix).catch(reason => error(reason))
             }
         }
-    }, [token])
+    }, [token, token?.wallet])
 
     return { value: balance, isFetching }
 }

@@ -216,6 +216,7 @@
 
     &.disabled,
     &:disabled {
+        background: none !important;
         cursor: not-allowed !important;
     }
 
@@ -304,6 +305,7 @@ button.form-submit {
 
     &.disabled,
     &:disabled {
+        background: none !important;
         cursor: not-allowed !important;
     }
 }

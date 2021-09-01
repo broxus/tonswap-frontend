@@ -52,18 +52,18 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case !swap.isCrossExchangeAvailable:
-            buttonProps.disabled = true
-            buttonText = intl.formatMessage({
-                id: 'SWAP_BTN_TEXT_ROUTE_DOES_NOT_EXIST',
-            })
-            break
-
         case swap.leftAmount.length === 0 && swap.direction === SwapDirection.LTR:
         case swap.rightAmount.length === 0 && swap.direction === SwapDirection.RTL:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_ENTER_AN_AMOUNT',
+            })
+            break
+
+        case !swap.isCrossExchangeAvailable:
+            buttonProps.disabled = true
+            buttonText = intl.formatMessage({
+                id: 'SWAP_BTN_TEXT_ROUTE_DOES_NOT_EXIST',
             })
             break
 

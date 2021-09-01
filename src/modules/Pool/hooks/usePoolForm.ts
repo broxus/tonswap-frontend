@@ -4,7 +4,8 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import { usePool } from '@/modules/Pool/stores/PoolStore'
 import { PoolStoreData, TokenSide } from '@/modules/Pool/types'
-import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
+import { useTokensCache } from '@/stores/TokensCacheService'
+import { useWallet } from '@/stores/WalletService'
 import { debounce, error } from '@/utils'
 
 
@@ -15,7 +16,7 @@ type PoolFormShape = {
     hideTokensList: () => void;
     showTokensList: (side: TokenSide) => () => void;
     onChangeData: <K extends keyof PoolStoreData>(key: K) => (value: PoolStoreData[K]) => void;
-    onSelectToken: (token: TokenCache) => void;
+    onSelectToken: (root: string) => void;
     onDismissTransactionReceipt: () => void;
 }
 
@@ -28,6 +29,7 @@ export function usePoolForm(): PoolFormShape {
     } = useParams<{ leftTokenAddress: string, rightTokenAddress: string }>()
     const history = useHistory()
     const tokensCache = useTokensCache()
+    const wallet = useWallet()
 
     const [isTokenListShown, setTokenListVisible] = React.useState(false)
 
@@ -61,23 +63,23 @@ export function usePoolForm(): PoolFormShape {
         pool.changeData(key, value)
     }
 
-    const onSelectToken = (token: TokenCache) => {
+    const onSelectToken = (root: string) => {
         let pathname = '/pool'
         if (tokenSide === 'leftToken') {
-            const rightTokenRoot = (pool.rightToken?.root !== undefined && pool.rightToken.root !== token.root)
+            const rightTokenRoot = (pool.rightToken?.root !== undefined && pool.rightToken.root !== root)
                 ? `/${pool.rightToken.root}`
                 : ''
-            pathname += `/${token.root}${rightTokenRoot}`
+            pathname += `/${root}${rightTokenRoot}`
         }
         else if (
             tokenSide === 'rightToken'
             && pool.leftToken?.root !== undefined
-            && pool.leftToken.root !== token.root
+            && pool.leftToken.root !== root
         ) {
-            pathname += `/${pool.leftToken.root}/${token.root}`
+            pathname += `/${pool.leftToken.root}/${root}`
         }
         else if (tokenSide) {
-            pool.changeData(tokenSide, token)
+            pool.changeData(tokenSide, root)
         }
         history.push({ pathname })
         hideTokensList()
@@ -95,17 +97,17 @@ export function usePoolForm(): PoolFormShape {
         // Initial update tokens state by the given uri params and after list of the tokens loaded
         const tokensListDisposer = reaction(() => tokensCache.tokens, () => {
             if (
-                (!pool.leftToken || pool.leftToken.root !== leftTokenAddress)
-                && tokensCache.get(leftTokenAddress) !== undefined
+                (pool.leftToken === undefined || pool.leftToken.root !== leftTokenAddress)
+                && tokensCache.has(leftTokenAddress)
             ) {
-                pool.changeData('leftToken', tokensCache.get(leftTokenAddress))
+                pool.changeData('leftToken', leftTokenAddress)
             }
 
             if (
-                (!pool.rightToken || pool.rightToken.root !== rightTokenAddress)
-                && tokensCache.get(rightTokenAddress) !== undefined
+                (pool.rightToken === undefined || pool.rightToken.root !== rightTokenAddress)
+                && tokensCache.has(rightTokenAddress)
             ) {
-                pool.changeData('rightToken', tokensCache.get(rightTokenAddress))
+                pool.changeData('rightToken', rightTokenAddress)
             }
         })
 
@@ -117,13 +119,14 @@ export function usePoolForm(): PoolFormShape {
 
     // Update tokens state after change the uri params
     React.useEffect(() => {
-        if (leftTokenAddress !== undefined && tokensCache.get(leftTokenAddress) !== undefined) {
-            pool.changeData('leftToken', tokensCache.get(leftTokenAddress))
+        if (leftTokenAddress !== undefined && tokensCache.has(leftTokenAddress)) {
+            pool.changeData('leftToken', leftTokenAddress)
         }
-        if (rightTokenAddress !== undefined && tokensCache.get(rightTokenAddress) !== undefined) {
-            pool.changeData('rightToken', tokensCache.get(rightTokenAddress))
+
+        if (rightTokenAddress !== undefined && tokensCache.has(rightTokenAddress)) {
+            pool.changeData('rightToken', rightTokenAddress)
         }
-    }, [leftTokenAddress, rightTokenAddress])
+    }, [leftTokenAddress, rightTokenAddress, wallet.address])
 
     return {
         isTokenListShown,
