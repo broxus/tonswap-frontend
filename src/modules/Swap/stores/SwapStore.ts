@@ -1377,7 +1377,7 @@ export class SwapStore {
             return
         }
 
-        const currentRoute = { ...this.bestCrossExchangeRoute }
+        const currentRoute = this.data.bestCrossExchangeRoute && { ...this.data.bestCrossExchangeRoute }
         const prevAmountBN = new BigNumber(currentRoute?.bill?.amount || '0').shiftedBy(this.leftTokenDecimals)
         const isAmountDecreased = prevAmountBN.gte(amountBn)
         const directMinExpectedAmount = new BigNumber(this.bill.minExpectedAmount || 0)
@@ -1599,7 +1599,7 @@ export class SwapStore {
             return
         }
 
-        const currentRoute = { ...this.bestCrossExchangeRoute }
+        const currentRoute = this.data.bestCrossExchangeRoute && { ...this.data.bestCrossExchangeRoute }
         const prevAmountBN = new BigNumber(currentRoute?.bill?.amount || '0').shiftedBy(this.rightTokenDecimals)
         const isAmountDecreased = prevAmountBN.gte(amountBn)
         const directMinExpectedAmount = new BigNumber(this.bill.minExpectedAmount || 0)
