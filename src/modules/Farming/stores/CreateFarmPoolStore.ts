@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
 import {
-    IReactionDisposer,
     action,
+    IReactionDisposer,
     makeAutoObservable,
     reaction,
 } from 'mobx'
@@ -20,7 +20,7 @@ import {
     FarmRewardToken,
     FarmToken,
 } from '@/modules/Farming/types'
-import { farmSpeed, parseDate, resolveToken } from '@/modules/Farming/utils'
+import { parseDate, resolveToken } from '@/modules/Farming/utils'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { debounce } from '@/utils'
 
@@ -44,14 +44,12 @@ export class CreateFarmPoolStore {
             CreateFarmPoolStore,
             | 'handleFarmTokenChange'
             | 'handleFarmStartChange'
-            | 'handleFarmEndChange'
             | 'handleRewardTokensChange'
         >(this, {
             addRewardToken: action.bound,
             create: action.bound,
             handleFarmTokenChange: action.bound,
             handleFarmStartChange: action.bound,
-            handleFarmEndChange: action.bound,
             handleRewardTokensChange: action.bound,
         })
     }
@@ -99,7 +97,6 @@ export class CreateFarmPoolStore {
     public init(): void {
         this.#farmTokenResolveDisposer = reaction(() => this.farmToken, debounce(this.handleFarmTokenChange, 2000))
         this.#farmStartDisposer = reaction(() => this.farmStart, this.handleFarmStartChange)
-        this.#farmEndDisposer = reaction(() => this.farmEnd, this.handleFarmEndChange)
         this.#rewardTokensDisposer = reaction(() => this.rewardTokens, debounce(this.handleRewardTokensChange, 2000))
     }
 
@@ -109,7 +106,6 @@ export class CreateFarmPoolStore {
     public dispose(): void {
         this.#farmTokenResolveDisposer?.()
         this.#farmStartDisposer?.()
-        this.#farmEndDisposer?.()
         this.#rewardTokensDisposer?.()
         this.reset()
     }
@@ -128,14 +124,10 @@ export class CreateFarmPoolStore {
 
         this.changeState('isCreating', true)
 
-        const rps = this.rewardTokens.map(token => farmSpeed(
-            this.farmStart.date as Date,
-            this.farmEnd.date as Date,
-            token.rewardTotalAmount,
-            token.decimals,
-        ).shiftedBy(token.decimals as number)
-            .decimalPlaces(0, BigNumber.ROUND_DOWN)
-            .toFixed())
+        const rps = this.rewardTokens
+            .map(token => new BigNumber(token.farmSpeed || 0).shiftedBy(token.decimals as number)
+                .decimalPlaces(0, BigNumber.ROUND_DOWN)
+                .toFixed())
 
         try {
             await Farm.createPool(
@@ -143,10 +135,15 @@ export class CreateFarmPoolStore {
                 new Address(this.farmToken.root as string),
                 this.rewardTokens.map(token => new Address(token.root as string)),
                 ((this.farmStart.date as Date).getTime() / 1000).toFixed(0),
-                ((this.farmEnd.date as Date).getTime() / 1000).toFixed(0),
                 rps,
+                this.farmVesting.vestingPeriod || '0',
+                new BigNumber(this.farmVesting.vestingRatio || '0')
+                    .times(10)
+                    .dp(0, BigNumber.ROUND_DOWN)
+                    .toFixed(),
             )
-            this.changeState('isCreating', false)
+            // never return to normal state, waiting for redirect here
+            // this.changeState('isCreating', false)
         }
         catch (e) {
             this.changeState('isCreating', false)
@@ -192,16 +189,6 @@ export class CreateFarmPoolStore {
      */
     protected handleFarmStartChange(farmStart: FarmDate, prevFarmStart: FarmDate): void {
         this.handleChangeDate(farmStart, prevFarmStart, 'farmStart')
-    }
-
-    /**
-     *
-     * @param {FarmDate} farmEnd
-     * @param {FarmDate} prevFarmEnd
-     * @protected
-     */
-    protected handleFarmEndChange(farmEnd: FarmDate, prevFarmEnd: FarmDate): void {
-        this.handleChangeDate(farmEnd, prevFarmEnd, 'farmEnd')
     }
 
     /**
@@ -260,7 +247,7 @@ export class CreateFarmPoolStore {
      * @param {'farmStart' | 'farmEnd'} key
      * @protected
      */
-    protected handleChangeDate(farmDate: FarmDate, prevFarmDate: FarmDate, key: 'farmStart' | 'farmEnd'): void {
+    protected handleChangeDate(farmDate: FarmDate, prevFarmDate: FarmDate, key: 'farmStart'): void {
         if (!farmDate?.value || farmDate.value === prevFarmDate?.value) {
             if (!farmDate?.value && prevFarmDate.value) {
                 this.changeData(key, DEFAULT_CREATE_FARM_POOL_STORE_DATA[key])
@@ -297,9 +284,9 @@ export class CreateFarmPoolStore {
         return (
             !!this.farmToken.isValid
             && !!this.farmStart.isValid
-            && !!this.farmEnd.isValid
-            && this.farmStart.value !== this.farmEnd.value
+            && this.isVestingValid
             && this.rewardTokens.every(token => token.isValid && token.isRewardTotalValid)
+            && this.rewardTokens.findIndex(t => t.root === this.farmToken.root) < 0
         )
     }
 
@@ -325,15 +312,39 @@ export class CreateFarmPoolStore {
     /**
      *
      */
-    public get farmEnd(): CreateFarmPoolStoreData['farmEnd'] {
-        return this.data.farmEnd
+    public get rewardTokens(): CreateFarmPoolStoreData['rewardTokens'] {
+        return this.data.rewardTokens
     }
 
     /**
      *
      */
-    public get rewardTokens(): CreateFarmPoolStoreData['rewardTokens'] {
-        return this.data.rewardTokens
+    public get farmVesting(): CreateFarmPoolStoreData['farmVesting'] {
+        return this.data.farmVesting
+    }
+
+    /**
+     *
+     */
+    public get isVestingValid(): boolean {
+        if (this.farmVesting.vestingRatio || this.farmVesting.vestingPeriod) {
+            const periodBN = new BigNumber(this.farmVesting.vestingPeriod || 0)
+                .dp(0, BigNumber.ROUND_DOWN)
+            const ratioBN = new BigNumber(this.farmVesting.vestingRatio || 0)
+                .times(10)
+                .dp(0, BigNumber.ROUND_DOWN)
+            const isPeriodValid = !periodBN.isZero()
+                && periodBN.isFinite()
+                && !periodBN.isNaN()
+                && periodBN.isPositive()
+            const isRatioValid = !ratioBN.isZero()
+                && ratioBN.isFinite()
+                && !ratioBN.isNaN()
+                && ratioBN.isPositive()
+                && ratioBN.lte(1000)
+            return isPeriodValid && isRatioValid
+        }
+        return true
     }
 
     /*
@@ -356,8 +367,6 @@ export class CreateFarmPoolStore {
     #farmTokenResolveDisposer: IReactionDisposer | undefined
 
     #farmStartDisposer: IReactionDisposer | undefined
-
-    #farmEndDisposer: IReactionDisposer | undefined
 
     #rewardTokensDisposer: IReactionDisposer | undefined
 

@@ -2,7 +2,9 @@ import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
 import ton, { Address, Contract } from 'ton-inpage-provider'
 
-import { Farm, FarmAbi, TokenWallet } from '@/misc'
+import {
+    Farm, FarmAbi, TokenWallet, UserPendingReward,
+} from '@/misc'
 
 
 export async function loadUniWTON(): Promise<BigNumber> {
@@ -35,6 +37,7 @@ export function parseDate(value: string | undefined): Date | undefined {
     return undefined
 }
 
+// fixme check usage
 export function farmSpeed(
     dateStart: Date,
     dateEnd: Date,
@@ -151,12 +154,18 @@ export async function depositToken(
     })
 
     try {
+        const depositPayload = await Farm.poolDepositPayload(
+            new Address(poolAddress),
+            new Address(accountAddress),
+        )
+
         await TokenWallet.send({
             address: new Address(userWalletAddress),
             owner: new Address(accountAddress),
             recipient: poolWallet,
             tokens: deposit.toFixed(),
             grams: '5000000000',
+            payload: depositPayload,
         })
     }
     catch (e) {
@@ -180,17 +189,23 @@ export async function depositToken(
     return { newUserBalance, newPoolBalance }
 }
 
-export function isWithdrawUnclaimedValid(userReward: (string | undefined)[], userBalance: string | undefined): boolean {
-    return (
-        userReward.map(a => (new BigNumber(a || '0').isZero())).findIndex(a => !a) >= 0
+export function isWithdrawUnclaimedValid(
+    userReward: UserPendingReward | undefined,
+    userBalance: string | undefined,
+): boolean {
+    return userReward ? (
+        userReward._vested.map(a => (new BigNumber(a || '0').isZero())).findIndex(a => !a) >= 0
+        || userReward._pool_debt.map(a => (new BigNumber(a || '0').isZero())).findIndex(a => !a) >= 0
         || !(new BigNumber(userBalance || '0').isZero())
-    )
+    ) : false
 }
 
-export async function withdrawUnclaimed(
+export async function executeAction(
     poolAddress: string,
     accountAddress: string,
     userWalletAddress: string,
+    action: () => Promise<any>,
+    handler: 'Reward' | 'Withdraw',
 ): Promise<string> {
     const poolContract = new Contract(FarmAbi.Pool, new Address(poolAddress))
     let resolve: () => void | undefined
@@ -205,7 +220,7 @@ export async function withdrawUnclaimed(
                 transaction: tx,
             }).then(events => {
                 events.forEach(event => {
-                    if (event.event === 'Withdraw') {
+                    if (event.event === handler) {
                         if (event.data.user.toString() === accountAddress) {
                             resolve()
                         }
@@ -216,7 +231,7 @@ export async function withdrawUnclaimed(
     })
 
     try {
-        await Farm.poolWithdrawUnclaimed(new Address(poolAddress), new Address(accountAddress))
+        await action()
     }
     catch (e) {
         await subscription.unsubscribe()

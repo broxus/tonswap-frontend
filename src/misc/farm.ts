@@ -1,6 +1,6 @@
 import {
     Address,
-    Contract,
+    Contract, DecodedAbiFunctionOutputs,
     FullContractState,
     TransactionId,
 } from 'ton-inpage-provider'
@@ -8,6 +8,9 @@ import {
 import { FarmAbi } from '@/misc/abi'
 import { DexConstants } from '@/misc/dex-constants'
 
+export type PoolDetails = DecodedAbiFunctionOutputs<typeof FarmAbi.Pool, 'getDetails'>['value0'];
+export type UserPendingReward = DecodedAbiFunctionOutputs<typeof FarmAbi.User, 'pendingReward'>;
+export type PoolCalculateRewardData = DecodedAbiFunctionOutputs<typeof FarmAbi.Pool, 'calculateRewardData'>;
 
 export class Farm {
 
@@ -16,17 +19,18 @@ export class Farm {
         tokenRoot: Address,
         rewardTokenRoot: Address[],
         farmStart: string,
-        farmEnd: string,
         rewardPerSecond: string[],
+        vestingPeriod: string, // int seconds, 86400 - day, 180 * 86400 - half of the year
+        vestingRatio: string, // int percent, 1000 - 100%, 0 - 0%, 505 - 50.5 %
     ): Promise<TransactionId> {
         const fabricContract = new Contract(FarmAbi.Fabric, DexConstants.FarmFabricAddress)
         const { id } = await fabricContract.methods.deployFarmPool({
             tokenRoot,
             rewardTokenRoot,
             pool_owner: owner,
-            farmStartTime: farmStart,
-            farmEndTime: farmEnd,
-            rewardPerSecond,
+            reward_rounds: [{ startTime: farmStart, rewardPerSecond }],
+            vestingPeriod,
+            vestingRatio,
         }).send({
             amount: '7000000000',
             bounce: true,
@@ -35,130 +39,54 @@ export class Farm {
         return id
     }
 
-    public static async poolOwner(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<Address> {
+    public static async poolGetDetails(poolAddress: Address, state?: FullContractState): Promise<PoolDetails> {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { owner } = await poolContract.methods.owner({}).call({
-            cachedState: state,
-        })
-        return owner
-    }
-
-    public static async poolTokenRoot(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<Address> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { tokenRoot } = await poolContract.methods.tokenRoot({}).call({
-            cachedState: state,
-        })
-        return tokenRoot
-    }
-
-    public static async poolRewardTokenRoot(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<Address[]> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { rewardTokenRoot } = await poolContract.methods.rewardTokenRoot({}).call({
-            cachedState: state,
-        })
-        return rewardTokenRoot
-    }
-
-    public static async poolTokenBalance(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<string> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { tokenBalance } = await poolContract.methods.tokenBalance({}).call({
-            cachedState: state,
-        })
-        return tokenBalance.toString()
-    }
-
-    public static async poolRewardTokenBalance(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<string[]> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { rewardTokenBalance } = await poolContract.methods.rewardTokenBalance({}).call({
-            cachedState: state,
-        })
-        return rewardTokenBalance.map(a => a.toString())
-    }
-
-    public static async poolFarmStart(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<string> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { farmStartTime } = await poolContract.methods.farmStartTime({}).call({
-            cachedState: state,
-        })
-        return farmStartTime.toString()
-    }
-
-    public static async poolFarmEnd(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<string> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { farmEndTime } = await poolContract.methods.farmEndTime({}).call({
-            cachedState: state,
-        })
-        return farmEndTime.toString()
-    }
-
-    public static async poolRewardPerSecond(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<string[]> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { rewardPerSecond } = await poolContract.methods.rewardPerSecond({}).call({
-            cachedState: state,
-        })
-        return rewardPerSecond.map(a => a.toString())
-    }
-
-    public static async poolRewardTokenBalanceCumulative(
-        poolAddress: Address,
-        state?: FullContractState,
-    ): Promise<string[]> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const {
-            rewardTokenBalanceCumulative,
-        } = await poolContract.methods.rewardTokenBalanceCumulative({}).call({
-            cachedState: state,
-        })
-        return rewardTokenBalanceCumulative.map(a => a.toString())
-    }
-
-
-    public static async poolPendingReward(
-        poolAddress: Address,
-        userBalance: string,
-        userRewardDept: string[],
-        state?: FullContractState,
-    ): Promise<string[]> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { value0: reward } = await poolContract.methods.pendingReward({
-            user_amount: userBalance,
-            user_reward_debt: userRewardDept,
+        return (await poolContract.methods.getDetails({
+            answerId: 0,
         }).call({
             cachedState: state,
-        })
-        return reward.map(a => a.toString())
+        })).value0
     }
 
-    public static async poolWithdrawUnclaimed(
+    public static async poolDepositPayload(
+        poolAddress: Address,
+        owner: Address,
+        state?: FullContractState,
+    ): Promise<string> {
+        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        return (await poolContract.methods.encodeDepositPayload({
+            callback_payload: '',
+            deposit_owner: owner,
+        }).call({
+            cachedState: state,
+        })).deposit_payload
+    }
+
+    public static async poolClaimReward(
         poolAddress: Address,
         owner: Address,
     ): Promise<TransactionId> {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
-        const { id } = await poolContract.methods.withdrawAll({}).send({
+        const { id } = await poolContract.methods.claimReward({
+            callback_payload: '',
+            send_gas_to: owner,
+        }).send({
+            from: owner,
+            bounce: true,
+            amount: '5000000000',
+        })
+        return id
+    }
+
+    public static async poolWithdrawAll(
+        poolAddress: Address,
+        owner: Address,
+    ): Promise<TransactionId> {
+        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const { id } = await poolContract.methods.withdrawAll({
+            callback_payload: '',
+            send_gas_to: owner,
+        }).send({
             from: owner,
             bounce: true,
             amount: '5000000000',
@@ -173,12 +101,37 @@ export class Farm {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.withdrawUnclaimed({
             to: owner,
+            callback_payload: '',
+            send_gas_to: owner,
         }).send({
             from: owner,
             bounce: true,
             amount: '5000000000',
         })
         return id
+    }
+
+    public static async poolCalculateRewardData(
+        poolAddress: Address,
+        state?: FullContractState,
+    ): Promise<PoolCalculateRewardData> {
+        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        return poolContract.methods.calculateRewardData({}).call({ cachedState: state })
+    }
+
+    public static async userPendingReward(
+        userDataAddress: Address,
+        accTonPerShare: string[],
+        poolLastRewardTime: string,
+        state?: FullContractState,
+    ): Promise<UserPendingReward> {
+        const userData = new Contract(FarmAbi.User, userDataAddress)
+        return userData.methods.pendingReward({
+            _accTonPerShare: accTonPerShare,
+            poolLastRewardTime,
+        }).call({
+            cachedState: state,
+        })
     }
 
     public static async userDataAddress(
@@ -199,7 +152,7 @@ export class Farm {
         state?: FullContractState): Promise<{ amount: string, rewardDebt: string[] }> {
         const userContract = new Contract(FarmAbi.User, userDataAddress)
         const { value0: { amount, rewardDebt }} = await userContract.methods.getDetails({
-            _answer_id: 0,
+            answerId: 0,
         }).call({
             cachedState: state,
         })

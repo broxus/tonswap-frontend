@@ -14,7 +14,7 @@
     "dependencies": {
         "@broxus/await-semaphore": "^0.1.4",
         "@types/lodash.isequal": "^4.5.5",
-        "@types/lodash.uniqby":  "^4.7.6",
+        "@types/lodash.uniqby": "^4.7.6",
         "@types/luxon": "^1.27.1",
         "@types/react": "^17.0.18",
         "@types/react-dom": "^17.0.9",
@@ -34,7 +34,7 @@
         "react-intl": "^5.20.9",
         "react-router-dom": "^5.2.0",
         "react-waypoint": "^10.1.0",
-        "ton-inpage-provider": "^0.1.17"
+        "ton-inpage-provider": "^0.1.18"
     },
     "devDependencies": {
         "@babel/core": "^7.15.0",

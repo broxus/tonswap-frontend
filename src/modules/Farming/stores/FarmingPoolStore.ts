@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { action, makeAutoObservable } from 'mobx'
 import ton, { Address } from 'ton-inpage-provider'
 
-import { Farm, TokenWallet } from '@/misc'
+import {Farm, TokenWallet, UserPendingReward} from '@/misc'
 import {
     DEFAULT_FARMING_POOL_STORE_DATA,
     DEFAULT_FARMING_POOL_STORE_STATE,
@@ -13,7 +13,7 @@ import {
     FarmingPoolStoreState,
     FarmPool,
 } from '@/modules/Farming/types'
-import { depositToken, withdrawUnclaimed } from '@/modules/Farming/utils'
+import { depositToken, executeAction } from '@/modules/Farming/utils'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { error } from '@/utils'
 
@@ -49,6 +49,7 @@ export class FarmingPoolStore {
             depositToken: action.bound,
             maxDeposit: action.bound,
             withdrawUnclaimed: action.bound,
+            withdrawAll: action.bound,
         })
     }
 
@@ -162,10 +163,49 @@ export class FarmingPoolStore {
         this.changeState('isUserDepositing', true)
 
         try {
-            const result = await withdrawUnclaimed(
+            await executeAction(
                 this.pool.address,
                 this.wallet.address,
                 this.userWalletAddress,
+                () => Farm.poolClaimReward(new Address(this.pool.address), new Address(this.wallet.address || '')),
+                'Reward',
+            )
+
+            if (this.poolUpdateTimeout !== undefined) {
+                clearTimeout(this.poolUpdateTimeout)
+                this.poolUpdateTimeout = undefined
+            }
+
+            await this.syncPool()
+            this.updatePoolTimeTick()
+        }
+        catch (e) {
+            error('Claim error', e)
+        }
+        finally {
+            this.changeState('isUserDepositing', false)
+        }
+    }
+
+    /**
+     *
+     */
+    public async withdrawAll(): Promise<void> {
+        if (
+            this.wallet.address == null
+            || this.isUserDepositing
+            || this.userWalletAddress == null
+        ) { return }
+
+        this.changeState('isUserDepositing', true)
+
+        try {
+            const result = await executeAction(
+                this.pool.address,
+                this.wallet.address,
+                this.userWalletAddress,
+                () => Farm.poolWithdrawAll(new Address(this.pool.address), new Address(this.wallet.address || '')),
+                'Withdraw',
             )
 
             if (result == null) {
@@ -182,7 +222,7 @@ export class FarmingPoolStore {
             this.updatePoolTimeTick()
         }
         catch (e) {
-            error('Withdraw unclaimed error', e)
+            error('Withdraw all error', e)
         }
         finally {
             this.changeState('isUserDepositing', false)
@@ -290,18 +330,8 @@ export class FarmingPoolStore {
     /**
      *
      */
-    protected getAdminDeposit(idx: number): string | undefined {
-        const seconds = (this.pool.farmEnd - this.pool.farmStart) / 1000
-        const reward = new BigNumber(this.pool.farmSpeed[idx]).multipliedBy(seconds)
-        const depositAmount = reward
-            .minus(this.pool.rewardTokenBalanceCumulative[idx])
-            .shiftedBy(-this.pool.rewardTokenDecimals[idx])
-            .decimalPlaces(this.pool.rewardTokenDecimals[idx], BigNumber.ROUND_UP)
-
-        if (depositAmount.isFinite() && depositAmount.isPositive() && !depositAmount.isZero()) {
-            return depositAmount.toFixed()
-        }
-
+    // eslint-disable-next-line class-methods-use-this
+    protected getAdminDeposit(_: number): string | undefined {
         return undefined
     }
 
@@ -312,26 +342,30 @@ export class FarmingPoolStore {
         const poolAddress = new Address(this.pool.address)
         const userDataAddress = new Address(this.pool.userDataAddress)
         const poolState = await ton.getFullContractState({ address: poolAddress })
-        const poolBalance = await Farm.poolTokenBalance(poolAddress, poolState.state)
-        const poolRewardBalance = await Farm.poolRewardTokenBalance(poolAddress, poolState.state)
-        const poolRewardBalanceCumulative = await Farm.poolRewardTokenBalanceCumulative(poolAddress, poolState.state)
+        const poolDetails = await Farm.poolGetDetails(poolAddress, poolState.state)
+        const poolBalance = poolDetails.tokenBalance
+        const poolRewardBalance = poolDetails.rewardTokenBalance
+        const poolRewardBalanceCumulative = poolDetails.rewardTokenBalanceCumulative
+        const poolRewardData = await Farm.poolCalculateRewardData(
+            poolAddress,
+            poolState.state,
+        )
         let userBalance = '0',
-            userRewardDebt: string[] = [],
-            userDataDeployed = false
+            userDataDeployed = false,
+            userReward: UserPendingReward | undefined
 
         try {
             const userData = await Farm.userDataAmountAndRewardDebt(userDataAddress)
             userBalance = userData.amount
-            userRewardDebt = userData.rewardDebt
             userDataDeployed = true
+            userReward = await Farm.userPendingReward(
+                userDataAddress,
+                poolRewardData._accTonPerShare,
+                poolRewardData._lastRewardTime,
+            )
         }
         catch (e) {}
 
-        const userReward = await Farm.poolPendingReward(
-            poolAddress,
-            userBalance,
-            userRewardDebt,
-        )
         const share = poolBalance !== '0' ? new BigNumber(userBalance)
             .div(poolBalance)
             .multipliedBy('100')
@@ -339,7 +373,8 @@ export class FarmingPoolStore {
             .decimalPlaces(0, BigNumber.ROUND_DOWN)
             .toFixed() : '0'
 
-        this.pools.updatePool(this.pool.tokenRoot, {
+        this.pools.updatePool(this.pool.address, {
+            isActive: (this.pool.farmStart - new Date().getTime()) < 0,
             tokenBalance: poolBalance,
             rewardTokenBalance: poolRewardBalance,
             userBalance,

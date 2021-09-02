@@ -34,21 +34,14 @@ export function Item({ pool }: Props): JSX.Element {
                             <h3 className="farming-list__token-name">
                                 {pool.tokenSymbol}
                             </h3>
-                            {pool.isExpired && (
-                                <div key="expired" className="farming-list__token-status--expired">
-                                    {intl.formatMessage({
-                                        id: 'FARMING_LIST_POOL_STATUS_EXPIRED',
-                                    })}
-                                </div>
-                            )}
-                            {(!pool.isExpired && pool.isActive) && (
+                            {(pool.isActive) && (
                                 <div key="active" className="farming-list__token-status--active">
                                     {intl.formatMessage({
                                         id: 'FARMING_LIST_POOL_STATUS_ACTIVE',
                                     })}
                                 </div>
                             )}
-                            {(!pool.isExpired && !pool.isActive) && (
+                            {(!pool.isActive) && (
                                 <div key="awaiting" className="farming-list__token-status--awaiting">
                                     {intl.formatMessage({
                                         id: 'FARMING_LIST_POOL_STATUS_AWAITING',
@@ -94,7 +87,7 @@ export function Item({ pool }: Props): JSX.Element {
                                     })}
                                 </div>
                                 <div className="list__cell-inner-leader-value">
-                                    {pool.userReward.map((reward, idx) => (
+                                    {pool.userReward?._vested.map((reward, idx) => (
                                         <div key={pool.rewardTokenSymbol[idx]}>
                                             {amount(
                                                 reward,

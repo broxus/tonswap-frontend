@@ -92,26 +92,9 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                             day: 'numeric',
                             month: 'short',
                             year: 'numeric',
-                            hour: 'numeric',
-                            hour12: false,
-                            minute: 'numeric',
-                        })}
-                    </div>
-                </div>
-                <div className="farming-pool-details-table__row">
-                    <div>
-                        {intl.formatMessage({
-                            id: 'FARMING_LIST_POOL_DETAILS_FARM_END',
-                        })}
-                    </div>
-                    <div>
-                        {intl.formatDate(pool.farmEnd, {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                            hour: 'numeric',
-                            hour12: false,
-                            minute: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hourCycle: 'h23',
                         })}
                     </div>
                 </div>
@@ -186,19 +169,51 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                             </div>
                         </div>
                         {pool.rewardTokenSymbol.map((symbol, idx) => (
-                            <div key={symbol} className="farming-pool-details-table__row">
-                                <div>
-                                    {intl.formatMessage({
-                                        id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_REWARD',
-                                    }, {
-                                        symbol,
-                                    })}
+                            <div key={symbol}>
+                                <div className="farming-pool-details-table__row">
+                                    <div>
+                                        {intl.formatMessage({
+                                            id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_REWARD',
+                                        }, {
+                                            symbol,
+                                        })}
+                                    </div>
+                                    <div>
+                                        {amount(
+                                            pool.userReward?._vested[idx],
+                                            pool.rewardTokenDecimals[idx],
+                                        ) || 0}
+                                    </div>
                                 </div>
-                                <div>
-                                    {amount(
-                                        pool.userReward[idx],
-                                        pool.rewardTokenDecimals[idx],
-                                    ) || 0}
+                                <div className="farming-pool-details-table__row">
+                                    <div>
+                                        {intl.formatMessage({
+                                            id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_REWARD_ENTITLED',
+                                        }, {
+                                            symbol,
+                                        })}
+                                    </div>
+                                    <div>
+                                        {amount(
+                                            pool.userReward?._entitled[idx],
+                                            pool.rewardTokenDecimals[idx],
+                                        ) || 0}
+                                    </div>
+                                </div>
+                                <div className="farming-pool-details-table__row">
+                                    <div>
+                                        {intl.formatMessage({
+                                            id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_REWARD_DEBT',
+                                        }, {
+                                            symbol,
+                                        })}
+                                    </div>
+                                    <div>
+                                        {amount(
+                                            pool.userReward?._pool_debt[idx],
+                                            pool.rewardTokenDecimals[idx],
+                                        ) || 0}
+                                    </div>
                                 </div>
                             </div>
                         ))}
