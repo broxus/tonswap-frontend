@@ -1,5 +1,6 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
+import { reaction } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
@@ -28,10 +29,7 @@ function ConfirmationPopup(): JSX.Element {
             : swap.rightAmount),
     )
 
-    const isChanged = React.useMemo(
-        () => minExpectedAmount !== swap.minExpectedAmount,
-        [minExpectedAmount, swap.minExpectedAmount],
-    )
+    const [isChanged, setChangedTo] = React.useState(false)
 
     const onUpdate = () => {
         setMinExpectedAmount(swap.minExpectedAmount)
@@ -41,6 +39,7 @@ function ConfirmationPopup(): JSX.Element {
         setRightAmount((swap.isCrossExchangeMode && swap.direction !== SwapDirection.RTL)
             ? swap.bestCrossExchangeRoute?.rightAmount
             : swap.rightAmount)
+        setChangedTo(false)
     }
 
     const onDismiss = () => {
@@ -56,6 +55,22 @@ function ConfirmationPopup(): JSX.Element {
             await swap.swap()
         }
     }
+
+    React.useEffect(() => reaction(() => [
+        swap.amount,
+        swap.expectedAmount,
+        swap.minExpectedAmount,
+    ], ([
+        nextAmount,
+        newExpectedAmount,
+        nextMinExpectedAmount,
+    ]) => {
+        setChangedTo(
+            !(nextAmount === leftAmount
+            && newExpectedAmount === rightAmount
+            && nextMinExpectedAmount === minExpectedAmount),
+        )
+    }), [])
 
     return ReactDOM.createPortal(
         <div className="popup">
@@ -174,6 +189,7 @@ function ConfirmationPopup(): JSX.Element {
                 <button
                     type="button"
                     className="btn btn-md btn-primary btn-block"
+                    disabled={isChanged}
                     onClick={onSubmit}
                 >
                     {intl.formatMessage({

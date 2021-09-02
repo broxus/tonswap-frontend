@@ -703,7 +703,7 @@ export class SwapStore {
 
                 this.finalizeDirectCalculation()
 
-                this.#pairUpdatesUpdater = setInterval(async () => {
+                this.#pairsUpdatesUpdater = setInterval(async () => {
                     await this.syncPairState()
                     await this.syncPairBalances()
 
@@ -712,6 +712,9 @@ export class SwapStore {
                         !this.pairLeftBalanceNumber.isZero()
                         && !this.pairRightBalanceNumber.isZero(),
                     )
+
+                    await this.syncCrossExchangePairsStates()
+                    await this.syncCrossExchangePairsBalances()
 
                     await this.recalculate(!this.isCalculating)
 
@@ -1110,9 +1113,9 @@ export class SwapStore {
      * @protected
      */
     protected cleanPairUpdatesInterval(): void {
-        if (this.#pairUpdatesUpdater !== undefined) {
-            clearInterval(this.#pairUpdatesUpdater)
-            this.#pairUpdatesUpdater = undefined
+        if (this.#pairsUpdatesUpdater !== undefined) {
+            clearInterval(this.#pairsUpdatesUpdater)
+            this.#pairsUpdatesUpdater = undefined
         }
     }
 
@@ -1375,9 +1378,9 @@ export class SwapStore {
             ? new BigNumber(currentRoute.bill.amount || 0)
             : amountBN
         const isAmountDecreased = prevAmountBN.gt(amountBN)
-        const directMinExpectedAmount = new BigNumber(this.bill.minExpectedAmount || 0)
-        let bestMinExpectedAmount = new BigNumber(
-                isAmountDecreased ? 0 : (currentRoute?.bill.minExpectedAmount || 0),
+        const directAmount = new BigNumber(this.bill.expectedAmount || 0)
+        let bestExpectedAmount = new BigNumber(
+                isAmountDecreased ? 0 : (currentRoute?.bill.expectedAmount || 0),
             ),
             bestCrossExchangeRoute: SwapRoute | undefined
 
@@ -1389,14 +1392,13 @@ export class SwapStore {
                 break
             }
 
-            const minExpectedAmount = new BigNumber(route.bill.minExpectedAmount || 0)
+            let expectedAmountBN = new BigNumber(route.bill.expectedAmount || 0)
 
             if (
-                minExpectedAmount.gt(directMinExpectedAmount)
-                && minExpectedAmount.gt(bestMinExpectedAmount)
+                expectedAmountBN.gt(directAmount)
+                && expectedAmountBN.gt(bestExpectedAmount)
             ) {
-                const expectedAmount = route.bill.expectedAmount || '0'
-                const expectedAmountBN = new BigNumber(expectedAmount).shiftedBy(-this.rightTokenDecimals)
+                expectedAmountBN = expectedAmountBN.shiftedBy(-this.rightTokenDecimals)
                 const fee = getReducedCrossExchangeFee(route.steps)
                 const amount = getReducedCrossExchangeAmount(
                     this.leftAmountNumber,
@@ -1432,7 +1434,7 @@ export class SwapStore {
                     ...prices,
                     bill: {
                         ...route.bill,
-                        expectedAmount,
+                        expectedAmount: expectedAmountBN.toFixed(),
                         fee: fee.toFixed(),
                         priceImpact: priceImpact.toFixed(),
                     },
@@ -1441,7 +1443,7 @@ export class SwapStore {
                     slippage: getCrossExchangeSlippage(this.data.slippage, route.steps.length),
                 }
 
-                bestMinExpectedAmount = new BigNumber(bestCrossExchangeRoute?.bill.minExpectedAmount || 0)
+                bestExpectedAmount = new BigNumber(bestCrossExchangeRoute?.bill.minExpectedAmount || 0)
             }
         }
 
@@ -2256,6 +2258,26 @@ export class SwapStore {
      */
 
     /**
+     * Bill: amount
+     * @returns {SwapBill['amount']}
+     */
+    public get amount(): SwapBill['amount'] {
+        return this.isCrossExchangeMode
+            ? this.bestCrossExchangeRoute?.bill.amount
+            : this.bill.amount
+    }
+
+    /**
+     * Bill: expected amount
+     * @returns {SwapBill['expectedAmount']}
+     */
+    public get expectedAmount(): SwapBill['expectedAmount'] {
+        return this.isCrossExchangeMode
+            ? this.bestCrossExchangeRoute?.bill.expectedAmount
+            : this.bill.expectedAmount
+    }
+
+    /**
      * Bill: fee
      * @returns {SwapBill['fee']}
      */
@@ -2480,7 +2502,7 @@ export class SwapStore {
      */
     #transactionSubscriber: Subscriber | undefined
 
-    #pairUpdatesUpdater: ReturnType<typeof setInterval> | undefined
+    #pairsUpdatesUpdater: ReturnType<typeof setInterval> | undefined
 
     /*
      * Internal reaction disposers

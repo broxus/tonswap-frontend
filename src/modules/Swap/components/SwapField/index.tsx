@@ -19,7 +19,6 @@ type Props = {
     token?: TokenCache;
     value?: string;
     onChange?: (value: string) => void;
-    onKeyPress?: () => void;
     onToggleTokensList?: () => void;
 }
 
@@ -27,11 +26,10 @@ type Props = {
 function Field({
     isValid = true,
     token,
-    onKeyPress,
     ...props
 }: Props): JSX.Element {
     const intl = useIntl()
-    const field = useField({ token, onKeyPress, ...props })
+    const field = useField({ token, ...props })
     const balance = useTokenFormattedBalance(token, {
         subscriberPrefix: 'field',
     })
@@ -67,8 +65,6 @@ function Field({
                         value={props.value}
                         onBlur={field.onBlur}
                         onChange={field.onChange}
-                        onKeyDown={field.onKeyDown}
-                        onKeyPress={onKeyPress}
                     />
                     {!token ? (
                         <button

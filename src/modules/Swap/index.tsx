@@ -62,7 +62,6 @@ export function Swap(): JSX.Element {
                                     value={(swap.isCrossExchangeMode && swap.direction === SwapDirection.RTL)
                                         ? swap.crossExchangeLeftAmount
                                         : swap.leftAmount}
-                                    onKeyPress={form.onKeyPress}
                                     onChange={form.onChangeLeftAmount}
                                     onToggleTokensList={form.showTokensList('leftToken')}
                                 />
@@ -98,7 +97,6 @@ export function Swap(): JSX.Element {
                                     value={(swap.isCrossExchangeMode && swap.direction === SwapDirection.LTR)
                                         ? swap.crossExchangeRightAmount
                                         : swap.rightAmount}
-                                    onKeyPress={form.onKeyPress}
                                     onChange={form.onChangeRightAmount}
                                     onToggleTokensList={form.showTokensList('rightToken')}
                                 />

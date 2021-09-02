@@ -88,11 +88,11 @@ export function useSwapForm(): SwapFormShape {
         }
     }
 
-    const onKeyPress: SwapFormShape['onKeyPress'] = debounce(() => {
+    const onKeyPress: SwapFormShape['onKeyPress'] = React.useCallback(debounce(() => {
         (async () => {
-            await swap.recalculate(!swap.isCalculating)
+            await swap.recalculate(true)
         })()
-    }, 400)
+    }, 400), [swap.isCalculating])
 
     const onChangeLeftAmount: SwapFormShape['onChangeLeftAmount'] = value => {
         if (swap.direction === SwapDirection.RTL) {
@@ -108,6 +108,8 @@ export function useSwapForm(): SwapFormShape {
                 swap.toDirectSwap()
             }
         }
+
+        onKeyPress()
     }
 
     const onChangeRightAmount: SwapFormShape['onChangeRightAmount'] = value => {
@@ -124,6 +126,8 @@ export function useSwapForm(): SwapFormShape {
                 swap.toDirectSwap()
             }
         }
+
+        onKeyPress()
     }
 
     const onSelectToken: SwapFormShape['onSelectToken'] = async root => {
