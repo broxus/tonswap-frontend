@@ -363,11 +363,15 @@ export class SwapStore {
                     )
 
                     if (cancelStepIndex === 0) {
-                        return E.left({ step: results[0] })
+                        return E.left({})
                     }
 
                     if (cancelStepIndex > 0) {
-                        return E.left({ step: results[cancelStepIndex - 1] })
+                        return E.left({
+                            cancelStep: results[cancelStepIndex],
+                            index: cancelStepIndex,
+                            step: results[cancelStepIndex - 1],
+                        })
                     }
                 }
 
@@ -394,11 +398,15 @@ export class SwapStore {
                     )
 
                     if (cancelStepIndex === 0) {
-                        return E.left({ step: results[0] })
+                        return E.left({})
                     }
 
                     if (cancelStepIndex > 0) {
-                        return E.left({ step: results[cancelStepIndex - 1] })
+                        return E.left({
+                            cancelStep: results[cancelStepIndex],
+                            index: cancelStepIndex,
+                            step: results[cancelStepIndex - 1],
+                        })
                     }
                 }
             }
@@ -773,8 +781,8 @@ export class SwapStore {
      */
     protected handleSwapSuccess({ input, transaction }: SwapSuccessResult): void {
         this.transactionReceipt = {
+            amount: input.result.received.toString(),
             hash: transaction.id.hash,
-            receivedAmount: input.result.received.toString(),
             receivedDecimals: this.rightTokenDecimals,
             receivedIcon: this.rightToken?.icon,
             receivedRoot: this.rightToken?.root,
@@ -797,18 +805,24 @@ export class SwapStore {
      * @param {SwapFailureResult} [_]
      * @protected
      */
-    protected handleSwapFailure({ step }: SwapFailureResult): void {
-        const rightToken = step?.step.receiveAddress !== undefined
-            ? this.tokensCache.get(step.step.receiveAddress.toString())
+    protected handleSwapFailure({ cancelStep, index, step }: SwapFailureResult): void {
+        const leftToken = cancelStep?.step.spentAddress !== undefined
+            ? this.tokensCache.get(cancelStep.step.spentAddress.toString())
+            : undefined
+        const rightToken = cancelStep?.step.receiveAddress !== undefined
+            ? this.tokensCache.get(cancelStep.step.receiveAddress.toString())
             : undefined
 
         this.transactionReceipt = {
+            amount: step?.amount,
             isCrossExchangeCanceled: step !== undefined,
-            receivedAmount: step?.amount,
             receivedDecimals: rightToken?.decimals,
-            receivedIcon: rightToken?.icon,
-            receivedRoot: rightToken?.root,
             receivedSymbol: rightToken?.symbol,
+            slippage: index !== undefined
+                ? getCrossExchangeSlippage(this.data.slippage, index + 1)
+                : undefined,
+            spentDecimals: leftToken?.decimals,
+            spentSymbol: leftToken?.symbol,
             success: false,
         }
 

@@ -61,13 +61,18 @@ function Transaction(): JSX.Element | null {
                 className="popup-main__name"
                 dangerouslySetInnerHTML={{
                     __html: intl.formatMessage({
-                        id: 'SWAP_TRANSACTION_RECEIPT_LEAD_SUCCESSFUL_AMOUNT',
+                        id: 'SWAP_TRANSACTION_RECEIPT_LEAD_RECEIVED_AMOUNT',
                     }, {
                         value: amount(
-                            swap.transaction.receivedAmount || '0',
-                            swap.transaction.receivedDecimals,
+                            swap.transaction.amount || '0',
+                            swap.transaction.isCrossExchangeCanceled
+                                ? swap.transaction.spentDecimals
+                                : swap.transaction.receivedDecimals,
                         ) || '0',
-                        symbol: swap.transaction.receivedSymbol,
+                        symbol:
+                            swap.transaction.isCrossExchangeCanceled
+                                ? swap.transaction.spentSymbol
+                                : swap.transaction.receivedSymbol,
                     }, {
                         ignoreTag: true,
                     }),
@@ -110,10 +115,9 @@ function Transaction(): JSX.Element | null {
                                         ? 'SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE'
                                         : 'SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE',
                                 }, {
-                                    leftSymbol: swap.isPairChecking ? swap.rightToken?.symbol : swap.leftToken?.symbol,
-                                    rightSymbol: swap.isPairChecking ? swap.leftToken?.symbol : swap.rightToken?.symbol,
-                                    slippage: swap.bestCrossExchangeRoute?.slippage,
-                                    tokenSymbol: swap.transaction.receivedSymbol,
+                                    leftSymbol: swap.transaction.spentSymbol,
+                                    rightSymbol: swap.transaction.receivedSymbol,
+                                    slippage: swap.transaction.slippage,
                                 }),
                             }}
                         />

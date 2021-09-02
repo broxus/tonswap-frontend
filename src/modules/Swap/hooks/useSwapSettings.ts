@@ -27,6 +27,9 @@ export function useSwapSettings(): SwapSettingsShape {
     const [isOpen, setOpen] = React.useState(false)
 
     const show = () => {
+        if (swap.isSwapping) {
+            return
+        }
         setOpen(true)
     }
 

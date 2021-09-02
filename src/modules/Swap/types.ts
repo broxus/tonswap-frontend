@@ -114,19 +114,19 @@ export type SwapStoreState = {
 }
 
 export type SwapTransactionReceipt = {
-    isCrossExchangeCanceled?: boolean;
+    amount?: string;
     hash?: string;
-    receivedAmount?: string;
+    isCrossExchangeCanceled?: boolean;
     receivedDecimals?: number;
     receivedIcon?: string;
     receivedRoot?: string;
     receivedSymbol?: string;
+    slippage?: string;
     spentAmount?: string;
     spentDecimals?: number;
     spentFee?: string;
     spentSymbol?: string;
     success: boolean;
-    transactionHash?: string;
 }
 
 export type SwapSuccessResult = {
@@ -137,4 +137,6 @@ export type SwapSuccessResult = {
 export type SwapFailureResult = {
     input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>;
     step?: SwapRouteResult;
+    cancelStep?: SwapRouteResult;
+    index?: number;
 }

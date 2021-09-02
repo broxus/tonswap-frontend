@@ -57,11 +57,11 @@ export default {
     SWAP_POPUP_CONFORMATION_TITLE: 'Confirm transaction',
     SWAP_TRANSACTION_RECEIPT_POPUP_TITLE_SUCCESS: 'Swap has been completed successfully',
     SWAP_TRANSACTION_RECEIPT_POPUP_TITLE_FAILURE: 'Swap cancelled',
-    SWAP_TRANSACTION_RECEIPT_LEAD_SUCCESSFUL_AMOUNT: '+ <span>{value}</span> {symbol}',
+    SWAP_TRANSACTION_RECEIPT_LEAD_RECEIVED_AMOUNT: '+ <span>{value}</span> {symbol}',
     SWAP_TRANSACTION_RECEIPT_LINK_TXT_TOKEN_ROOT_CONTRACT: 'Token root contract',
     SWAP_TRANSACTION_RECEIPT_LINK_TXT_TRANSACTION: 'Transaction result',
     SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE: '<p>The Swap was canceled. Your balance hasn’t changed.</p>',
-    SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE: 'Due to the slippage is more than {slippage} of the {leftSymbol}/{rightSymbol} pair, you stayed with {tokenSymbol} token.',
+    SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE: 'Due to the slippage is more than {slippage} of the {leftSymbol}/{rightSymbol} pair, you stayed with {leftSymbol} token.',
 
     TOKENS_LIST_POPUP_TITLE: 'Select a token',
     TOKENS_LIST_POPUP_FIELD_SEARCH_PLACEHOLDER: 'Enter a token name or address...',
