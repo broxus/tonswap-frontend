@@ -142,7 +142,8 @@ export class CreateFarmPoolStore {
                     .dp(0, BigNumber.ROUND_DOWN)
                     .toFixed(),
             )
-            this.changeState('isCreating', false)
+            // never return to normal state, waiting for redirect here
+            // this.changeState('isCreating', false)
         }
         catch (e) {
             this.changeState('isCreating', false)
@@ -285,6 +286,7 @@ export class CreateFarmPoolStore {
             && !!this.farmStart.isValid
             && this.isVestingValid
             && this.rewardTokens.every(token => token.isValid && token.isRewardTotalValid)
+            && this.rewardTokens.findIndex(t => t.root === this.farmToken.root) < 0
         )
     }
 

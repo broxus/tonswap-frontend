@@ -154,12 +154,18 @@ export async function depositToken(
     })
 
     try {
+        const depositPayload = await Farm.poolDepositPayload(
+            new Address(poolAddress),
+            new Address(accountAddress),
+        )
+
         await TokenWallet.send({
             address: new Address(userWalletAddress),
             owner: new Address(accountAddress),
             recipient: poolWallet,
             tokens: deposit.toFixed(),
             grams: '5000000000',
+            payload: depositPayload,
         })
     }
     catch (e) {
@@ -199,7 +205,7 @@ export async function executeAction(
     accountAddress: string,
     userWalletAddress: string,
     action: () => Promise<any>,
-    handler: 'Deposit' | 'Withdraw',
+    handler: 'Reward' | 'Withdraw',
 ): Promise<string> {
     const poolContract = new Contract(FarmAbi.Pool, new Address(poolAddress))
     let resolve: () => void | undefined

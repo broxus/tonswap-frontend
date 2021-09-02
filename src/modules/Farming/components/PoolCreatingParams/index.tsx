@@ -5,6 +5,8 @@ import { useIntl } from 'react-intl'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { useCreateFarmPoolStore } from '@/modules/Farming/stores/CreateFarmPoolStore'
+import BigNumber from "bignumber.js";
+import {amount} from "@/utils";
 
 function CreatingParams(): JSX.Element {
     const intl = useIntl()
@@ -76,20 +78,34 @@ function CreatingParams(): JSX.Element {
                         <React.Fragment key={idx}>
                             {token.isValid && (
                                 // eslint-disable-next-line react/no-array-index-key
-                                <div key={`rewardToken-${idx}`} className="form-row">
-                                    <div>
-                                        {intl.formatMessage({
-                                            id: 'FARMING_CREATE_POOL_PARAMS_REWARD_TOKEN',
-                                        }, {
-                                            index: idx + 1,
-                                        })}
+                                <div key={`rewardToken-${idx}`}>
+                                    <div className="form-row">
+                                        <div>
+                                            {intl.formatMessage({
+                                                id: 'FARMING_CREATE_POOL_PARAMS_REWARD_TOKEN',
+                                            }, {
+                                                index: idx + 1,
+                                            })}
+                                        </div>
+                                        <div>
+                                            {token.root !== undefined && (
+                                                <AccountExplorerLink address={token.root}>
+                                                    {token.symbol}
+                                                </AccountExplorerLink>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div>
-                                        {token.root !== undefined && (
-                                            <AccountExplorerLink address={token.root}>
-                                                {token.symbol}
-                                            </AccountExplorerLink>
-                                        )}
+                                    <div className="form-row">
+                                        <div>
+                                            {intl.formatMessage({
+                                                id: 'FARMING_CREATE_POOL_PARAMS_REWARD_TOKEN_DAY',
+                                            }, {
+                                                index: idx + 1,
+                                            })}
+                                        </div>
+                                        <div>
+                                            {amount(new BigNumber(token.farmSpeed || 0).times(86400).times(30), 0)}
+                                        </div>
                                     </div>
                                 </div>
                             )}
