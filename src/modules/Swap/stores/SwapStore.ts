@@ -1617,9 +1617,9 @@ export class SwapStore {
             ? new BigNumber(currentRoute.bill.amount || 0)
             : amountBN
         const isAmountDecreased = prevAmountBN.gte(amountBN)
-        const directMinExpectedAmount = new BigNumber(this.bill.minExpectedAmount || 0)
-        let bestMinExpectedAmount = new BigNumber(
-                isAmountDecreased ? 0 : (currentRoute?.bill.minExpectedAmount || 0),
+        const directAmount = new BigNumber(this.bill.amount || 0)
+        let bestExpectedAmount = new BigNumber(
+                isAmountDecreased ? 0 : (currentRoute?.bill.expectedAmount || 0),
             ),
             bestCrossExchangeRoute: SwapRoute | undefined
 
@@ -1631,15 +1631,17 @@ export class SwapStore {
                 break
             }
 
-            const minExpectedAmount = new BigNumber(route.bill.minExpectedAmount || 0)
+            let expectedAmountBN = new BigNumber(route.bill.expectedAmount || 0)
 
             if (
                 !this.isEnoughLiquidity
-                || (directMinExpectedAmount.isZero() && minExpectedAmount.gt(0))
-                || (directMinExpectedAmount.gt(minExpectedAmount) && bestMinExpectedAmount.gt(minExpectedAmount))
+                || (directAmount.isZero() && expectedAmountBN.gt(0))
+                || (
+                    directAmount.gt(expectedAmountBN)
+                    && (bestExpectedAmount.isZero() || bestExpectedAmount.gt(expectedAmountBN))
+                )
             ) {
-                const expectedAmount = route.bill.expectedAmount || '0'
-                const expectedAmountBN = new BigNumber(expectedAmount).shiftedBy(-this.leftTokenDecimals)
+                expectedAmountBN = expectedAmountBN.shiftedBy(-this.leftTokenDecimals)
                 const fee = getReducedCrossExchangeFee(route.steps)
                 const amount = getReducedCrossExchangeAmount(
                     expectedAmountBN,
@@ -1675,7 +1677,7 @@ export class SwapStore {
                     ...prices,
                     bill: {
                         ...route.bill,
-                        expectedAmount,
+                        expectedAmount: expectedAmountBN.toFixed(),
                         fee: fee.toFixed(),
                         priceImpact: priceImpact.toFixed(),
                     },
@@ -1684,7 +1686,7 @@ export class SwapStore {
                     slippage: getCrossExchangeSlippage(this.data.slippage, route.steps.length),
                 }
 
-                bestMinExpectedAmount = new BigNumber(bestCrossExchangeRoute?.bill.minExpectedAmount || 0)
+                bestExpectedAmount = new BigNumber(bestCrossExchangeRoute?.bill.minExpectedAmount || 0)
             }
         }
 
