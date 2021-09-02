@@ -19,7 +19,7 @@ type SwapFormShape = {
     toggleTokensDirection: () => void;
     onChangeLeftAmount: (value: SwapStoreData['leftAmount']) => void;
     onChangeRightAmount: (value: SwapStoreData['rightAmount']) => void;
-    onKeyUp: () => void;
+    onKeyPress: () => void;
     onSelectToken: (root: string) => void;
     onDismissTransactionReceipt: () => void;
 }
@@ -28,11 +28,11 @@ type SwapFormShape = {
 export function useSwapForm(): SwapFormShape {
     const swap = useSwapStore()
     const {
-        leftTokenAddress,
-        rightTokenAddress,
+        leftTokenRoot,
+        rightTokenRoot,
     } = useParams<{
-        leftTokenAddress: string,
-        rightTokenAddress: string,
+        leftTokenRoot: string,
+        rightTokenRoot: string,
     }>()
     const history = useHistory()
     const tokensCache = useTokensCache()
@@ -55,6 +55,24 @@ export function useSwapForm(): SwapFormShape {
         setTokenListVisible(true)
     }
 
+    const checkForDefaults = () => {
+        if (
+            leftTokenRoot === undefined
+            && swap.leftToken === undefined
+            && tokensCache.has(DEFAULT_LEFT_TOKEN_ROOT)
+        ) {
+            swap.changeData('leftToken', DEFAULT_LEFT_TOKEN_ROOT)
+        }
+
+        if (
+            rightTokenRoot === undefined
+            && swap.rightToken === undefined
+            && tokensCache.has(DEFAULT_RIGHT_TOKEN_ROOT)
+        ) {
+            swap.changeData('rightToken', DEFAULT_RIGHT_TOKEN_ROOT)
+        }
+    }
+
     const toggleTokensDirection = async () => {
         if (swap.isLoading || swap.isSwapping) {
             return
@@ -70,6 +88,12 @@ export function useSwapForm(): SwapFormShape {
         }
     }
 
+    const onKeyPress: SwapFormShape['onKeyPress'] = debounce(() => {
+        (async () => {
+            await swap.recalculate(!swap.isCalculating)
+        })()
+    }, 400)
+
     const onChangeLeftAmount: SwapFormShape['onChangeLeftAmount'] = value => {
         if (swap.direction === SwapDirection.RTL) {
             swap.changeState('direction', SwapDirection.LTR)
@@ -79,6 +103,10 @@ export function useSwapForm(): SwapFormShape {
 
         if (value.length === 0) {
             swap.changeData('rightAmount', '')
+            swap.forceInvalidate()
+            if (swap.pair !== undefined) {
+                swap.toDirectSwap()
+            }
         }
     }
 
@@ -91,17 +119,14 @@ export function useSwapForm(): SwapFormShape {
 
         if (value.length === 0) {
             swap.changeData('leftAmount', '')
+            swap.forceInvalidate()
+            if (swap.pair !== undefined) {
+                swap.toDirectSwap()
+            }
         }
     }
 
-    const onKeyUp: SwapFormShape['onKeyUp'] = debounce(event => {
-        console.log(event);
-        (async () => {
-            await swap.recalculate(!swap.isCalculating)
-        })()
-    }, 400)
-
-    const onSelectToken: SwapFormShape['onSelectToken'] = root => {
+    const onSelectToken: SwapFormShape['onSelectToken'] = async root => {
         let pathname = '/swap'
         if (tokenSide === 'leftToken' && swap.rightToken?.root !== undefined) {
             let rightRoot = swap.rightToken.root
@@ -130,6 +155,7 @@ export function useSwapForm(): SwapFormShape {
         else if (tokenSide) {
             swap.changeData(tokenSide, root)
         }
+        swap.toDirectSwap()
         history.push({ pathname })
         hideTokensList()
     }
@@ -139,42 +165,30 @@ export function useSwapForm(): SwapFormShape {
     }
 
     React.useEffect(() => {
-        (async () => {
-            await swap.init()
-        })()
-
         // Initial update tokens state by the given uri params and after list of the tokens loaded
         const tokensListDisposer = reaction(() => tokensCache.tokens, () => {
             if (
-                (swap.leftToken === undefined || swap.leftToken.root !== leftTokenAddress)
-                && tokensCache.has(leftTokenAddress)
+                (swap.leftToken === undefined || swap.leftToken.root !== leftTokenRoot)
+                && tokensCache.has(leftTokenRoot)
             ) {
-                swap.changeData('leftToken', leftTokenAddress)
+                swap.changeData('leftToken', leftTokenRoot)
             }
 
             if (
-                (swap.rightToken === undefined || swap.rightToken.root !== rightTokenAddress)
-                && tokensCache.has(rightTokenAddress)
+                (swap.rightToken === undefined || swap.rightToken.root !== rightTokenRoot)
+                && tokensCache.has(rightTokenRoot)
             ) {
-                swap.changeData('rightToken', rightTokenAddress)
+                swap.changeData('rightToken', rightTokenRoot)
             }
 
-            if (
-                leftTokenAddress === undefined
-                && swap.leftToken === undefined
-                && tokensCache.has(DEFAULT_LEFT_TOKEN_ROOT)
-            ) {
-                swap.changeData('leftToken', DEFAULT_LEFT_TOKEN_ROOT)
-            }
-
-            if (
-                rightTokenAddress === undefined
-                && swap.rightToken === undefined
-                && tokensCache.has(DEFAULT_RIGHT_TOKEN_ROOT)
-            ) {
-                swap.changeData('rightToken', DEFAULT_RIGHT_TOKEN_ROOT)
-            }
+            checkForDefaults()
         })
+
+        checkForDefaults();
+
+        (async () => {
+            await swap.init()
+        })()
 
         return () => {
             swap.dispose().catch(reason => error(reason))
@@ -190,7 +204,7 @@ export function useSwapForm(): SwapFormShape {
         toggleTokensDirection,
         onChangeLeftAmount,
         onChangeRightAmount,
-        onKeyUp,
+        onKeyPress,
         onSelectToken,
         onDismissTransactionReceipt,
     }

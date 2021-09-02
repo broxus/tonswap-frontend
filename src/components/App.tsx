@@ -45,7 +45,7 @@ export function App(): JSX.Element {
                             <Route exact path="/">
                                 <Redirect exact to="/swap" />
                             </Route>
-                            <Route path="/swap/:leftTokenAddress([0][:][0-9a-f]{64})?/:rightTokenAddress([0][:][0-9a-f]{64})?">
+                            <Route path="/swap/:leftTokenRoot([0][:][0-9a-f]{64})?/:rightTokenRoot([0][:][0-9a-f]{64})?">
                                 <Swap />
                             </Route>
                             <Route exact path="/pool/:leftTokenAddress([0][:][0-9a-f]{64})?/:rightTokenAddress([0][:][0-9a-f]{64})?">

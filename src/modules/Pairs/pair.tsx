@@ -35,11 +35,10 @@ function PairInner(): JSX.Element {
         () => {
             const price = (baseToken !== undefined && counterToken !== undefined)
                 ? getDefaultPerPrice(
-                    new BigNumber(store.pair?.rightLocked || '0'),
+                    new BigNumber(store.pair?.rightLocked || 0).shiftedBy(-counterToken?.decimals),
+                    new BigNumber(store.pair?.leftLocked || 0).shiftedBy(-baseToken?.decimals),
                     counterToken?.decimals,
-                    new BigNumber(store.pair?.leftLocked || '0').shiftedBy(-baseToken?.decimals),
-                    counterToken?.decimals,
-                ) : new BigNumber('0')
+                ) : new BigNumber(0)
 
             return isAmountValid(price) ? price.toFixed() : '0'
         },
@@ -50,11 +49,10 @@ function PairInner(): JSX.Element {
         () => {
             const price = (baseToken !== undefined && counterToken !== undefined)
                 ? getDefaultPerPrice(
-                    new BigNumber(store.pair?.leftLocked || '0'),
+                    new BigNumber(store.pair?.leftLocked || 0).shiftedBy(-baseToken?.decimals),
+                    new BigNumber(store.pair?.rightLocked || 0).shiftedBy(-counterToken?.decimals),
                     baseToken?.decimals,
-                    new BigNumber(store.pair?.rightLocked || '0').shiftedBy(-counterToken?.decimals),
-                    baseToken?.decimals,
-                ) : new BigNumber('0')
+                ) : new BigNumber(0)
 
             return isAmountValid(price) ? price.toFixed() : '0'
         },

@@ -54,7 +54,7 @@ export function Swap(): JSX.Element {
                                     isValid={useBalanceValidation(
                                         swap.leftToken,
                                         swap.isCrossExchangeMode
-                                            ? swap.bestCrossExchangeRoute?.leftAmount || '0'
+                                            ? swap.crossExchangeLeftAmount || '0'
                                             : swap.leftAmount,
                                     )}
                                     readOnly={swap.isSwapping}
@@ -62,7 +62,7 @@ export function Swap(): JSX.Element {
                                     value={(swap.isCrossExchangeMode && swap.direction === SwapDirection.RTL)
                                         ? swap.crossExchangeLeftAmount
                                         : swap.leftAmount}
-                                    onKeyUp={form.onKeyUp}
+                                    onKeyPress={form.onKeyPress}
                                     onChange={form.onChangeLeftAmount}
                                     onToggleTokensList={form.showTokensList('leftToken')}
                                 />
@@ -98,7 +98,7 @@ export function Swap(): JSX.Element {
                                     value={(swap.isCrossExchangeMode && swap.direction === SwapDirection.LTR)
                                         ? swap.crossExchangeRightAmount
                                         : swap.rightAmount}
-                                    onKeyUp={form.onKeyUp}
+                                    onKeyPress={form.onKeyPress}
                                     onChange={form.onChangeRightAmount}
                                     onToggleTokensList={form.showTokensList('rightToken')}
                                 />

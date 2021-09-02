@@ -36,7 +36,7 @@ export default {
     SWAP_PRICE_CROSS_EXCHANGE_AVAILABLE_LABEL: 'Cross-exchange available',
     SWAP_PRICE_CROSS_EXCHANGE_MODE_LABEL: 'Get a better price',
     SWAP_PRICE_DIRECT_EXCHANGE_MODE_LABEL: 'Back to direct swap',
-    SWAP_PRICE_CROSS_EXCHANGE_MODE_ONLY_LABEL: 'Cross-pair swap only',
+    SWAP_PRICE_CROSS_EXCHANGE_MODE_ONLY_LABEL: 'Cross-exchange only',
     SWAP_PRICE_RESULT: '{value} {leftSymbol}&nbsp;per&nbsp;{rightSymbol}',
     SWAP_BTN_TEXT_SELECT_A_TOKEN: 'Select a token',
     SWAP_BTN_TEXT_ENTER_AN_AMOUNT: 'Enter an amount',

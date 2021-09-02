@@ -30,18 +30,17 @@ import {
     SwapTransactionReceipt,
 } from '@/modules/Swap/types'
 import {
+    fillStepResult,
     getCrossExchangePriceImpact,
     getCrossExchangeSlippage,
-    getDefaultPerPrice,
-    getDirectExchangePerPrice,
-    getDirectExchangePriceImpact,
+    getDefaultPerPrice, getDirectExchangePriceImpact,
+    getExchangePerPrice,
     getExpectedExchange,
     getExpectedSpendAmount,
     getReducedCrossExchangeAmount,
     getReducedCrossExchangeFee,
     getSlippageMinExpectedAmount,
     intersection,
-    mapStepResult,
 } from '@/modules/Swap/utils'
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
@@ -112,7 +111,6 @@ export class SwapStore {
      * @param {SwapStoreData[K]} value
      */
     public changeData<K extends keyof SwapStoreData>(key: K, value: SwapStoreData[K]): void {
-        debug('Change data', key, value)
         this.data[key] = value
     }
 
@@ -158,8 +156,8 @@ export class SwapStore {
                 this.data.leftToken,
                 this.data.rightToken,
             ])
+            this.finalizeDirectCalculation()
             await this.recalculate()
-            this.checkCrossExchange()
         }
         catch (e) {}
     }
@@ -348,7 +346,7 @@ export class SwapStore {
             if (result !== undefined) {
                 if (result.method === 'dexPairOperationCancelled' && result.input.id.toString() === processingId) {
                     results = results.map(
-                        res => mapStepResult(
+                        res => fillStepResult(
                             res,
                             transaction.inMessage.src,
                             undefined,
@@ -375,7 +373,7 @@ export class SwapStore {
 
                 if (result.method === 'dexPairExchangeSuccess' && result.input.id.toString() === processingId) {
                     results = results.map(
-                        res => mapStepResult(
+                        res => fillStepResult(
                             res,
                             transaction.inMessage.src,
                             result.input.result.received.toString(),
@@ -444,11 +442,40 @@ export class SwapStore {
             return
         }
 
+        if (this.pair?.address === undefined && !this.isCrossExchangeAvailable) {
+            this.changeData('priceLeftToRight', undefined)
+            this.changeData('priceRightToLeft', undefined)
+            this.changeState('isEnoughLiquidity', false)
+            debug(
+                '#recalculate reset when no pair',
+                toJS(this.data), toJS(this.state), toJS(this.bill),
+            )
+            return
+        }
+
+        this.changeState(
+            'isEnoughLiquidity',
+            !this.pairLeftBalanceNumber.isZero()
+            && !this.pairRightBalanceNumber.isZero(),
+        )
+
         if (this.direction === SwapDirection.LTR) {
-            await this.calculateByLeftAmount(force)
+            if (this.isLeftAmountValid) {
+                await this.calculateByLeftAmount(force)
+            }
+
+            if (this.isLeftAmountValid && this.isCrossExchangeAvailable) {
+                await this.calculateLtrCrossExchangeBill(force)
+            }
         }
         else if (this.direction === SwapDirection.RTL) {
-            await this.calculateByRightAmount(force)
+            if (this.isRightAmountValid) {
+                await this.calculateByRightAmount(force)
+            }
+
+            if (this.isRightAmountValid && this.isCrossExchangeAvailable) {
+                await this.calculateRtlCrossExchangeBill(force)
+            }
         }
     }
 
@@ -487,16 +514,7 @@ export class SwapStore {
             this.changeData('leftAmount', '')
         }
 
-        this.invalidateCrossExchangeRoutes()
-
-        await this.recalculate(!this.isCalculating)
-    }
-
-    /**
-     * Manually clean last transaction receipt result.
-     */
-    public cleanTransactionResult(): void {
-        this.transactionReceipt = undefined
+        this.forceInvalidate()
     }
 
     /**
@@ -515,10 +533,34 @@ export class SwapStore {
      */
     public toggleSwapExchangeMode(): void {
         if (!this.isCrossExchangeMode && this.isCrossExchangeAvailable) {
-            this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
+            this.toCrossExchangeSwap()
             return
         }
+        this.toDirectSwap()
+    }
+
+    public toCrossExchangeSwap(): void {
+        this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
+    }
+
+    public toDirectSwap(): void {
         this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
+    }
+
+    /**
+     * Manually clean last transaction receipt result.
+     */
+    public cleanTransactionResult(): void {
+        this.transactionReceipt = undefined
+    }
+
+    /**
+     * Invalidate bills
+     */
+    public forceInvalidate(): void {
+        this.resetBill()
+        this.changeData('bestCrossExchangeRoute', undefined)
+        this.finalizeDirectCalculation()
     }
 
 
@@ -538,24 +580,9 @@ export class SwapStore {
             value !== prevValue
             && isAmountValid(new BigNumber(value || 0))
         ) {
-            if (
-                this.isCrossExchangeMode
-                && this.bestCrossExchangeRoute !== undefined
-                && this.crossExchangeSlippage !== undefined
-            ) {
-                this.changeData(
-                    'bestCrossExchangeRoute',
-                    {
-                        ...this.bestCrossExchangeRoute,
-                        bill: {
-                            ...this.bestCrossExchangeRoute.bill,
-                            minExpectedAmount: getSlippageMinExpectedAmount(
-                                new BigNumber(this.bestCrossExchangeRoute.bill._minExpectedAmount || 0),
-                                value,
-                            ).toFixed(),
-                        },
-                    },
-                )
+            if (this.isCrossExchangeMode) {
+                this.changeData('bestCrossExchangeRoute', undefined)
+                await this.recalculate(!this.isCalculating)
             }
 
             if (this.bill.expectedAmount !== undefined) {
@@ -612,6 +639,18 @@ export class SwapStore {
             }
         }
 
+        this.forceInvalidate()
+
+        debug(
+            '#handleTokensChange reset bill',
+            toJS(this.data), toJS(this.state), toJS(this.bill),
+        )
+
+        if (!isToggleDirection) {
+            this.resetCrossExchangeData()
+            debug('#handleTokensChange reset cross-exchange data')
+        }
+
         if (isChanged) {
             this.changeData('pair', undefined)
             debug('#handleTokensChange change token')
@@ -619,9 +658,10 @@ export class SwapStore {
 
         if (leftRoot === undefined || rightRoot === undefined) {
             this.changeData('pair', undefined)
-            this.resetBill()
-            this.resetCrossExchangeData()
-            debug('#handleTokensChange no some token -> reset pair, bill, cross-exchange data')
+            debug(
+                '#handleTokensChange only one token selected -> reset',
+                toJS(this.data), toJS(this.state), toJS(this.bill),
+            )
             return
         }
 
@@ -651,7 +691,6 @@ export class SwapStore {
                 this.cleanPairUpdatesInterval()
 
                 await this.syncPairState()
-                await this.syncPairData()
                 await this.syncPairBalances()
 
                 this.changeState(
@@ -660,17 +699,23 @@ export class SwapStore {
                     && !this.pairRightBalanceNumber.isZero(),
                 )
 
+                await this.syncPairData()
+
+                this.finalizeDirectCalculation()
+
                 // this.#pairUpdatesUpdater = setInterval(async () => {
                 //     await this.syncPairState()
-                //     await this.syncPairData()
                 //     await this.syncPairBalances()
+                //
                 //     this.changeState(
                 //         'isEnoughLiquidity',
                 //         !this.pairLeftBalanceNumber.isZero()
                 //         && !this.pairRightBalanceNumber.isZero(),
                 //     )
-                //     debug('Update pair data by interval')
-                //     await this.recalculate(true)
+                //
+                //     await this.recalculate(!this.isCalculating)
+                //
+                //     debug('#handleTokensChange Update pair data by interval', toJS(this.pair))
                 // }, 10000)
             }
             catch (e) {
@@ -678,23 +723,24 @@ export class SwapStore {
             }
         }
 
-        debug(
-            '#handleTokensChange resets',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
-        )
-
         this.changeState('isPairChecking', false)
 
         if (isChanged) {
-            this.resetBill()
-            this.resetCrossExchangeData()
             await this.prepareCrossExchange()
-            debug('#handleTokensChange changed tokens')
+            debug(
+                '#handleTokensChange prepare cross-exchange',
+                toJS(this.data), toJS(this.state), toJS(this.bill),
+            )
         }
 
         await this.recalculate(!this.isCalculating)
 
-        debug('#handleTokensChange prepare cross-exchange')
+        this.checkCrossExchange()
+
+        debug(
+            '#handleTokensChange check cross-exchange',
+            toJS(this.data), toJS(this.state), toJS(this.bill),
+        )
     }
 
     /**
@@ -740,7 +786,7 @@ export class SwapStore {
         this.changeState('isSwapping', false)
         this.changeData('leftAmount', '')
         this.changeData('rightAmount', '')
-        this.resetBill()
+        this.forceInvalidate()
     }
 
     /**
@@ -764,7 +810,7 @@ export class SwapStore {
         }
 
         this.changeState('isSwapping', false)
-        this.resetBill()
+        this.forceInvalidate()
     }
 
     /*
@@ -793,24 +839,12 @@ export class SwapStore {
             return
         }
 
+        this.changeState('isCalculating', !force)
+
         debug(
             '#calculateByLeftAmount start',
             toJS(this.data), toJS(this.state), toJS(this.bill),
         )
-
-        if (this.pair?.address === undefined) {
-            this.changeData('priceLeftToRight', undefined)
-            this.changeData('priceRightToLeft', undefined)
-            debug(
-                '#calculateByLeftAmount reset when no pair',
-                toJS(this.data), toJS(this.state), toJS(this.bill),
-            )
-            return
-        }
-
-        this.changeState('isCalculating', !force)
-
-        this.resetBill()
 
         if (this.isEnoughLiquidity && this.isLeftAmountValid && this.leftTokenAddress !== undefined) {
             this.changeBillData(
@@ -855,26 +889,16 @@ export class SwapStore {
                         : '',
                 )
             }
-            else {
-                this.changeData('rightAmount', '')
-            }
-        }
-        else {
-            this.changeData('rightAmount', '')
         }
 
         this.finalizeDirectCalculation()
+
+        this.changeState('isCalculating', false)
 
         debug(
             '#calculateByLeftAmount done',
             toJS(this.data), toJS(this.state), toJS(this.bill),
         )
-
-        this.changeState('isCalculating', false)
-
-        if (this.routes.length > 0) {
-            await this.calculateLtrCrossExchangeBill(force)
-        }
     }
 
     /**
@@ -898,29 +922,12 @@ export class SwapStore {
             return
         }
 
+        this.changeState('isCalculating', !force)
+
         debug(
             '#calculateByRightAmount start',
             toJS(this.data), toJS(this.state), toJS(this.bill),
         )
-
-        debug(
-            '#calculateByLeftAmount start',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
-        )
-
-        if (this.pair?.address === undefined) {
-            this.changeData('priceLeftToRight', undefined)
-            this.changeData('priceRightToLeft', undefined)
-            debug(
-                '#calculateByLeftAmount reset when no pair',
-                toJS(this.data), toJS(this.state), toJS(this.bill),
-            )
-            return
-        }
-
-        this.changeState('isCalculating', !force)
-
-        this.resetBill()
 
         if (this.isEnoughLiquidity && this.isRightAmountValid) {
             this.changeState(
@@ -974,31 +981,20 @@ export class SwapStore {
                     )
                 }
                 else {
-                    debug('RESET AMOUNTS')
                     this.changeData('leftAmount', '')
                     this.changeData('rightAmount', '')
                 }
             }
-            else {
-                this.changeData('leftAmount', '')
-            }
-        }
-        else {
-            this.changeData('leftAmount', '')
         }
 
         this.finalizeDirectCalculation()
+
+        this.changeState('isCalculating', false)
 
         debug(
             '#calculateByRightAmount done',
             toJS(this.data), toJS(this.state), toJS(this.bill),
         )
-
-        this.changeState('isCalculating', false)
-
-        if (this.routes.length > 0) {
-            await this.calculateRtlCrossExchangeBill(force)
-        }
     }
 
     /**
@@ -1017,14 +1013,12 @@ export class SwapStore {
         const pairRightBalanceBN = this.isPairInverted ? this.pairLeftBalanceNumber : this.pairRightBalanceNumber
 
         let priceLeftToRight = getDefaultPerPrice(
-                pairLeftBalanceBN,
-                this.leftTokenDecimals,
+                pairLeftBalanceBN.shiftedBy(-this.leftTokenDecimals),
                 pairRightBalanceBN.shiftedBy(-this.rightTokenDecimals),
                 this.leftTokenDecimals,
             ),
             priceRightToLeft = getDefaultPerPrice(
-                pairRightBalanceBN,
-                this.rightTokenDecimals,
+                pairRightBalanceBN.shiftedBy(-this.rightTokenDecimals),
                 pairLeftBalanceBN.shiftedBy(-this.leftTokenDecimals),
                 this.rightTokenDecimals,
             )
@@ -1052,13 +1046,13 @@ export class SwapStore {
         let amountBN = new BigNumber(this.bill.amount || 0)
         const expectedAmountBN = new BigNumber(this.bill.expectedAmount || 0)
 
-        priceLeftToRight = getDirectExchangePerPrice(
+        priceLeftToRight = getExchangePerPrice(
             amountBN,
             expectedAmountBN,
             this.rightTokenDecimals,
         )
 
-        priceRightToLeft = getDirectExchangePerPrice(
+        priceRightToLeft = getExchangePerPrice(
             expectedAmountBN,
             amountBN,
             this.leftTokenDecimals,
@@ -1129,7 +1123,7 @@ export class SwapStore {
      * @protected
      */
     protected reset(): void {
-        this.resetBill()
+        this.forceInvalidate()
         this.resetCrossExchangeData()
         this.resetData()
         this.resetState()
@@ -1263,25 +1257,22 @@ export class SwapStore {
      */
     protected async calculateLtrCrossExchangeBill(force?: boolean): Promise<void> {
         if (
-            !force
-            && (
-                this.isCrossExchangeCalculating
-                || this.leftToken === undefined
-                || this.rightToken === undefined
-            )
+            this.leftToken === undefined
+            || this.rightToken === undefined
+            || !this.isLeftAmountValid
         ) {
             return
         }
 
-        const amountBn = this.leftAmountNumber.shiftedBy(this.leftTokenDecimals).dp(0, BigNumber.ROUND_DOWN)
-
-        if (!isAmountValid(amountBn)) {
+        if (!force && this.isCrossExchangeCalculating) {
             return
         }
 
-        this.changeState('isCrossExchangeCalculating', !force)
+        const amountBN = this.leftAmountNumber
+            .shiftedBy(this.leftTokenDecimals)
+            .dp(0, BigNumber.ROUND_DOWN)
 
-        this.invalidateCrossExchangeRoutes()
+        this.changeState('isCrossExchangeCalculating', !force)
 
         debug(
             '#calculateLtrCrossExchangeBill invalidate routes',
@@ -1290,15 +1281,18 @@ export class SwapStore {
 
         await (
             async () => {
+                const routes: SwapRoute[] = []
+
                 // eslint-disable-next-line no-restricted-syntax
-                for (const route of this.routes) {
+                for (const _route of this.routes) {
+                    const route = { ..._route }
                     const tokens = this.getRouteTokensMap(route.tokens, true)
 
-                    route.bill.amount = amountBn.toFixed()
-                    route.bill.expectedAmount = amountBn.toFixed()
-                    route.bill.minExpectedAmount = amountBn.toFixed()
-                    // route.pairs = []
-                    // route.steps = []
+                    route.bill.amount = amountBN.toFixed()
+                    route.bill.expectedAmount = amountBN.toFixed()
+                    route.bill.minExpectedAmount = amountBN.toFixed()
+                    route.pairs = []
+                    route.steps = []
 
                     // eslint-disable-next-line no-restricted-syntax
                     for (const { idx, token } of tokens) {
@@ -1368,26 +1362,33 @@ export class SwapStore {
                             }
                         }
                     }
+
+                    routes.push(route)
                 }
+
+                this.changeData('routes', routes)
             }
         )()
 
-        if (this.leftToken === undefined) {
-            this.changeState('isCrossExchangeCalculating', false)
-            return
-        }
-
         const currentRoute = this.data.bestCrossExchangeRoute && { ...this.data.bestCrossExchangeRoute }
-        const prevAmountBN = new BigNumber(currentRoute?.bill?.amount || '0').shiftedBy(this.leftTokenDecimals)
-        const isAmountDecreased = prevAmountBN.gte(amountBn)
+        const prevAmountBN = currentRoute?.bill.amount !== undefined
+            ? new BigNumber(currentRoute.bill.amount || 0)
+            : amountBN
+        const isAmountDecreased = prevAmountBN.gt(amountBN)
         const directMinExpectedAmount = new BigNumber(this.bill.minExpectedAmount || 0)
-        let bestMinExpectedAmount = new BigNumber(isAmountDecreased ? 0 : (currentRoute?.bill?.minExpectedAmount || 0)),
+        let bestMinExpectedAmount = new BigNumber(
+                isAmountDecreased ? 0 : (currentRoute?.bill.minExpectedAmount || 0),
+            ),
             bestCrossExchangeRoute: SwapRoute | undefined
 
         this.changeData('bestCrossExchangeRoute', undefined)
 
         // eslint-disable-next-line no-restricted-syntax
         for (const route of this.routes) {
+            if (route.steps.length === 0) {
+                break
+            }
+
             const minExpectedAmount = new BigNumber(route.bill.minExpectedAmount || 0)
 
             if (
@@ -1395,26 +1396,28 @@ export class SwapStore {
                 && minExpectedAmount.gt(bestMinExpectedAmount)
             ) {
                 const expectedAmount = route.bill.expectedAmount || '0'
-                const expectedAmountBn = new BigNumber(expectedAmount).shiftedBy(-this.rightTokenDecimals)
+                const expectedAmountBN = new BigNumber(expectedAmount).shiftedBy(-this.rightTokenDecimals)
                 const fee = getReducedCrossExchangeFee(route.steps)
                 const amount = getReducedCrossExchangeAmount(
                     this.leftAmountNumber,
                     this.leftToken,
                     route.pairs,
                 )
-                const priceImpact = getCrossExchangePriceImpact(amount, expectedAmountBn)
+                const priceImpact = getCrossExchangePriceImpact(amount, expectedAmountBN)
 
                 const prices: Pick<SwapRoute, 'priceLeftToRight' | 'priceRightToLeft'> = {}
 
-                const priceLeftToRight = this.leftAmountNumber
-                    .div(expectedAmountBn)
-                    .shiftedBy(this.leftTokenDecimals)
-                    .dp(0, BigNumber.ROUND_UP)
+                const priceLeftToRight = getExchangePerPrice(
+                    this.leftAmountNumber,
+                    expectedAmountBN,
+                    this.leftTokenDecimals,
+                )
 
-                const priceRightToLeft = expectedAmountBn
-                    .div(this.leftAmountNumber)
-                    .shiftedBy(this.rightTokenDecimals)
-                    .dp(0, BigNumber.ROUND_UP)
+                const priceRightToLeft = getExchangePerPrice(
+                    expectedAmountBN,
+                    this.leftAmountNumber,
+                    this.rightTokenDecimals,
+                )
 
                 if (isAmountValid(priceLeftToRight)) {
                     prices.priceLeftToRight = priceLeftToRight.toFixed()
@@ -1434,7 +1437,7 @@ export class SwapStore {
                         priceImpact: priceImpact.toFixed(),
                     },
                     leftAmount: this.leftAmountNumber.toFixed(),
-                    rightAmount: expectedAmountBn.toFixed(),
+                    rightAmount: expectedAmountBN.toFixed(),
                     slippage: getCrossExchangeSlippage(this.data.slippage, route.steps.length),
                 }
 
@@ -1442,7 +1445,11 @@ export class SwapStore {
             }
         }
 
-        this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute || (currentRoute as SwapRoute))
+        this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute)
+
+        if (bestCrossExchangeRoute === undefined) {
+            this.toDirectSwap()
+        }
 
         this.changeState('isCrossExchangeCalculating', false)
 
@@ -1459,25 +1466,22 @@ export class SwapStore {
      */
     protected async calculateRtlCrossExchangeBill(force?: boolean): Promise<void> {
         if (
-            !force
-            && (
-                this.isCrossExchangeCalculating
-                || this.leftToken === undefined
-                || this.rightToken === undefined
-            )
+            this.leftToken === undefined
+            || this.rightToken === undefined
+            || !this.isRightAmountValid
         ) {
             return
         }
 
-        const amountBn = this.rightAmountNumber.shiftedBy(this.rightTokenDecimals).dp(0, BigNumber.ROUND_DOWN)
-
-        if (!isAmountValid(amountBn)) {
+        if (!force && this.isCrossExchangeCalculating) {
             return
         }
 
-        this.changeState('isCrossExchangeCalculating', !force)
+        const amountBN = this.rightAmountNumber
+            .shiftedBy(this.rightTokenDecimals)
+            .dp(0, BigNumber.ROUND_DOWN)
 
-        this.invalidateCrossExchangeRoutes()
+        this.changeState('isCrossExchangeCalculating', !force)
 
         debug(
             '#calculateRtlCrossExchangeBill invalidate routes',
@@ -1486,15 +1490,18 @@ export class SwapStore {
 
         await (
             async () => {
+                const routes: SwapRoute[] = []
+
                 // eslint-disable-next-line no-restricted-syntax
-                for (const route of this.routes) {
+                for (const _route of this.routes) {
+                    const route = { ..._route }
                     const tokens = this.getRouteTokensMap(route.tokens, false)
 
-                    route.bill.amount = amountBn.toFixed()
-                    route.bill.expectedAmount = amountBn.toFixed()
-                    route.bill.minExpectedAmount = amountBn.toFixed()
-                    // route.pairs = []
-                    // route.steps = []
+                    route.bill.amount = amountBN.toFixed()
+                    route.bill.expectedAmount = amountBN.toFixed()
+                    route.bill.minExpectedAmount = amountBN.toFixed()
+                    route.pairs = []
+                    route.steps = []
 
                     // eslint-disable-next-line no-restricted-syntax
                     for (const { idx, token } of tokens) {
@@ -1548,14 +1555,21 @@ export class SwapStore {
                             }
                         }
                     }
+
+                    routes.push(route)
                 }
+
+                this.changeData('routes', routes)
             }
         )()
 
         await (
             async () => {
+                const routes: SwapRoute[] = []
+
                 // eslint-disable-next-line no-restricted-syntax
-                for (const route of this.routes) {
+                for (const _route of this.routes) {
+                    const route = { ..._route }
                     const steps = route.steps.map((step, idx) => ({ idx, step }))
 
                     // eslint-disable-next-line no-restricted-syntax
@@ -1590,37 +1604,45 @@ export class SwapStore {
                             error('Min expected amount reverse by right error', e)
                         }
                     }
+
+                    routes.push(route)
                 }
+
+                this.changeData('routes', routes)
             }
         )()
 
-        if (this.leftToken === undefined) {
-            this.changeState('isCrossExchangeCalculating', false)
-            return
-        }
-
         const currentRoute = this.data.bestCrossExchangeRoute && { ...this.data.bestCrossExchangeRoute }
-        const prevAmountBN = new BigNumber(currentRoute?.bill?.amount || '0').shiftedBy(this.rightTokenDecimals)
-        const isAmountDecreased = prevAmountBN.gte(amountBn)
+        const prevAmountBN = currentRoute?.bill.amount !== undefined
+            ? new BigNumber(currentRoute.bill.amount || 0)
+            : amountBN
+        const isAmountDecreased = prevAmountBN.gte(amountBN)
         const directMinExpectedAmount = new BigNumber(this.bill.minExpectedAmount || 0)
-        let bestMinExpectedAmount = new BigNumber(isAmountDecreased ? 0 : (currentRoute?.bill?.minExpectedAmount || 0)),
+        let bestMinExpectedAmount = new BigNumber(
+                isAmountDecreased ? 0 : (currentRoute?.bill.minExpectedAmount || 0),
+            ),
             bestCrossExchangeRoute: SwapRoute | undefined
 
         this.changeData('bestCrossExchangeRoute', undefined)
 
         // eslint-disable-next-line no-restricted-syntax
         for (const route of this.routes) {
+            if (route.steps.length === 0) {
+                break
+            }
+
             const minExpectedAmount = new BigNumber(route.bill.minExpectedAmount || 0)
 
             if (
-                (directMinExpectedAmount.isZero() && minExpectedAmount.gt(0))
+                !this.isEnoughLiquidity
+                || (directMinExpectedAmount.isZero() && minExpectedAmount.gt(0))
                 || (directMinExpectedAmount.gt(minExpectedAmount) && bestMinExpectedAmount.gt(minExpectedAmount))
             ) {
                 const expectedAmount = route.bill.expectedAmount || '0'
-                const expectedAmountBn = new BigNumber(expectedAmount).shiftedBy(-this.leftTokenDecimals)
+                const expectedAmountBN = new BigNumber(expectedAmount).shiftedBy(-this.leftTokenDecimals)
                 const fee = getReducedCrossExchangeFee(route.steps)
                 const amount = getReducedCrossExchangeAmount(
-                    expectedAmountBn,
+                    expectedAmountBN,
                     this.leftToken,
                     route.pairs.slice().reverse(),
                 )
@@ -1628,15 +1650,17 @@ export class SwapStore {
 
                 const prices: Pick<SwapRoute, 'priceLeftToRight' | 'priceRightToLeft'> = {}
 
-                const priceLeftToRight = expectedAmountBn
-                    .div(this.rightAmountNumber)
-                    .shiftedBy(this.leftTokenDecimals)
-                    .dp(0, BigNumber.ROUND_UP)
+                const priceLeftToRight = getExchangePerPrice(
+                    expectedAmountBN,
+                    this.rightAmountNumber,
+                    this.leftTokenDecimals,
+                )
 
-                const priceRightToLeft = this.rightAmountNumber
-                    .div(expectedAmountBn)
-                    .shiftedBy(this.rightTokenDecimals)
-                    .dp(0, BigNumber.ROUND_UP)
+                const priceRightToLeft = getExchangePerPrice(
+                    this.rightAmountNumber,
+                    expectedAmountBN,
+                    this.rightTokenDecimals,
+                )
 
                 if (isAmountValid(priceLeftToRight)) {
                     prices.priceLeftToRight = priceLeftToRight.toFixed()
@@ -1655,7 +1679,7 @@ export class SwapStore {
                         fee: fee.toFixed(),
                         priceImpact: priceImpact.toFixed(),
                     },
-                    leftAmount: expectedAmountBn.toFixed(),
+                    leftAmount: expectedAmountBN.toFixed(),
                     rightAmount: this.rightAmountNumber.toFixed(),
                     slippage: getCrossExchangeSlippage(this.data.slippage, route.steps.length),
                 }
@@ -1664,7 +1688,11 @@ export class SwapStore {
             }
         }
 
-        this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute || (currentRoute as SwapRoute))
+        this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute)
+
+        if (bestCrossExchangeRoute === undefined) {
+            this.toDirectSwap()
+        }
 
         this.changeState('isCrossExchangeCalculating', false)
 
@@ -1725,6 +1753,11 @@ export class SwapStore {
      * @protected
      */
     protected checkCrossExchange(): void {
+        if (this.pair === undefined && this.isCrossExchangeAvailable) {
+            this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
+            return
+        }
+
         if (
             (!this.isEnoughLiquidity || this.pair === undefined)
             && this.isCrossExchangeAvailable
@@ -2022,6 +2055,7 @@ export class SwapStore {
                 leftAmount: '',
                 pairs: [],
                 rightAmount: '',
+                slippage: '',
                 steps: [],
             })),
         )

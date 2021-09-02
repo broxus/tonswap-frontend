@@ -11,7 +11,7 @@ import { SwapPair, SwapRouteResult, SwapRouteStep } from '@/modules/Swap/types'
 import { TokenCache } from '@/stores/TokensCacheService'
 
 
-export function mapStepResult(
+export function fillStepResult(
     result: SwapRouteResult,
     src?: Address,
     amount?: SwapRouteResult['amount'],
@@ -62,25 +62,23 @@ export async function getExpectedSpendAmount(
 
 export function getDefaultPerPrice(
     value: BigNumber,
-    shiftedBy: number,
     dividedBy: BigNumber,
-    decimalPlaces: number,
+    decimals: number,
 ): BigNumber {
     return value
-        .shiftedBy(-shiftedBy)
-        .dividedBy(dividedBy)
-        .decimalPlaces(decimalPlaces, BigNumber.ROUND_UP)
-        .shiftedBy(shiftedBy)
+        .div(dividedBy)
+        .dp(decimals, BigNumber.ROUND_UP)
+        .shiftedBy(decimals)
 }
 
-export function getDirectExchangePerPrice(
+export function getExchangePerPrice(
     value: BigNumber,
-    divided: BigNumber,
-    shifted: number,
+    dividedBy: BigNumber,
+    decimals: number,
 ): BigNumber {
-    return new BigNumber(value)
-        .div(divided)
-        .shiftedBy(shifted)
+    return value
+        .div(dividedBy)
+        .shiftedBy(decimals)
         .dp(0, BigNumber.ROUND_DOWN)
 }
 
@@ -93,10 +91,10 @@ export function getDirectExchangePriceImpact(start: BigNumber, end: BigNumber): 
 }
 
 export function getSlippageMinExpectedAmount(
-    expectedAmount: BigNumber,
+    amount: BigNumber,
     slippage: string,
 ): BigNumber {
-    return expectedAmount
+    return amount
         .div(100)
         .times(new BigNumber(100).minus(slippage))
         .dp(0, BigNumber.ROUND_DOWN)
@@ -115,8 +113,7 @@ export function getCrossExchangeSlippage(value: string, stepsCounts: number): st
 export function getReducedCrossExchangeFee(iteratee: SwapRouteStep[], isInverted?: boolean): BigNumber {
     const fee = iteratee.reduceRight(
         (acc, step, idx, steps) => (
-            acc
-                .plus(step.fee)
+            acc.plus(step.fee)
                 .times((isInverted ? steps[idx - 1]?.expectedAmount : steps[idx - 1]?.amount) || 1)
                 .div((isInverted ? steps[idx - 1]?.amount : steps[idx - 1]?.expectedAmount) || 1)
         ),

@@ -2,6 +2,7 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { SwapDirection } from '@/modules/Swap/types'
 import { Icon } from '@/components/common/Icon'
 import { useWallet } from '@/stores/WalletService'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
@@ -26,9 +27,7 @@ function SubmitButton(): JSX.Element {
         )
     }
 
-    const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
-        disabled: !swap.isDirectSwapValid || swap.isLoading,
-    }
+    const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {}
     let buttonText: React.ReactNode = intl.formatMessage({ id: 'SWAP_BTN_TEXT_SUBMIT' })
 
     switch (true) {
@@ -56,7 +55,8 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case swap.leftAmount.length === 0 || swap.rightAmount.length === 0:
+        case swap.leftAmount.length === 0 && swap.direction === SwapDirection.LTR:
+        case swap.rightAmount.length === 0 && swap.direction === SwapDirection.RTL:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_ENTER_AN_AMOUNT',
@@ -88,6 +88,7 @@ function SubmitButton(): JSX.Element {
             break
 
         default:
+            buttonProps.disabled = !swap.isDirectSwapValid || swap.isLoading
     }
 
     return (

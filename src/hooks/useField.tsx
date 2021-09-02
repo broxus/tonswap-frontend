@@ -7,12 +7,14 @@ import { formatAmount } from '@/utils'
 type FieldShape = {
     onBlur?: React.FocusEventHandler<HTMLInputElement>;
     onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 type Props = {
     token?: TokenCache;
     value?: string;
     onChange?: (value: string) => void;
+    onKeyPress?: React.KeyboardEventHandler<HTMLInputElement>;
 }
 
 
@@ -36,5 +38,12 @@ export function useField({ token, ...props }: Props): FieldShape {
         props.onChange?.(value)
     }
 
-    return { onBlur, onChange }
+    const onKeyDown: React.KeyboardEventHandler<HTMLInputElement> = event => {
+        const key = event.keyCode || event.charCode
+        if (key === 8) {
+            props.onKeyPress?.(event)
+        }
+    }
+
+    return { onBlur, onChange, onKeyDown }
 }

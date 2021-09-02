@@ -29,9 +29,7 @@ function SubmitButton(): JSX.Element {
         )
     }
 
-    const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
-        disabled: !swap.isCrossExchangeSwapValid || swap.isLoading,
-    }
+    const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {}
     let buttonText: React.ReactNode = intl.formatMessage({ id: 'SWAP_BTN_TEXT_SUBMIT' })
 
     switch (true) {
@@ -97,6 +95,7 @@ function SubmitButton(): JSX.Element {
             break
 
         default:
+            buttonProps.disabled = !swap.isCrossExchangeSwapValid || swap.isLoading
     }
 
     return (
