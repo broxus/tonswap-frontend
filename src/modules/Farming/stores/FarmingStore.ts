@@ -17,9 +17,9 @@ import {
     DexConstants,
     Farm,
     FarmAbi,
-    TokenWallet,
+    TokenWallet, UserPendingReward,
 } from '@/misc'
-import { DEFAULT_FARMING_STORE_DATA, DEFAULT_FARMING_STORE_STATE, OWNERS_WHITE_LIST } from '@/modules/Farming/constants'
+import { DEFAULT_FARMING_STORE_DATA, DEFAULT_FARMING_STORE_STATE } from '@/modules/Farming/constants'
 import { FarmingStoreData, FarmingStoreState, FarmPool } from '@/modules/Farming/types'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { filterEmpty, loadUniWTON } from '@/modules/Farming/utils'
@@ -75,8 +75,8 @@ export class FarmingStore {
     /**
      *
      */
-    public updatePool(tokenRoot: string, data: Partial<FarmPool>): void {
-        this.data.pools = this.pools.map(pool => (pool.tokenRoot === tokenRoot ? { ...pool, ...data } : pool))
+    public updatePool(address: string, data: Partial<FarmPool>): void {
+        this.data.pools = this.pools.map(pool => (pool.address === address ? { ...pool, ...data } : pool))
     }
 
     /*
@@ -264,61 +264,32 @@ export class FarmingStore {
                                 new Address(this.wallet.address),
                                 poolState.state,
                             )
-                            const poolBalance = await Farm.poolTokenBalance(newPool.data.pool, poolState.state)
-                            const poolRewardBalance = await Farm.poolRewardTokenBalance(
-                                newPool.data.pool,
-                                poolState.state,
-                            )
-                            const poolRewardBalanceCumulative = await Farm.poolRewardTokenBalanceCumulative(
-                                newPool.data.pool,
-                                poolState.state,
-                            )
-                            const farmStart = parseInt(newPool.data.farmStartTime.toString(), 10) * 1000
-                            const farmEnd = parseInt(newPool.data.farmEndTime.toString(), 10) * 1000
-                            const seconds = (farmEnd - farmStart) / 1000
-                            const isPoolOwner = this.wallet.address === newPool.data.pool_owner.toString()
-                            const isExpired = (farmEnd - new Date().getTime()) < 0
+                            const poolDetails = await Farm.poolGetDetails(newPool.data.pool, poolState.state)
+                            const poolBalance = poolDetails.tokenBalance
+                            const poolRewardBalance = poolDetails.rewardTokenBalance
+                            const poolRewardBalanceCumulative = poolDetails.rewardTokenBalanceCumulative
+                            const farmStart = parseInt(newPool.data.reward_rounds[0].startTime.toString(), 10) * 1000
                             const isActive = (farmStart - new Date().getTime()) < 0
-                            const reward = newPool.data.rewardPerSecond.map(a => new BigNumber(a).multipliedBy(seconds))
-
-                            if (
-                                !isPoolOwner && (
-                                    poolRewardBalanceCumulative
-                                        .map((a, i) => new BigNumber(a).lt(reward[i]))
-                                        .findIndex(a => a) >= 0
-                                    || reward.map(a => a.isZero()).findIndex(a => a) >= 0
-                                )
-                            ) {
-                                return undefined
-                            }
 
                             let userBalance = '0',
-                                userRewardDebt: string[] = [],
-                                userReward: string[] = [],
+                                userReward: UserPendingReward | undefined,
                                 userDataDeployed = false
 
                             try {
-                                const userData = await Farm.userDataAmountAndRewardDebt(userDataAddress)
-                                userBalance = userData.amount
-                                userRewardDebt = userData.rewardDebt
-                                userDataDeployed = true
-                                userReward = await Farm.poolPendingReward(
+                                const poolRewardData = await Farm.poolCalculateRewardData(
                                     newPool.data.pool,
-                                    userBalance,
-                                    userRewardDebt,
                                     poolState.state,
+                                )
+                                userBalance = (await Farm.userDataAmountAndRewardDebt(userDataAddress)).amount
+                                userDataDeployed = true
+                                userReward = await Farm.userPendingReward(
+                                    userDataAddress,
+                                    poolRewardData._accTonPerShare,
+                                    poolRewardData._lastRewardTime,
                                 )
                             }
                             catch (e) {}
 
-                            if (
-                                !isPoolOwner
-                                && isExpired
-                                && new BigNumber(userBalance).isZero()
-                                && userReward.findIndex(a => !new BigNumber(a).isZero()) < 0
-                            ) {
-                                return undefined
-                            }
                             const tokenData = await this.loadTokenData(new Address(tokenRoot))
                             const rewardTokenData = await Promise.all(rewardTokenRoot.map(
                                 a => this.loadTokenData(new Address(a)),
@@ -377,6 +348,17 @@ export class FarmingStore {
                                 }
                             }
 
+                            const activePeriods = poolDetails.rewardRounds.filter(a => {
+                                const start = parseInt(a.startTime.toString(), 10) * 1000
+                                return (start - new Date().getTime()) < 0
+                            })
+
+                            let activePeriod = newPool.data.reward_rounds[0]
+
+                            if (activePeriods.length > 0) {
+                                activePeriod = activePeriods[activePeriods.length - 1]
+                            }
+
                             if (tokenRoot === DexConstants.UniWTONUSDTLPRootAddress.toString() && wtonPrice) {
                                 try {
                                     const uniWTON = await loadUniWTON()
@@ -413,7 +395,7 @@ export class FarmingStore {
                                         tokenDecimals = 18
                                     }
                                     if (tokenPrice !== undefined && tokenDecimals !== undefined) {
-                                        const yearReward = new BigNumber(newPool.data.rewardPerSecond[i])
+                                        const yearReward = new BigNumber(activePeriod.rewardPerSecond[i])
                                             .multipliedBy('31536000') // 365 * 86400
                                             .shiftedBy(-tokenDecimals)
                                         APYt = APYt.plus(
@@ -439,8 +421,7 @@ export class FarmingStore {
                                 rewardTokenBalance: poolRewardBalance,
                                 rewardTokenBalanceCumulative: poolRewardBalanceCumulative,
                                 farmStart,
-                                farmEnd,
-                                farmSpeed: newPool.data.rewardPerSecond.map(a => a.toString()),
+                                farmSpeed: activePeriod.rewardPerSecond.map(a => a.toString()),
                                 tokenDecimals: tokenData.decimals,
                                 tokenSymbol: tokenData.symbol,
                                 rewardTokenDecimals: rewardTokenData.map(a => (a ? a.decimals : 0)),
@@ -449,7 +430,6 @@ export class FarmingStore {
                                 userDataAddress: userDataAddress.toString(),
                                 userDataDeployed,
                                 userBalance,
-                                userRewardDebt,
                                 userReward,
                                 userShare: poolBalance !== '0' ? new BigNumber(userBalance)
                                     .div(poolBalance)
@@ -459,7 +439,6 @@ export class FarmingStore {
                                     .toFixed() : '0',
                                 APY,
                                 TVL,
-                                isExpired,
                                 isActive,
                             }
                             return pool
@@ -540,10 +519,10 @@ export class FarmingStore {
      *
      */
     public get pools(): FarmingStoreData['pools'] {
-        return this.data.pools.filter(pool => (
+        return this.data.pools /* .filter(pool => (
             OWNERS_WHITE_LIST.includes(pool.owner)
             || pool.owner === this.wallet.address
-        ))
+        )) */
     }
 
     /*

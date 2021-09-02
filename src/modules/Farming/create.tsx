@@ -22,7 +22,7 @@ export function Create(): JSX.Element {
         creatingPool.changeData('farmToken', { root: address })
     }
 
-    const onChangeDate = (key: 'farmStart' | 'farmEnd') => (dateString: string | undefined) => {
+    const onChangeDate = (key: 'farmStart') => (dateString: string | undefined) => {
         creatingPool.changeData(key, { value: dateString })
     }
 
@@ -38,8 +38,7 @@ export function Create(): JSX.Element {
     const onChangeRewardTokenRewardAmount = (idx: number) => (value: string | undefined) => {
         const rewardTotalAmount = new BigNumber(value || '0')
         creatingPool.updateRewardToken(idx, {
-            rewardTotal: value,
-            rewardTotalAmount,
+            farmSpeed: value,
             isRewardTotalValid: (
                 !rewardTotalAmount.isNaN()
                 && rewardTotalAmount.isPositive()
@@ -47,6 +46,10 @@ export function Create(): JSX.Element {
                 && rewardTotalAmount.isFinite()
             ),
         })
+    }
+
+    const onChangeVesting = (key: 'vestingRatio' | 'vestingPeriod') => (value: string | undefined) => {
+        creatingPool.changeData('farmVesting', { ...creatingPool.farmVesting, [key]: value })
     }
 
     const create = async () => {
@@ -128,16 +131,34 @@ export function Create(): JSX.Element {
                             {() => (
                                 <PoolField
                                     label={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_END_LABEL',
+                                        id: 'FARMING_CREATE_FIELD_FARM_VESTING_RATIO_LABEL',
                                     })}
                                     hint={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_END_HINT',
+                                        id: 'FARMING_CREATE_FIELD_FARM_VESTING_RATIO_HINT',
                                     })}
-                                    placeholder="YYYY/MM/DD HH:MM"
-                                    isValid={creatingPool.farmEnd.isValid}
+                                    placeholder="50"
+                                    isValid={creatingPool.isVestingValid}
                                     readOnly={creatingPool.isCreating}
-                                    value={creatingPool.farmEnd.value || ''}
-                                    onChange={onChangeDate('farmEnd')}
+                                    value={creatingPool.farmVesting.vestingRatio || ''}
+                                    onChange={onChangeVesting('vestingRatio')}
+                                />
+                            )}
+                        </Observer>
+
+                        <Observer>
+                            {() => (
+                                <PoolField
+                                    label={intl.formatMessage({
+                                        id: 'FARMING_CREATE_FIELD_FARM_VESTING_PERIOD_LABEL',
+                                    })}
+                                    hint={intl.formatMessage({
+                                        id: 'FARMING_CREATE_FIELD_FARM_VESTING_PERIOD_HINT',
+                                    })}
+                                    placeholder="86400"
+                                    isValid={creatingPool.isVestingValid}
+                                    readOnly={creatingPool.isCreating}
+                                    value={creatingPool.farmVesting.vestingPeriod || ''}
+                                    onChange={onChangeVesting('vestingPeriod')}
                                 />
                             )}
                         </Observer>
@@ -178,7 +199,7 @@ export function Create(): JSX.Element {
                                                 placeholder="0.0"
                                                 isValid={token.isRewardTotalValid}
                                                 readOnly={creatingPool.isCreating}
-                                                value={token.rewardTotal || ''}
+                                                value={token.farmSpeed || ''}
                                                 onChange={onChangeRewardTokenRewardAmount(idx)}
                                             />
                                         </React.Fragment>

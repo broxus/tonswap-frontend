@@ -108,6 +108,19 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                     id: 'FARMING_POOL_FORM_CLAIM_BTN_TEXT',
                                 })}
                             </button>
+                            <button
+                                type="button"
+                                className="btn btn-s btn-primary"
+                                disabled={!isWithdrawUnclaimedValid(
+                                    pool.userReward,
+                                    pool.userBalance,
+                                ) || farmingPool.isUserDepositing}
+                                onClick={farmingPool.withdrawAll}
+                            >
+                                {intl.formatMessage({
+                                    id: 'FARMING_POOL_FORM_WITHDRAW_BTN_TEXT',
+                                })}
+                            </button>
                         </div>
                     </div>
 

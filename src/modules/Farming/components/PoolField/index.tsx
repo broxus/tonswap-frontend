@@ -23,7 +23,7 @@ export function PoolField({ isValid = true, autoFocus = false, ...props }: Props
     return (
         <fieldset
             className={classNames('form-fieldset', {
-                invalid: !isValid && !props.disabled,
+                invalid: !isValid,
             })}
         >
             <div className="form-fieldset__header">

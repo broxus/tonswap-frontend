@@ -1,5 +1,6 @@
-import BigNumber from 'bignumber.js'
+
 import { FullContractState, TransactionId } from 'ton-inpage-provider'
+import {UserPendingReward} from "@/misc";
 
 
 export type FarmPool = {
@@ -11,7 +12,6 @@ export type FarmPool = {
     rewardTokenBalance: string[];
     rewardTokenBalanceCumulative: string[];
     farmStart: number;
-    farmEnd: number;
     farmSpeed: string[];
     tokenSymbol: string;
     tokenDecimals: number;
@@ -21,12 +21,10 @@ export type FarmPool = {
     userDataAddress: string;
     userDataDeployed: boolean;
     userBalance: string;
-    userRewardDebt: string[];
-    userReward: string[];
+    userReward?: UserPendingReward;
     userShare: string;
     APY?: string;
     TVL?: string;
-    isExpired: boolean;
     isActive: boolean;
 };
 
@@ -69,16 +67,20 @@ export type FarmToken = {
 }
 
 export type FarmRewardToken = FarmToken & {
-    rewardTotal?: string;
-    rewardTotalAmount?: BigNumber;
+    farmSpeed?: string;
     isRewardTotalValid?: boolean;
 }
 
+export type FarmVesting = {
+    vestingPeriod?: string,
+    vestingRatio?: string,
+}
+
 export type CreateFarmPoolStoreData = {
-    farmEnd: FarmDate;
     farmStart: FarmDate;
     farmToken: FarmToken;
     rewardTokens: FarmRewardToken[];
+    farmVesting: FarmVesting;
 }
 
 export type CreateFarmPoolStoreState = {
