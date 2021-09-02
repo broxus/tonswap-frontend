@@ -703,20 +703,20 @@ export class SwapStore {
 
                 this.finalizeDirectCalculation()
 
-                // this.#pairUpdatesUpdater = setInterval(async () => {
-                //     await this.syncPairState()
-                //     await this.syncPairBalances()
-                //
-                //     this.changeState(
-                //         'isEnoughLiquidity',
-                //         !this.pairLeftBalanceNumber.isZero()
-                //         && !this.pairRightBalanceNumber.isZero(),
-                //     )
-                //
-                //     await this.recalculate(!this.isCalculating)
-                //
-                //     debug('#handleTokensChange Update pair data by interval', toJS(this.pair))
-                // }, 10000)
+                this.#pairUpdatesUpdater = setInterval(async () => {
+                    await this.syncPairState()
+                    await this.syncPairBalances()
+
+                    this.changeState(
+                        'isEnoughLiquidity',
+                        !this.pairLeftBalanceNumber.isZero()
+                        && !this.pairRightBalanceNumber.isZero(),
+                    )
+
+                    await this.recalculate(!this.isCalculating)
+
+                    debug('#handleTokensChange Update pair data by interval', toJS(this.pair))
+                }, 10000)
             }
             catch (e) {
                 error('Sync pair data error', e)
