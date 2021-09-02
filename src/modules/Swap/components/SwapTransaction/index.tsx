@@ -48,8 +48,12 @@ function Transaction(): JSX.Element | null {
             <div className="popup-main__ava">
                 {swap.transaction.receivedIcon ? (
                     <img
-                        alt={swap.transaction.receivedSymbol}
-                        src={swap.transaction.receivedIcon}
+                        alt={swap.transaction.isCrossExchangeCanceled
+                            ? swap.transaction.spentSymbol
+                            : swap.transaction.receivedSymbol}
+                        src={swap.transaction.isCrossExchangeCanceled
+                            ? swap.transaction.spentIcon
+                            : swap.transaction.receivedIcon}
                     />
                 ) : swap.transaction.receivedRoot !== undefined && (
                     <UserAvatar

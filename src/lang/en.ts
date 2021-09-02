@@ -61,7 +61,7 @@ export default {
     SWAP_TRANSACTION_RECEIPT_LINK_TXT_TOKEN_ROOT_CONTRACT: 'Token root contract',
     SWAP_TRANSACTION_RECEIPT_LINK_TXT_TRANSACTION: 'Transaction result',
     SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE: '<p>The Swap was canceled. Your balance hasn’t changed.</p>',
-    SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE: 'Due to the slippage is more than {slippage} of the {leftSymbol}/{rightSymbol} pair, you stayed with {leftSymbol} token.',
+    SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE: 'Due to the slippage is more than {slippage}% of the {leftSymbol}/{rightSymbol} pair, you stayed with {leftSymbol} token.',
 
     TOKENS_LIST_POPUP_TITLE: 'Select a token',
     TOKENS_LIST_POPUP_FIELD_SEARCH_PLACEHOLDER: 'Enter a token name or address...',

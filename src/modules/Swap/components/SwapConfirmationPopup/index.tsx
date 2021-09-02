@@ -57,18 +57,24 @@ function ConfirmationPopup(): JSX.Element {
     }
 
     React.useEffect(() => reaction(() => [
-        swap.amount,
-        swap.expectedAmount,
+        (swap.isCrossExchangeMode && swap.direction !== SwapDirection.LTR)
+            ? swap.bestCrossExchangeRoute?.leftAmount
+            : swap.leftAmount,
+        (swap.isCrossExchangeMode && swap.direction !== SwapDirection.RTL)
+            ? swap.bestCrossExchangeRoute?.rightAmount
+            : swap.rightAmount,
         swap.minExpectedAmount,
     ], ([
-        nextAmount,
-        newExpectedAmount,
+        nextLeftAmount,
+        nextRightAmount,
         nextMinExpectedAmount,
     ]) => {
         setChangedTo(
-            !(nextAmount === leftAmount
-            && newExpectedAmount === rightAmount
-            && nextMinExpectedAmount === minExpectedAmount),
+            (
+                nextLeftAmount !== leftAmount
+                || nextRightAmount !== rightAmount
+                || nextMinExpectedAmount !== minExpectedAmount
+            ),
         )
     }), [])
 

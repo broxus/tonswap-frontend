@@ -128,6 +128,7 @@ export class SwapStore {
      * Run all necessary subscribers.
      */
     public async init(): Promise<void> {
+        this.#walletAccountDisposer?.()
         this.#walletAccountDisposer = reaction(
             () => this.wallet.address,
             this.handleWalletAccountChange,
@@ -157,20 +158,25 @@ export class SwapStore {
                 this.data.rightToken,
             ])
             this.finalizeDirectCalculation()
-            await this.recalculate()
+            await this.recalculate(true)
         }
-        catch (e) {}
+        catch (e) {
+            error(e)
+        }
     }
 
     /**
      * Manually dispose all of the internal subscribers.
      * Clean last transaction result, intervals
      * and reset all data to their defaults.
+     * @param {boolean} disposeWallet
      */
-    public async dispose(): Promise<void> {
+    public async dispose(disposeWallet: boolean = true): Promise<void> {
         await this.unsubscribeTransactionSubscriber()
         this.#tokensDisposer?.()
-        this.#walletAccountDisposer?.()
+        if (disposeWallet) {
+            this.#walletAccountDisposer?.()
+        }
         this.cleanTransactionResult()
         this.cleanPairUpdatesInterval()
         this.reset()
@@ -217,6 +223,7 @@ export class SwapStore {
             cachedState: toJS(this.pair.state),
         })
 
+        // noinspection DuplicatedCode
         this.changeState('isSwapping', true)
 
         let stream = this.#transactionSubscriber?.transactions(this.wallet.account.address)
@@ -323,6 +330,7 @@ export class SwapStore {
             cachedState: toJS(firstPair.state),
         })
 
+        // noinspection DuplicatedCode
         this.changeState('isSwapping', true)
 
         let stream = this.#transactionSubscriber?.transactions(this.wallet.account.address)
@@ -363,7 +371,7 @@ export class SwapStore {
                     )
 
                     if (cancelStepIndex === 0) {
-                        return E.left({})
+                        return E.left({ transaction })
                     }
 
                     if (cancelStepIndex > 0) {
@@ -371,6 +379,7 @@ export class SwapStore {
                             cancelStep: results[cancelStepIndex],
                             index: cancelStepIndex,
                             step: results[cancelStepIndex - 1],
+                            transaction,
                         })
                     }
                 }
@@ -398,7 +407,7 @@ export class SwapStore {
                     )
 
                     if (cancelStepIndex === 0) {
-                        return E.left({})
+                        return E.left({ transaction })
                     }
 
                     if (cancelStepIndex > 0) {
@@ -406,6 +415,7 @@ export class SwapStore {
                             cancelStep: results[cancelStepIndex],
                             index: cancelStepIndex,
                             step: results[cancelStepIndex - 1],
+                            transaction,
                         })
                     }
                 }
@@ -699,7 +709,10 @@ export class SwapStore {
                 this.cleanPairUpdatesInterval()
 
                 await this.syncPairState()
-                await this.syncPairBalances()
+                await Promise.all([
+                    this.syncPairBalances(),
+                    this.syncPairData(),
+                ])
 
                 this.changeState(
                     'isEnoughLiquidity',
@@ -707,31 +720,39 @@ export class SwapStore {
                     && !this.pairRightBalanceNumber.isZero(),
                 )
 
-                await this.syncPairData()
-
                 this.finalizeDirectCalculation()
-
-                this.#pairsUpdatesUpdater = setInterval(async () => {
-                    await this.syncPairState()
-                    await this.syncPairBalances()
-
-                    this.changeState(
-                        'isEnoughLiquidity',
-                        !this.pairLeftBalanceNumber.isZero()
-                        && !this.pairRightBalanceNumber.isZero(),
-                    )
-
-                    await this.syncCrossExchangePairsStates()
-                    await this.syncCrossExchangePairsBalances()
-
-                    await this.recalculate(!this.isCalculating)
-
-                    debug('#handleTokensChange Update pair data by interval', toJS(this.pair))
-                }, 10000)
             }
             catch (e) {
                 error('Sync pair data error', e)
             }
+
+            this.#pairsUpdatesUpdater = setInterval(async () => {
+                if (this.isSwapping) {
+                    return
+                }
+
+                try {
+                    await this.syncPairState()
+                    await this.syncPairBalances()
+                }
+                catch (e) {}
+
+                this.changeState(
+                    'isEnoughLiquidity',
+                    !this.pairLeftBalanceNumber.isZero()
+                    && !this.pairRightBalanceNumber.isZero(),
+                )
+
+                try {
+                    await this.syncCrossExchangePairsStates()
+                    await this.syncCrossExchangePairsBalances()
+                }
+                catch (e) {}
+
+                await this.recalculate(!this.isCalculating)
+
+                debug('#handleTokensChange Update pair data by interval', toJS(this.pair))
+            }, 10000)
         }
 
         this.changeState('isPairChecking', false)
@@ -760,7 +781,7 @@ export class SwapStore {
      * @protected
      */
     protected async handleWalletAccountChange(walletAddress?: string): Promise<void> {
-        await this.dispose()
+        await this.dispose(false)
         if (walletAddress !== undefined) {
             await this.init()
             await this.recalculate(true)
@@ -802,10 +823,18 @@ export class SwapStore {
 
     /**
      * Failure transaction callback handler
-     * @param {SwapFailureResult} [_]
+     * @param {SwapSuccessResult['index']} index
+     * @param {SwapSuccessResult['input']} input
+     * @param {SwapSuccessResult['step']} step
+     * @param {SwapSuccessResult['transaction']} transaction
      * @protected
      */
-    protected handleSwapFailure({ cancelStep, index, step }: SwapFailureResult): void {
+    protected handleSwapFailure({
+        cancelStep,
+        index,
+        step,
+        transaction,
+    }: SwapFailureResult): void {
         const leftToken = cancelStep?.step.spentAddress !== undefined
             ? this.tokensCache.get(cancelStep.step.spentAddress.toString())
             : undefined
@@ -815,13 +844,19 @@ export class SwapStore {
 
         this.transactionReceipt = {
             amount: step?.amount,
+            hash: transaction?.id.hash,
             isCrossExchangeCanceled: step !== undefined,
             receivedDecimals: rightToken?.decimals,
+            receivedRoot: rightToken?.root,
             receivedSymbol: rightToken?.symbol,
             slippage: index !== undefined
-                ? getCrossExchangeSlippage(this.data.slippage, index + 1)
+                ? getCrossExchangeSlippage(
+                    this.data.slippage,
+                    index + 1,
+                )
                 : undefined,
             spentDecimals: leftToken?.decimals,
+            spentIcon: leftToken?.icon,
             spentSymbol: leftToken?.symbol,
             success: false,
         }
@@ -1247,10 +1282,7 @@ export class SwapStore {
      * @protected
      */
     protected async syncPairState(): Promise<void> {
-        if (
-            this.pair?.contract === undefined
-            || this.pair.address === undefined
-        ) {
+        if (this.pair?.address === undefined) {
             return
         }
 
@@ -1273,6 +1305,7 @@ export class SwapStore {
      * @protected
      */
     protected async calculateLtrCrossExchangeBill(force?: boolean): Promise<void> {
+        // noinspection DuplicatedCode
         if (
             this.leftToken === undefined
             || this.rightToken === undefined
@@ -1331,25 +1364,26 @@ export class SwapStore {
                             const spentTokenAddress = new Address(token.root)
 
                             try {
-                                // todo: maybe with Promise.all ?
-                                const {
-                                    expected_amount: expectedAmount,
-                                    expected_fee: expectedFee,
-                                } = await getExpectedExchange(
-                                    pair.contract,
-                                    route.bill.expectedAmount!,
-                                    spentTokenAddress,
-                                    toJS(pair.state),
-                                )
-
-                                const {
-                                    expected_amount: minExpectedAmount,
-                                } = await getExpectedExchange(
-                                    pair.contract,
-                                    route.bill.minExpectedAmount!,
-                                    spentTokenAddress,
-                                    toJS(pair.state),
-                                )
+                                const [
+                                    {
+                                        expected_amount: expectedAmount,
+                                        expected_fee: expectedFee,
+                                    },
+                                    { expected_amount: minExpectedAmount },
+                                ] = await Promise.all([
+                                    getExpectedExchange(
+                                        pair.contract,
+                                        route.bill.expectedAmount!,
+                                        spentTokenAddress,
+                                        toJS(pair.state),
+                                    ),
+                                    getExpectedExchange(
+                                        pair.contract,
+                                        route.bill.minExpectedAmount!,
+                                        spentTokenAddress,
+                                        toJS(pair.state),
+                                    ),
+                                ])
 
                                 route.bill._minExpectedAmount = minExpectedAmount as string
                                 route.bill.minExpectedAmount = getSlippageMinExpectedAmount(
@@ -1481,6 +1515,7 @@ export class SwapStore {
      * @protected
      */
     protected async calculateRtlCrossExchangeBill(force?: boolean): Promise<void> {
+        // noinspection DuplicatedCode
         if (
             this.leftToken === undefined
             || this.rightToken === undefined
@@ -2279,16 +2314,6 @@ export class SwapStore {
         return this.isCrossExchangeMode
             ? this.bestCrossExchangeRoute?.bill.amount
             : this.bill.amount
-    }
-
-    /**
-     * Bill: expected amount
-     * @returns {SwapBill['expectedAmount']}
-     */
-    public get expectedAmount(): SwapBill['expectedAmount'] {
-        return this.isCrossExchangeMode
-            ? this.bestCrossExchangeRoute?.bill.expectedAmount
-            : this.bill.expectedAmount
     }
 
     /**

@@ -124,6 +124,7 @@ export type SwapTransactionReceipt = {
     slippage?: string;
     spentAmount?: string;
     spentDecimals?: number;
+    spentIcon?: string;
     spentFee?: string;
     spentSymbol?: string;
     success: boolean;
@@ -135,8 +136,9 @@ export type SwapSuccessResult = {
 }
 
 export type SwapFailureResult = {
-    input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>;
-    step?: SwapRouteResult;
     cancelStep?: SwapRouteResult;
     index?: number;
+    input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>;
+    step?: SwapRouteResult;
+    transaction?: Transaction;
 }
