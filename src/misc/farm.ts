@@ -111,6 +111,42 @@ export class Farm {
         return id
     }
 
+    public static async poolAdminCreatePeriod(
+        poolAddress: Address,
+        owner: Address,
+        startTime: string,
+        rewardPerSecond: string[],
+    ): Promise<TransactionId> {
+        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const { id } = await poolContract.methods.addRewardRound({
+            reward_round: {
+                startTime,
+                rewardPerSecond,
+            },
+        }).send({
+            from: owner,
+            bounce: true,
+            amount: '5000000000',
+        })
+        return id
+    }
+
+    public static async poolAdminSetEndTime(
+        poolAddress: Address,
+        owner: Address,
+        endTime: string,
+    ): Promise<TransactionId> {
+        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const { id } = await poolContract.methods.setEndTime({
+            farm_end_time: endTime,
+        }).send({
+            from: owner,
+            bounce: true,
+            amount: '5000000000',
+        })
+        return id
+    }
+
     public static async poolCalculateRewardData(
         poolAddress: Address,
         state?: FullContractState,

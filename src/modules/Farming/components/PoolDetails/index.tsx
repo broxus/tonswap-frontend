@@ -7,6 +7,7 @@ import { FarmPool } from '@/modules/Farming/types'
 import { amount } from '@/utils'
 
 import './index.scss'
+import BigNumber from "bignumber.js";
 
 
 type Props = {
@@ -101,6 +102,26 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                 <div className="farming-pool-details-table__row">
                     <div>
                         {intl.formatMessage({
+                            id: 'FARMING_LIST_POOL_DETAILS_VESTING_RATIO',
+                        })}
+                    </div>
+                    <div>
+                        {new BigNumber(pool.vestingRatio).div(10).decimalPlaces(1, BigNumber.ROUND_DOWN).toFixed()}
+                    </div>
+                </div>
+                <div className="farming-pool-details-table__row">
+                    <div>
+                        {intl.formatMessage({
+                            id: 'FARMING_LIST_POOL_DETAILS_VESTING_PERIOD',
+                        })}
+                    </div>
+                    <div>
+                        {new BigNumber(pool.vestingPeriod).div(86400).decimalPlaces(0, BigNumber.ROUND_DOWN).toFixed()}
+                    </div>
+                </div>
+                <div className="farming-pool-details-table__row">
+                    <div>
+                        {intl.formatMessage({
                             id: 'FARMING_LIST_POOL_DETAILS_POOL_ADDRESS',
                         })}
                     </div>
@@ -188,21 +209,6 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 <div className="farming-pool-details-table__row">
                                     <div>
                                         {intl.formatMessage({
-                                            id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_REWARD_ENTITLED',
-                                        }, {
-                                            symbol,
-                                        })}
-                                    </div>
-                                    <div>
-                                        {amount(
-                                            pool.userReward?._entitled[idx],
-                                            pool.rewardTokenDecimals[idx],
-                                        ) || 0}
-                                    </div>
-                                </div>
-                                <div className="farming-pool-details-table__row">
-                                    <div>
-                                        {intl.formatMessage({
                                             id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_REWARD_DEBT',
                                         }, {
                                             symbol,
@@ -215,8 +221,41 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                         ) || 0}
                                     </div>
                                 </div>
+                                <div className="farming-pool-details-table__row">
+                                    <div>
+                                        {intl.formatMessage({
+                                            id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_REWARD_ENTITLED',
+                                        }, {
+                                            symbol,
+                                        })}
+                                    </div>
+                                    <div>
+                                        {amount(
+                                            pool.userReward?._entitled[idx],
+                                            pool.rewardTokenDecimals[idx],
+                                        ) || 0}
+                                    </div>
+                                </div>
                             </div>
                         ))}
+                        <div className="farming-pool-details-table__row">
+                            <div>
+                                {intl.formatMessage({
+                                    id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_VESTING_TIME',
+                                })}
+                            </div>
+                            <div>
+                                {intl.formatDate(parseInt(pool.userReward?._vesting_time || '0', 10) * 1000, {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit',
+                                    hourCycle: 'h23',
+                                })}
+                            </div>
+                        </div>
                         <div className="farming-pool-details-table__row">
                             <div>
                                 {intl.formatMessage({

@@ -7,7 +7,7 @@ import { useFarmingPool } from '@/modules/Farming/stores/FarmingPoolStore'
 import { amount } from '@/utils'
 
 import './index.scss'
-import { isDepositValid, isWithdrawUnclaimedValid } from '@/modules/Farming/utils'
+import {isCreatePeriodValid, isDepositValid, isWithdrawUnclaimedValid} from '@/modules/Farming/utils'
 
 
 type Props = {
@@ -27,6 +27,12 @@ export function PoolForm({ pool }: Props): JSX.Element {
         const adminDeposit = farmingPool.adminDeposit.slice()
         adminDeposit[idx] = event.target.value
         farmingPool.changeData('adminDeposit', adminDeposit)
+    }
+
+    const onChangeAdminRPS = (idx: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        const adminRPS = farmingPool.adminCreatePeriodRPS.slice()
+        adminRPS[idx] = event.target.value
+        farmingPool.changeData('adminCreatePeriodRPS', adminRPS)
     }
 
     const onAdminDepositToken = (idx: number) => () => farmingPool.adminDepositToken(idx)
@@ -187,6 +193,52 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                         </React.Fragment>
                                     )
                                 })}
+                                <div className="farming-pool-form__field-wrapper">
+                                    <div className="farming-pool-form__swap-amount">
+                                        <input
+                                            type="text"
+                                            className="form-input farming-pool-form__input"
+                                            placeholder={intl.formatMessage({
+                                                id: 'FARMING_POOL_FORM_CREATE_PERIOD_START',
+                                            })}
+                                            value={farmingPool.adminCreatePeriodStartTime || ''}
+                                            disabled={farmingPool.isAdminDepositing}
+                                            onChange={onChange('adminCreatePeriodStartTime')}
+                                        />
+                                    </div>
+                                    {pool.rewardTokenSymbol.map((symbol, idx) => (
+                                        <React.Fragment key={`period-${symbol}`}>
+                                            <div className="farming-pool-form__swap-amount">
+                                                <input
+                                                    type="text"
+                                                    className="form-input farming-pool-form__input"
+                                                    placeholder={intl.formatMessage({
+                                                        id: 'FARMING_POOL_FORM_CREATE_PERIOD_RPS',
+                                                    }, {
+                                                        symbol,
+                                                    })}
+                                                    value={farmingPool.adminCreatePeriodRPS[idx] || ''}
+                                                    disabled={farmingPool.isAdminDepositing}
+                                                    onChange={onChangeAdminRPS(idx)}
+                                                />
+                                            </div>
+                                        </React.Fragment>
+                                    ))}
+                                    <button
+                                        type="button"
+                                        className="btn btn-s btn-primary"
+                                        disabled={farmingPool.isAdminDepositing
+                                        || !isCreatePeriodValid(
+                                            farmingPool.adminCreatePeriodStartTime,
+                                            farmingPool.adminCreatePeriodRPS,
+                                        )}
+                                        onClick={farmingPool.onAdminCreatePeriod}
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'FARMING_POOL_FORM_CREATE_PERIOD',
+                                        })}
+                                    </button>
+                                </div>
                             </div>
                             <div className="farming-pool-form__actions">
                                 <button
