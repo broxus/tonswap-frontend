@@ -238,24 +238,28 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 </div>
                             </div>
                         ))}
-                        <div className="farming-pool-details-table__row">
-                            <div>
-                                {intl.formatMessage({
-                                    id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_VESTING_TIME',
-                                })}
-                            </div>
-                            <div>
-                                {intl.formatDate(parseInt(pool.userReward?._vesting_time || '0', 10) * 1000, {
-                                    day: 'numeric',
-                                    month: 'short',
-                                    year: 'numeric',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                    second: '2-digit',
-                                    hourCycle: 'h23',
-                                })}
-                            </div>
-                        </div>
+                        {pool.userReward?._vesting_time !== '0' && (
+                            <>
+                                <div className="farming-pool-details-table__row">
+                                    <div>
+                                        {intl.formatMessage({
+                                            id: 'FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_VESTING_TIME',
+                                        })}
+                                    </div>
+                                    <div>
+                                        {intl.formatDate(parseInt(pool.userReward?._vesting_time || '0', 10) * 1000, {
+                                            day: 'numeric',
+                                            month: 'short',
+                                            year: 'numeric',
+                                            hour: '2-digit',
+                                            minute: '2-digit',
+                                            second: '2-digit',
+                                            hourCycle: 'h23',
+                                        })}
+                                    </div>
+                                </div>
+                            </>
+                        )}
                         <div className="farming-pool-details-table__row">
                             <div>
                                 {intl.formatMessage({
