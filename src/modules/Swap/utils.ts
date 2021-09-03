@@ -93,7 +93,7 @@ export function getDirectExchangePriceImpact(start: BigNumber, end: BigNumber): 
         .div(start)
         .abs()
         .times(100)
-        .dp(10, BigNumber.ROUND_UP)
+        .dp(2, BigNumber.ROUND_UP)
 }
 
 export function getSlippageMinExpectedAmount(
@@ -164,7 +164,7 @@ export function getCrossExchangePriceImpact(amount: BigNumber, expectedAmount: B
     return new BigNumber(new BigNumber(amount).minus(expectedAmount))
         .div(amount)
         .times(100)
-        .dp(10, BigNumber.ROUND_UP)
+        .dp(2, BigNumber.ROUND_UP)
 }
 
 export function intersection(...arrays: Array<Array<string>>): string[] {

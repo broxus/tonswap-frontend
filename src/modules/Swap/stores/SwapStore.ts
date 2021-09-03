@@ -2159,11 +2159,11 @@ export class SwapStore {
         return (
             this.isCrossExchangeAvailable
             && this.leftToken?.wallet !== undefined
-            && this.data.bestCrossExchangeRoute?.bill !== undefined
-            && this.data.bestCrossExchangeRoute.bill.amount !== undefined
-            && new BigNumber(this.data.bestCrossExchangeRoute.bill.expectedAmount || 0).gt(0)
-            && new BigNumber(this.data.bestCrossExchangeRoute.bill.amount || 0).gt(0)
-            && new BigNumber(this.leftToken.balance || 0).gte(this.data.bestCrossExchangeRoute.bill.amount)
+            && this.bestCrossExchangeRoute?.bill !== undefined
+            && this.bestCrossExchangeRoute.bill.amount !== undefined
+            && new BigNumber(this.bestCrossExchangeRoute.bill.expectedAmount || 0).gt(0)
+            && new BigNumber(this.bestCrossExchangeRoute.bill.amount || 0).gt(0)
+            && new BigNumber(this.leftToken.balance || 0).gte(this.bestCrossExchangeRoute.leftAmount || 0)
         )
     }
 
