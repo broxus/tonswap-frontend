@@ -298,9 +298,9 @@ export class FarmingStore {
                             if (!isOwner
                                 && isExpired
                                 && (!userReward || (
-                                    userReward._entitled.map(a => new BigNumber(a).eq(0))
-                                    && userReward._vested.map(a => new BigNumber(a).eq(0))
-                                    && userReward._pool_debt.map(a => new BigNumber(a).eq(0))
+                                    userReward._entitled.findIndex(a => !new BigNumber(a).eq(0)) < -1
+                                    && userReward._vested.findIndex(a => !new BigNumber(a).eq(0)) < -1
+                                    && userReward._pool_debt.findIndex(a => !new BigNumber(a).eq(0)) < -1
                                 ))
                                 && new BigNumber(userBalance).eq(0)
                             ) {
