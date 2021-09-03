@@ -198,14 +198,18 @@ export async function depositToken(
     return { newUserBalance, newPoolBalance }
 }
 
-export function isWithdrawUnclaimedValid(
-    userReward: UserPendingReward | undefined,
+export function isWithdrawAllValid(
     userBalance: string | undefined,
+): boolean {
+    return !(new BigNumber(userBalance || '0').isZero())
+}
+
+export function isClaimValid(
+    userReward: UserPendingReward | undefined,
 ): boolean {
     return userReward ? (
         userReward._vested.map(a => (new BigNumber(a || '0').isZero())).findIndex(a => !a) >= 0
         || userReward._pool_debt.map(a => (new BigNumber(a || '0').isZero())).findIndex(a => !a) >= 0
-        || !(new BigNumber(userBalance || '0').isZero())
     ) : false
 }
 
@@ -214,7 +218,7 @@ export async function executeAction(
     accountAddress: string,
     userWalletAddress: string,
     action: () => Promise<any>,
-    handler: 'Reward' | 'Withdraw',
+    handler: 'Claim' | 'Withdraw' | 'Deposit',
 ): Promise<string> {
     const poolContract = new Contract(FarmAbi.Pool, new Address(poolAddress))
     let resolve: () => void | undefined

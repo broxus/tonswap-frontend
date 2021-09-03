@@ -7,7 +7,12 @@ import { useFarmingPool } from '@/modules/Farming/stores/FarmingPoolStore'
 import { amount } from '@/utils'
 
 import './index.scss'
-import {isCreatePeriodValid, isDepositValid, isWithdrawUnclaimedValid} from '@/modules/Farming/utils'
+import {
+    isClaimValid,
+    isCreatePeriodValid,
+    isDepositValid,
+    isWithdrawAllValid,
+} from '@/modules/Farming/utils'
 
 
 type Props = {
@@ -104,9 +109,8 @@ export function PoolForm({ pool }: Props): JSX.Element {
                             <button
                                 type="button"
                                 className="btn btn-s btn-primary"
-                                disabled={!isWithdrawUnclaimedValid(
+                                disabled={!isClaimValid(
                                     pool.userReward,
-                                    pool.userBalance,
                                 ) || farmingPool.isUserDepositing}
                                 onClick={farmingPool.withdrawUnclaimed}
                             >
@@ -117,8 +121,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                             <button
                                 type="button"
                                 className="btn btn-s btn-primary"
-                                disabled={!isWithdrawUnclaimedValid(
-                                    pool.userReward,
+                                disabled={!isWithdrawAllValid(
                                     pool.userBalance,
                                 ) || farmingPool.isUserDepositing}
                                 onClick={farmingPool.withdrawAll}

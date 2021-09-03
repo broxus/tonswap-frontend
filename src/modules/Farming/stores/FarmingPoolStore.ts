@@ -169,7 +169,7 @@ export class FarmingPoolStore {
                 this.wallet.address,
                 this.userWalletAddress,
                 () => Farm.poolClaimReward(new Address(this.pool.address), new Address(this.wallet.address || '')),
-                'Reward',
+                'Claim',
             )
 
             if (this.poolUpdateTimeout !== undefined) {
