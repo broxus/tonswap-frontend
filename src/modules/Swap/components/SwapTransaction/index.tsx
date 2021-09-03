@@ -3,12 +3,12 @@ import * as ReactDOM from 'react-dom'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Icon } from '@/components/common/Icon'
+import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { amount } from '@/utils'
-import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
-import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 
 
 function Transaction(): JSX.Element | null {
@@ -21,8 +21,21 @@ function Transaction(): JSX.Element | null {
 
     const actions = (
         <div key="actions" className="popup-actions">
-            {swap.transaction.receivedRoot !== undefined && (
+            {(swap.transaction.isCrossExchangeCanceled && swap.transaction.spentRoot !== undefined) && (
                 <AccountExplorerLink
+                    key="crossPair"
+                    address={swap.transaction.spentRoot}
+                    className="btn btn-secondary"
+                >
+                    {intl.formatMessage({
+                        id: 'SWAP_TRANSACTION_RECEIPT_LINK_TXT_TOKEN_ROOT_CONTRACT',
+                    })}
+                </AccountExplorerLink>
+            )}
+
+            {(!swap.transaction.isCrossExchangeCanceled && swap.transaction.receivedRoot !== undefined) && (
+                <AccountExplorerLink
+                    key="directPair"
                     address={swap.transaction.receivedRoot}
                     className="btn btn-secondary"
                 >
@@ -45,22 +58,38 @@ function Transaction(): JSX.Element | null {
     )
     const receivedToken = (
         <div key="receivedToken" className="popup-main nb np">
-            <div className="popup-main__ava">
-                {swap.transaction.receivedIcon ? (
-                    <img
-                        alt={swap.transaction.isCrossExchangeCanceled
-                            ? swap.transaction.spentSymbol
-                            : swap.transaction.receivedSymbol}
-                        src={swap.transaction.isCrossExchangeCanceled
-                            ? swap.transaction.spentIcon
-                            : swap.transaction.receivedIcon}
-                    />
-                ) : swap.transaction.receivedRoot !== undefined && (
-                    <UserAvatar
-                        address={swap.transaction.receivedRoot}
-                    />
-                )}
-            </div>
+            {swap.transaction.isCrossExchangeCanceled ? (
+                <div key="crossExchangeIcon" className="popup-main__ava">
+                    {swap.transaction.spentIcon !== undefined
+                        ? (
+                            <img
+                                alt={swap.transaction.spentSymbol}
+                                src={swap.transaction.spentIcon}
+                            />
+                        )
+                        : swap.transaction.spentRoot !== undefined && (
+                            <UserAvatar
+                                address={swap.transaction.spentRoot}
+                            />
+                        )}
+                </div>
+            ) : (
+                <div key="directIcon" className="popup-main__ava">
+                    {swap.transaction.receivedIcon !== undefined
+                        ? (
+                            <img
+                                alt={swap.transaction.receivedSymbol}
+                                src={swap.transaction.receivedIcon}
+                            />
+                        )
+                        : swap.transaction.receivedRoot !== undefined && (
+                            <UserAvatar
+                                address={swap.transaction.receivedRoot}
+                            />
+                        )}
+                </div>
+            )}
+
             <div
                 className="popup-main__name"
                 dangerouslySetInnerHTML={{

@@ -47,6 +47,7 @@ function Price(): JSX.Element | null {
                                 <button
                                     type="button"
                                     className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"
+                                    disabled={swap.isSwapping}
                                     onClick={swap.toggleSwapExchangeMode}
                                 >
                                     {intl.formatMessage({
@@ -64,6 +65,7 @@ function Price(): JSX.Element | null {
                                 <button
                                     type="button"
                                     className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"
+                                    disabled={swap.isSwapping}
                                     onClick={swap.toggleSwapExchangeMode}
                                 >
                                     {intl.formatMessage({

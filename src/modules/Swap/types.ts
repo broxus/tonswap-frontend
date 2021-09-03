@@ -50,6 +50,7 @@ export type SwapRouteResult = {
     amount?: string;
     status?: 'success' | 'cancel';
     step: SwapRouteStep;
+    transaction?: Transaction;
 }
 
 export type SwapRouteStep = {
@@ -126,6 +127,7 @@ export type SwapTransactionReceipt = {
     spentDecimals?: number;
     spentIcon?: string;
     spentFee?: string;
+    spentRoot?: string;
     spentSymbol?: string;
     success: boolean;
 }
@@ -140,5 +142,4 @@ export type SwapFailureResult = {
     index?: number;
     input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>;
     step?: SwapRouteResult;
-    transaction?: Transaction;
 }

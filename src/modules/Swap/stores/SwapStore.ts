@@ -356,38 +356,39 @@ export class SwapStore {
                     results = results.map(
                         res => fillStepResult(
                             res,
+                            transaction,
                             transaction.inMessage.src,
                             undefined,
                             'cancel',
                         ),
                     )
 
-                    if (results.some(({ status }) => status === undefined)) {
-                        return undefined
-                    }
-
                     const cancelStepIndex = results.findIndex(
                         ({ status }) => status === 'cancel',
                     )
 
                     if (cancelStepIndex === 0) {
-                        return E.left({ transaction })
+                        return E.left({})
                     }
 
-                    if (cancelStepIndex > 0) {
-                        return E.left({
-                            cancelStep: results[cancelStepIndex],
-                            index: cancelStepIndex,
-                            step: results[cancelStepIndex - 1],
-                            transaction,
-                        })
+                    results = results.slice(0, cancelStepIndex + 1)
+
+                    if (results.some(({ status }) => status === undefined)) {
+                        return undefined
                     }
+
+                    return E.left({
+                        cancelStep: results[cancelStepIndex],
+                        index: cancelStepIndex,
+                        step: results[cancelStepIndex - 1],
+                    })
                 }
 
                 if (result.method === 'dexPairExchangeSuccess' && result.input.id.toString() === processingId) {
                     results = results.map(
                         res => fillStepResult(
                             res,
+                            transaction,
                             transaction.inMessage.src,
                             result.input.result.received.toString(),
                             'success',
@@ -407,7 +408,7 @@ export class SwapStore {
                     )
 
                     if (cancelStepIndex === 0) {
-                        return E.left({ transaction })
+                        return E.left({})
                     }
 
                     if (cancelStepIndex > 0) {
@@ -415,7 +416,6 @@ export class SwapStore {
                             cancelStep: results[cancelStepIndex],
                             index: cancelStepIndex,
                             step: results[cancelStepIndex - 1],
-                            transaction,
                         })
                     }
                 }
@@ -819,6 +819,7 @@ export class SwapStore {
         this.changeData('leftAmount', '')
         this.changeData('rightAmount', '')
         this.forceInvalidate()
+        this.toDirectSwap()
     }
 
     /**
@@ -826,14 +827,12 @@ export class SwapStore {
      * @param {SwapSuccessResult['index']} index
      * @param {SwapSuccessResult['input']} input
      * @param {SwapSuccessResult['step']} step
-     * @param {SwapSuccessResult['transaction']} transaction
      * @protected
      */
     protected handleSwapFailure({
         cancelStep,
         index,
         step,
-        transaction,
     }: SwapFailureResult): void {
         const leftToken = cancelStep?.step.spentAddress !== undefined
             ? this.tokensCache.get(cancelStep.step.spentAddress.toString())
@@ -844,7 +843,7 @@ export class SwapStore {
 
         this.transactionReceipt = {
             amount: step?.amount,
-            hash: transaction?.id.hash,
+            hash: cancelStep?.transaction?.id.hash,
             isCrossExchangeCanceled: step !== undefined,
             receivedDecimals: rightToken?.decimals,
             receivedRoot: rightToken?.root,
@@ -857,12 +856,14 @@ export class SwapStore {
                 : undefined,
             spentDecimals: leftToken?.decimals,
             spentIcon: leftToken?.icon,
+            spentRoot: leftToken?.root,
             spentSymbol: leftToken?.symbol,
             success: false,
         }
 
         this.changeState('isSwapping', false)
         this.forceInvalidate()
+        this.toDirectSwap()
     }
 
     /*
