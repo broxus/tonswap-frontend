@@ -273,6 +273,8 @@ export class FarmingStore {
                                 ? parseInt(poolDetails.farmEndTime, 10) * 1000
                                 : undefined
                             const isActive = (farmStart - new Date().getTime()) < 0
+                            const isExpired = farmEnd ? (farmEnd - new Date().getTime()) < 0 : false
+                            const isOwner = newPool.data.pool_owner.toString() === this.wallet.address
 
                             let userBalance = '0',
                                 userReward: UserPendingReward | undefined,
@@ -292,6 +294,18 @@ export class FarmingStore {
                                 )
                             }
                             catch (e) {}
+
+                            if (!isOwner
+                                && isExpired
+                                && (!userReward || (
+                                    userReward._entitled.map(a => new BigNumber(a).eq(0))
+                                    && userReward._vested.map(a => new BigNumber(a).eq(0))
+                                    && userReward._pool_debt.map(a => new BigNumber(a).eq(0))
+                                ))
+                                && new BigNumber(userBalance).eq(0)
+                            ) {
+                                return undefined
+                            }
 
                             const tokenData = await this.loadTokenData(new Address(tokenRoot))
                             const rewardTokenData = await Promise.all(rewardTokenRoot.map(
@@ -444,6 +458,7 @@ export class FarmingStore {
                                 APY,
                                 TVL,
                                 isActive,
+                                isExpired,
                                 vestingPeriod: newPool.data.vestingPeriod,
                                 vestingRatio: newPool.data.vestingRatio,
                             }

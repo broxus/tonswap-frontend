@@ -35,7 +35,7 @@ export function Item({ pool }: Props): JSX.Element {
                             <h3 className="farming-list__token-name">
                                 {pool.tokenSymbol}
                             </h3>
-                            {(pool.isActive) && (
+                            {(pool.isActive && !pool.isExpired) && (
                                 <div key="active" className="farming-list__token-status--active">
                                     {intl.formatMessage({
                                         id: 'FARMING_LIST_POOL_STATUS_ACTIVE',
@@ -46,6 +46,13 @@ export function Item({ pool }: Props): JSX.Element {
                                 <div key="awaiting" className="farming-list__token-status--awaiting">
                                     {intl.formatMessage({
                                         id: 'FARMING_LIST_POOL_STATUS_AWAITING',
+                                    })}
+                                </div>
+                            )}
+                            {(pool.isExpired) && (
+                                <div key="expired" className="farming-list__token-status--awaiting">
+                                    {intl.formatMessage({
+                                        id: 'FARMING_LIST_POOL_STATUS_EXPIRED',
                                     })}
                                 </div>
                             )}

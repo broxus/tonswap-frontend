@@ -45,7 +45,7 @@ export class FarmingPoolStore {
     ) {
         makeAutoObservable(this, {
             adminDepositToken: action.bound,
-            adminWithdrawUnclaimed: action.bound,
+            adminWithdrawUnclaimedAll: action.bound,
             depositToken: action.bound,
             maxDeposit: action.bound,
             withdrawUnclaimed: action.bound,
@@ -360,7 +360,7 @@ export class FarmingPoolStore {
     /**
      *
      */
-    public async adminWithdrawUnclaimed(): Promise<void> {
+    public async adminWithdrawUnclaimedAll(): Promise<void> {
         if (this.wallet.address == null) {
             return
         }
@@ -368,7 +368,7 @@ export class FarmingPoolStore {
         this.changeState('isAdminWithdrawUnclaiming', true)
 
         try {
-            await Farm.poolAdminWithdrawUnclaimed(
+            await Farm.poolAdminWithdrawUnclaimedAll(
                 new Address(this.pool.address),
                 new Address(this.wallet.address),
             )

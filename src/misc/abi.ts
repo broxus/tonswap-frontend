@@ -2010,6 +2010,7 @@ export class FarmAbi {
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
+                    { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2024,6 +2025,7 @@ export class FarmAbi {
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
+                    { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2093,6 +2095,7 @@ export class FarmAbi {
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
+                    { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2124,6 +2127,7 @@ export class FarmAbi {
                     { name: '_rewardTokenRoot', type: 'address[]' },
                     { name: '_vestingPeriod', type: 'uint32' },
                     { name: '_vestingRatio', type: 'uint32' },
+                    { name: '_withdrawAllLockPeriod', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2159,7 +2163,7 @@ export class FarmAbi {
                 name: 'encodeDepositPayload',
                 inputs: [
                     { name: 'deposit_owner', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                     { name: 'deposit_payload', type: 'cell' },
@@ -2172,7 +2176,7 @@ export class FarmAbi {
                 ],
                 outputs: [
                     { name: 'deposit_owner', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                     { name: 'correct', type: 'bool' },
                 ],
             },
@@ -2206,7 +2210,7 @@ export class FarmAbi {
                 inputs: [
                     { name: 'amount', type: 'uint128' },
                     { name: 'send_gas_to', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2215,7 +2219,7 @@ export class FarmAbi {
                 name: 'withdrawAll',
                 inputs: [
                     { name: 'send_gas_to', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2224,7 +2228,7 @@ export class FarmAbi {
                 name: 'claimReward',
                 inputs: [
                     { name: 'send_gas_to', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2236,7 +2240,7 @@ export class FarmAbi {
                     { name: '_withdrawAmount', type: 'uint128' },
                     { name: '_vested', type: 'uint128[]' },
                     { name: 'send_gas_to', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2246,7 +2250,17 @@ export class FarmAbi {
                 inputs: [
                     { name: 'to', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'withdrawUnclaimedAll',
+                inputs: [
+                    { name: 'to', type: 'address' },
+                    { name: 'send_gas_to', type: 'address' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2254,14 +2268,8 @@ export class FarmAbi {
             {
                 name: 'addRewardRound',
                 inputs: [
-                    {
-                        components: [
-                            { name: 'startTime', type: 'uint32' },
-                            { name: 'rewardPerSecond', type: 'uint128[]' },
-                        ],
-                        name: 'reward_round',
-                        type: 'tuple',
-                    },
+                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_round', type: 'tuple' },
+                    { name: 'send_gas_to', type: 'address' },
                 ],
                 outputs: [
                 ],
@@ -2270,6 +2278,7 @@ export class FarmAbi {
                 name: 'setEndTime',
                 inputs: [
                     { name: 'farm_end_time', type: 'uint32' },
+                    { name: 'send_gas_to', type: 'address' },
                 ],
                 outputs: [
                 ],
@@ -2380,6 +2389,7 @@ export class FarmAbi {
             { name: '_pubkey', type: 'uint256' },
             { name: '_timestamp', type: 'uint64' },
             { name: '_constructorFlag', type: 'bool' },
+            { name: 'withdrawAllLockPeriod', type: 'uint32' },
             { name: 'lastRewardTime', type: 'uint32' },
             { name: 'farmEndTime', type: 'uint32' },
             { name: 'vestingPeriod', type: 'uint32' },
@@ -2396,7 +2406,7 @@ export class FarmAbi {
             { name: 'unclaimedReward', type: 'uint128[]' },
             { name: 'owner', type: 'address' },
             { name: 'deposit_nonce', type: 'uint64' },
-            { components: [{ name: 'user', type: 'address' }, { name: 'amount', type: 'uint128' }, { name: 'send_gas_to', type: 'address' }, { name: 'callback_payload', type: 'cell' }], name: 'deposits', type: 'map(uint64,tuple)' },
+            { components: [{ name: 'user', type: 'address' }, { name: 'amount', type: 'uint128' }, { name: 'send_gas_to', type: 'address' }, { name: 'nonce', type: 'uint32' }], name: 'deposits', type: 'map(uint64,tuple)' },
             { name: 'userDataCode', type: 'cell' },
             { name: 'fabric', type: 'address' },
             { name: 'deploy_nonce', type: 'uint64' },
@@ -2467,7 +2477,7 @@ export class FarmAbi {
                     { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'poolLastRewardTime', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2478,7 +2488,7 @@ export class FarmAbi {
                     { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'poolLastRewardTime', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2489,7 +2499,7 @@ export class FarmAbi {
                     { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'poolLastRewardTime', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
-                    { name: 'callback_payload', type: 'cell' },
+                    { name: 'nonce', type: 'uint32' },
                 ],
                 outputs: [
                 ],

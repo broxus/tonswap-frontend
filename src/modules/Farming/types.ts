@@ -27,6 +27,7 @@ export type FarmPool = {
     APY?: string;
     TVL?: string;
     isActive: boolean;
+    isExpired: boolean;
     vestingPeriod: string;
     vestingRatio: string
 };

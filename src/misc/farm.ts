@@ -31,6 +31,7 @@ export class Farm {
             reward_rounds: [{ startTime: farmStart, rewardPerSecond }],
             vestingPeriod,
             vestingRatio,
+            withdrawAllLockPeriod: 60,
         }).send({
             amount: '7000000000',
             bounce: true,
@@ -55,7 +56,7 @@ export class Farm {
     ): Promise<string> {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
         return (await poolContract.methods.encodeDepositPayload({
-            callback_payload: '',
+            nonce: 0,
             deposit_owner: owner,
         }).call({
             cachedState: state,
@@ -68,7 +69,7 @@ export class Farm {
     ): Promise<TransactionId> {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.claimReward({
-            callback_payload: '',
+            nonce: 0,
             send_gas_to: owner,
         }).send({
             from: owner,
@@ -84,7 +85,7 @@ export class Farm {
     ): Promise<TransactionId> {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.withdrawAll({
-            callback_payload: '',
+            nonce: 0,
             send_gas_to: owner,
         }).send({
             from: owner,
@@ -100,8 +101,25 @@ export class Farm {
     ): Promise<TransactionId> {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.withdrawUnclaimed({
+            nonce: 0,
             to: owner,
-            callback_payload: '',
+            send_gas_to: owner,
+        }).send({
+            from: owner,
+            bounce: true,
+            amount: '5000000000',
+        })
+        return id
+    }
+
+    public static async poolAdminWithdrawUnclaimedAll(
+        poolAddress: Address,
+        owner: Address,
+    ): Promise<TransactionId> {
+        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const { id } = await poolContract.methods.withdrawUnclaimedAll({
+            nonce: 0,
+            to: owner,
             send_gas_to: owner,
         }).send({
             from: owner,
@@ -123,6 +141,7 @@ export class Farm {
                 startTime,
                 rewardPerSecond,
             },
+            send_gas_to: owner,
         }).send({
             from: owner,
             bounce: true,
@@ -139,6 +158,7 @@ export class Farm {
         const poolContract = new Contract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.setEndTime({
             farm_end_time: endTime,
+            send_gas_to: owner,
         }).send({
             from: owner,
             bounce: true,

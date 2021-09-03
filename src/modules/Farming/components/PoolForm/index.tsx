@@ -275,7 +275,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                     type="button"
                                     className="btn btn-primary btn-s swap-acc-table-frame__submit"
                                     disabled={farmingPool.isAdminWithdrawUnclaiming}
-                                    onClick={farmingPool.adminWithdrawUnclaimed}
+                                    onClick={farmingPool.adminWithdrawUnclaimedAll}
                                 >
                                     {intl.formatMessage({
                                         id: 'FARMING_POOL_FORM_WITHDRAW_UNCLAIMED_BTN_TEXT',

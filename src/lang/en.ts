@@ -182,7 +182,7 @@ export default {
     FARMING_POOL_FORM_DEPOSITING_TOKEN_BTN_TEXT: 'Depositing {symbol}',
     FARMING_POOL_FORM_TOKEN_WALLET_BALANCE_TEXT: 'Your {symbol} wallet balance: {amount} {symbol}',
     FARMING_POOL_FORM_ADMIN_TEXT: 'You are the pool administrator. You have access to the functions of deposit and withdrawal of unclaimed balance.',
-    FARMING_POOL_FORM_WITHDRAW_UNCLAIMED_BTN_TEXT: 'Withdraw unclaimed',
+    FARMING_POOL_FORM_WITHDRAW_UNCLAIMED_BTN_TEXT: 'Withdraw all',
     FARMING_LIST_USER_DETAILS_HEADER_SUBTITLE: 'User data',
     FARMING_LIST_USER_DETAILS_FARM_USER_BALANCE: 'Farm balance, {symbol}',
     FARMING_LIST_USER_DETAILS_FARM_USER_UNCLAIMED_REWARD: 'Unclaimed reward, {symbol}',
