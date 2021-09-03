@@ -23,6 +23,8 @@ export const DEFAULT_FARMING_POOL_STORE_DATA: FarmingPoolStoreData = {
     adminDeposit: [],
     adminWalletAddress: [],
     adminWalletBalance: [],
+    adminCreatePeriodStartTime: undefined,
+    adminCreatePeriodRPS: [],
     userDeposit: undefined,
     userWalletAddress: undefined,
     userWalletBalance: undefined,

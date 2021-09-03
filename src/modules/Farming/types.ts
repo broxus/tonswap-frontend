@@ -26,6 +26,8 @@ export type FarmPool = {
     APY?: string;
     TVL?: string;
     isActive: boolean;
+    vestingPeriod: string;
+    vestingRatio: string
 };
 
 export type FarmingStoreData = {
@@ -41,6 +43,8 @@ export type FarmingPoolStoreData = {
     adminDeposit: (string | undefined)[];
     adminWalletAddress: (string | undefined)[];
     adminWalletBalance: (string | undefined)[];
+    adminCreatePeriodStartTime: string | undefined;
+    adminCreatePeriodRPS: (string | undefined)[];
     userDeposit: string | undefined;
     userWalletAddress: string | undefined;
     userWalletBalance: string | undefined;

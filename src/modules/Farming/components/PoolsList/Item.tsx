@@ -7,6 +7,7 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import { PoolDetails } from '@/modules/Farming/components/PoolDetails'
 import { FarmPool } from '@/modules/Farming/types'
 import { amount } from '@/utils'
+import BigNumber from "bignumber.js";
 
 
 type Props = {
@@ -90,7 +91,7 @@ export function Item({ pool }: Props): JSX.Element {
                                     {pool.userReward?._vested.map((reward, idx) => (
                                         <div key={pool.rewardTokenSymbol[idx]}>
                                             {amount(
-                                                reward,
+                                                new BigNumber(reward).plus(pool.userReward?._pool_debt[idx] || '0'),
                                                 pool.rewardTokenDecimals[idx],
                                             ) || 0}
                                             {' '}

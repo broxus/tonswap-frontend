@@ -440,6 +440,8 @@ export class FarmingStore {
                                 APY,
                                 TVL,
                                 isActive,
+                                vestingPeriod: newPool.data.vestingPeriod,
+                                vestingRatio: newPool.data.vestingRatio,
                             }
                             return pool
                         }).catch(() => undefined)

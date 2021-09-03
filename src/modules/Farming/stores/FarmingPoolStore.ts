@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import { action, makeAutoObservable } from 'mobx'
 import ton, { Address } from 'ton-inpage-provider'
 
-import {Farm, TokenWallet, UserPendingReward} from '@/misc'
+import { Farm, TokenWallet, UserPendingReward } from '@/misc'
 import {
     DEFAULT_FARMING_POOL_STORE_DATA,
     DEFAULT_FARMING_POOL_STORE_STATE,
@@ -13,7 +13,7 @@ import {
     FarmingPoolStoreState,
     FarmPool,
 } from '@/modules/Farming/types'
-import { depositToken, executeAction } from '@/modules/Farming/utils'
+import { depositToken, executeAction, parseDate } from '@/modules/Farming/utils'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { error } from '@/utils'
 
@@ -50,6 +50,7 @@ export class FarmingPoolStore {
             maxDeposit: action.bound,
             withdrawUnclaimed: action.bound,
             withdrawAll: action.bound,
+            onAdminCreatePeriod: action.bound,
         })
     }
 
@@ -288,6 +289,43 @@ export class FarmingPoolStore {
         }
     }
 
+    public async onAdminCreatePeriod(): Promise<void> {
+        if (this.isAdminDepositing) { return }
+
+        const rps = this.pool.rewardTokenDecimals.map((d, i) => (new BigNumber(this.adminCreatePeriodRPS[i] || '0')
+            .shiftedBy(d)
+            .decimalPlaces(0, BigNumber.ROUND_DOWN)))
+
+        const date = parseDate(this.adminCreatePeriodStartTime)
+
+        if (
+            rps.findIndex(a => a.isNaN() || a.isNegative()) > -1
+            || date === undefined
+            || date.getTime() <= new Date().getTime()
+            || this.wallet.address === undefined
+        ) {
+            return
+        }
+
+        this.changeState('isAdminDepositing', true)
+
+        try {
+            await Farm.poolAdminCreatePeriod(
+                new Address(this.pool.address),
+                new Address(this.wallet.address),
+                (date.getTime() / 1000).toString(),
+                rps.map(a => a.toFixed()),
+            )
+            this.changeData('adminCreatePeriodStartTime', undefined)
+            this.changeData('adminCreatePeriodRPS', [])
+            this.changeState('isAdminDepositing', false)
+        }
+        catch (e) {
+            console.error('Error on period creating', e)
+            this.changeState('isAdminDepositing', false)
+        }
+    }
+
     /**
      *
      */
@@ -512,6 +550,20 @@ export class FarmingPoolStore {
      */
     public get adminWalletBalance(): FarmingPoolStoreData['adminWalletBalance'] {
         return this.data.adminWalletBalance
+    }
+
+    /**
+     *
+     */
+    public get adminCreatePeriodStartTime(): FarmingPoolStoreData['adminCreatePeriodStartTime'] {
+        return this.data.adminCreatePeriodStartTime
+    }
+
+    /**
+     *
+     */
+    public get adminCreatePeriodRPS(): FarmingPoolStoreData['adminCreatePeriodRPS'] {
+        return this.data.adminCreatePeriodRPS
     }
 
     /**

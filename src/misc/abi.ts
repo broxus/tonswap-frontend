@@ -2254,7 +2254,14 @@ export class FarmAbi {
             {
                 name: 'addRewardRound',
                 inputs: [
-                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_round', type: 'tuple' },
+                    {
+                        components: [
+                            { name: 'startTime', type: 'uint32' },
+                            { name: 'rewardPerSecond', type: 'uint128[]' },
+                        ],
+                        name: 'reward_round',
+                        type: 'tuple',
+                    },
                 ],
                 outputs: [
                 ],

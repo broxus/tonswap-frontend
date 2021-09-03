@@ -104,6 +104,15 @@ export function isDepositValid(
     return balanceValid && !walletBN.isZero() && !amountBN.isZero()
 }
 
+export function isCreatePeriodValid(
+    start: string | undefined,
+    rps: (string | undefined)[],
+): boolean {
+    const ui = rps.map(a => new BigNumber(a || '0')).findIndex(a => a.isNaN() || a.isNegative())
+    const date = parseDate(start)
+    return date !== undefined && ui < 0 && date.getTime() > new Date().getTime()
+}
+
 export async function depositToken(
     depositAmount: string,
     depositDecimals: number,
