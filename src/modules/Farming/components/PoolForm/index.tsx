@@ -8,7 +8,7 @@ import { amount } from '@/utils'
 
 import './index.scss'
 import {
-    isClaimValid,
+    isClaimValid, isClosePoolValid,
     isCreatePeriodValid,
     isDepositValid,
     isWithdrawAllValid,
@@ -239,6 +239,33 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                     >
                                         {intl.formatMessage({
                                             id: 'FARMING_POOL_FORM_CREATE_PERIOD',
+                                        })}
+                                    </button>
+                                </div>
+                                <div className="farming-pool-form__field-wrapper">
+                                    <div className="farming-pool-form__swap-amount">
+                                        <input
+                                            type="text"
+                                            className="form-input farming-pool-form__input"
+                                            placeholder={intl.formatMessage({
+                                                id: 'FARMING_POOL_FORM_SET_END_TIME',
+                                            })}
+                                            value={farmingPool.adminSetEndTime || ''}
+                                            disabled={farmingPool.isAdminDepositing}
+                                            onChange={onChange('adminSetEndTime')}
+                                        />
+                                    </div>
+                                    <button
+                                        type="button"
+                                        className="btn btn-s btn-primary"
+                                        disabled={farmingPool.isAdminDepositing
+                                        || !isClosePoolValid(
+                                            farmingPool.adminSetEndTime,
+                                        )}
+                                        onClick={farmingPool.onAdminSetEndTime}
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'FARMING_POOL_FORM_CLOSE_POOL',
                                         })}
                                     </button>
                                 </div>

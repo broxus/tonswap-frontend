@@ -269,6 +269,9 @@ export class FarmingStore {
                             const poolRewardBalance = poolDetails.rewardTokenBalance
                             const poolRewardBalanceCumulative = poolDetails.rewardTokenBalanceCumulative
                             const farmStart = parseInt(newPool.data.reward_rounds[0].startTime.toString(), 10) * 1000
+                            const farmEnd = poolDetails.farmEndTime !== '0'
+                                ? parseInt(poolDetails.farmEndTime, 10) * 1000
+                                : undefined
                             const isActive = (farmStart - new Date().getTime()) < 0
 
                             let userBalance = '0',
@@ -421,6 +424,7 @@ export class FarmingStore {
                                 rewardTokenBalance: poolRewardBalance,
                                 rewardTokenBalanceCumulative: poolRewardBalanceCumulative,
                                 farmStart,
+                                farmEnd,
                                 farmSpeed: activePeriod.rewardPerSecond.map(a => a.toString()),
                                 tokenDecimals: tokenData.decimals,
                                 tokenSymbol: tokenData.symbol,

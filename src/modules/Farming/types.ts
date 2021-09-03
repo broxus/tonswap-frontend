@@ -12,6 +12,7 @@ export type FarmPool = {
     rewardTokenBalance: string[];
     rewardTokenBalanceCumulative: string[];
     farmStart: number;
+    farmEnd: number | undefined;
     farmSpeed: string[];
     tokenSymbol: string;
     tokenDecimals: number;
@@ -45,6 +46,7 @@ export type FarmingPoolStoreData = {
     adminWalletBalance: (string | undefined)[];
     adminCreatePeriodStartTime: string | undefined;
     adminCreatePeriodRPS: (string | undefined)[];
+    adminSetEndTime: string | undefined;
     userDeposit: string | undefined;
     userWalletAddress: string | undefined;
     userWalletBalance: string | undefined;

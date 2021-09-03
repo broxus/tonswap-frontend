@@ -51,6 +51,7 @@ export class FarmingPoolStore {
             withdrawUnclaimed: action.bound,
             withdrawAll: action.bound,
             onAdminCreatePeriod: action.bound,
+            onAdminSetEndTime: action.bound,
         })
     }
 
@@ -326,6 +327,36 @@ export class FarmingPoolStore {
         }
     }
 
+    public async onAdminSetEndTime(): Promise<void> {
+        if (this.isAdminDepositing) { return }
+
+        const date = parseDate(this.adminSetEndTime)
+
+        if (
+            date === undefined
+            || date.getTime() <= new Date().getTime()
+            || this.wallet.address === undefined
+        ) {
+            return
+        }
+
+        this.changeState('isAdminDepositing', true)
+
+        try {
+            await Farm.poolAdminSetEndTime(
+                new Address(this.pool.address),
+                new Address(this.wallet.address),
+                (date.getTime() / 1000).toString(),
+            )
+            this.changeData('adminSetEndTime', undefined)
+            this.changeState('isAdminDepositing', false)
+        }
+        catch (e) {
+            console.error('Error on period creating', e)
+            this.changeState('isAdminDepositing', false)
+        }
+    }
+
     /**
      *
      */
@@ -564,6 +595,13 @@ export class FarmingPoolStore {
      */
     public get adminCreatePeriodRPS(): FarmingPoolStoreData['adminCreatePeriodRPS'] {
         return this.data.adminCreatePeriodRPS
+    }
+
+    /**
+     *
+     */
+    public get adminSetEndTime(): FarmingPoolStoreData['adminSetEndTime'] {
+        return this.data.adminSetEndTime
     }
 
     /**

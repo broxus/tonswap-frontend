@@ -113,6 +113,13 @@ export function isCreatePeriodValid(
     return date !== undefined && ui < 0 && date.getTime() > new Date().getTime()
 }
 
+export function isClosePoolValid(
+    closeTime: string | undefined,
+): boolean {
+    const date = parseDate(closeTime)
+    return date !== undefined && date.getTime() > new Date().getTime()
+}
+
 export async function depositToken(
     depositAmount: string,
     depositDecimals: number,

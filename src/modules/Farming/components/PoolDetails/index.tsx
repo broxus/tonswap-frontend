@@ -99,6 +99,27 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                         })}
                     </div>
                 </div>
+                {pool.farmEnd && (
+                    <>
+                        <div className="farming-pool-details-table__row">
+                            <div>
+                                {intl.formatMessage({
+                                    id: 'FARMING_LIST_POOL_DETAILS_FARM_END',
+                                })}
+                            </div>
+                            <div>
+                                {intl.formatDate(pool.farmEnd, {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hourCycle: 'h23',
+                                })}
+                            </div>
+                        </div>
+                    </>
+                )}
                 <div className="farming-pool-details-table__row">
                     <div>
                         {intl.formatMessage({
