@@ -31,7 +31,7 @@ export class Farm {
             reward_rounds: [{ startTime: farmStart, rewardPerSecond }],
             vestingPeriod,
             vestingRatio,
-            withdrawAllLockPeriod: 60,
+            withdrawAllLockPeriod: 2592000,
         }).send({
             amount: '7000000000',
             bounce: true,
