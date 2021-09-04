@@ -179,12 +179,14 @@ export class Farm {
         userDataAddress: Address,
         accTonPerShare: string[],
         poolLastRewardTime: string,
+        farmEndTime: string,
         state?: FullContractState,
     ): Promise<UserPendingReward> {
         const userData = new Contract(FarmAbi.User, userDataAddress)
         return userData.methods.pendingReward({
             _accTonPerShare: accTonPerShare,
             poolLastRewardTime,
+            farmEndTime,
         }).call({
             cachedState: state,
         })

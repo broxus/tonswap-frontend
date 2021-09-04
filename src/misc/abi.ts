@@ -2442,6 +2442,7 @@ export class FarmAbi {
                 inputs: [
                     { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'poolLastRewardTime', type: 'uint32' },
+                    { name: 'farmEndTime', type: 'uint32' },
                 ],
                 outputs: [
                     { name: '_entitled', type: 'uint128[]' },
@@ -2466,6 +2467,7 @@ export class FarmAbi {
                     { name: '_amount', type: 'uint128' },
                     { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'poolLastRewardTime', type: 'uint32' },
+                    { name: 'farmEndTime', type: 'uint32' },
                 ],
                 outputs: [
                 ],
@@ -2476,6 +2478,7 @@ export class FarmAbi {
                     { name: '_amount', type: 'uint128' },
                     { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'poolLastRewardTime', type: 'uint32' },
+                    { name: 'farmEndTime', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
@@ -2487,6 +2490,7 @@ export class FarmAbi {
                 inputs: [
                     { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'poolLastRewardTime', type: 'uint32' },
+                    { name: 'farmEndTime', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
@@ -2498,6 +2502,7 @@ export class FarmAbi {
                 inputs: [
                     { name: '_accTonPerShare', type: 'uint256[]' },
                     { name: 'poolLastRewardTime', type: 'uint32' },
+                    { name: 'farmEndTime', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],

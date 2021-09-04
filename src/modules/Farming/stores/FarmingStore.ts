@@ -291,6 +291,7 @@ export class FarmingStore {
                                     userDataAddress,
                                     poolRewardData._accTonPerShare,
                                     poolRewardData._lastRewardTime,
+                                    poolDetails.farmEndTime || '0',
                                 )
                             }
                             catch (e) {}
