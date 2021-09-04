@@ -40,6 +40,16 @@ export function Farming(): JSX.Element {
                 </h2>
                 <div className="section__header-actions">
                     <a
+                        href="https://v3.tonswap.io/farming"
+                        target="_blank"
+                        rel="nofollow noopener noreferrer"
+                        className="section__header-link"
+                    >
+                        Old farming
+                        &nbsp;
+                        <Icon icon="externalLink" />
+                    </a>
+                    <a
                         href="https://docs.tonbridge.io/ton-swap/yield-farming-guide/farming-guide"
                         target="_blank"
                         rel="nofollow noopener noreferrer"
