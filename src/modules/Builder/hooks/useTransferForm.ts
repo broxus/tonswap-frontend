@@ -8,7 +8,7 @@ type MintFormShape = {
     isTransferPopupShown: boolean;
     showTransferPopup: () => void;
     hideTransferPopup: () => void;
-    onChangeData: <K extends keyof Omit<ManageTokenStoreData, 'token' | 'tokenCache' | 'targetAddress' | 'amountToMint'>>
+    onChangeData: <K extends keyof Pick<ManageTokenStoreData, 'newOwnerAddress'>>
         (key: K) => (value: ManageTokenStoreData[K]) => void;
 
 }
@@ -27,7 +27,7 @@ export function useTransferForm(): MintFormShape {
         setIsTransferPopupShown(false)
     }
 
-    const onChangeData = <K extends keyof Omit<ManageTokenStoreData, 'token' | 'tokenCache' | 'targetAddress' | 'amountToMint'>>(key: K) => (value: ManageTokenStoreData[K]) => {
+    const onChangeData = <K extends keyof Pick<ManageTokenStoreData, 'newOwnerAddress'>>(key: K) => (value: ManageTokenStoreData[K]) => {
         managingToken.changeData(key, value)
     }
 

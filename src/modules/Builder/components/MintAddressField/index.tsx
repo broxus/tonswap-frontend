@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite'
 import { useMintForm } from '@/modules/Builder/hooks/useMintForm'
 import { BuilderField } from '@/modules/Builder/components/BuilderField'
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
+import { isAddressValid } from '@/misc'
 
 function Field(): JSX.Element {
     const { tokenRoot } = useParams<{ tokenRoot: string }>()
@@ -23,10 +24,10 @@ function Field(): JSX.Element {
     return (
         <BuilderField
             disabled={managingToken.isMinting}
-            label={intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MINT_LABEL_TARGET_ADDRESS' })}
+            label={intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_LABEL_TARGET_ADDRESS' })}
             type="string"
             isValid={
-                managingToken.targetAddress.length > 0
+                isAddressValid(managingToken.targetAddress)
             }
             value={managingToken.targetAddress}
             onChange={handleChange}
@@ -34,4 +35,4 @@ function Field(): JSX.Element {
     )
 }
 
-export const TargetAddressField = observer(Field)
+export const MintAddressField = observer(Field)

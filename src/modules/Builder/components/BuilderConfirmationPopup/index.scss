@@ -1,0 +1,23 @@
+.builder-confirmation-modal {
+    h3, p {
+        text-align: center;
+    }
+
+    h3 {
+        font-size: 2.4rem;
+        font-weight: bold;
+        line-height: 32px;
+        margin-bottom: 16px;
+    }
+
+    &__loader {
+        height: 44px;
+        margin: 30px auto 40px;
+        width: 44px;
+
+        svg {
+            animation: rotate 1s linear infinite;
+            fill: #ffffff;
+        }
+    }
+}

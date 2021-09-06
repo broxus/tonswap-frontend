@@ -2,9 +2,9 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Icon } from '@/components/common/Icon'
 import { useWallet } from '@/stores/WalletService'
 import { useCreateTokenStore } from '@/modules/Builder/stores/CreateTokenStore'
-import { Icon } from '@/components/common/Icon'
 
 
 function SubmitButton(): JSX.Element {
@@ -47,7 +47,7 @@ function SubmitButton(): JSX.Element {
     return (
         <button
             type="button"
-            className="btn btn-primary btn-lg form-submit btn-block"
+            className="btn btn-primary btn-lg btn-block form-submit"
             aria-disabled={buttonProps.disabled}
             {...buttonProps}
         >

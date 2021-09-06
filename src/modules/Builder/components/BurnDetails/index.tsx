@@ -26,10 +26,10 @@ function Details(): JSX.Element {
 
     const afterTargetAddressBalance = React.useMemo(
         () => new BigNumber(managingToken.targetWalletBalance)
-            .plus(managingToken.amountToMint)
+            .minus(managingToken.amountToBurn)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
-        , [managingToken.targetWalletBalance, managingToken.amountToMint],
+        , [managingToken.targetWalletBalance, managingToken.amountToBurn],
     )
 
     const currentSupply = React.useMemo(
@@ -41,10 +41,10 @@ function Details(): JSX.Element {
 
     const afterSupply = React.useMemo(
         () => new BigNumber(managingToken.token!.total_supply)
-            .plus(managingToken.amountToMint)
+            .minus(managingToken.amountToBurn)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
-        , [managingToken.token!.total_supply, managingToken.amountToMint],
+        , [managingToken.token!.total_supply, managingToken.amountToBurn],
     )
 
     const getBalanceMessage = (): string => {
@@ -60,17 +60,17 @@ function Details(): JSX.Element {
     }
 
     return (
-        <div className="mint-details">
-            <h3 className="mint-details-title">
+        <div className="burn-details">
+            <h3 className="burn-details-title">
                 {intl.formatMessage({
                     id: 'BUILDER_MANAGE_TOKEN_TITLE_BALANCE',
                 })}
             </h3>
-            <div className="mint-details-table">
-                {managingToken.targetWalletBalance && managingToken.amountToMint
+            <div className="burn-details-table">
+                {managingToken.targetWalletBalance && managingToken.amountToBurn
                     ? (
                         <>
-                            <div className="mint-details-table__row">
+                            <div className="burn-details-table__row">
                                 <div>
                                     {intl.formatMessage({
                                         id: 'BUILDER_MANAGE_TOKEN_LABEL_CURRENT',
@@ -80,7 +80,7 @@ function Details(): JSX.Element {
                                     {currentTargetAddressBalance}
                                 </div>
                             </div>
-                            <div className="mint-details-table__row">
+                            <div className="burn-details-table__row">
                                 <div>
                                     {intl.formatMessage({
                                         id: 'BUILDER_MANAGE_TOKEN_LABEL_AFTER_MINING',
@@ -93,21 +93,21 @@ function Details(): JSX.Element {
                         </>
                     )
                     : (
-                        <div className="mint-details-table__row">
+                        <div className="burn-details-table__row">
                             <div>{intl.formatMessage({ id: getBalanceMessage() })}</div>
                         </div>
                     )}
             </div>
-            <h3 className="mint-details-title">
+            <h3 className="burn-details-title">
                 {intl.formatMessage({
                     id: 'BUILDER_MANAGE_TOKEN_LABEL_SUPPLY',
                 })}
             </h3>
-            <div className="mint-details-table">
-                {managingToken.amountToMint
+            <div className="burn-details-table">
+                {managingToken.amountToBurn
                     ? (
                         <>
-                            <div className="mint-details-table__row">
+                            <div className="burn-details-table__row">
                                 <div>
                                     {intl.formatMessage({
                                         id: 'BUILDER_MANAGE_TOKEN_LABEL_CURRENT',
@@ -117,7 +117,7 @@ function Details(): JSX.Element {
                                     {currentSupply}
                                 </div>
                             </div>
-                            <div className="mint-details-table__row">
+                            <div className="burn-details-table__row">
                                 <div>
                                     {intl.formatMessage({
                                         id: 'BUILDER_MANAGE_TOKEN_LABEL_AFTER_MINING',
@@ -130,7 +130,7 @@ function Details(): JSX.Element {
                         </>
                     )
                     : (
-                        <div className="mint-details-table__row">
+                        <div className="burn-details-table__row">
                             <div>
                                 {intl.formatMessage({
                                     id: 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_AMOUNT',
@@ -143,4 +143,4 @@ function Details(): JSX.Element {
     )
 }
 
-export const MintDetails = observer(Details)
+export const BurnDetails = observer(Details)

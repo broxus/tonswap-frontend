@@ -9,7 +9,7 @@ type MintFormShape = {
     isMintPopupShown: boolean;
     showMintPopup: () => void;
     hideMintPopup: () => void;
-    onChangeData: <K extends keyof Omit<ManageTokenStoreData, 'token' | 'tokenCache' | 'newOwnerAddress'>>
+    onChangeData: <K extends keyof Pick<ManageTokenStoreData, 'targetAddress' | 'targetWalletBalance' | 'amountToMint'>>
         (key: K) => (value: ManageTokenStoreData[K]) => void;
     debouncedLoadTargetWalletBalance: () => void;
 
@@ -29,7 +29,7 @@ export function useMintForm(): MintFormShape {
         setIsMintPopupShown(false)
     }
 
-    const onChangeData = <K extends keyof Omit<ManageTokenStoreData, 'token' | 'tokenCache' | 'newOwnerAddress'>>
+    const onChangeData = <K extends keyof Pick<ManageTokenStoreData, 'targetAddress' | 'targetWalletBalance' | 'amountToMint'>>
         (key: K) => (value: ManageTokenStoreData[K]) => {
             managingToken.changeData(key, value)
         }

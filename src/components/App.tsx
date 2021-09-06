@@ -12,9 +12,9 @@ import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
 import messages from '@/lang/en'
 import { Account } from '@/modules/Account'
-import { ManageToken } from '@/modules/Builder/manageToken'
 import Builder from '@/pages/builder'
 import CreateToken from '@/pages/builder/create'
+import CustomToken from '@/pages/builder/token'
 import Farming from '@/pages/farming'
 import CreateFarmPool from '@/pages/farming/create'
 import Pairs from '@/pages/pairs'
@@ -48,27 +48,32 @@ export function App(): JSX.Element {
                             <Route path="/swap/:leftTokenRoot([0][:][0-9a-f]{64})?/:rightTokenRoot([0][:][0-9a-f]{64})?">
                                 <Swap />
                             </Route>
+
                             <Route exact path="/pool/:leftTokenAddress([0][:][0-9a-f]{64})?/:rightTokenAddress([0][:][0-9a-f]{64})?">
                                 <Pool />
                             </Route>
-                            <Route exact path="/farming">
-                                <Farming />
-                            </Route>
-                            <Route exact path="/farming/create">
-                                <CreateFarmPool />
-                            </Route>
+
                             <Route exact path="/tokens">
                                 <Tokens />
                             </Route>
                             <Route exact path="/tokens/:address">
                                 <Token />
                             </Route>
+
                             <Route exact path="/pairs">
                                 <Pairs />
                             </Route>
                             <Route exact path="/pairs/:poolAddress">
                                 <Pair />
                             </Route>
+
+                            <Route exact path="/farming">
+                                <Farming />
+                            </Route>
+                            <Route exact path="/farming/create">
+                                <CreateFarmPool />
+                            </Route>
+
                             <Route exact path="/builder">
                                 <Builder />
                             </Route>
@@ -76,7 +81,7 @@ export function App(): JSX.Element {
                                 <CreateToken />
                             </Route>
                             <Route exact path="/builder/:tokenRoot">
-                                <ManageToken />
+                                <CustomToken />
                             </Route>
                         </Switch>
                     </main>
