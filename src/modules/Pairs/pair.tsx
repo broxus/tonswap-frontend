@@ -13,7 +13,7 @@ import { Stats } from '@/modules/Pairs/components/Stats'
 import { getDefaultPerPrice } from '@/modules/Swap/utils'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amount, isAmountValid } from '@/utils'
+import { amount, isGoodBignumber } from '@/utils'
 
 import './pair.scss'
 
@@ -40,7 +40,7 @@ function PairInner(): JSX.Element {
                     counterToken?.decimals,
                 ) : new BigNumber(0)
 
-            return isAmountValid(price) ? price.toFixed() : '0'
+            return isGoodBignumber(price) ? price.toFixed() : '0'
         },
         [baseToken, counterToken, store.pair],
     )
@@ -54,7 +54,7 @@ function PairInner(): JSX.Element {
                     baseToken?.decimals,
                 ) : new BigNumber(0)
 
-            return isAmountValid(price) ? price.toFixed() : '0'
+            return isGoodBignumber(price) ? price.toFixed() : '0'
         },
         [baseToken, counterToken, store.pair],
     )

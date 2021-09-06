@@ -35,7 +35,7 @@ import {
 import { DexAccountService, useDexAccount } from '@/stores/DexAccountService'
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
-import { debounce, error, isAmountValid } from '@/utils'
+import { debounce, error, isGoodBignumber } from '@/utils'
 
 
 export class PoolStore {
@@ -1147,7 +1147,7 @@ export class PoolStore {
         ) {
             const right = getAmount(this.rightPrice || '0', this.leftAmount, this.rightToken?.decimals)
 
-            if (isAmountValid(right)) {
+            if (isGoodBignumber(right)) {
                 this.data.rightAmount = right.toFixed()
             }
             else {
@@ -1161,7 +1161,7 @@ export class PoolStore {
         ) {
             const left = getAmount(this.leftPrice || '0', this.rightAmount, this.leftToken.decimals)
 
-            if (isAmountValid(left)) {
+            if (isGoodBignumber(left)) {
                 this.data.leftAmount = left.toFixed()
             }
             else {
@@ -1637,11 +1637,11 @@ export class PoolStore {
      */
 
     public get isLeftAmountValid(): boolean {
-        return isAmountValid(new BigNumber(this.leftAmount), this.leftToken?.decimals)
+        return isGoodBignumber(new BigNumber(this.leftAmount))
     }
 
     public get isRightAmountValid(): boolean {
-        return isAmountValid(new BigNumber(this.rightAmount), this.rightToken?.decimals)
+        return isGoodBignumber(new BigNumber(this.rightAmount))
     }
 
     public get leftAmount(): PoolStoreData['leftAmount'] {

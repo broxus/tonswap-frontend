@@ -1,10 +1,17 @@
 import BigNumber from 'bignumber.js'
 import * as E from 'fp-ts/Either'
 import {
-    action, IReactionDisposer, makeAutoObservable, reaction, toJS,
+    action,
+    IReactionDisposer,
+    makeAutoObservable,
+    reaction,
+    toJS,
 } from 'mobx'
 import ton, {
-    Address, Contract, DecodedAbiFunctionInputs, Subscriber,
+    Address,
+    Contract,
+    DecodedAbiFunctionInputs,
+    Subscriber,
 } from 'ton-inpage-provider'
 
 import { API_URL, CROSS_PAIR_EXCHANGE_WHITE_LIST } from '@/constants'
@@ -33,7 +40,8 @@ import {
     fillStepResult,
     getCrossExchangePriceImpact,
     getCrossExchangeSlippage,
-    getDefaultPerPrice, getDirectExchangePriceImpact,
+    getDefaultPerPrice,
+    getDirectExchangePriceImpact,
     getExchangePerPrice,
     getExpectedExchange,
     getExpectedSpendAmount,
@@ -45,18 +53,14 @@ import {
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import {
-    debounce, debug, error, isAmountValid,
+    debounce,
+    debug,
+    error,
+    isGoodBignumber,
 } from '@/utils'
 
 
 export class SwapStore {
-
-    /**
-     * Current data of the direct swap bill.
-     * @type {SwapBill}
-     * @protected
-     */
-    protected bill: SwapBill = DEFAULT_SWAP_BILL
 
     /**
      * Current data of the swap form.
@@ -187,15 +191,7 @@ export class SwapStore {
      * @returns {Promise<void>}
      */
     public async swap(): Promise<void> {
-        if (
-            this.wallet.account?.address === undefined
-            || !this.isDirectSwapValid
-            || (this.pair?.address === undefined || this.pair.contract === undefined)
-            || this.leftTokenAddress === undefined
-            || this.leftToken?.wallet === undefined
-            || this.bill.amount === undefined
-            || this.bill.minExpectedAmount === undefined
-        ) {
+        if (!this.isDirectSwapValid) {
             this.changeState('isSwapping', false)
             return
         }
@@ -203,8 +199,8 @@ export class SwapStore {
         const deployGrams = this.rightToken?.balance === undefined ? '100000000' : '0'
 
         const pairWallet = await TokenWallet.walletAddress({
-            root: this.leftTokenAddress,
-            owner: this.pair.address,
+            root: this.leftTokenAddress!,
+            owner: this.pair!.address!,
         })
 
         const processingId = new BigNumber(
@@ -215,20 +211,20 @@ export class SwapStore {
 
         const {
             value0: payload,
-        } = await this.pair.contract.methods.buildExchangePayload({
+        } = await this.pair!.contract!.methods.buildExchangePayload({
             id: processingId,
-            expected_amount: this.bill.minExpectedAmount,
+            expected_amount: this.data.bill.minExpectedAmount!,
             deploy_wallet_grams: deployGrams,
         }).call({
-            cachedState: toJS(this.pair.state),
+            cachedState: toJS(this.pair!.state),
         })
 
         // noinspection DuplicatedCode
         this.changeState('isSwapping', true)
 
-        let stream = this.#transactionSubscriber?.transactions(this.wallet.account.address)
+        let stream = this.#transactionSubscriber?.transactions(this.wallet.account!.address)
 
-        const oldStream = this.#transactionSubscriber?.oldTransactions(this.wallet.account.address, {
+        const oldStream = this.#transactionSubscriber?.oldTransactions(this.wallet.account!.address, {
             fromLt: this.wallet.contract?.lastTransactionId?.lt,
         })
 
@@ -257,12 +253,12 @@ export class SwapStore {
 
         try {
             await TokenWallet.send({
-                address: new Address(this.leftToken.wallet),
-                grams: '2600000000',
-                owner: this.wallet.account.address,
+                address: new Address(this.leftToken!.wallet!),
+                grams: new BigNumber(2500000000).plus(deployGrams).toFixed(),
+                owner: this.wallet.account!.address,
                 payload,
                 recipient: pairWallet,
-                tokens: this.bill.amount,
+                tokens: this.data.bill.amount!,
             })
 
             if (resultHandler !== undefined) {
@@ -283,25 +279,24 @@ export class SwapStore {
      */
     public async crossExchangeSwap(): Promise<void> {
         const firstPair = this.bestCrossExchangeRoute?.pairs.slice().shift()
+
         if (
-            this.wallet.account?.address === undefined
-            || !this.isCrossExchangeSwapValid
-            || this.leftTokenAddress === undefined
-            || this.leftToken?.wallet === undefined
-            || (firstPair?.address === undefined || firstPair.contract === undefined)
-            || this.bestCrossExchangeRoute?.bill.amount === undefined
-            || this.bestCrossExchangeRoute?.bill.minExpectedAmount === undefined
+            this.isCrossExchangeSwapValid
+            || firstPair?.address === undefined
+            || firstPair.contract === undefined
         ) {
             this.changeState('isSwapping', false)
             return
         }
 
-        const tokens = this.bestCrossExchangeRoute?.tokens.slice()
+        const tokens = this.bestCrossExchangeRoute!.tokens.slice()
 
-        const deployGrams = tokens.concat(this.rightToken!).some(token => token.balance === undefined) ? '100000000' : '0'
+        const deployGrams = tokens.concat(this.rightToken!).some(
+            token => token.balance === undefined,
+        ) ? '100000000' : '0'
 
         const pairWallet = await TokenWallet.walletAddress({
-            root: this.leftTokenAddress,
+            root: this.leftTokenAddress!,
             owner: firstPair.address,
         })
 
@@ -311,7 +306,7 @@ export class SwapStore {
             ) + 1,
         ).toFixed()
 
-        const steps = this.bestCrossExchangeRoute.steps.slice()
+        const steps = this.bestCrossExchangeRoute!.steps.slice()
 
         const minExpectedAmount = steps.slice().shift()?.minExpectedAmount as string
         const params: DecodedAbiFunctionInputs<typeof DexAbi.Pair, 'buildCrossPairExchangePayload'> = {
@@ -333,9 +328,9 @@ export class SwapStore {
         // noinspection DuplicatedCode
         this.changeState('isSwapping', true)
 
-        let stream = this.#transactionSubscriber?.transactions(this.wallet.account.address)
+        let stream = this.#transactionSubscriber?.transactions(this.wallet.account!.address)
 
-        const oldStream = this.#transactionSubscriber?.oldTransactions(this.wallet.account.address, {
+        const oldStream = this.#transactionSubscriber?.oldTransactions(this.wallet.account!.address, {
             fromLt: this.wallet.contract?.lastTransactionId?.lt,
         })
 
@@ -426,16 +421,16 @@ export class SwapStore {
 
         try {
             await TokenWallet.send({
-                address: new Address(this.leftToken.wallet),
+                address: new Address(this.leftToken!.wallet!),
                 grams: new BigNumber(steps.length)
                     .times(1000000000)
                     .plus(1500000000)
                     .plus(deployGrams)
                     .toFixed(),
-                owner: this.wallet.account.address,
+                owner: this.wallet.account!.address,
                 payload,
                 recipient: pairWallet,
-                tokens: this.bestCrossExchangeRoute?.bill.amount,
+                tokens: this.bestCrossExchangeRoute!.bill.amount!,
             })
 
             if (resultHandler !== undefined) {
@@ -452,7 +447,7 @@ export class SwapStore {
     }
 
     /**
-     * Manually recalculate swap bill by current direction.
+     * Manually recalculate exchange bill by current direction.
      * @protected
      */
     public async recalculate(force?: boolean): Promise<void> {
@@ -466,7 +461,7 @@ export class SwapStore {
             this.changeState('isEnoughLiquidity', false)
             debug(
                 '#recalculate reset when no pair',
-                toJS(this.data), toJS(this.state), toJS(this.bill),
+                toJS(this.data), toJS(this.state), toJS(this.data.bill),
             )
             return
         }
@@ -498,7 +493,7 @@ export class SwapStore {
     }
 
     /**
-     * Manually toggle swap direction.
+     * Manually toggle exchange direction.
      * Reset swap bill. Revert prices, amounts and tokens.
      */
     public async toggleDirection(): Promise<void> {
@@ -536,7 +531,7 @@ export class SwapStore {
     }
 
     /**
-     * Manually toggle price direction
+     * Manually toggle price direction.
      */
     public togglePriceDirection(): void {
         if (this.priceDirection === SwapDirection.LTR) {
@@ -547,7 +542,7 @@ export class SwapStore {
     }
 
     /**
-     * Manually toggle swap exchange mode
+     * Manually toggle exchange mode.
      */
     public toggleSwapExchangeMode(): void {
         if (!this.isCrossExchangeMode && this.isCrossExchangeAvailable) {
@@ -557,10 +552,16 @@ export class SwapStore {
         this.toDirectSwap()
     }
 
+    /**
+     * Sets cross-exchange swap mode.
+     */
     public toCrossExchangeSwap(): void {
         this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
     }
 
+    /**
+     * Sets direct exchange swap mode.
+     */
     public toDirectSwap(): void {
         this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
@@ -596,18 +597,18 @@ export class SwapStore {
     protected async handleSlippageChange(value: string, prevValue: string): Promise<void> {
         if (
             value !== prevValue
-            && isAmountValid(new BigNumber(value || 0))
+            && isGoodBignumber(new BigNumber(value || 0))
         ) {
             if (this.isCrossExchangeMode) {
                 this.changeData('bestCrossExchangeRoute', undefined)
                 await this.recalculate(!this.isCalculating)
             }
 
-            if (this.bill.expectedAmount !== undefined) {
+            if (this.data.bill.expectedAmount !== undefined) {
                 this.changeBillData(
                     'minExpectedAmount',
                     getSlippageMinExpectedAmount(
-                        new BigNumber(this.bill.expectedAmount || 0),
+                        new BigNumber(this.data.bill.expectedAmount || 0),
                         value,
                     ).toFixed(),
                 )
@@ -659,10 +660,7 @@ export class SwapStore {
 
         this.forceInvalidate()
 
-        debug(
-            '#handleTokensChange reset bill',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
-        )
+        debug('#handleTokensChange reset bill')
 
         if (!isToggleDirection) {
             this.resetCrossExchangeData()
@@ -678,7 +676,7 @@ export class SwapStore {
             this.changeData('pair', undefined)
             debug(
                 '#handleTokensChange only one token selected -> reset',
-                toJS(this.data), toJS(this.state), toJS(this.bill),
+                toJS(this.data), toJS(this.state), toJS(this.data.bill),
             )
             return
         }
@@ -726,43 +724,40 @@ export class SwapStore {
                 error('Sync pair data error', e)
             }
 
-            this.#pairsUpdatesUpdater = setInterval(async () => {
-                if (this.isSwapping) {
-                    return
-                }
-
-                try {
-                    await this.syncPairState()
-                    await this.syncPairBalances()
-                }
-                catch (e) {}
-
-                this.changeState(
-                    'isEnoughLiquidity',
-                    !this.pairLeftBalanceNumber.isZero()
-                    && !this.pairRightBalanceNumber.isZero(),
-                )
-
-                try {
-                    await this.syncCrossExchangePairsStates()
-                    await this.syncCrossExchangePairsBalances()
-                }
-                catch (e) {}
-
-                await this.recalculate(!this.isCalculating)
-
-                debug('#handleTokensChange Update pair data by interval', toJS(this.pair))
-            }, 10000)
+            // this.#pairsUpdatesUpdater = setInterval(async () => {
+            //     if (this.isSwapping) {
+            //         return
+            //     }
+            //
+            //     try {
+            //         await this.syncPairState()
+            //         await this.syncPairBalances()
+            //     }
+            //     catch (e) {}
+            //
+            //     this.changeState(
+            //         'isEnoughLiquidity',
+            //         !this.pairLeftBalanceNumber.isZero()
+            //         && !this.pairRightBalanceNumber.isZero(),
+            //     )
+            //
+            //     try {
+            //         await this.syncCrossExchangePairsStates()
+            //         await this.syncCrossExchangePairsBalances()
+            //     }
+            //     catch (e) {}
+            //
+            //     debug('#handleTokensChange Update pair data by interval', toJS(this.pair))
+            //
+            //     await this.recalculate(!this.isCalculating)
+            // }, 10000)
         }
 
         this.changeState('isPairChecking', false)
 
         if (isChanged) {
             await this.prepareCrossExchange()
-            debug(
-                '#handleTokensChange prepare cross-exchange',
-                toJS(this.data), toJS(this.state), toJS(this.bill),
-            )
+            debug('#handleTokensChange prepare cross-exchange')
         }
 
         await this.recalculate(!this.isCalculating)
@@ -771,7 +766,7 @@ export class SwapStore {
 
         debug(
             '#handleTokensChange check cross-exchange',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            toJS(this.data), toJS(this.state), toJS(this.data.bill),
         )
     }
 
@@ -829,11 +824,7 @@ export class SwapStore {
      * @param {SwapSuccessResult['step']} step
      * @protected
      */
-    protected handleSwapFailure({
-        cancelStep,
-        index,
-        step,
-    }: SwapFailureResult): void {
+    protected handleSwapFailure({ cancelStep, index, step }: SwapFailureResult): void {
         const leftToken = cancelStep?.step.spentAddress !== undefined
             ? this.tokensCache.get(cancelStep.step.spentAddress.toString())
             : undefined
@@ -887,7 +878,7 @@ export class SwapStore {
         ) {
             debug(
                 '#calculateByLeftAmount reset before start',
-                toJS(this.data), toJS(this.state), toJS(this.bill),
+                toJS(this.data), toJS(this.state), toJS(this.data.bill),
             )
             return
         }
@@ -896,51 +887,42 @@ export class SwapStore {
 
         debug(
             '#calculateByLeftAmount start',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            toJS(this.data), toJS(this.state), toJS(this.data.bill),
         )
 
         if (this.isEnoughLiquidity && this.isLeftAmountValid && this.leftTokenAddress !== undefined) {
-            this.changeBillData(
-                'amount',
-                this.leftAmountNumber
-                    .shiftedBy(this.leftTokenDecimals)
-                    .dp(0, BigNumber.ROUND_DOWN)
-                    .toFixed(),
-            )
-
             if (this.pair?.contract !== undefined) {
-                let expectedAmountBN = new BigNumber(0),
-                    expectedFee
-
                 try {
                     const {
                         expected_amount: expectedAmount,
-                        expected_fee: expectedExchangeFee,
+                        expected_fee: fee,
                     } = await getExpectedExchange(
                         this.pair.contract,
-                        this.bill.amount || '0',
+                        this.leftAmountNumber.toFixed() || '0',
                         this.leftTokenAddress,
                         toJS(this.pair.state),
                     )
 
-                    expectedAmountBN = new BigNumber(expectedAmount || 0)
-                    expectedFee = expectedExchangeFee
+                    const expectedAmountBN = new BigNumber(expectedAmount || 0)
+
+                    this.changeData('bill', {
+                        amount: this.leftAmountNumber.toFixed(),
+                        expectedAmount: expectedAmountBN.toFixed(),
+                        fee,
+                        minExpectedAmount: getSlippageMinExpectedAmount(
+                            expectedAmountBN,
+                            this.data.slippage,
+                        ).toFixed(),
+                    })
+
+                    this.changeData(
+                        'rightAmount',
+                        isGoodBignumber(expectedAmountBN)
+                            ? expectedAmountBN.shiftedBy(-this.rightTokenDecimals).toFixed()
+                            : '',
+                    )
                 }
                 catch (e) {}
-
-                this.changeBillData('expectedAmount', expectedAmountBN.toFixed())
-                this.changeBillData('fee', expectedFee || '0')
-                this.changeBillData(
-                    'minExpectedAmount',
-                    getSlippageMinExpectedAmount(expectedAmountBN, this.data.slippage).toFixed(),
-                )
-
-                this.changeData(
-                    'rightAmount',
-                    isAmountValid(expectedAmountBN, this.rightTokenDecimals)
-                        ? expectedAmountBN.shiftedBy(-this.rightTokenDecimals).toFixed()
-                        : '',
-                )
             }
         }
 
@@ -950,7 +932,7 @@ export class SwapStore {
 
         debug(
             '#calculateByLeftAmount done',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            toJS(this.data), toJS(this.state), toJS(this.data.bill),
         )
     }
 
@@ -970,7 +952,7 @@ export class SwapStore {
         ) {
             debug(
                 '#calculateByRightAmount reset before start',
-                toJS(this.data), toJS(this.state), toJS(this.bill),
+                toJS(this.data), toJS(this.state), toJS(this.data.bill),
             )
             return
         }
@@ -979,14 +961,16 @@ export class SwapStore {
 
         debug(
             '#calculateByRightAmount start',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            toJS(this.data), toJS(this.state), toJS(this.data.bill),
         )
 
         if (this.isEnoughLiquidity && this.isRightAmountValid) {
             this.changeState(
                 'isEnoughLiquidity',
-                this.rightAmountNumber.shiftedBy(this.rightTokenDecimals).lt(
-                    this.isPairInverted ? this.pairLeftBalanceNumber : this.pairRightBalanceNumber,
+                this.rightAmountNumber.lt(
+                    this.isPairInverted
+                        ? this.pairLeftBalanceNumber
+                        : this.pairRightBalanceNumber,
                 ),
             )
 
@@ -996,47 +980,42 @@ export class SwapStore {
         }
 
         if (this.isEnoughLiquidity && this.isRightAmountValid && this.rightTokenAddress !== undefined) {
-            let expectedAmountBN = this.rightAmountNumber
-                .shiftedBy(this.rightTokenDecimals)
-                .dp(0, BigNumber.ROUND_DOWN)
-
-            this.changeBillData('expectedAmount', expectedAmountBN.toFixed())
-
-            this.changeBillData(
-                'minExpectedAmount',
-                getSlippageMinExpectedAmount(expectedAmountBN, this.data.slippage).toFixed(),
-            )
-
             if (this.pair?.contract !== undefined) {
-                let expectedFee
                 try {
                     const {
                         expected_amount: expectedAmount,
-                        expected_fee: expectedSpentFee,
+                        expected_fee: fee,
                     } = await getExpectedSpendAmount(
                         this.pair.contract,
-                        expectedAmountBN.toFixed(),
+                        this.rightAmountNumber.toFixed(),
                         this.rightTokenAddress,
                         toJS(this.pair.state),
                     )
 
-                    expectedAmountBN = new BigNumber(expectedAmount || 0)
-                    expectedFee = expectedSpentFee
+                    const expectedAmountBN = new BigNumber(expectedAmount || 0)
+
+                    if (isGoodBignumber(expectedAmountBN)) {
+                        this.changeData('bill', {
+                            amount: expectedAmountBN.toFixed(),
+                            expectedAmount: this.rightAmountNumber.toFixed(),
+                            fee,
+                            minExpectedAmount: getSlippageMinExpectedAmount(
+                                this.rightAmountNumber,
+                                this.data.slippage,
+                            ).toFixed(),
+                        })
+
+                        this.changeData(
+                            'leftAmount',
+                            expectedAmountBN.shiftedBy(-this.leftTokenDecimals).toFixed(),
+                        )
+                    }
+                    else {
+                        this.changeData('leftAmount', '')
+                        this.changeData('rightAmount', '')
+                    }
                 }
                 catch (e) {}
-
-                if (isAmountValid(expectedAmountBN)) {
-                    this.changeBillData('amount', expectedAmountBN.toFixed())
-                    this.changeBillData('fee', expectedFee)
-                    this.changeData(
-                        'leftAmount',
-                        expectedAmountBN.shiftedBy(-this.leftTokenDecimals).toFixed(),
-                    )
-                }
-                else {
-                    this.changeData('leftAmount', '')
-                    this.changeData('rightAmount', '')
-                }
             }
         }
 
@@ -1046,7 +1025,7 @@ export class SwapStore {
 
         debug(
             '#calculateByRightAmount done',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            toJS(this.data), toJS(this.state), toJS(this.data.bill),
         )
     }
 
@@ -1078,26 +1057,26 @@ export class SwapStore {
 
         if (
             !this.isRightAmountValid
-            || this.bill.amount === undefined
-            || this.bill.expectedAmount === undefined
+            || this.data.bill.amount === undefined
+            || this.data.bill.expectedAmount === undefined
             || this.pair === undefined
             || this.pair.contract === undefined
             || this.pair.denominator === undefined
             || this.pair.numerator === undefined
         ) {
-            if (isAmountValid(priceLeftToRight)) {
+            if (isGoodBignumber(priceLeftToRight)) {
                 this.changeData('priceLeftToRight', priceLeftToRight.toFixed())
             }
 
-            if (isAmountValid(priceRightToLeft)) {
+            if (isGoodBignumber(priceRightToLeft)) {
                 this.changeData('priceRightToLeft', priceRightToLeft.toFixed())
             }
 
             return
         }
 
-        let amountBN = new BigNumber(this.bill.amount || 0)
-        const expectedAmountBN = new BigNumber(this.bill.expectedAmount || 0)
+        let amountBN = new BigNumber(this.data.bill.amount || 0)
+        const expectedAmountBN = new BigNumber(this.data.bill.expectedAmount || 0)
 
         priceLeftToRight = getExchangePerPrice(
             amountBN,
@@ -1123,11 +1102,11 @@ export class SwapStore {
             ).toFixed(),
         )
 
-        if (isAmountValid(priceLeftToRight)) {
+        if (isGoodBignumber(priceLeftToRight)) {
             this.changeData('priceLeftToRight', priceLeftToRight.toFixed())
         }
 
-        if (isAmountValid(priceRightToLeft)) {
+        if (isGoodBignumber(priceRightToLeft)) {
             this.changeData('priceRightToLeft', priceRightToLeft.toFixed())
         }
     }
@@ -1138,7 +1117,7 @@ export class SwapStore {
      * @param {SwapBill[K]} value
      */
     protected changeBillData<K extends keyof SwapBill>(key: K, value: SwapBill[K]): void {
-        this.bill[key] = value
+        this.data.bill[key] = value
     }
 
     /**
@@ -1188,7 +1167,7 @@ export class SwapStore {
      * @protected
      */
     protected resetBill(): void {
-        this.bill = DEFAULT_SWAP_BILL
+        this.data.bill = DEFAULT_SWAP_BILL
     }
 
     /**
@@ -1319,15 +1298,11 @@ export class SwapStore {
             return
         }
 
-        const amountBN = this.leftAmountNumber
-            .shiftedBy(this.leftTokenDecimals)
-            .dp(0, BigNumber.ROUND_DOWN)
-
         this.changeState('isCrossExchangeCalculating', !force)
 
         debug(
             '#calculateLtrCrossExchangeBill invalidate routes',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            toJS(this.data.bestCrossExchangeRoute), toJS(this.data.bill),
         )
 
         await (
@@ -1339,9 +1314,9 @@ export class SwapStore {
                     const route = { ..._route }
                     const tokens = this.getRouteTokensMap(route.tokens, true)
 
-                    route.bill.amount = amountBN.toFixed()
-                    route.bill.expectedAmount = amountBN.toFixed()
-                    route.bill.minExpectedAmount = amountBN.toFixed()
+                    route.bill.amount = this.leftAmountNumber.toFixed()
+                    route.bill.expectedAmount = this.leftAmountNumber.toFixed()
+                    route.bill.minExpectedAmount = this.leftAmountNumber.toFixed()
                     route.pairs = []
                     route.steps = []
 
@@ -1368,7 +1343,7 @@ export class SwapStore {
                                 const [
                                     {
                                         expected_amount: expectedAmount,
-                                        expected_fee: expectedFee,
+                                        expected_fee: fee,
                                     },
                                     { expected_amount: minExpectedAmount },
                                 ] = await Promise.all([
@@ -1386,7 +1361,6 @@ export class SwapStore {
                                     ),
                                 ])
 
-                                route.bill._minExpectedAmount = minExpectedAmount as string
                                 route.bill.minExpectedAmount = getSlippageMinExpectedAmount(
                                     new BigNumber(minExpectedAmount || 0),
                                     this.data.slippage,
@@ -1395,7 +1369,7 @@ export class SwapStore {
                                 route.steps.push({
                                     amount: route.bill.expectedAmount!,
                                     expectedAmount,
-                                    fee: expectedFee,
+                                    fee,
                                     from: token.symbol,
                                     minExpectedAmount: route.bill.minExpectedAmount,
                                     pair,
@@ -1425,9 +1399,9 @@ export class SwapStore {
         const currentRoute = this.data.bestCrossExchangeRoute && { ...this.data.bestCrossExchangeRoute }
         const prevAmountBN = currentRoute?.bill.amount !== undefined
             ? new BigNumber(currentRoute.bill.amount || 0)
-            : amountBN
-        const isAmountDecreased = prevAmountBN.gt(amountBN)
-        const directAmount = new BigNumber(this.bill.expectedAmount || 0)
+            : this.leftAmountNumber
+        const isAmountDecreased = prevAmountBN.gt(this.leftAmountNumber)
+        const directExpectedAmount = new BigNumber(this.data.bill.expectedAmount || 0)
         let bestExpectedAmount = new BigNumber(
                 isAmountDecreased ? 0 : (currentRoute?.bill.expectedAmount || 0),
             ),
@@ -1441,42 +1415,36 @@ export class SwapStore {
                 break
             }
 
-            let expectedAmountBN = new BigNumber(route.bill.expectedAmount || 0)
+            const expectedAmountBN = new BigNumber(route.bill.expectedAmount || 0)
 
-            if (
-                expectedAmountBN.gt(directAmount)
-                && expectedAmountBN.gt(bestExpectedAmount)
-            ) {
-                expectedAmountBN = expectedAmountBN.shiftedBy(-this.rightTokenDecimals)
-                const fee = getReducedCrossExchangeFee(route.steps)
+            if (expectedAmountBN.gt(directExpectedAmount) && expectedAmountBN.gt(bestExpectedAmount)) {
+                const prices: Pick<SwapRoute, 'priceLeftToRight' | 'priceRightToLeft'> = {}
+
+                const priceLeftToRight = getExchangePerPrice(
+                    this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals),
+                    expectedAmountBN.shiftedBy(-this.rightTokenDecimals),
+                    this.leftTokenDecimals,
+                )
+
+                if (isGoodBignumber(priceLeftToRight)) {
+                    prices.priceLeftToRight = priceLeftToRight.toFixed()
+                }
+
+                const priceRightToLeft = getExchangePerPrice(
+                    expectedAmountBN.shiftedBy(-this.rightTokenDecimals),
+                    this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals),
+                    this.rightTokenDecimals,
+                )
+
+                if (isGoodBignumber(priceRightToLeft)) {
+                    prices.priceRightToLeft = priceRightToLeft.toFixed()
+                }
+
                 const amount = getReducedCrossExchangeAmount(
                     this.leftAmountNumber,
                     this.leftToken,
                     route.pairs,
                 )
-                const priceImpact = getCrossExchangePriceImpact(amount, expectedAmountBN)
-
-                const prices: Pick<SwapRoute, 'priceLeftToRight' | 'priceRightToLeft'> = {}
-
-                const priceLeftToRight = getExchangePerPrice(
-                    this.leftAmountNumber,
-                    expectedAmountBN,
-                    this.leftTokenDecimals,
-                )
-
-                const priceRightToLeft = getExchangePerPrice(
-                    expectedAmountBN,
-                    this.leftAmountNumber,
-                    this.rightTokenDecimals,
-                )
-
-                if (isAmountValid(priceLeftToRight)) {
-                    prices.priceLeftToRight = priceLeftToRight.toFixed()
-                }
-
-                if (isAmountValid(priceRightToLeft)) {
-                    prices.priceRightToLeft = priceRightToLeft.toFixed()
-                }
 
                 bestCrossExchangeRoute = {
                     ...route,
@@ -1484,15 +1452,15 @@ export class SwapStore {
                     bill: {
                         ...route.bill,
                         expectedAmount: expectedAmountBN.toFixed(),
-                        fee: fee.toFixed(),
-                        priceImpact: priceImpact.toFixed(),
+                        fee: getReducedCrossExchangeFee(route.steps).toFixed(),
+                        priceImpact: getCrossExchangePriceImpact(amount, expectedAmountBN).toFixed(),
                     },
-                    leftAmount: this.leftAmountNumber.toFixed(),
-                    rightAmount: expectedAmountBN.toFixed(),
+                    leftAmount: this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals).toFixed(),
+                    rightAmount: expectedAmountBN.shiftedBy(-this.rightTokenDecimals).toFixed(),
                     slippage: getCrossExchangeSlippage(this.data.slippage, route.steps.length),
                 }
 
-                bestExpectedAmount = new BigNumber(bestCrossExchangeRoute?.bill.minExpectedAmount || 0)
+                bestExpectedAmount = expectedAmountBN
             }
         }
 
@@ -1506,7 +1474,7 @@ export class SwapStore {
 
         debug(
             '#calculateLtrCrossExchangeBill done',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            toJS(this.data), toJS(this.state), toJS(this.data.bill),
         )
     }
 
@@ -1529,29 +1497,25 @@ export class SwapStore {
             return
         }
 
-        const amountBN = this.rightAmountNumber
-            .shiftedBy(this.rightTokenDecimals)
-            .dp(0, BigNumber.ROUND_DOWN)
-
         this.changeState('isCrossExchangeCalculating', !force)
 
         debug(
             '#calculateRtlCrossExchangeBill invalidate routes',
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            toJS(this.data), toJS(this.state), toJS(this.data.bill),
         )
+
+        let routes: SwapRoute[] = []
 
         await (
             async () => {
-                const routes: SwapRoute[] = []
+                const _routes: SwapRoute[] = []
 
                 // eslint-disable-next-line no-restricted-syntax
                 for (const _route of this.routes) {
                     const route = { ..._route }
                     const tokens = this.getRouteTokensMap(route.tokens, false)
 
-                    route.bill.amount = amountBN.toFixed()
-                    route.bill.expectedAmount = amountBN.toFixed()
-                    route.bill.minExpectedAmount = amountBN.toFixed()
+                    route.bill.expectedAmount = this.rightAmountNumber.toFixed()
                     route.pairs = []
                     route.steps = []
 
@@ -1570,34 +1534,34 @@ export class SwapStore {
                                 pair.contract = new Contract(DexAbi.Pair, pair.address)
                             }
 
-                            route.pairs.push(pair)
+                            route.pairs.unshift(pair)
 
                             const receiveTokenAddress = new Address(token.root)
 
                             try {
                                 const {
-                                    expected_amount: expectedAmount,
-                                    expected_fee: expectedFee,
+                                    expected_amount: amount,
+                                    expected_fee: fee,
                                 } = await getExpectedSpendAmount(
                                     pair.contract,
-                                    route.bill.expectedAmount!,
+                                    idx === 0 ? route.bill.expectedAmount! : route.bill.amount!,
                                     receiveTokenAddress,
                                     toJS(pair.state),
                                 )
 
                                 route.steps.unshift({
-                                    amount: expectedAmount,
-                                    expectedAmount: route.bill.expectedAmount!,
-                                    fee: expectedFee,
+                                    amount,
+                                    expectedAmount: idx === 0 ? route.bill.expectedAmount! : route.bill.amount!,
+                                    fee,
                                     from: nextToken.symbol,
-                                    minExpectedAmount: route.bill.minExpectedAmount!,
+                                    minExpectedAmount: idx === 0 ? route.bill.expectedAmount! : route.bill.amount!,
                                     pair,
                                     receiveAddress: receiveTokenAddress,
                                     spentAddress: new Address(nextToken.root),
                                     to: token.symbol,
                                 })
 
-                                route.bill.expectedAmount = expectedAmount as string
+                                route.bill.amount = amount
                             }
                             catch (e) {
                                 route.bill = {}
@@ -1608,19 +1572,24 @@ export class SwapStore {
                         }
                     }
 
-                    routes.push(route)
+                    _routes.push(route)
                 }
 
-                this.changeData('routes', routes)
+                routes = _routes
             }
         )()
 
+        debug(
+            '#calculateRtlCrossExchangeBill first iteration',
+            toJS({ ...this.data, routes }), toJS(this.state), toJS(this.data.bill),
+        )
+
         await (
             async () => {
-                const routes: SwapRoute[] = []
+                const _routes: SwapRoute[] = []
 
                 // eslint-disable-next-line no-restricted-syntax
-                for (const _route of this.routes) {
+                for (const _route of routes) {
                     const route = { ..._route }
                     const steps = route.steps.map((step, idx) => ({ idx, step }))
 
@@ -1636,112 +1605,108 @@ export class SwapStore {
 
                         try {
                             const {
-                                expected_amount: minExpectedAmount,
+                                expected_amount: expectedAmount,
                             } = await getExpectedExchange(
                                 step.pair.contract,
-                                idx === 0 ? route.bill.expectedAmount! : route.bill.minExpectedAmount!,
+                                idx === 0 ? route.bill.amount! : route.bill.minExpectedAmount!,
                                 step.spentAddress,
                                 toJS(step.pair.state),
                             )
 
-                            route.bill._minExpectedAmount = minExpectedAmount as string
                             route.bill.minExpectedAmount = getSlippageMinExpectedAmount(
-                                new BigNumber(minExpectedAmount || 0),
+                                new BigNumber(expectedAmount || 0),
                                 this.data.slippage,
                             ).toFixed() as string
 
+                            step.expectedAmount = expectedAmount
                             step.minExpectedAmount = route.bill.minExpectedAmount
                         }
                         catch (e) {
-                            error('Min expected amount reverse by right error', e)
+                            error('Get reverted min expected amount error', e)
                         }
                     }
 
-                    routes.push(route)
+                    _routes.push(route)
                 }
 
-                this.changeData('routes', routes)
+                routes = _routes
             }
         )()
 
         const currentRoute = this.data.bestCrossExchangeRoute && { ...this.data.bestCrossExchangeRoute }
         const prevAmountBN = currentRoute?.bill.amount !== undefined
             ? new BigNumber(currentRoute.bill.amount || 0)
-            : amountBN
-        const isAmountDecreased = prevAmountBN.gte(amountBN)
-        const directAmount = new BigNumber(this.bill.amount || 0)
-        let bestExpectedAmount = new BigNumber(
-                isAmountDecreased ? 0 : (currentRoute?.bill.expectedAmount || 0),
+            : this.rightAmountNumber
+        const isAmountDecreased = prevAmountBN.gte(this.rightAmountNumber)
+        const directAmount = new BigNumber(this.data.bill.amount || 0)
+        let bestAmount = new BigNumber(
+                isAmountDecreased ? 0 : (currentRoute?.bill.amount || 0),
             ),
             bestCrossExchangeRoute: SwapRoute | undefined
 
         this.changeData('bestCrossExchangeRoute', undefined)
 
         // eslint-disable-next-line no-restricted-syntax
-        for (const route of this.routes) {
+        for (const route of routes) {
             if (route.steps.length === 0) {
                 break
             }
 
-            let expectedAmountBN = new BigNumber(route.bill.expectedAmount || 0)
+            const amountBN = new BigNumber(route.bill.amount || 0)
 
             if (
                 !this.isEnoughLiquidity
-                || (directAmount.isZero() && expectedAmountBN.gt(0))
-                || (
-                    directAmount.gt(expectedAmountBN)
-                    && (bestExpectedAmount.isZero() || bestExpectedAmount.gt(expectedAmountBN))
-                )
+                || (directAmount.isZero() && amountBN.gt(0))
+                || (directAmount.gt(amountBN) && (bestAmount.isZero() || bestAmount.gt(amountBN)))
             ) {
-                expectedAmountBN = expectedAmountBN.shiftedBy(-this.leftTokenDecimals)
-                const fee = getReducedCrossExchangeFee(route.steps)
-                const amount = getReducedCrossExchangeAmount(
-                    expectedAmountBN,
-                    this.leftToken,
-                    route.pairs.slice().reverse(),
-                )
-                const priceImpact = getCrossExchangePriceImpact(amount, this.rightAmountNumber)
-
                 const prices: Pick<SwapRoute, 'priceLeftToRight' | 'priceRightToLeft'> = {}
 
                 const priceLeftToRight = getExchangePerPrice(
-                    expectedAmountBN,
-                    this.rightAmountNumber,
+                    amountBN.shiftedBy(-this.leftTokenDecimals),
+                    this.rightAmountNumber.shiftedBy(-this.rightTokenDecimals),
                     this.leftTokenDecimals,
                 )
 
-                const priceRightToLeft = getExchangePerPrice(
-                    this.rightAmountNumber,
-                    expectedAmountBN,
-                    this.rightTokenDecimals,
-                )
-
-                if (isAmountValid(priceLeftToRight)) {
+                if (isGoodBignumber(priceLeftToRight)) {
                     prices.priceLeftToRight = priceLeftToRight.toFixed()
                 }
 
-                if (isAmountValid(priceRightToLeft)) {
+                const priceRightToLeft = getExchangePerPrice(
+                    this.rightAmountNumber.shiftedBy(-this.rightTokenDecimals),
+                    amountBN.shiftedBy(-this.leftTokenDecimals),
+                    this.rightTokenDecimals,
+                )
+
+                if (isGoodBignumber(priceRightToLeft)) {
                     prices.priceRightToLeft = priceRightToLeft.toFixed()
                 }
+
+                const amount = getReducedCrossExchangeAmount(
+                    amountBN,
+                    this.leftToken,
+                    route.pairs,
+                )
 
                 bestCrossExchangeRoute = {
                     ...route,
                     ...prices,
                     bill: {
                         ...route.bill,
-                        expectedAmount: expectedAmountBN.toFixed(),
-                        fee: fee.toFixed(),
-                        priceImpact: priceImpact.toFixed(),
+                        amount: amountBN.toFixed(),
+                        fee: getReducedCrossExchangeFee(route.steps).toFixed(),
+                        priceImpact: getCrossExchangePriceImpact(amount, this.rightAmountNumber).toFixed(),
                     },
-                    leftAmount: expectedAmountBN.toFixed(),
-                    rightAmount: this.rightAmountNumber.toFixed(),
+                    leftAmount: amountBN.shiftedBy(-this.leftTokenDecimals).toFixed(),
+                    rightAmount: this.rightAmountNumber.shiftedBy(-this.rightTokenDecimals).toFixed(),
                     slippage: getCrossExchangeSlippage(this.data.slippage, route.steps.length),
                 }
 
-                bestExpectedAmount = new BigNumber(bestCrossExchangeRoute?.bill.minExpectedAmount || 0)
+                bestAmount = new BigNumber(bestCrossExchangeRoute?.bill.minExpectedAmount || 0)
             }
         }
 
+
+        this.changeData('routes', routes)
         this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute)
 
         if (bestCrossExchangeRoute === undefined) {
@@ -1751,8 +1716,8 @@ export class SwapStore {
         this.changeState('isCrossExchangeCalculating', false)
 
         debug(
-            '#calculateRtlCrossExchangeBill done', force,
-            toJS(this.data), toJS(this.state), toJS(this.bill),
+            '#calculateRtlCrossExchangeBill done',
+            toJS(this.data), toJS(this.state), toJS(this.data.bill),
         )
     }
 
@@ -2125,14 +2090,14 @@ export class SwapStore {
      * Returns `true` if left amount value is valid, otherwise `false`.
      */
     public get isLeftAmountValid(): boolean {
-        return isAmountValid(this.leftAmountNumber, this.leftTokenDecimals)
+        return isGoodBignumber(this.leftAmountNumber)
     }
 
     /**
      * Returns `true` if right amount value is valid, otherwise `false`.
      */
     public get isRightAmountValid(): boolean {
-        return isAmountValid(this.rightAmountNumber, this.rightTokenDecimals)
+        return isGoodBignumber(this.rightAmountNumber)
     }
 
     /**
@@ -2158,12 +2123,13 @@ export class SwapStore {
     public get isCrossExchangeSwapValid(): boolean {
         return (
             this.isCrossExchangeAvailable
+            && this.wallet.account?.address !== undefined
             && this.leftToken?.wallet !== undefined
-            && this.bestCrossExchangeRoute?.bill !== undefined
-            && this.bestCrossExchangeRoute.bill.amount !== undefined
-            && new BigNumber(this.bestCrossExchangeRoute.bill.expectedAmount || 0).gt(0)
-            && new BigNumber(this.bestCrossExchangeRoute.bill.amount || 0).gt(0)
-            && new BigNumber(this.leftToken.balance || 0).gte(this.bestCrossExchangeRoute.leftAmount || 0)
+            && this.leftTokenAddress !== undefined
+            && new BigNumber(this.bestCrossExchangeRoute?.bill.amount || 0).gt(0)
+            && new BigNumber(this.bestCrossExchangeRoute?.bill.expectedAmount || 0).gt(0)
+            && new BigNumber(this.bestCrossExchangeRoute?.bill.minExpectedAmount || 0).gt(0)
+            && new BigNumber(this.leftToken.balance || 0).gte(this.bestCrossExchangeRoute?.bill.amount || 0)
         )
     }
 
@@ -2174,12 +2140,15 @@ export class SwapStore {
     public get isDirectSwapValid(): boolean {
         return (
             this.isEnoughLiquidity
+            && this.wallet.account?.address !== undefined
             && this.pair?.address !== undefined
+            && this.pair?.contract !== undefined
             && this.leftToken?.wallet !== undefined
-            && this.bill.amount !== undefined
-            && new BigNumber(this.bill.expectedAmount || 0).gt(0)
-            && new BigNumber(this.bill.amount || 0).gt(0)
-            && new BigNumber(this.leftToken.balance || 0).gte(this.bill.amount)
+            && this.leftTokenAddress !== undefined
+            && new BigNumber(this.data.bill.amount || 0).gt(0)
+            && new BigNumber(this.data.bill.expectedAmount || 0).gt(0)
+            && new BigNumber(this.data.bill.minExpectedAmount || 0).gt(0)
+            && new BigNumber(this.leftToken.balance || 0).gte(this.data.bill.amount || 0)
         )
     }
 
@@ -2236,23 +2205,26 @@ export class SwapStore {
     }
 
     /**
-     *
+     * Returns left amount BigNumber shifted by the left token decimals
+     * @returns {BigNumber}
      * @protected
      */
     protected get leftAmountNumber(): BigNumber {
-        return new BigNumber(this.leftAmount)
+        return new BigNumber(this.leftAmount).shiftedBy(this.leftTokenDecimals).dp(0, BigNumber.ROUND_DOWN)
     }
 
     /**
-     *
+     * Returns right amount BigNumber shifted by the right token decimals
+     * @returns {BigNumber}
      * @protected
      */
     protected get rightAmountNumber(): BigNumber {
-        return new BigNumber(this.rightAmount)
+        return new BigNumber(this.rightAmount).shiftedBy(this.rightTokenDecimals).dp(0, BigNumber.ROUND_DOWN)
     }
 
     /**
-     *
+     * Returns left token `Address` instance if left token is selected, otherwise returns `undefined`.
+     * @returns {Address | undefined}
      * @protected
      */
     protected get leftTokenAddress(): Address | undefined {
@@ -2260,7 +2232,8 @@ export class SwapStore {
     }
 
     /**
-     *
+     * Returns right token `Address` instance if right token is selected, otherwise returns `undefined`.
+     * @returns {Address | undefined}
      * @protected
      */
     protected get rightTokenAddress(): Address | undefined {
@@ -2308,13 +2281,13 @@ export class SwapStore {
      */
 
     /**
-     * Bill: amount
+     * Returns direct exchange
      * @returns {SwapBill['amount']}
      */
     public get amount(): SwapBill['amount'] {
         return this.isCrossExchangeMode
             ? this.bestCrossExchangeRoute?.bill.amount
-            : this.bill.amount
+            : this.data.bill.amount
     }
 
     /**
@@ -2324,7 +2297,7 @@ export class SwapStore {
     public get fee(): SwapBill['fee'] {
         return this.isCrossExchangeMode
             ? this.bestCrossExchangeRoute?.bill.fee
-            : this.bill.fee
+            : this.data.bill.fee
     }
 
     /**
@@ -2334,7 +2307,7 @@ export class SwapStore {
     public get minExpectedAmount(): SwapBill['minExpectedAmount'] {
         return this.isCrossExchangeMode
             ? this.bestCrossExchangeRoute?.bill.minExpectedAmount
-            : this.bill.minExpectedAmount
+            : this.data.bill.minExpectedAmount
     }
 
     /**
@@ -2344,7 +2317,7 @@ export class SwapStore {
     public get priceImpact(): SwapBill['priceImpact'] {
         return this.isCrossExchangeMode
             ? this.bestCrossExchangeRoute?.bill.priceImpact
-            : this.bill.priceImpact
+            : this.data.bill.priceImpact
     }
 
 

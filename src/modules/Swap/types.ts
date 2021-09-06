@@ -6,51 +6,38 @@ import { DexAbi } from '@/misc'
 import { TokenCache } from '@/stores/TokensCacheService'
 
 export type SwapBill = {
+    /** As left amount */
     amount?: string;
+    /** As right amount */
     expectedAmount?: string;
     fee?: string;
+    /** As minimum received */
     minExpectedAmount?: string;
-    _minExpectedAmount?: string;
     priceImpact?: string;
-}
-
-export type SwapPairBalances = {
-    left: string;
-    right: string;
-}
-
-export type SwapPairDecimals = {
-    left: number;
-    right: number;
-}
-
-export type SwapPairSymbols = {
-    left: string;
-    right: string;
-}
-
-export type SwapPairRoots = {
-    left: Address;
-    right: Address;
 }
 
 export type SwapPair = {
     address?: Address;
-    balances?: SwapPairBalances;
+    balances?: {
+        left: string;
+        right: string;
+    };
     contract?: Contract<typeof DexAbi.Pair>;
-    decimals?: SwapPairDecimals;
+    decimals?: {
+        left: number;
+        right: number;
+    };
     denominator?: string;
     numerator?: string;
-    roots?: SwapPairRoots;
+    roots?: {
+        left: Address;
+        right: Address;
+    };
     state?: FullContractState;
-    symbols?: SwapPairSymbols;
-}
-
-export type SwapRouteResult = {
-    amount?: string;
-    status?: 'success' | 'cancel';
-    step: SwapRouteStep;
-    transaction?: Transaction;
+    symbols?: {
+        left: string;
+        right: string;
+    };
 }
 
 export type SwapRouteStep = {
@@ -77,8 +64,16 @@ export type SwapRoute = {
     tokens: TokenCache[];
 }
 
+export type SwapRouteResult = {
+    amount?: string;
+    status?: 'success' | 'cancel';
+    step: SwapRouteStep;
+    transaction?: Transaction;
+}
+
 export type SwapStoreData = {
     bestCrossExchangeRoute?: SwapRoute;
+    bill: SwapBill;
     crossPairs: SwapPair[];
     leftAmount: string;
     leftToken?: string;
