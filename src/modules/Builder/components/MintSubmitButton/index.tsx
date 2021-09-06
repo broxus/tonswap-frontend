@@ -6,6 +6,7 @@ import { observer } from 'mobx-react-lite'
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 import { useWallet } from '@/stores/WalletService'
 import { Icon } from '@/components/common/Icon'
+import { isAddressValid } from '@/misc'
 
 type Props = {
     closePopup: () => void;
@@ -21,7 +22,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
         disabled: managingToken.isMinting,
     }
-    let buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_SUBMIT' })
+    let buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MINT_BTN_TEXT' })
     const showSpinner = managingToken.isMinting
 
     switch (true) {
@@ -35,6 +36,11 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
             })
             break
 
+        case !isAddressValid(managingToken.targetAddress):
+            buttonProps.disabled = true
+            buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_VALID_ADDRESS' })
+            break
+
         case !managingToken.targetAddress || !managingToken.amountToMint:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_ENTER_ALL_DATA' })
@@ -42,8 +48,8 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
 
         case managingToken.targetAddress != null && managingToken.amountToMint != null:
             buttonProps.onClick = async () => {
-                await managingToken.mint()
                 closePopup()
+                await managingToken.mint()
             }
             break
 

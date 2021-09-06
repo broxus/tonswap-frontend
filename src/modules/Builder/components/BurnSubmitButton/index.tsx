@@ -1,7 +1,7 @@
 import * as React from 'react'
+import { useParams } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
-import { useParams } from 'react-router-dom'
 
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 import { useWallet } from '@/stores/WalletService'
@@ -20,10 +20,10 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     const managingToken = useManageTokenStore(tokenRoot)
 
     const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
-        disabled: managingToken.isTransfer,
+        disabled: managingToken.isBurning,
     }
-    let buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_SUBMIT' })
-    const showSpinner = managingToken.isTransfer
+    let buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BURN_BTN_TEXT' })
+    const showSpinner = managingToken.isBurning
 
     switch (true) {
         case !wallet.account:
@@ -36,20 +36,25 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
             })
             break
 
-        case !managingToken.newOwnerAddress:
-            buttonProps.disabled = true
-            buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_ENTER_ALL_DATA' })
-            break
-
-        case !isAddressValid(managingToken.newOwnerAddress):
+        case !isAddressValid(managingToken.targetAddress):
             buttonProps.disabled = true
             buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_VALID_ADDRESS' })
             break
 
-        case managingToken.newOwnerAddress != null:
+        case !isAddressValid(managingToken.callbackAddress):
+            buttonProps.disabled = true
+            buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MESSAGE_INVALID_CALLBACK_ADDRESS' })
+            break
+
+        case !managingToken.targetAddress || !managingToken.amountToBurn:
+            buttonProps.disabled = true
+            buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_ENTER_ALL_DATA' })
+            break
+
+        case managingToken.targetAddress != null && managingToken.amountToBurn != null:
             buttonProps.onClick = async () => {
                 closePopup()
-                await managingToken.transfer()
+                await managingToken.burn()
             }
             break
 
@@ -59,7 +64,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     return (
         <button
             type="button"
-            className="btn btn-tertiary btn-lg form-submit btn-block"
+            className="btn btn--grey btn-lg form-submit btn-block"
             aria-disabled={buttonProps.disabled}
             {...buttonProps}
         >
@@ -72,4 +77,4 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     )
 }
 
-export const TransferSubmitButton = observer(SubmitButton)
+export const BurnSubmitButton = observer(SubmitButton)

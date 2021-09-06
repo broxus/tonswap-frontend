@@ -33,14 +33,18 @@ export const DEFAULT_MANAGE_TOKEN_STORE_DATA: ManageTokenStoreData = {
     token: undefined,
     tokenCache: undefined,
     targetAddress: '',
-    amountToMint: '',
-    newOwnerAddress: '',
     targetWalletBalance: '',
+    amountToMint: '',
+    amountToBurn: '',
+    callbackAddress: '0:0000000000000000000000000000000000000000000000000000000000000000',
+    callbackPayload: '',
+    newOwnerAddress: '',
 }
 
 export const DEFAULT_MANAGE_TOKEN_STORE_STATE: ManageTokenStoreState = {
     tokenRoot: '',
     isLoading: false,
     isMinting: false,
+    isBurning: false,
     isTransfer: false,
 }

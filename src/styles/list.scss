@@ -23,6 +23,12 @@
         text-decoration: none !important;
     }
 
+    &__row {
+        &--pointer {
+            cursor: pointer;
+        }
+    }
+
     &__header {
         color: rgba(255, 255, 255, 48%);
         font-size: 14px;

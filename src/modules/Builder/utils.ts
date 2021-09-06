@@ -1,12 +1,14 @@
+import { storage } from '@/utils'
+
 export function getTokenFromLocalStorage(): string[] {
-    return JSON.parse(localStorage.getItem('builder_tokens') || '[]')
+    return JSON.parse(storage.get('builder_tokens') || '[]')
 }
 
 export function saveTokenToLocalStorage(token: string): void {
-    localStorage.setItem(
+    storage.set(
         'builder_tokens',
         JSON.stringify([
-            ...JSON.parse(localStorage.getItem('builder_tokens') || '[]'),
+            ...getTokenFromLocalStorage(),
             token,
         ]),
     )

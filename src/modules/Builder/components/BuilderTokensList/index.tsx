@@ -99,6 +99,11 @@ export function TokensList(): JSX.Element {
                                 id: 'BUILDER_LIST_HEADER_TOTAL_SUPPLY_CELL',
                             })}
                         </div>
+                        <div className="list__cell list__cell--center">
+                            {intl.formatMessage({
+                                id: 'BUILDER_LIST_HEADER_TOTAL_ROOT_CELL',
+                            })}
+                        </div>
                     </div>
 
                     {builder.tokens.map(token => (
