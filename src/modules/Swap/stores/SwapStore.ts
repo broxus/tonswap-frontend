@@ -281,7 +281,7 @@ export class SwapStore {
         const firstPair = this.bestCrossExchangeRoute?.pairs.slice().shift()
 
         if (
-            this.isCrossExchangeSwapValid
+            !this.isCrossExchangeSwapValid
             || firstPair?.address === undefined
             || firstPair.contract === undefined
         ) {
