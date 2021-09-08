@@ -19,6 +19,8 @@ import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { SwapDirection } from '@/modules/Swap/types'
 import { TokensList } from '@/modules/TokensList'
+import { TokenImportPopup } from '@/modules/TokensList/components'
+
 
 import './index.scss'
 
@@ -153,6 +155,15 @@ export function Swap(): JSX.Element {
                     currentToken={swap[form.tokenSide]}
                     onDismiss={form.hideTokensList}
                     onSelectToken={form.onSelectToken}
+                />
+            )}
+
+            {(form.isImporting && form.tokenToImport !== undefined) && (
+                <TokenImportPopup
+                    key="tokenImport"
+                    token={form.tokenToImport}
+                    onDismiss={form.onDismissImporting}
+                    onImport={form.onDismissImporting}
                 />
             )}
         </section>

@@ -49,7 +49,7 @@ export function App(): JSX.Element {
                                 <Swap />
                             </Route>
 
-                            <Route exact path="/pool/:leftTokenAddress([0][:][0-9a-f]{64})?/:rightTokenAddress([0][:][0-9a-f]{64})?">
+                            <Route exact path="/pool/:leftTokenRoot([0][:][0-9a-f]{64})?/:rightTokenRoot([0][:][0-9a-f]{64})?">
                                 <Pool />
                             </Route>
 

@@ -25,7 +25,7 @@ export function TokenImportPopup({ token, onDismiss, onImport }: Props): JSX.Ele
 
     return ReactDOM.createPortal(
         <div className="popup">
-            <div onClick={onDismiss} className="popup-overlay" />
+            <div className="popup-overlay" onClick={onDismiss} />
             <div className="popup__wrap">
                 <button
                     type="button"

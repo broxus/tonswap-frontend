@@ -20,6 +20,7 @@ import { usePoolForm } from '@/modules/Pool/hooks/usePoolForm'
 import { usePool } from '@/modules/Pool/stores/PoolStore'
 import { AddLiquidityStep } from '@/modules/Pool/types'
 import { TokensList } from '@/modules/TokensList'
+import { TokenImportPopup } from '@/modules/TokensList/components'
 import { useWallet } from '@/stores/WalletService'
 
 import './index.scss'
@@ -168,20 +169,24 @@ export function Pool(): JSX.Element {
                 )}
             </Observer>
 
-            <Observer>
-                {() => (
-                    <>
-                        {(form.isTokenListShown && form.tokenSide) && (
-                            <TokensList
-                                key="tokensList"
-                                currentToken={pool[form.tokenSide]}
-                                onDismiss={form.hideTokensList}
-                                onSelectToken={form.onSelectToken}
-                            />
-                        )}
-                    </>
-                )}
-            </Observer>
+            {(form.isTokenListShown && form.tokenSide) && (
+                <TokensList
+                    key="tokensList"
+                    currentToken={pool[form.tokenSide]}
+                    onDismiss={form.hideTokensList}
+                    onSelectToken={form.onSelectToken}
+                />
+            )}
+
+
+            {(form.isImporting && form.tokenToImport !== undefined) && (
+                <TokenImportPopup
+                    key="tokenImport"
+                    token={form.tokenToImport}
+                    onDismiss={form.onDismissImporting}
+                    onImport={form.onDismissImporting}
+                />
+            )}
         </section>
     )
 }

@@ -5,10 +5,16 @@ import {
     action,
     IReactionDisposer,
     makeAutoObservable,
-    reaction, runInAction,
+    reaction,
+    runInAction,
 } from 'mobx'
-import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
+import ton, {
+    Address,
+    Contract,
+    Subscriber,
+} from 'ton-inpage-provider'
 
+import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
 import {
     checkPair,
     Dex,
@@ -311,9 +317,9 @@ export class PoolStore {
             this.changeState('isDepositingRight', true)
         }
 
-        const delta = new BigNumber(amount || '0')
+        const delta = new BigNumber(amount || 0)
             .shiftedBy(token.decimals)
-            .minus(dexBalance || '0')
+            .minus(dexBalance || 0)
             .decimalPlaces(0, BigNumber.ROUND_UP)
 
         if (
@@ -418,11 +424,11 @@ export class PoolStore {
                 new Address(this.leftToken.root),
                 new Address(this.rightToken.root),
                 new Address(this.lpRoot),
-                new BigNumber(this.leftAmount || '0')
+                new BigNumber(this.leftAmount || 0)
                     .shiftedBy(this.leftToken.decimals)
                     .decimalPlaces(0)
                     .toFixed(),
-                new BigNumber(this.rightAmount || '0')
+                new BigNumber(this.rightAmount || 0)
                     .shiftedBy(this.rightToken.decimals)
                     .decimalPlaces(0)
                     .toFixed(),
@@ -588,14 +594,21 @@ export class PoolStore {
 
     /**
      *
-     * @param {TokenCache[]} tokens
-     * @param {TokenCache[]} prevTokens
+     * @param {(TokenCache | undefined)[]} tokens
+     * @param {(TokenCache | undefined)[]} prevTokens
      * @returns {Promise<void>}
      * @protected
      */
-    protected handleTokensChange(tokens: TokenCache[] = [], prevTokens: TokenCache[] = []): void {
+    protected handleTokensChange(
+        tokens: (TokenCache | undefined)[] = [],
+        prevTokens: (TokenCache | undefined)[] = [],
+    ): void {
         const [leftToken, rightToken] = tokens
         const [prevLeftToken, prevRightToken] = prevTokens
+
+        if (leftToken?.root === prevLeftToken?.root && rightToken?.root === prevRightToken?.root) {
+            return
+        }
 
         const isLeftChanged = leftToken !== undefined && leftToken?.root !== prevLeftToken?.root
         const isRightChanged = rightToken !== undefined && rightToken?.root !== prevRightToken?.root
@@ -698,7 +711,7 @@ export class PoolStore {
             this.isPoolEmpty
                 ? '100.0'
                 : new BigNumber(poolShare)
-                    .plus(lpWalletBalance || '0')
+                    .plus(lpWalletBalance || 0)
                     .multipliedBy(100)
                     .dividedBy(new BigNumber(pairLpBalance).plus(poolShare))
                     .decimalPlaces(8, BigNumber.ROUND_DOWN)
@@ -708,7 +721,7 @@ export class PoolStore {
             'currentSharePercent',
             this.isPoolEmpty
                 ? '0.0'
-                : new BigNumber(lpWalletBalance || '0')
+                : new BigNumber(lpWalletBalance || 0)
                     .multipliedBy(100)
                     .dividedBy(new BigNumber(pairLpBalance))
                     .decimalPlaces(8, BigNumber.ROUND_DOWN)
@@ -942,8 +955,8 @@ export class PoolStore {
             const leftDecimals = this.leftToken.decimals
             const rightDecimals = this.rightToken.decimals
 
-            const leftBN = new BigNumber(this.pairBalances?.left || '0').shiftedBy(-leftDecimals)
-            const rightBN = new BigNumber(this.pairBalances?.right || '0').shiftedBy(-rightDecimals)
+            const leftBN = new BigNumber(this.pairBalances?.left || 0).shiftedBy(-leftDecimals)
+            const rightBN = new BigNumber(this.pairBalances?.right || 0).shiftedBy(-rightDecimals)
 
             this.changePoolData(
                 'leftPrice',
@@ -1137,7 +1150,7 @@ export class PoolStore {
         }
 
         const getAmount = (price: string, amount: string, decimals: number) => (
-            new BigNumber(price || '0').multipliedBy(amount).decimalPlaces(decimals, BigNumber.ROUND_UP)
+            new BigNumber(price || 0).multipliedBy(amount).decimalPlaces(decimals, BigNumber.ROUND_UP)
         )
 
         if (
@@ -1321,12 +1334,12 @@ export class PoolStore {
             return
         }
 
-        const leftAmount = new BigNumber(this.leftAmount || '0')
+        const leftAmount = new BigNumber(this.leftAmount || 0)
             .shiftedBy(this.leftToken.decimals)
             .decimalPlaces(0)
             .toFixed()
 
-        const rightAmount = new BigNumber(this.rightAmount || '0')
+        const rightAmount = new BigNumber(this.rightAmount || 0)
             .shiftedBy(this.rightToken.decimals)
             .decimalPlaces(0)
             .toFixed()
@@ -1362,16 +1375,16 @@ export class PoolStore {
                 else {
                     this.changePoolData(
                         'sharePercent',
-                        new BigNumber(this.poolShare || '0')
-                            .plus(this.lpWalletBalance || '0')
+                        new BigNumber(this.poolShare || 0)
+                            .plus(this.lpWalletBalance || 0)
                             .multipliedBy(100)
-                            .dividedBy(new BigNumber(pairLp).plus(this.poolShare || '0'))
+                            .dividedBy(new BigNumber(pairLp).plus(this.poolShare || 0))
                             .decimalPlaces(8, BigNumber.ROUND_DOWN)
                             .toFixed(),
                     )
                     this.changePoolData(
                         'currentSharePercent',
-                        new BigNumber(this.lpWalletBalance || '0')
+                        new BigNumber(this.lpWalletBalance || 0)
                             .multipliedBy(100)
                             .dividedBy(new BigNumber(pairLp))
                             .decimalPlaces(8, BigNumber.ROUND_DOWN)
@@ -1381,7 +1394,7 @@ export class PoolStore {
                     if (this.leftToken !== undefined) {
                         this.changePoolData(
                             'currentShareLeft',
-                            new BigNumber(this.lpWalletBalance || '0')
+                            new BigNumber(this.lpWalletBalance || 0)
                                 .times(new BigNumber(isInverted ? pairRight : pairLeft))
                                 .dividedBy(new BigNumber(pairLp))
                                 .decimalPlaces(0, BigNumber.ROUND_DOWN)
@@ -1404,8 +1417,8 @@ export class PoolStore {
 
                     this.changePoolData(
                         'shareChangePercent',
-                        new BigNumber(this.sharePercent || '0')
-                            .minus(this.currentSharePercent || '0')
+                        new BigNumber(this.sharePercent || 0)
+                            .minus(this.currentSharePercent || 0)
                             .decimalPlaces(8, BigNumber.ROUND_DOWN)
                             .toFixed(),
                     )
@@ -1428,8 +1441,8 @@ export class PoolStore {
                 this.changePoolData('leftDeposit', isInverted ? rightBN.toFixed() : leftBN.toFixed())
                 this.changePoolData('rightDeposit', isInverted ? leftBN.toFixed() : rightBN.toFixed())
 
-                const newLeftBN = new BigNumber(pairLeft).plus(this.leftDeposit || '0')
-                const newRightBN = new BigNumber(pairRight).plus(this.rightDeposit || '0')
+                const newLeftBN = new BigNumber(pairLeft).plus(this.leftDeposit || 0)
+                const newRightBN = new BigNumber(pairRight).plus(this.rightDeposit || 0)
 
                 this.changePoolData('newLeft', newLeftBN.toFixed())
                 this.changePoolData('newRight', newRightBN.toFixed())
@@ -1594,8 +1607,8 @@ export class PoolStore {
             return false
         }
 
-        const leftAmount = new BigNumber(this.leftAmount || '0').shiftedBy(this.leftToken.decimals)
-        return leftAmount.lte(this.dexLeftBalance || '0')
+        const leftAmount = new BigNumber(this.leftAmount || 0).shiftedBy(this.leftToken.decimals || DEFAULT_DECIMALS)
+        return leftAmount.lte(this.dexLeftBalance || 0)
     }
 
     public get isLeftTokenWithdrawAvailable(): boolean {
@@ -1611,8 +1624,8 @@ export class PoolStore {
             return false
         }
 
-        const rightAmount = new BigNumber(this.rightAmount || '0').shiftedBy(this.rightToken.decimals)
-        return rightAmount.lte(this.dexRightBalance || '0')
+        const rightAmount = new BigNumber(this.rightAmount || 0).shiftedBy(this.rightToken.decimals || DEFAULT_DECIMALS)
+        return rightAmount.lte(this.dexRightBalance || 0)
     }
 
     public get isRightTokenWithdrawAvailable(): boolean {
@@ -1637,11 +1650,11 @@ export class PoolStore {
      */
 
     public get isLeftAmountValid(): boolean {
-        return isGoodBignumber(new BigNumber(this.leftAmount))
+        return isGoodBignumber(new BigNumber(this.leftAmount || 0))
     }
 
     public get isRightAmountValid(): boolean {
-        return isGoodBignumber(new BigNumber(this.rightAmount))
+        return isGoodBignumber(new BigNumber(this.rightAmount || 0))
     }
 
     public get leftAmount(): PoolStoreData['leftAmount'] {
