@@ -400,10 +400,12 @@ export class CurrencyStore {
             this.changeState('isPairsLoading', true)
 
             const body: PairsRequest = {
+                currencyAddresses: getImportedTokens(),
                 currencyAddress: this.address,
                 limit: this.pairsLimit,
                 offset: this.pairsCurrentPage >= 1 ? (this.pairsCurrentPage - 1) * this.pairsLimit : 0,
                 ordering: this.pairsOrdering,
+                whiteListUri: DexConstants.TokenListURI,
             }
             const response = await fetch(`${API_URL}/pairs`, {
                 body: JSON.stringify(body),
