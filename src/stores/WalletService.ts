@@ -24,6 +24,7 @@ export type WalletState = {
     hasProvider: boolean;
     isConnecting: boolean;
     isInitialized: boolean;
+    isInitializing: boolean;
 }
 
 export type WalletData = {
@@ -45,6 +46,7 @@ const DEFAULT_WALLET_STATE: WalletState = {
     hasProvider: false,
     isConnecting: false,
     isInitialized: false,
+    isInitializing: false,
 }
 
 
@@ -106,10 +108,15 @@ export class WalletService {
      * @protected
      */
     protected async init(): Promise<void> {
+        runInAction(() => {
+            this.state.isInitializing = true
+        })
+
         const hasProvider = await hasTonProvider()
 
         if (!hasProvider) {
             runInAction(() => {
+                this.state.isInitializing = false
                 this.state.hasProvider = false
             })
             return
@@ -122,7 +129,9 @@ export class WalletService {
         await ton.ensureInitialized()
 
         runInAction(() => {
+            this.state.isInitializing = false
             this.state.isInitialized = true
+            this.state.isConnecting = true
         })
 
         const permissionsSubscriber = await ton.subscribe('permissionsChanged')
@@ -135,6 +144,9 @@ export class WalletService {
         const currentProviderState = await ton.getProviderState()
 
         if (currentProviderState.permissions.accountInteraction === undefined) {
+            runInAction(() => {
+                this.state.isConnecting = false
+            })
             return
         }
 
@@ -350,6 +362,14 @@ export class WalletService {
      */
     public get isInitialized(): WalletState['isInitialized'] {
         return this.state.isInitialized
+    }
+
+    public get isInitializing(): WalletState['isInitializing'] {
+        return this.state.isInitializing
+    }
+
+    public get isConnected(): boolean {
+        return Boolean(this.address)
     }
 
     /**

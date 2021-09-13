@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { TvlChange } from '@/components/common/TvlChange'
 import { Chart } from '@/modules/Chart'
 import { useCurrencyStore } from '@/modules/Currencies/providers/CurrencyStoreProvider'
 import { CurrencyStoreState } from '@/modules/Currencies/types'
@@ -37,15 +38,10 @@ export function Stats(): JSX.Element {
                         <strong>{store.formattedTvl}</strong>
                     </div>
                     {store.currency?.tvlChange !== undefined && (
-                        <div
-                            className={classNames('changes-direction', {
-                                'changes-direction-up': getChangesDirection(store.currency.tvlChange) > 0,
-                                'changes-direction-down': getChangesDirection(store.currency.tvlChange) < 0,
-                            })}
-                        >
-                            {store.currency.tvlChange}
-                            %
-                        </div>
+                        <TvlChange
+                            changesDirection={getChangesDirection(store.currency.tvlChange)}
+                            priceChange={store.currency.tvlChange}
+                        />
                     )}
                 </div>
                 <div className="currency-stats__sidebar-item">
@@ -58,15 +54,10 @@ export function Stats(): JSX.Element {
                         <strong>{store.formattedVolume24h}</strong>
                     </div>
                     {store.currency?.volumeChange24h !== undefined && (
-                        <div
-                            className={classNames('changes-direction', {
-                                'changes-direction-up': getChangesDirection(store.currency.volumeChange24h) > 0,
-                                'changes-direction-down': getChangesDirection(store.currency.volumeChange24h) < 0,
-                            })}
-                        >
-                            {store.currency.volumeChange24h}
-                            %
-                        </div>
+                        <TvlChange
+                            changesDirection={getChangesDirection(store.currency.volumeChange24h)}
+                            priceChange={store.currency.volumeChange24h}
+                        />
                     )}
                 </div>
                 <div className="currency-stats__sidebar-item">

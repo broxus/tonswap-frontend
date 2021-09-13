@@ -1,8 +1,8 @@
 import * as React from 'react'
-import classNames from 'classnames'
 import { Link } from 'react-router-dom'
 
 import { TokenIcon } from '@/components/common/TokenIcon'
+import { TvlChange } from '@/components/common/TvlChange'
 import { CurrencyInfo } from '@/modules/Currencies/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { getChangesDirection, parseCurrencyBillions } from '@/utils'
@@ -33,7 +33,7 @@ export function Item({ currency, idx }: Props): JSX.Element {
                             address={currency.address}
                             className="currencies-list__token-icon"
                             name={token?.symbol}
-                            small
+                            size="small"
                             uri={token?.icon}
                         />
                     </div>
@@ -51,15 +51,10 @@ export function Item({ currency, idx }: Props): JSX.Element {
                 {price}
             </div>
             <div className="list__cell list__cell--right hide-824">
-                <div
-                    className={classNames('changes-direction', {
-                        'changes-direction-up': getChangesDirection(currency.priceChange) > 0,
-                        'changes-direction-down': getChangesDirection(currency.priceChange) < 0,
-                    })}
-                >
-                    {currency.priceChange}
-                    %
-                </div>
+                <TvlChange
+                    changesDirection={getChangesDirection(currency.priceChange)}
+                    priceChange={currency.priceChange}
+                />
             </div>
             <div className="list__cell list__cell--right">
                 {volume24h}

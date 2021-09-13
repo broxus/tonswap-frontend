@@ -18,3 +18,23 @@ export function amount(v?: BigNumber.Value, decimals: number = 9): string {
 
     return strings.join('')
 }
+
+export function amountOrZero(...args: Parameters<typeof amount>): string {
+    return amount(...args) || '0'
+}
+
+export function shareAmount(
+    walletLpBalance: string,
+    poolTokenBalance: string,
+    poolLpBalance: string,
+    tokenDecimals: number,
+): string {
+    return poolLpBalance !== '0'
+        ? new BigNumber(walletLpBalance)
+            .times(new BigNumber(poolTokenBalance))
+            .dividedBy(new BigNumber(poolLpBalance))
+            .decimalPlaces(0, BigNumber.ROUND_DOWN)
+            .shiftedBy(-tokenDecimals)
+            .toFixed()
+        : '0'
+}

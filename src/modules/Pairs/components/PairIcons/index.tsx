@@ -1,11 +1,7 @@
 import * as React from 'react'
-import classNames from 'classnames'
 
-import { TokenIcon } from '@/components/common/TokenIcon'
 import { TokenCache } from '@/stores/TokensCacheService'
-
-import './index.scss'
-
+import { PairIcons as PairIconsCommon } from '@/components/common/PairIcons'
 
 type Props = {
     leftToken?: TokenCache | undefined;
@@ -13,28 +9,20 @@ type Props = {
     small?: boolean;
 }
 
-
 export function PairIcons({ leftToken, rightToken, small }: Props): JSX.Element {
     return (
-        <div
-            className={classNames('pair-tokens-icons', {
-                'pair-tokens-icons--small': small,
-            })}
-        >
-            <TokenIcon
-                address={leftToken?.root}
-                className="pair-tokens-icon"
-                name={leftToken?.name}
-                small
-                uri={leftToken?.icon}
-            />
-            <TokenIcon
-                address={rightToken?.root}
-                className="pair-tokens-icon"
-                name={rightToken?.name}
-                small
-                uri={rightToken?.icon}
-            />
-        </div>
+        <PairIconsCommon
+            small={small}
+            leftToken={{
+                address: leftToken?.root,
+                name: leftToken?.name,
+                uri: leftToken?.icon,
+            }}
+            rightToken={{
+                address: rightToken?.root,
+                name: rightToken?.name,
+                uri: rightToken?.icon,
+            }}
+        />
     )
 }

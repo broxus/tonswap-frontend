@@ -1,5 +1,6 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
+import BigNumber from 'bignumber.js'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { PoolForm } from '@/modules/Farming/components/PoolForm'
@@ -7,7 +8,6 @@ import { FarmPool } from '@/modules/Farming/types'
 import { amount } from '@/utils'
 
 import './index.scss'
-import BigNumber from "bignumber.js";
 
 
 type Props = {

@@ -1,0 +1,11 @@
+.token-icons {
+    display: flex;
+
+    &__item {
+        margin-left: -8px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+}

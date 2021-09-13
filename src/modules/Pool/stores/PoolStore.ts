@@ -41,7 +41,10 @@ import {
 import { DexAccountService, useDexAccount } from '@/stores/DexAccountService'
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
-import { debounce, error, isGoodBignumber } from '@/utils'
+import { FavoritePairs, useFavoritePairs } from '@/stores/FavoritePairs'
+import {
+    concatSymbols, debounce, error, isGoodBignumber,
+} from '@/utils'
 
 
 export class PoolStore {
@@ -78,6 +81,7 @@ export class PoolStore {
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
         protected readonly dex: DexAccountService,
+        protected readonly favoritePairs: FavoritePairs,
     ) {
         makeAutoObservable<
             PoolStore,
@@ -699,6 +703,10 @@ export class PoolStore {
             shareChangePercent = '0.0',
             currentSharePercent = '0.0',
         } = this
+
+        if (this.pairAddress) {
+            this.favoritePairs.add(this.pairAddress, concatSymbols(leftSymbol, rightSymbol))
+        }
 
         this.changePoolData(
             'share',
@@ -1840,7 +1848,12 @@ export class PoolStore {
 }
 
 
-const Pool = new PoolStore(useWallet(), useTokensCache(), useDexAccount())
+const Pool = new PoolStore(
+    useWallet(),
+    useTokensCache(),
+    useDexAccount(),
+    useFavoritePairs(),
+)
 
 export function usePool(): PoolStore {
     return Pool

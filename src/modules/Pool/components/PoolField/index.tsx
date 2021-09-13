@@ -100,7 +100,7 @@ function Field({
                             <TokenIcon
                                 address={token.root}
                                 name={token.symbol}
-                                small
+                                size="small"
                                 uri={token.icon}
                             />
                         </span>

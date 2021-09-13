@@ -1,0 +1,41 @@
+.pools {
+    &-sub-header {
+        margin: 40px 0 16px;
+        display: flex;
+        justify-content: space-between;
+        column-gap: 20px;
+    }
+
+    &-toolbar {
+        display: flex;
+        justify-content: space-between;
+        margin: 0 0 40px;
+        @media only screen and (max-width: 959px) {
+            flex-direction: column;
+        }
+    }
+
+    &-pair-buttons {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        @media only screen and (max-width: 959px) {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    &-balances {
+        display: flex;
+        gap: 16px;
+        @media only screen and (max-width: 959px) {
+            flex-direction: column;
+        }
+    }
+
+    &-pair-title {
+        display: flex;
+        column-gap: 12px;
+        margin: 0 0 16px;
+    }
+}

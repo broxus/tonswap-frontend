@@ -206,8 +206,10 @@ export class Farm {
         return address
     }
 
-    public static async userDataAmountAndRewardDebt(userDataAddress: Address,
-        state?: FullContractState): Promise<{ amount: string, rewardDebt: string[] }> {
+    public static async userDataAmountAndRewardDebt(
+        userDataAddress: Address,
+        state?: FullContractState,
+    ): Promise<{ amount: string, rewardDebt: string[] }> {
         const userContract = new Contract(FarmAbi.User, userDataAddress)
         const { value0: { amount, rewardDebt }} = await userContract.methods.getDetails({
             answerId: 0,
