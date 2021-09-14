@@ -75,7 +75,7 @@ export function usePoolForm(): PoolFormShape {
     }
 
     const onSelectToken = (root: string) => {
-        let pathname = '/pools/create'
+        let pathname = '/pool'
         if (tokenSide === 'leftToken') {
             const rightRoot = (pool.rightToken?.root !== undefined && pool.rightToken.root !== root)
                 ? `/${pool.rightToken.root}`
