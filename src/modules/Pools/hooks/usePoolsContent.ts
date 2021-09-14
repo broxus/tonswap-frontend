@@ -3,12 +3,14 @@ import BigNumber from 'bignumber.js'
 import { Address } from 'ton-inpage-provider'
 
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
+import { FarmingPoolInfo } from '@/modules/Farming/types'
 import { useFavoritePairs } from '@/stores/FavoritePairs'
 import { useWallet } from '@/stores/WalletService'
 import { useDexAccount } from '@/stores/DexAccountService'
 import { useTokensList } from '@/stores/TokensListService'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { usePagination } from '@/hooks/usePagination'
+import { useApi } from '@/modules/Pools/hooks/useApi'
 import {
     amountOrZero, concatSymbols, error, shareAmount,
 } from '@/utils'
@@ -27,6 +29,7 @@ type UsePoolsContent = {
 const PAGE_LENGTH = 10
 
 export function usePoolsContent(): UsePoolsContent {
+    const api = useApi()
     const wallet = useWallet()
     const dexAccount = useDexAccount()
     const dexBalances = useDexBalances()
@@ -38,6 +41,7 @@ export function usePoolsContent(): UsePoolsContent {
     const [loading, setLoading] = React.useState(true)
     const [data, setData] = React.useState<PoolData[]>([])
     const [totalPages, setTotalPages] = React.useState(0)
+    const [lockedLp, setLockedLp] = React.useState<Record<string, string>>({})
     const startIndex = PAGE_LENGTH * (pagination.currentPage - 1)
     const endIndex = startIndex + PAGE_LENGTH
 
@@ -53,16 +57,20 @@ export function usePoolsContent(): UsePoolsContent {
                     return undefined
                 }
 
+                const lpTokens = new BigNumber(lp.inWallet)
+                    .plus(lockedLp[lp.address] || '0')
+                    .toFixed()
+
                 return {
-                    lpTokens: amountOrZero(lp.inWallet, lp.decimals),
+                    lpTokens: amountOrZero(lpTokens, lp.decimals),
                     leftToken: shareAmount(
-                        lp.inWallet,
+                        lpTokens,
                         left.inPool,
                         lp.inPool,
                         leftToken.decimals,
                     ),
                     rightToken: shareAmount(
-                        lp.inWallet,
+                        lpTokens,
                         right.inPool,
                         lp.inPool,
                         rightToken.decimals,
@@ -91,6 +99,48 @@ export function usePoolsContent(): UsePoolsContent {
             .reverse()
     ), [data, tokensList])
 
+    const getFarmingPools = async (
+        userAddress: string,
+        limit: number = 100,
+    ): Promise<FarmingPoolInfo[]> => {
+        const { total_count, pools_info } = await api.farmingPools({}, {
+            body: JSON.stringify({
+                limit,
+                offset: 0,
+                userAddress,
+                isWithMyFarming: true,
+                ordering: 'tvlascending',
+            }),
+        })
+        let poolsInfo = pools_info.filter(item => (
+            item.left_address
+            && item.left_currency
+            && item.right_address
+            && item.right_currency
+        ))
+        if (total_count > 100) {
+            poolsInfo = await getFarmingPools(userAddress, total_count)
+        }
+        return poolsInfo
+    }
+
+    const getLockedLpInFarming = async (userAddress: string) => {
+        const farmingPools = await getFarmingPools(userAddress)
+        const byRootToken = farmingPools.reduce((acc, item) => {
+            acc[item.token_root_address] = acc[item.token_root_address]
+                ? new BigNumber(acc[item.token_root_address])
+                    .plus(new BigNumber(item.user_token_balance)
+                        .shiftedBy(item.token_root_scale))
+                    .toFixed()
+                : new BigNumber(item.user_token_balance)
+                    .shiftedBy(item.token_root_scale)
+                    .toFixed()
+            return acc
+        }, {} as Record<string, string>)
+
+        return byRootToken
+    }
+
     const getData = async () => {
         if (!dexAccount.address || !wallet.address) {
             return
@@ -100,11 +150,10 @@ export function usePoolsContent(): UsePoolsContent {
             const pairs = favoritePairs.filterData(query)
             const visiblePairs = pairs.slice(startIndex, endIndex)
             const addresses = visiblePairs.map(item => item.address)
-            const pools = await Pool.pools(
-                addresses,
-                new Address(dexAccount.address),
-                new Address(wallet.address),
-            )
+            const [pools, lockedLpByRoot] = await Promise.all([
+                Pool.pools(addresses, new Address(wallet.address)),
+                getLockedLpInFarming(wallet.address),
+            ])
             await Promise.all(
                 pools.map(pool => Promise.all([
                     tokensCache.fetchAndImportIfNotExist(pool.left.address),
@@ -112,6 +161,7 @@ export function usePoolsContent(): UsePoolsContent {
                 ])),
             )
             setTotalPages(Math.ceil(pairs.length / PAGE_LENGTH))
+            setLockedLp(lockedLpByRoot)
             setData(pools)
         }
         catch (e) {

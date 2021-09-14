@@ -79,7 +79,6 @@ export function usePoolContent(): UsePoolContent {
 
     const pairAddress = new Address(params.address)
     const ownerAddress = new Address(wallet.address)
-    const accountAddress = new Address(dexAccount.address)
 
     const leftToken = pool && tokensCache.get(pool.left.address)
     const rightToken = pool && tokensCache.get(pool.right.address)
@@ -209,7 +208,7 @@ export function usePoolContent(): UsePoolContent {
         setWithdrawLoading(true)
         try {
             await Pool.withdrawLiquidity(pairAddress, ownerAddress)
-            setPool(await Pool.pool(pairAddress, accountAddress, ownerAddress))
+            setPool(await Pool.pool(pairAddress, ownerAddress))
         }
         catch (e) {
             error(e)
@@ -321,7 +320,7 @@ export function usePoolContent(): UsePoolContent {
     const getData = async () => {
         try {
             const [poolData, pairData] = await Promise.all([
-                Pool.pool(pairAddress, accountAddress, ownerAddress),
+                Pool.pool(pairAddress, ownerAddress),
                 api.pair({ address: pairAddress.toString() }),
             ])
             await Promise.all([

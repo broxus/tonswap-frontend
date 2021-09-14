@@ -14,7 +14,6 @@ type PoolAddresses = {
 
 type TokenData = {
     inPool: string;
-    inWallet: string;
     address: string;
 }
 
@@ -25,6 +24,7 @@ export type PoolData = {
     lp: TokenData & {
         decimals: number;
         symbol: string;
+        inWallet: string;
     };
 }
 
@@ -46,34 +46,29 @@ export class Pool {
 
     static async pools(
         poolAddresses: Address[],
-        accountAddress: Address,
         walletAddress: Address,
     ): Promise<PoolData[]> {
         return Promise.all(
             poolAddresses.map(poolAddress => (
-                Pool.pool(poolAddress, accountAddress, walletAddress)
+                Pool.pool(poolAddress, walletAddress)
             )),
         )
     }
 
     static async pool(
         poolAddress: Address,
-        accountAddress: Address,
         walletAddress: Address,
     ): Promise<PoolData> {
         const poolAddresses = await Pool.addresses(poolAddress, walletAddress)
         const [
             lpDecimals, lpSymbol,
-            pairBalances, balances, walletLp,
+            pairBalances, walletLp,
         ] = await Promise.all([
             TokenWallet.decimal(poolAddresses.lp),
             TokenWallet.symbol(poolAddresses.lp),
             Dex.pairBalances(poolAddress),
-            Dex.accountBalances(accountAddress),
             Pool.walletBalanceOrZero(poolAddresses.lpWallet),
         ])
-        const walletLeft = balances.get(poolAddresses.left.toString())
-        const walletRight = balances.get(poolAddresses.right.toString())
 
         return {
             address: poolAddress.toString(),
@@ -86,12 +81,10 @@ export class Pool {
             },
             left: {
                 inPool: pairBalances.left,
-                inWallet: walletLeft || '0',
                 address: poolAddresses.left.toString(),
             },
             right: {
                 inPool: pairBalances.right,
-                inWallet: walletRight || '0',
                 address: poolAddresses.right.toString(),
             },
         }
