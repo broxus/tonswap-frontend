@@ -58,6 +58,7 @@ import {
     debug,
     error,
     isGoodBignumber,
+    storage,
 } from '@/utils'
 
 
@@ -160,6 +161,7 @@ export class SwapStore {
         )
 
         try {
+            this.changeData('slippage', storage.get('slippage') || '0.5')
             await this.handleTokensChange([
                 this.data.leftToken,
                 this.data.rightToken,
@@ -616,6 +618,8 @@ export class SwapStore {
                     ).toFixed(),
                 )
             }
+
+            storage.set('slippage', value)
         }
     }
 
