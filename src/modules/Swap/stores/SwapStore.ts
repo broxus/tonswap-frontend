@@ -1184,6 +1184,7 @@ export class SwapStore {
     protected resetData(): void {
         this.data = {
             ...DEFAULT_SWAP_STORE_DATA,
+            slippage: storage.get('slippage') || '0.5',
             leftToken: this.data.leftToken,
             rightToken: this.data.rightToken,
         }
