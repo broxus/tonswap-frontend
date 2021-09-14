@@ -48,20 +48,23 @@ export function PoolFarmings({
                         <div className="list__cell list__cell--left">
                             {intl.formatMessage({ id: 'POOL_FARMINGS_REWARD' })}
                         </div>
-                        <div className="list__cell list__cell--left list__cell--right">
+                        <div className="list__cell list__cell--right">
                             {intl.formatMessage({ id: 'TVL' })}
                         </div>
-                        <div className="list__cell list__cell--left list__cell--right">
+                        <div className="list__cell list__cell--right">
                             {intl.formatMessage({ id: 'POOL_FARMINGS_TVL_CHANGE' })}
                         </div>
-                        <div className="list__cell list__cell--left list__cell--right">
+                        <div className="list__cell list__cell--right">
                             {intl.formatMessage({ id: 'POOL_FARMINGS_APR' })}
                         </div>
-                        <div className="list__cell list__cell--left list__cell--right">
+                        <div className="list__cell list__cell--right">
                             {intl.formatMessage({ id: 'POOL_FARMINGS_SHARE' })}
                         </div>
-                        <div className="list__cell list__cell--left list__cell--right">
+                        <div className="list__cell list__cell--right">
                             {intl.formatMessage({ id: 'POOL_FARMINGS_YOUR_REWARD' })}
+                        </div>
+                        <div className="list__cell list__cell--right">
+                            {intl.formatMessage({ id: 'POOL_FARMINGS_ENTITLED_REWARD' })}
                         </div>
                     </div>
 

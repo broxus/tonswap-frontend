@@ -7,10 +7,10 @@ import { TransactionsInfoResponse } from '@/modules/Transactions/types'
 
 const currenciesApi = {
     currencies: createHandler(apiRoutes.currencies)<CurrenciesResponse>(),
-    currencie: createHandler(apiRoutes.currencie)<CurrencyResponse>(),
-    currenciePrice: createHandler(apiRoutes.currenciePrice)<OhlcvGraphModel[]>(),
-    currencieVolume: createHandler(apiRoutes.currencieVolume)<VolumeGraphModel[]>(),
-    currencieTvl: createHandler(apiRoutes.currencieTvl)<TvlGraphModel[]>(),
+    currency: createHandler(apiRoutes.currency)<CurrencyResponse>(),
+    currencyPrices: createHandler(apiRoutes.currencyPrices)<OhlcvGraphModel[]>(),
+    currencyVolume: createHandler(apiRoutes.currencyVolume)<VolumeGraphModel[]>(),
+    currencyTvl: createHandler(apiRoutes.currencyTvl)<TvlGraphModel[]>(),
     pairs: createHandler(apiRoutes.pairs)<PairsResponse>(),
     transactions: createHandler(apiRoutes.transactions)<TransactionsInfoResponse>(),
 }

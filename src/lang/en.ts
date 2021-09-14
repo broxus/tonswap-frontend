@@ -262,6 +262,7 @@ export default {
     POOL_FARMINGS_APR: 'APR',
     POOL_FARMINGS_SHARE: 'Share',
     POOL_FARMINGS_YOUR_REWARD: 'Your reward',
+    POOL_FARMINGS_ENTITLED_REWARD: 'Entitled reward',
 
     CURRENCIES_HEADER_TITLE: 'All tokens',
     CURRENCIES_WATCHLIST_HEADER_TITLE: 'My tokens watchlist',

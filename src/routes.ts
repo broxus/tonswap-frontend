@@ -41,16 +41,16 @@ export const apiRoutes = {
     currencies: new Route(
         '/currencies',
     ),
-    currencie: new Route<{ address: string }>(
+    currency: new Route<{ address: string }>(
         '/currencies/:address',
     ),
-    currenciePrice: new Route<{ address: string }>(
+    currencyPrices: new Route<{ address: string }>(
         '/currencies/:address/prices',
     ),
-    currencieVolume: new Route<{ address: string }>(
+    currencyVolume: new Route<{ address: string }>(
         '/currencies/:address/volume',
     ),
-    currencieTvl: new Route<{ address: string }>(
+    currencyTvl: new Route<{ address: string }>(
         '/currencies/:address/tvl',
     ),
     farmingPools: new Route(
@@ -69,7 +69,7 @@ export const appRoutes = {
         '/pools/:address([0][:][0-9a-f]{64})?',
     ),
     poolCreate: new Route<{ leftTokenRoot?: string, rightTokenRoot?: string }>(
-        '/pools/create/:leftTokenRoot([0][:][0-9a-f]{64})?/:rightTokenRoot([0][:][0-9a-f]{64})?',
+        '/pool/:leftTokenRoot([0][:][0-9a-f]{64})?/:rightTokenRoot([0][:][0-9a-f]{64})?',
     ),
     tokenList: new Route(
         '/tokens',

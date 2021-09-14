@@ -114,7 +114,7 @@ export class CurrencyStore {
         try {
             this.changeState('isLoading', true)
 
-            const result = await this.api.currencie({
+            const result = await this.api.currency({
                 address: this.address,
             })
             this.changeData('currency', result)
@@ -192,7 +192,7 @@ export class CurrencyStore {
                 }).toMillis(),
             }
 
-            const result = await this.api.currenciePrice({
+            const result = await this.api.currencyPrices({
                 address: this.address,
             }, {
                 body: JSON.stringify(body),
@@ -238,7 +238,7 @@ export class CurrencyStore {
                 }).toMillis(),
             }
 
-            const result = await this.api.currencieVolume({
+            const result = await this.api.currencyVolume({
                 address: this.address,
             }, {
                 body: JSON.stringify(body),
@@ -284,7 +284,7 @@ export class CurrencyStore {
                 }).toMillis(),
             }
 
-            const result = await this.api.currencieTvl({
+            const result = await this.api.currencyTvl({
                 address: this.address,
             }, {
                 body: JSON.stringify(body),

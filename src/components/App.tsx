@@ -53,9 +53,6 @@ export function App(): JSX.Element {
                                 <Swap />
                             </Route>
 
-                            <Route path="/pool/">
-                                <Redirect exact to={appRoutes.poolCreate.makeUrl()} />
-                            </Route>
                             <Route exact path={appRoutes.poolList.path}>
                                 <PoolsPage />
                             </Route>
