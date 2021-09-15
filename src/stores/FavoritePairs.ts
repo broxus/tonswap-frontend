@@ -127,10 +127,32 @@ export class FavoritePairs {
         return []
     }
 
-    public filterData(query: string): AddressData[] {
-        return query ? this.state.data.filter(({ name }) => (
-            name && name.toLocaleLowerCase().indexOf(query) > -1
-        )) : [...this.state.data]
+    public filterData(query?: string): AddressData[] {
+        const data = query
+            ? this.state.data.filter(({ name }) => (
+                name && name.toLocaleLowerCase().indexOf(query) > -1
+            ))
+            : [...this.state.data]
+
+        return FavoritePairs.sortByName(data)
+    }
+
+    static sortByName(data: AddressData[]): AddressData[] {
+        return data.sort((a, b) => {
+            if (!a.name) {
+                return 1
+            }
+            if (!b.name) {
+                return -1
+            }
+            if (a.name < b.name) {
+                return -1
+            }
+            if (a.name > b.name) {
+                return 1
+            }
+            return 0
+        })
     }
 
     public get count(): number {

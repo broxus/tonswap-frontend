@@ -7,17 +7,17 @@ import { FilterForm } from '@/components/common/FilterForm'
 import './style.scss'
 
 type Props = {
-    query?: string;
     onSearch: (value: string) => void;
 }
 
-export const Search = React.memo(({
-    query,
+export function Search({
     onSearch,
-}: Props): JSX.Element => {
+}: Props): JSX.Element {
     const intl = useIntl()
+    const [value, setValue] = React.useState('')
 
     const onChange = (e: React.FormEvent<HTMLInputElement>) => {
+        setValue(e.currentTarget.value)
         onSearch(e.currentTarget.value)
     }
 
@@ -32,8 +32,8 @@ export const Search = React.memo(({
                 placeholder={intl.formatMessage({ id: 'POOLS_LIST_FILTER_PLACEHOLDER' })}
                 showSubmit={false}
                 onChange={onChange}
-                value={query}
+                value={value}
             />
         </div>
     )
-})
+}

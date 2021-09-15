@@ -1,6 +1,7 @@
 import * as React from 'react'
 import BigNumber from 'bignumber.js'
 import { Address } from 'ton-inpage-provider'
+import { useIntl } from 'react-intl'
 
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
 import { FarmingPoolInfo } from '@/modules/Farming/types'
@@ -11,24 +12,29 @@ import { useTokensList } from '@/stores/TokensListService'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { usePagination } from '@/hooks/usePagination'
 import { useApi } from '@/modules/Pools/hooks/useApi'
+import { ItemProps } from '@/modules/Pools/components/PoolsContent/item'
 import {
-    amountOrZero, concatSymbols, error, shareAmount,
+    amountOrZero, concatSymbols, debounce, error, shareAmount,
 } from '@/utils'
 import { Pool, PoolData } from '@/misc'
 import { appRoutes } from '@/routes'
-import { ItemProps } from '@/modules/Pools/components/PoolsContent/item'
 
 type UsePoolsContent = {
     loading: boolean;
-    totalPages: number;
     items: ItemProps[];
     query: string;
+    totalPages: number;
+    currentPage: number;
     onSearch: (value: string) => void;
+    onSubmit: (page: number) => void;
+    onNext: () => void;
+    onPrev: () => void;
 }
 
 const PAGE_LENGTH = 10
 
 export function usePoolsContent(): UsePoolsContent {
+    const intl = useIntl()
     const api = useApi()
     const wallet = useWallet()
     const dexAccount = useDexAccount()
@@ -63,18 +69,28 @@ export function usePoolsContent(): UsePoolsContent {
 
                 return {
                     lpTokens: amountOrZero(lpTokens, lp.decimals),
-                    leftToken: shareAmount(
-                        lpTokens,
-                        left.inPool,
-                        lp.inPool,
-                        leftToken.decimals,
-                    ),
-                    rightToken: shareAmount(
-                        lpTokens,
-                        right.inPool,
-                        lp.inPool,
-                        rightToken.decimals,
-                    ),
+                    leftToken: intl.formatMessage({
+                        id: 'POOLS_LIST_TOKEN_BALANCE',
+                    }, {
+                        value: shareAmount(
+                            lpTokens,
+                            left.inPool,
+                            lp.inPool,
+                            leftToken.decimals,
+                        ),
+                        symbol: leftToken.symbol,
+                    }),
+                    rightToken: intl.formatMessage({
+                        id: 'POOLS_LIST_TOKEN_BALANCE',
+                    }, {
+                        value: shareAmount(
+                            lpTokens,
+                            right.inPool,
+                            lp.inPool,
+                            rightToken.decimals,
+                        ),
+                        symbol: rightToken.symbol,
+                    }),
                     link: appRoutes.poolItem.makeUrl({ address }),
                     pair: {
                         pairLabel: concatSymbols(
@@ -95,8 +111,6 @@ export function usePoolsContent(): UsePoolsContent {
                 }
             })
             .filter(item => item !== undefined) as ItemProps[])
-            .sort((a, b) => new BigNumber(a.lpTokens).comparedTo(b.lpTokens))
-            .reverse()
     ), [data, tokensList])
 
     const getFarmingPools = async (
@@ -171,9 +185,9 @@ export function usePoolsContent(): UsePoolsContent {
     }
 
     const onSearch = React.useCallback(
-        (value: string) => {
+        debounce((value: string) => {
             setQuery(value)
-        },
+        }, 300),
         [setQuery],
     )
 
@@ -188,9 +202,13 @@ export function usePoolsContent(): UsePoolsContent {
 
     return {
         loading,
-        totalPages,
         items,
         query,
+        totalPages,
+        currentPage: pagination.currentPage,
+        onNext: pagination.onNext,
+        onPrev: pagination.onPrev,
+        onSubmit: pagination.onSubmit,
         onSearch,
     }
 }

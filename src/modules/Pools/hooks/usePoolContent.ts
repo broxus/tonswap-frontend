@@ -22,7 +22,6 @@ import {
 
 type RewardInfo = {
     amount: string
-    entitled: string
     symbol: string
 }
 
@@ -173,8 +172,8 @@ export function usePoolContent(): UsePoolContent {
         farm.map(({ info, balance: { reward }}) => ({
             tvl: info.tvl,
             tvlChange: info.tvl_change,
-            apr: `${info.apr}%`,
-            share: `${info.share}%`,
+            apr: `${amountOrZero(info.apr, 0)}%`,
+            share: `${amountOrZero(info.share, 0)}%`,
             leftTokenAddress: info.left_address as string,
             rightTokenAddress: info.right_address as string,
             leftTokenUri: tokensList.getUri(info.left_address as string),
@@ -191,14 +190,6 @@ export function usePoolContent(): UsePoolContent {
                 }, {
                     symbol,
                     value: amount,
-                })
-            )),
-            entitled: reward.map(({ entitled, symbol }) => (
-                intl.formatMessage({
-                    id: 'POOLS_LIST_TOKEN_BALANCE',
-                }, {
-                    symbol,
-                    value: entitled,
                 })
             )),
         }))
@@ -227,7 +218,6 @@ export function usePoolContent(): UsePoolContent {
                 offset: 0,
                 userAddress: owner.toString(),
                 rootAddresses: [root.toString()],
-                isWithMyFarming: true,
                 ordering: 'tvlascending',
             }),
         })
@@ -266,13 +256,11 @@ export function usePoolContent(): UsePoolContent {
         return rewardTokenInfo.map(({ reward_currency, reward_scale }, index) => {
             const poolDebt = userReward && !isExpired ? userReward._pool_debt[index] : '0'
             const vested = userReward && !isExpired ? userReward._vested[index] : '0'
-            const entitled = userReward && !isExpired ? userReward._entitled[index] : '0'
             const reward = new BigNumber(vested).plus(poolDebt)
             const amount = amountOrZero(reward, reward_scale)
 
             return {
                 amount,
-                entitled: amountOrZero(entitled, reward_scale),
                 symbol: reward_currency,
             }
         })
