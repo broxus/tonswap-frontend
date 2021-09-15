@@ -21,7 +21,6 @@ export type PoolFarmingsItemProps = {
     apr: string
     share: string
     rewards: string[]
-    entitled: string[]
 }
 
 export function PoolFarmingsItem({
@@ -37,7 +36,6 @@ export function PoolFarmingsItem({
     apr,
     share,
     rewards,
-    entitled,
 }: PoolFarmingsItemProps): JSX.Element {
     return (
         <div className="list__row">
@@ -76,11 +74,6 @@ export function PoolFarmingsItem({
             </div>
             <div className="list__cell list__cell--left list__cell--right">
                 {rewards.map(item => (
-                    <div key={item}>{item}</div>
-                ))}
-            </div>
-            <div className="list__cell list__cell--left list__cell--right">
-                {entitled.map(item => (
                     <div key={item}>{item}</div>
                 ))}
             </div>

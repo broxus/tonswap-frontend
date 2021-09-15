@@ -63,9 +63,6 @@ export function PoolFarmings({
                         <div className="list__cell list__cell--right">
                             {intl.formatMessage({ id: 'POOL_FARMINGS_YOUR_REWARD' })}
                         </div>
-                        <div className="list__cell list__cell--right">
-                            {intl.formatMessage({ id: 'POOL_FARMINGS_ENTITLED_REWARD' })}
-                        </div>
                     </div>
 
                     {loading && items.length === 0 ? (

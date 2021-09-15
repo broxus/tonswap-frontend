@@ -7,7 +7,6 @@ import { usePoolsContent } from '@/modules/Pools/hooks/usePoolsContent'
 import { Pagination } from '@/components/common/Pagination'
 import { ContentLoader } from '@/components/common/ContentLoader'
 import { PanelLoader } from '@/components/common/PanelLoader'
-import { usePagination } from '@/hooks/usePagination'
 
 import { Item } from './item'
 
@@ -15,18 +14,14 @@ import './style.scss'
 
 export const PoolsContent = observer((): JSX.Element => {
     const intl = useIntl()
-    const pagination = usePagination()
     const {
-        loading, totalPages, items, query,
-        onSearch,
+        loading, totalPages, items, query, currentPage,
+        onSearch, onSubmit, onNext, onPrev,
     } = usePoolsContent()
 
     return (
         <>
-            <Search
-                query={query}
-                onSearch={onSearch}
-            />
+            <Search onSearch={onSearch} />
 
             <div className="card card--small card--flat">
                 <div className="list polls-list">
@@ -71,10 +66,10 @@ export const PoolsContent = observer((): JSX.Element => {
                 {totalPages > 1 && (
                     <Pagination
                         totalPages={totalPages}
-                        currentPage={pagination.currentPage}
-                        onNext={pagination.onNext}
-                        onPrev={pagination.onPrev}
-                        onSubmit={pagination.onSubmit}
+                        currentPage={currentPage}
+                        onNext={onNext}
+                        onPrev={onPrev}
+                        onSubmit={onSubmit}
                     />
                 )}
             </div>
