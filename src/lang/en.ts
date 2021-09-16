@@ -263,6 +263,7 @@ export default {
     POOL_FARMINGS_SHARE: 'Share',
     POOL_FARMINGS_YOUR_REWARD: 'Your reward',
     POOL_FARMINGS_ENTITLED_REWARD: 'Entitled reward',
+    POOL_FARMINGS_NOT_FOUND: 'No farming pools found',
 
     CURRENCIES_HEADER_TITLE: 'All tokens',
     CURRENCIES_WATCHLIST_HEADER_TITLE: 'My tokens watchlist',

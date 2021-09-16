@@ -83,7 +83,7 @@ function CurrencyInner(): JSX.Element {
                             </AccountExplorerLink>
                             <Link
                                 className="btn btn-md btn-secondary"
-                                to={`/pool/create/${store.currency?.address}`}
+                                to={`/pool/${store.currency?.address}`}
                             >
                                 {intl.formatMessage({
                                     id: 'CURRENCY_ADD_LIQUIDITY_BTN_TEXT',

@@ -7,14 +7,14 @@ import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
 import { FarmingPoolInfo } from '@/modules/Farming/types'
 import { useFavoritePairs } from '@/stores/FavoritePairs'
 import { useWallet } from '@/stores/WalletService'
-import { useDexAccount } from '@/stores/DexAccountService'
 import { useTokensList } from '@/stores/TokensListService'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { usePagination } from '@/hooks/usePagination'
 import { useApi } from '@/modules/Pools/hooks/useApi'
 import { ItemProps } from '@/modules/Pools/components/PoolsContent/item'
 import {
-    amountOrZero, concatSymbols, debounce, error, shareAmount,
+    amountOrZero, concatSymbols, debounce,
+    error, lastOfCalls, shareAmount,
 } from '@/utils'
 import { Pool, PoolData } from '@/misc'
 import { appRoutes } from '@/routes'
@@ -31,13 +31,14 @@ type UsePoolsContent = {
     onPrev: () => void;
 }
 
+type LockedLp = Record<string, string>
+
 const PAGE_LENGTH = 10
 
 export function usePoolsContent(): UsePoolsContent {
     const intl = useIntl()
     const api = useApi()
     const wallet = useWallet()
-    const dexAccount = useDexAccount()
     const dexBalances = useDexBalances()
     const tokensList = useTokensList()
     const pagination = usePagination()
@@ -46,8 +47,8 @@ export function usePoolsContent(): UsePoolsContent {
     const [query, setQuery] = React.useState('')
     const [loading, setLoading] = React.useState(true)
     const [data, setData] = React.useState<PoolData[]>([])
-    const [totalPages, setTotalPages] = React.useState(0)
-    const [lockedLp, setLockedLp] = React.useState<Record<string, string>>({})
+    const [totalPages, setTotalPages] = React.useState(1)
+    const [lockedLp, setLockedLp] = React.useState<LockedLp>({})
     const startIndex = PAGE_LENGTH * (pagination.currentPage - 1)
     const endIndex = startIndex + PAGE_LENGTH
 
@@ -150,13 +151,33 @@ export function usePoolsContent(): UsePoolsContent {
                     .shiftedBy(item.token_root_scale)
                     .toFixed()
             return acc
-        }, {} as Record<string, string>)
+        }, {} as LockedLp)
 
         return byRootToken
     }
 
+    const fetchData = React.useCallback(
+        lastOfCalls(async (
+            addresses: Address[],
+            userAddress: string,
+        ): Promise<[PoolData[], LockedLp]> => {
+            const result = await Promise.all([
+                Pool.pools(addresses, new Address(userAddress)),
+                getLockedLpInFarming(userAddress),
+            ])
+            await Promise.all(
+                result[0].map(pool => Promise.all([
+                    tokensCache.fetchAndImportIfNotExist(pool.left.address),
+                    tokensCache.fetchAndImportIfNotExist(pool.right.address),
+                ])),
+            )
+            return result
+        }),
+        [],
+    )
+
     const getData = async () => {
-        if (!dexAccount.address || !wallet.address) {
+        if (!wallet.address) {
             return
         }
         setLoading(true)
@@ -164,19 +185,18 @@ export function usePoolsContent(): UsePoolsContent {
             const pairs = favoritePairs.filterData(query)
             const visiblePairs = pairs.slice(startIndex, endIndex)
             const addresses = visiblePairs.map(item => item.address)
-            const [pools, lockedLpByRoot] = await Promise.all([
-                Pool.pools(addresses, new Address(wallet.address)),
-                getLockedLpInFarming(wallet.address),
-            ])
-            await Promise.all(
-                pools.map(pool => Promise.all([
-                    tokensCache.fetchAndImportIfNotExist(pool.left.address),
-                    tokensCache.fetchAndImportIfNotExist(pool.right.address),
-                ])),
-            )
-            setTotalPages(Math.ceil(pairs.length / PAGE_LENGTH))
-            setLockedLp(lockedLpByRoot)
-            setData(pools)
+            const newTotalPages = Math.ceil(pairs.length / PAGE_LENGTH) || 1
+            if (pagination.currentPage > newTotalPages) {
+                pagination.onSubmit(newTotalPages)
+                return
+            }
+            const result = await fetchData(addresses, wallet.address)
+            if (!result) {
+                return
+            }
+            setTotalPages(newTotalPages)
+            setLockedLp(result[1])
+            setData(result[0])
         }
         catch (e) {
             error(e)
@@ -196,8 +216,9 @@ export function usePoolsContent(): UsePoolsContent {
     }, [
         query,
         dexBalances,
-        pagination.currentPage,
         wallet.address,
+        pagination.currentPage,
+        favoritePairs.data,
     ])
 
     return {
