@@ -1,6 +1,5 @@
 import { makeAutoObservable } from 'mobx'
 import { Address } from 'ton-inpage-provider'
-import uniqBy from 'lodash.uniqby'
 
 import { DexAccountService, useDexAccount } from '@/stores/DexAccountService'
 import { useWallet, WalletService } from '@/stores/WalletService'
@@ -35,13 +34,17 @@ export class FavoritePairs {
         protected readonly dexAccount: DexAccountService,
         protected readonly wallet: WalletService,
     ) {
-        this.restoreFromStorage()
+        this.syncWithStorage()
         makeAutoObservable(this)
+
+        window.addEventListener('storage', e => {
+            if (e.key === STORAGE_KEY) {
+                this.syncWithStorage()
+            }
+        })
     }
 
     private has(rawAddress: string): boolean {
-        this.restoreFromStorage()
-
         return Boolean(this.state.data
             .find(item => item.address.toString() === rawAddress))
     }
@@ -87,10 +90,8 @@ export class FavoritePairs {
         this.storage.set(STORAGE_KEY, storageData)
     }
 
-    public restoreFromStorage(): void {
-        const storageData = this.readFromStorage()
-        const actualData = this.state.data.concat(storageData)
-        this.state.data = uniqBy(actualData, data => data.address.toString())
+    public syncWithStorage(): void {
+        this.state.data = this.readFromStorage()
     }
 
     public readFromStorage(): AddressData[] {

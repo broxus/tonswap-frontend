@@ -195,6 +195,14 @@
             width: 48px;
         }
     }
+
+    &.btn-fav {
+        &.active {
+            svg {
+                fill: #fff;
+            }
+        }
+    }
 }
 
 .btn-with-icon {

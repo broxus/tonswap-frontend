@@ -71,7 +71,7 @@ export function PoolFarmings({
                         <>
                             {!loading && items.length === 0 ? (
                                 <div className="message message_faded">
-                                    No farming pools found
+                                    <p>{intl.formatMessage({ id: 'POOL_FARMINGS_NOT_FOUND' })}</p>
                                 </div>
                             ) : (
                                 <PanelLoader loading={loading && items.length > 0}>

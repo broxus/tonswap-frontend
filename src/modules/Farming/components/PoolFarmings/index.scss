@@ -8,4 +8,9 @@
     .changes-direction:not(.changes-direction-down) {
         opacity: 1;
     }
+
+    .message {
+        height: 100px;
+        padding-top: 32px;
+    }
 }

@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { observer } from 'mobx-react-lite'
-import classNames from 'classnames'
 import { useIntl } from 'react-intl'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
@@ -14,15 +13,14 @@ import { TotalBalance } from '@/modules/Pools/components/TotalBalance'
 import { BalancePanel } from '@/modules/Pools/components/BalancePanel'
 import { PoolTransactions } from '@/modules/Pools/components/PoolTransactions'
 import { PoolFarmings } from '@/modules/Pools/components/PoolContent/farmings'
+import { TogglePoolButton } from '@/modules/Pools/components/TogglePoolButton'
 import { usePoolContent } from '@/modules/Pools/hooks/usePoolContent'
 import { useTokensList } from '@/stores/TokensListService'
-import { useFavoritePairs } from '@/stores/FavoritePairs'
 import { amountOrZero, concatSymbols } from '@/utils'
 import { appRoutes } from '@/routes'
 
 export const PoolContent = observer((): JSX.Element | null => {
     const intl = useIntl()
-    const favoritePairs = useFavoritePairs()
     const tokensList = useTokensList()
     const {
         pool,
@@ -130,21 +128,11 @@ export const PoolContent = observer((): JSX.Element | null => {
                                 </div>
 
                                 <div>
-                                    <button
-                                        type="button"
-                                        className={classNames('btn btn-md btn-square btn-icon', {
-                                            active: favoritePairs.addresses.includes(pool.address),
-                                        })}
-                                        onClick={() => favoritePairs.toggle(
-                                            pool.address.toString(),
-                                            concatSymbols(
-                                                leftToken?.symbol,
-                                                rightToken?.symbol,
-                                            ),
-                                        )}
-                                    >
-                                        <Icon icon="star" />
-                                    </button>
+                                    <TogglePoolButton
+                                        poolAddress={pool.address.toString()}
+                                        leftSymbol={leftToken?.symbol}
+                                        rightSymbol={rightToken?.symbol}
+                                    />
                                     <AccountExplorerLink
                                         address={pool.address}
                                         className="btn btn-md btn-square btn-icon"

@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
-import classNames from 'classnames'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Icon } from '@/components/common/Icon'
@@ -13,12 +12,10 @@ import { PairIcons } from '@/modules/Pairs/components/PairIcons'
 import { PairTransactions } from '@/modules/Pairs/components/PairTransactions'
 import { Stats } from '@/modules/Pairs/components/Stats'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
+import { TogglePoolButton } from '@/modules/Pools/components/TogglePoolButton'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { getDefaultPerPrice } from '@/modules/Swap/utils'
-import {
-    amount, concatSymbols, isGoodBignumber,
-} from '@/utils'
-import { useFavoritePairs } from '@/stores/FavoritePairs'
+import { amount, concatSymbols, isGoodBignumber } from '@/utils'
 
 import './pair.scss'
 
@@ -27,7 +24,6 @@ function PairInner(): JSX.Element {
     const intl = useIntl()
     const tokensCache = useTokensCache()
     const store = usePairStore()
-    const favoritePairs = useFavoritePairs()
 
     const baseToken = React.useMemo(() => (
         store.pair?.meta.baseAddress ? tokensCache.get(store.pair.meta.baseAddress) : undefined
@@ -64,25 +60,6 @@ function PairInner(): JSX.Element {
         },
         [baseToken, counterToken, store.pair],
     )
-
-    const toggleFavoritePair = () => {
-        if (!store.pair) {
-            return
-        }
-
-        let name = ''
-        const address = store.pair.meta.poolAddress
-
-        if (baseToken && baseToken.symbol) {
-            name = baseToken.symbol
-        }
-
-        if (counterToken && counterToken.symbol) {
-            name = `${name}/${counterToken.symbol}`
-        }
-
-        favoritePairs.toggle(address, name)
-    }
 
     return (
         <>
@@ -148,15 +125,11 @@ function PairInner(): JSX.Element {
                     <div className="pair-page__header-actions">
                         {store.pair?.meta.poolAddress !== undefined && (
                             <div>
-                                <button
-                                    className={classNames('btn btn-md btn-square btn-icon', {
-                                        active: favoritePairs.addresses.includes(store.pair.meta.poolAddress),
-                                    })}
-                                    onClick={toggleFavoritePair}
-                                    type="button"
-                                >
-                                    <Icon icon="star" />
-                                </button>
+                                <TogglePoolButton
+                                    poolAddress={store.pair.meta.poolAddress}
+                                    leftSymbol={baseToken?.symbol}
+                                    rightSymbol={counterToken?.symbol}
+                                />
 
                                 <AccountExplorerLink
                                     address={store.pair?.meta.poolAddress}
@@ -168,7 +141,7 @@ function PairInner(): JSX.Element {
                         )}
                         <Link
                             className="btn btn-md btn-secondary"
-                            to={`/pool/create/${baseToken?.root || store.pair?.meta.baseAddress}/${counterToken?.root || store.pair?.meta.counterAddress}`}
+                            to={`/pool/${baseToken?.root || store.pair?.meta.baseAddress}/${counterToken?.root || store.pair?.meta.counterAddress}`}
                         >
                             {intl.formatMessage({
                                 id: 'PAIR_ADD_LIQUIDITY_BTN_TEXT',
