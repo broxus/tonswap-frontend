@@ -1,7 +1,5 @@
 import { makeAutoObservable } from 'mobx'
-import { Address } from 'ton-inpage-provider'
 
-import { DexAccountService, useDexAccount } from '@/stores/DexAccountService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import {
     error, isObject, isString, storage as storageInstance,
@@ -14,24 +12,27 @@ type Storage = {
     set: (key: string, value: string) => void
 }
 
-type AddressData = {
-    address: Address,
+type PairData = {
+    address: string,
     name?: string,
 }
 
+type Data = {
+    [key: string]: PairData[]
+}
+
 type State = {
-    data: AddressData[]
+    data: Data
 }
 
 export class FavoritePairs {
 
     protected state: State = {
-        data: [],
+        data: {},
     }
 
     constructor(
         protected readonly storage: Storage,
-        protected readonly dexAccount: DexAccountService,
         protected readonly wallet: WalletService,
     ) {
         this.syncWithStorage()
@@ -44,49 +45,62 @@ export class FavoritePairs {
         })
     }
 
-    private has(rawAddress: string): boolean {
-        return Boolean(this.state.data
-            .find(item => item.address.toString() === rawAddress))
+    private has(address: string): boolean {
+        if (!this.wallet.address) {
+            return false
+        }
+
+        const addresses = this.state.data[this.wallet.address]
+
+        if (!addresses) {
+            return false
+        }
+
+        return Boolean(addresses.find(item => item.address === address))
     }
 
-    public add(rawAddress: string, name?: string): void {
-        if (this.has(rawAddress)) {
+    public add(address: string, name?: string): void {
+        if (!this.wallet.address) {
             return
         }
 
-        this.state.data.push({
-            name,
-            address: new Address(rawAddress),
-        })
-        this.saveToStorage()
-    }
-
-    public remove(rawAddress: string): void {
-        if (!this.has(rawAddress)) {
+        if (this.has(address)) {
             return
         }
 
-        const index = this.state.data
-            .findIndex(item => item.address.toString() === rawAddress)
-        this.state.data.splice(index, 1)
+        const newItem = { name, address }
+        this.state.data[this.wallet.address] = this.state.data[this.wallet.address]
+            ? [...this.state.data[this.wallet.address], newItem]
+            : [newItem]
         this.saveToStorage()
     }
 
-    public toggle(rawAddress: string, name?: string): void {
-        if (this.has(rawAddress)) {
-            this.remove(rawAddress)
+    public remove(address: string): void {
+        if (!this.wallet.address) {
+            return
+        }
+
+        if (!this.has(address)) {
+            return
+        }
+
+        const index = this.state.data[this.wallet.address]
+            .findIndex(item => item.address === address)
+        this.state.data[this.wallet.address].splice(index, 1)
+        this.saveToStorage()
+    }
+
+    public toggle(address: string, name?: string): void {
+        if (this.has(address)) {
+            this.remove(address)
         }
         else {
-            this.add(rawAddress, name)
+            this.add(address, name)
         }
     }
 
     public saveToStorage(): void {
-        const rawData = this.state.data.map(item => ({
-            address: item.address.toString(),
-            name: item.name,
-        }))
-        const storageData = JSON.stringify(rawData)
+        const storageData = JSON.stringify(this.state.data)
         this.storage.set(STORAGE_KEY, storageData)
     }
 
@@ -94,51 +108,55 @@ export class FavoritePairs {
         this.state.data = this.readFromStorage()
     }
 
-    public readFromStorage(): AddressData[] {
+    public readFromStorage(): Data {
         const storageData = this.storage.get(STORAGE_KEY)
 
         if (!storageData) {
-            return []
+            return {}
         }
 
         try {
             const data: unknown = JSON.parse(storageData)
 
-            if (!Array.isArray(data)) {
-                return []
+            if (!isObject(data)) {
+                return {}
             }
 
-            return (data as Array<unknown>)
-                .filter(item => {
-                    const addressIsValid = isObject(item) && isString((item as {address: unknown}).address)
-                    const nameIsValid = isObject(item) && (item as {name: unknown}).name
-                        ? isString((item as {name: unknown}).name)
-                        : true
-                    return addressIsValid && nameIsValid
-                })
-                .map(item => ({
-                    name: (item as {name: string | undefined}).name,
-                    address: new Address((item as {address: string}).address),
-                }))
+            return Object.entries(data as {[key: string]: unknown})
+                .reduce((acc, [key, value]) => {
+                    if (Array.isArray(value)) {
+                        acc[key] = value.filter(item => (
+                            isObject(item)
+                            && isString(item.name)
+                            && isString(item.address)
+                        ))
+                    }
+                    return acc
+                }, {} as Data)
         }
         catch (e) {
             error(e)
         }
 
-        return []
+        return {}
     }
 
-    public filterData(query?: string): AddressData[] {
+    public filterData(query?: string): PairData[] {
+        if (!this.wallet.address) {
+            return []
+        }
+
+        const addresses = this.state.data[this.wallet.address] || []
         const data = query
-            ? this.state.data.filter(({ name }) => (
+            ? addresses.filter(({ name }) => (
                 name && name.toLocaleLowerCase().indexOf(query) > -1
             ))
-            : [...this.state.data]
+            : addresses
 
         return FavoritePairs.sortByName(data)
     }
 
-    static sortByName(data: AddressData[]): AddressData[] {
+    static sortByName(data: PairData[]): PairData[] {
         return data.sort((a, b) => {
             if (!a.name) {
                 return 1
@@ -157,22 +175,35 @@ export class FavoritePairs {
     }
 
     public get count(): number {
-        return this.state.data.length
+        if (!this.wallet.address) {
+            return 0
+        }
+
+        const addresses = this.state.data[this.wallet.address] || []
+        return addresses.length
     }
 
-    public get data(): AddressData[] {
-        return this.state.data
+    public get data(): PairData[] {
+        if (!this.wallet.address) {
+            return []
+        }
+
+        return this.state.data[this.wallet.address] || []
     }
 
     public get addresses(): string[] {
-        return this.state.data.map(item => item.address.toString())
+        const address = this.data
+        return address.map(item => item.address)
+    }
+
+    public get isConnected(): boolean {
+        return this.wallet.isConnected
     }
 
 }
 
 const favoritePairs = new FavoritePairs(
     storageInstance,
-    useDexAccount(),
     useWallet(),
 )
 
