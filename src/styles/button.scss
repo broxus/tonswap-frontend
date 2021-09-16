@@ -199,7 +199,10 @@
     &.btn-fav {
         &.active {
             svg {
-                fill: #fff;
+                fill: #E6AC00;
+                path {
+                    stroke: #E6AC00;
+                }
             }
         }
     }

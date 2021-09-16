@@ -184,7 +184,7 @@ export function usePoolsContent(): UsePoolsContent {
         try {
             const pairs = favoritePairs.filterData(query)
             const visiblePairs = pairs.slice(startIndex, endIndex)
-            const addresses = visiblePairs.map(item => item.address)
+            const addresses = visiblePairs.map(item => new Address(item.address))
             const newTotalPages = Math.ceil(pairs.length / PAGE_LENGTH) || 1
             if (pagination.currentPage > newTotalPages) {
                 pagination.onSubmit(newTotalPages)

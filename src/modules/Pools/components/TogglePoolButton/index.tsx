@@ -16,8 +16,12 @@ function TogglePoolButtonInner({
     poolAddress,
     leftSymbol,
     rightSymbol,
-}: Props): JSX.Element {
+}: Props): JSX.Element | null {
     const favoritePairs = useFavoritePairs()
+
+    if (!favoritePairs.isConnected) {
+        return null
+    }
 
     return (
         <button
