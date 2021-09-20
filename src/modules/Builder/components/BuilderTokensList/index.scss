@@ -1,23 +1,10 @@
 .tokens-list {
     &.list {
-        --list-grid-template: minmax(30%, 70%) minmax(200px, 250px) minmax(200px, 250px) minmax(200px, 250px);
+        --list-grid-template: minmax(30%, 70%) minmax(200px, 250px) minmax(200px, 250px) minmax(200px, 250px) minmax(200px, 250px);
 
         @media only screen and (max-width: 824px) {
-            --list-grid-template: minmax(30%, 50%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
+            --list-grid-template: minmax(30%, 50%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
         }
 
-    }
-}
-
-.message {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    height: 500px;
-    justify-content: center;
-    width: 100%;
-
-    &__text {
-        margin-bottom: 20px;
     }
 }

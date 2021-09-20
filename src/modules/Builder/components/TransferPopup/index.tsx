@@ -9,6 +9,7 @@ import { BuilderField } from '@/modules/Builder/components/BuilderField'
 import { TransferSubmitButton } from '@/modules/Builder/components/TransferSubmitButton'
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 import { useTransferForm } from '@/modules/Builder/hooks/useTransferForm'
+import { isAddressValid } from '@/misc'
 
 import './index.scss'
 
@@ -25,7 +26,7 @@ function Popup({ onDismiss }: Props): JSX.Element {
     const transferForm = useTransferForm()
 
     return ReactDOM.createPortal(
-        <div className="transfer-popup popup">
+        <div className="manage-token transfer-popup popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
                 <button
@@ -45,23 +46,25 @@ function Popup({ onDismiss }: Props): JSX.Element {
                     <p className="text">This action is irreversible!</p>
                     <p className="text">Please double check the target address before confirming the transfer.</p>
                 </div>
-                <BuilderField
-                    disabled={managingToken.isTransfer}
-                    label={intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_TRANSFER_LABEL_NEW_OWNER' })}
-                    type="string"
-                    isValid={
-                        managingToken.newOwnerAddress.length > 0
-                    }
-                    value={managingToken.newOwnerAddress}
-                    onChange={transferForm.onChangeData('newOwnerAddress')}
-                />
-                <div style={{ display: 'flex', columnGap: '10px' }}>
-                    <TransferSubmitButton closePopup={onDismiss} />
+                <div className="form-builder">
+                    <BuilderField
+                        disabled={managingToken.isTransfer}
+                        label={intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_TRANSFER_LABEL_NEW_OWNER' })}
+                        type="string"
+                        isValid={
+                            isAddressValid(managingToken.newOwnerAddress)
+                        }
+                        value={managingToken.newOwnerAddress}
+                        onChange={transferForm.onChangeData('newOwnerAddress')}
+                    />
+                </div>
+                <div className="popup-actions">
                     <button className="btn btn-primary btn-lg form-submit btn-block" onClick={onDismiss} type="button">
                         {intl.formatMessage({
-                            id: 'BUILDER_MANAGE_TOKEN_TRANSFER_BTN_TEXT_CANCEL',
+                            id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_CANCEL',
                         })}
                     </button>
+                    <TransferSubmitButton closePopup={onDismiss} />
                 </div>
             </div>
         </div>,

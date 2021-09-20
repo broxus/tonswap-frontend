@@ -7,6 +7,8 @@
     margin-bottom: 32px;
 
     li {
+        white-space: nowrap;
+
         &:not(:last-child) {
             margin-right: 30px;
             position: relative;

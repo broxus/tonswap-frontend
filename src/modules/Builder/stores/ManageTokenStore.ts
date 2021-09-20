@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
     action, IReactionDisposer, makeAutoObservable, reaction,
 } from 'mobx'
@@ -47,8 +48,10 @@ export class ManageTokenStore {
         }
 
         this.changeState('isLoading', true)
+        this.changeData('targetAddress', this.wallet.address ? this.wallet.address : '')
 
         await this.loadTokenData().then(token => this.changeData('token', token))
+        await this.loadTargetWalletBalance()
 
         this.changeState('isLoading', false)
     }
@@ -113,11 +116,89 @@ export class ManageTokenStore {
                 bounce: true,
             })
 
-            this.changeState('isMinting', false)
+            const currentTargetWalletBalance = this.data.targetWalletBalance
+
+            const intervalId = setInterval(async () => {
+                await this.loadTargetWalletBalance()
+
+                if (this.data.targetWalletBalance !== currentTargetWalletBalance) {
+                    this.changeData('token', {
+                        ...this.data.token!,
+                        total_supply: new BigNumber(this.data.token!.total_supply)
+                            .plus(this.data.amountToMint)
+                            .decimalPlaces(+this.data.token!.decimals, BigNumber.ROUND_DOWN)
+                            .toFixed(),
+                    })
+
+                    this.changeState('isMinting', false)
+                    clearInterval(intervalId)
+                }
+            }, 5000)
         }
         catch (reason) {
             this.changeState('isMinting', false)
             error('Mint token failure', reason)
+        }
+    }
+
+    public async burn(): Promise<void> {
+        if (
+            !this.wallet.address
+            || !this.data.token
+            || !this.data.targetAddress
+            || !this.data.amountToBurn
+        ) {
+            this.changeState('isBurning', false)
+            return
+        }
+
+        this.changeState('isBurning', true)
+
+        const result = await ton.packIntoCell({
+            structure: [
+                { name: 'data', type: 'bytes' } as const,
+            ] as const,
+            data: {
+                data: btoa(this.data.callbackPayload),
+            },
+        })
+
+        try {
+            await new Contract(TokenAbi.Root, new Address(this.state.tokenRoot)).methods.proxyBurn({
+                tokens: new BigNumber(this.data.amountToBurn)
+                    .shiftedBy(Number(this.data.token.decimals)).toFixed(),
+                sender_address: new Address(this.data.targetAddress),
+                send_gas_to: new Address(this.data.targetAddress),
+                callback_address: new Address(this.data.callbackAddress),
+                callback_payload: result.boc,
+            }).send({
+                from: new Address(this.wallet.address),
+                amount: '500000000',
+                bounce: true,
+            })
+
+            const currentTargetWalletBalance = this.data.targetWalletBalance
+
+            const intervalId = setInterval(async () => {
+                await this.loadTargetWalletBalance()
+
+                if (this.data.targetWalletBalance !== currentTargetWalletBalance) {
+                    this.changeData('token', {
+                        ...this.data.token!,
+                        total_supply: new BigNumber(this.data.token!.total_supply)
+                            .minus(this.data.amountToBurn)
+                            .decimalPlaces(+this.data.token!.decimals, BigNumber.ROUND_DOWN)
+                            .toFixed(),
+                    })
+
+                    this.changeState('isBurning', false)
+                    clearInterval(intervalId)
+                }
+            }, 5000)
+        }
+        catch (reason) {
+            this.changeState('isBurning', false)
+            error('Burn token failure', reason)
         }
     }
 
@@ -156,12 +237,17 @@ export class ManageTokenStore {
             return
         }
 
-        const balance = await TokenWallet.balance({
-            root: new Address(this.data.token.root),
-            owner: new Address(this.data.targetAddress),
-        })
+        try {
+            const balance = await TokenWallet.balance({
+                root: new Address(this.data.token.root),
+                owner: new Address(this.data.targetAddress),
+            })
 
-        this.changeData('targetWalletBalance', new BigNumber(balance).shiftedBy(-this.data.token.decimals).toFixed())
+            this.changeData('targetWalletBalance', new BigNumber(balance).shiftedBy(-this.data.token.decimals).toFixed())
+        }
+        catch (e) {
+            this.changeData('targetWalletBalance', '0')
+        }
     }
 
     public dispose(): void {
@@ -197,6 +283,18 @@ export class ManageTokenStore {
         return this.data.amountToMint
     }
 
+    public get amountToBurn(): string {
+        return this.data.amountToBurn
+    }
+
+    public get callbackAddress(): string {
+        return this.data.callbackAddress
+    }
+
+    public get callbackPayload(): string {
+        return this.data.callbackPayload
+    }
+
     public get newOwnerAddress(): string {
         return this.data.newOwnerAddress
     }
@@ -207,6 +305,10 @@ export class ManageTokenStore {
 
     public get isMinting(): boolean {
         return this.state.isMinting
+    }
+
+    public get isBurning(): boolean {
+        return this.state.isBurning
     }
 
     public get isTransfer(): boolean {

@@ -1,6 +1,6 @@
-
 import { FullContractState, TransactionId } from 'ton-inpage-provider'
-import {UserPendingReward} from "@/misc";
+
+import { UserPendingReward } from '@/misc'
 
 
 export type FarmPool = {
@@ -92,4 +92,35 @@ export type CreateFarmPoolStoreData = {
 
 export type CreateFarmPoolStoreState = {
     isCreating: boolean;
+}
+
+export type RewardTokenRootInfo = {
+    reward_currency: string;
+    reward_root_address: string;
+    reward_scale: number;
+}
+
+export type FarmingPoolInfo = {
+    apr: string;
+    farm_end_time: number;
+    farm_start_time: number;
+    left_address?: string;
+    left_currency?: string;
+    pool_address: string;
+    pool_owner_address: string;
+    reward_token_root_info: RewardTokenRootInfo[];
+    right_address?: string;
+    right_currency?: string;
+    share: string;
+    token_root_address: string;
+    token_root_currency: string;
+    token_root_scale: number;
+    tvl: string;
+    tvl_change: string;
+    user_token_balance: string;
+}
+
+export type FarmingPoolResponse = {
+    pools_info: FarmingPoolInfo[];
+    total_count: number;
 }

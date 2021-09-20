@@ -6,11 +6,11 @@ import { UserAvatar } from '@/components/common/UserAvatar'
 import './index.scss'
 
 
-type Props = {
+export type TokenIconProps = {
     address?: string;
     name?: string;
     className?: string;
-    small?: boolean;
+    size?: 'small' | 'xsmall';
     uri?: string;
 }
 
@@ -19,15 +19,15 @@ export function TokenIcon({
     address,
     className,
     name,
-    small,
+    size,
     uri,
-}: Props): JSX.Element | null {
+}: TokenIconProps): JSX.Element | null {
     if (uri !== undefined) {
         return (
             <img
                 alt={name}
                 className={classNames('token-icon', {
-                    'token-icon-small': small,
+                    [`token-icon_size_${size}`]: Boolean(size),
                 }, className)}
                 src={uri}
             />
@@ -35,6 +35,6 @@ export function TokenIcon({
     }
 
     return address !== undefined ? (
-        <UserAvatar address={address} small={small} />
+        <UserAvatar address={address} size={size} />
     ) : null
 }

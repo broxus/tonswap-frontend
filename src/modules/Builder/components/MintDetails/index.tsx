@@ -6,6 +6,7 @@ import { useIntl } from 'react-intl'
 import BigNumber from 'bignumber.js'
 
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
+import { isAddressValid } from '@/misc'
 
 import './index.scss'
 
@@ -20,7 +21,7 @@ function Details(): JSX.Element {
         () => new BigNumber(managingToken.targetWalletBalance)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
-        , [managingToken.targetWalletBalance, managingToken.token!.decimals],
+        , [managingToken.targetWalletBalance],
     )
 
     const afterTargetAddressBalance = React.useMemo(
@@ -28,14 +29,14 @@ function Details(): JSX.Element {
             .plus(managingToken.amountToMint)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
-        , [managingToken.targetWalletBalance, managingToken.token!.decimals],
+        , [managingToken.targetWalletBalance, managingToken.amountToMint],
     )
 
     const currentSupply = React.useMemo(
         () => new BigNumber(managingToken.token!.total_supply)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
-        , [managingToken.token!.total_supply, managingToken.token!.decimals],
+        , [managingToken.token!.total_supply],
     )
 
     const afterSupply = React.useMemo(
@@ -43,32 +44,36 @@ function Details(): JSX.Element {
             .plus(managingToken.amountToMint)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
-        , [managingToken.token!.total_supply, managingToken.token!.decimals],
+        , [managingToken.token!.total_supply, managingToken.amountToMint],
     )
 
     const getBalanceMessage = (): string => {
-        if (managingToken.targetAddress && !managingToken.targetWalletBalance) {
-            return 'BUILDER_MANAGE_TOKEN_TRANSFER_MESSAGE_ENTER_VALID_ADDRESS'
+        if (!isAddressValid(managingToken.targetAddress)) {
+            return 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_VALID_ADDRESS'
         }
 
-        return 'BUILDER_MANAGE_TOKEN_TRANSFER_MESSAGE_ENTER_ADDRESS'
+        if (!managingToken.amountToMint) {
+            return 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_AMOUNT'
+        }
+
+        return 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_ADDRESS'
     }
 
     return (
         <div className="mint-details">
             <h3 className="mint-details-title">
                 {intl.formatMessage({
-                    id: 'BUILDER_MANAGE_TOKEN_TRANSFER_TITLE_BALANCE',
+                    id: 'BUILDER_MANAGE_TOKEN_TITLE_BALANCE',
                 })}
             </h3>
             <div className="mint-details-table">
-                {managingToken.targetWalletBalance
+                {managingToken.targetWalletBalance && managingToken.amountToMint
                     ? (
                         <>
                             <div className="mint-details-table__row">
                                 <div>
                                     {intl.formatMessage({
-                                        id: 'BUILDER_MANAGE_TOKEN_TRANSFER_LABEL_CURRENT',
+                                        id: 'BUILDER_MANAGE_TOKEN_LABEL_CURRENT',
                                     })}
                                 </div>
                                 <div>
@@ -78,7 +83,7 @@ function Details(): JSX.Element {
                             <div className="mint-details-table__row">
                                 <div>
                                     {intl.formatMessage({
-                                        id: 'BUILDER_MANAGE_TOKEN_TRANSFER_LABEL_AFTER_MINING',
+                                        id: 'BUILDER_MANAGE_TOKEN_LABEL_AFTER_MINING',
                                     })}
                                 </div>
                                 <div>
@@ -95,7 +100,7 @@ function Details(): JSX.Element {
             </div>
             <h3 className="mint-details-title">
                 {intl.formatMessage({
-                    id: 'BUILDER_MANAGE_TOKEN_TRANSFER_LABEL_SUPPLY',
+                    id: 'BUILDER_MANAGE_TOKEN_LABEL_SUPPLY',
                 })}
             </h3>
             <div className="mint-details-table">
@@ -105,7 +110,7 @@ function Details(): JSX.Element {
                             <div className="mint-details-table__row">
                                 <div>
                                     {intl.formatMessage({
-                                        id: 'BUILDER_MANAGE_TOKEN_TRANSFER_LABEL_CURRENT',
+                                        id: 'BUILDER_MANAGE_TOKEN_LABEL_CURRENT',
                                     })}
                                 </div>
                                 <div>
@@ -115,7 +120,7 @@ function Details(): JSX.Element {
                             <div className="mint-details-table__row">
                                 <div>
                                     {intl.formatMessage({
-                                        id: 'BUILDER_MANAGE_TOKEN_TRANSFER_LABEL_AFTER_MINING',
+                                        id: 'BUILDER_MANAGE_TOKEN_LABEL_AFTER_MINING',
                                     })}
                                 </div>
                                 <div>
@@ -128,7 +133,7 @@ function Details(): JSX.Element {
                         <div className="mint-details-table__row">
                             <div>
                                 {intl.formatMessage({
-                                    id: 'BUILDER_MANAGE_TOKEN_TRANSFER_MESSAGE_ENTER_AMOUNT',
+                                    id: 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_AMOUNT',
                                 })}
                             </div>
                         </div>

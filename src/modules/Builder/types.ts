@@ -4,6 +4,7 @@ import {
     Transaction,
 } from 'ton-inpage-provider'
 
+
 import { CustomToken, TokenAbi } from '@/misc'
 
 export type BuilderStoreData = {
@@ -40,14 +41,18 @@ export type ManageTokenStoreData = {
     targetAddress: string;
     targetWalletBalance: string;
     amountToMint: string;
+    amountToBurn: string;
+    callbackAddress: string;
+    callbackPayload: string;
     newOwnerAddress: string;
 }
 
 export type ManageTokenStoreState = {
-    tokenRoot: string,
-    isLoading: boolean,
-    isMinting: boolean,
-    isTransfer: boolean,
+    tokenRoot: string;
+    isLoading: boolean;
+    isMinting: boolean;
+    isBurning: boolean;
+    isTransfer: boolean;
 }
 
 export type CreateTokenSuccessResult = {

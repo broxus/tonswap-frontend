@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js'
 import * as React from 'react'
 
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
-import { isAmountValid } from '@/utils'
+import { isGoodBignumber } from '@/utils'
 
 
 type SwapSettingsShape = {
@@ -49,7 +49,7 @@ export function useSwapSettings(): SwapSettingsShape {
 
     const onBlur: React.FormEventHandler<HTMLInputElement> = event => {
         const value = new BigNumber(event.currentTarget.value || 0)
-        if (!isAmountValid(value)) {
+        if (!isGoodBignumber(value)) {
             swap.changeData('slippage', '0.5')
         }
     }

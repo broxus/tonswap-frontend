@@ -2,11 +2,11 @@ import * as React from 'react'
 import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
+import BigNumber from 'bignumber.js'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { useCreateFarmPoolStore } from '@/modules/Farming/stores/CreateFarmPoolStore'
-import BigNumber from "bignumber.js";
-import {amount} from "@/utils";
+import { amount } from '@/utils'
 
 function CreatingParams(): JSX.Element {
     const intl = useIntl()

@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom'
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 import { useWallet } from '@/stores/WalletService'
 import { Icon } from '@/components/common/Icon'
+import { isAddressValid } from '@/misc'
 
 type Props = {
     closePopup: () => void;
@@ -21,7 +22,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
         disabled: managingToken.isTransfer,
     }
-    let buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_TRANSFER_BTN_TEXT_SUBMIT' })
+    let buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_SUBMIT' })
     const showSpinner = managingToken.isTransfer
 
     switch (true) {
@@ -40,10 +41,15 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
             buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_ENTER_ALL_DATA' })
             break
 
+        case !isAddressValid(managingToken.newOwnerAddress):
+            buttonProps.disabled = true
+            buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_VALID_ADDRESS' })
+            break
+
         case managingToken.newOwnerAddress != null:
             buttonProps.onClick = async () => {
-                await managingToken.transfer()
                 closePopup()
+                await managingToken.transfer()
             }
             break
 

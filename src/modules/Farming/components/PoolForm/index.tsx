@@ -5,8 +5,6 @@ import { useIntl } from 'react-intl'
 import { FarmingPoolStoreData, FarmPool } from '@/modules/Farming/types'
 import { useFarmingPool } from '@/modules/Farming/stores/FarmingPoolStore'
 import { amount } from '@/utils'
-
-import './index.scss'
 import {
     isClaimValid, isClosePoolValid,
     isCreatePeriodValid,
@@ -14,6 +12,7 @@ import {
     isWithdrawAllValid,
 } from '@/modules/Farming/utils'
 
+import './index.scss'
 
 type Props = {
     pool: FarmPool;

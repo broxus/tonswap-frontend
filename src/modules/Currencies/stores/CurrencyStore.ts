@@ -8,14 +8,10 @@ import {
 } from 'mobx'
 import uniqBy from 'lodash.uniqby'
 
-import { API_URL } from '@/constants'
 import { DexConstants } from '@/misc'
 import {
     CandlestickGraphShape,
     CommonGraphShape,
-    OhlcvGraphModel,
-    TvlGraphModel,
-    VolumeGraphModel,
 } from '@/modules/Chart/types'
 import {
     DEFAULT_CURRENCY_STORE_DATA,
@@ -23,15 +19,15 @@ import {
 } from '@/modules/Currencies/constants'
 import {
     CurrencyGraphRequest,
-    CurrencyResponse,
     CurrencyStoreData,
     CurrencyStoreGraphData,
     CurrencyStoreState,
 } from '@/modules/Currencies/types'
-import { PairsRequest, PairsResponse } from '@/modules/Pairs/types'
-import { TransactionsInfoResponse, TransactionsRequest } from '@/modules/Transactions/types'
+import { PairsRequest } from '@/modules/Pairs/types'
+import { TransactionsRequest } from '@/modules/Transactions/types'
 import { getImportedTokens } from '@/stores/TokensCacheService'
 import { parseCurrencyBillions } from '@/utils'
+import { CurrenciesApi, useCurrenciesApi } from '@/modules/Currencies/hooks/useApi'
 
 
 export class CurrencyStore {
@@ -47,6 +43,8 @@ export class CurrencyStore {
      * @protected
      */
     protected state: CurrencyStoreState = DEFAULT_CURRENCY_STORE_STATE
+
+    protected readonly api: CurrenciesApi = useCurrenciesApi()
 
     constructor(protected readonly address: string) {
         makeAutoObservable(this, {
@@ -116,19 +114,10 @@ export class CurrencyStore {
         try {
             this.changeState('isLoading', true)
 
-            const response = await fetch(`${API_URL}/currencies/${this.address}`, {
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
+            const result = await this.api.currency({
+                address: this.address,
             })
-
-            if (response.ok) {
-                const result: CurrencyResponse = await response.json()
-                this.changeData('currency', result)
-            }
+            this.changeData('currency', result)
         }
         catch (e) {}
         finally {
@@ -202,20 +191,14 @@ export class CurrencyStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-            const response = await fetch(`${API_URL}/currencies/${this.address}/prices`, {
+
+            const result = await this.api.currencyPrices({
+                address: this.address,
+            }, {
                 body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
             })
 
-            if (response.ok) {
-                const result: OhlcvGraphModel[] = await response.json()
-                this.changeGraphData('prices', result.concat(this.graphData.prices))
-            }
+            this.changeGraphData('prices', result.concat(this.graphData.prices))
         }
         catch (e) {}
         finally {
@@ -254,20 +237,14 @@ export class CurrencyStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-            const response = await fetch(`${API_URL}/currencies/${this.address}/volume`, {
+
+            const result = await this.api.currencyVolume({
+                address: this.address,
+            }, {
                 body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
             })
 
-            if (response.ok) {
-                const result: VolumeGraphModel[] = await response.json()
-                this.changeGraphData('volume', result.concat(this.graphData.volume))
-            }
+            this.changeGraphData('volume', result.concat(this.graphData.volume))
         }
         catch (e) {}
         finally {
@@ -306,20 +283,14 @@ export class CurrencyStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-            const response = await fetch(`${API_URL}/currencies/${this.address}/tvl`, {
+
+            const result = await this.api.currencyTvl({
+                address: this.address,
+            }, {
                 body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
             })
 
-            if (response.ok) {
-                const result: TvlGraphModel[] = await response.json()
-                this.changeGraphData('tvl', result.concat(this.graphData.tvl))
-            }
+            this.changeGraphData('tvl', result.concat(this.graphData.tvl))
         }
         catch (e) {}
         finally {
@@ -400,25 +371,18 @@ export class CurrencyStore {
             this.changeState('isPairsLoading', true)
 
             const body: PairsRequest = {
+                currencyAddresses: getImportedTokens(),
                 currencyAddress: this.address,
                 limit: this.pairsLimit,
                 offset: this.pairsCurrentPage >= 1 ? (this.pairsCurrentPage - 1) * this.pairsLimit : 0,
                 ordering: this.pairsOrdering,
+                whiteListUri: DexConstants.TokenListURI,
             }
-            const response = await fetch(`${API_URL}/pairs`, {
-                body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
-            })
 
-            if (response.ok) {
-                const result: PairsResponse = await response.json()
-                this.changeData('pairsData', result)
-            }
+            const result = await this.api.pairs({}, {
+                body: JSON.stringify(body),
+            })
+            this.changeData('pairsData', result)
         }
         catch (e) {}
         finally {
@@ -492,20 +456,12 @@ export class CurrencyStore {
             if (this.transactionsEvents.length > 0) {
                 body.eventType = this.transactionsEvents
             }
-            const response = await fetch(`${API_URL}/transactions`, {
+
+            const result = await this.api.transactions({}, {
                 body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
             })
 
-            if (response.ok) {
-                const result: TransactionsInfoResponse = await response.json()
-                this.changeData('transactionsData', result)
-            }
+            this.changeData('transactionsData', result)
         }
         catch (e) {}
         finally {

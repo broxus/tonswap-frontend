@@ -63,5 +63,13 @@
                 margin-top: 4px;
             }
         }
+
+        &__action:not(:last-child) {
+            margin-bottom: 28px;
+        }
     }
+}
+
+.builder-address-field {
+    cursor: pointer;
 }

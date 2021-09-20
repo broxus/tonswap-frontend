@@ -117,7 +117,7 @@ button.popup-close {
         font-weight: 500;
         letter-spacing: 0.5px;
         line-height: 24px;
-        max-width: 238px;
+        max-width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -194,4 +194,8 @@ button.popup-close {
     flex-direction: row;
     justify-content: flex-end;
     margin-top: 48px;
+
+    .btn {
+        margin: 0;
+    }
 }

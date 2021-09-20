@@ -12,9 +12,9 @@ import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
 import messages from '@/lang/en'
 import { Account } from '@/modules/Account'
-import { ManageToken } from '@/modules/Builder/manageToken'
 import Builder from '@/pages/builder'
 import CreateToken from '@/pages/builder/create'
+import CustomToken from '@/pages/builder/token'
 import Farming from '@/pages/farming'
 import CreateFarmPool from '@/pages/farming/create'
 import Pairs from '@/pages/pairs'
@@ -23,7 +23,10 @@ import Pool from '@/pages/pool'
 import Swap from '@/pages/swap'
 import Tokens from '@/pages/tokens'
 import Token from '@/pages/tokens/item'
+import { PoolsPage } from '@/pages/pools'
+import { PoolsItemPage } from '@/pages/pools/item'
 import { noop } from '@/utils'
+import { appRoutes } from '@/routes'
 
 import './App.scss'
 
@@ -43,40 +46,52 @@ export function App(): JSX.Element {
                     <main className="main">
                         <Switch>
                             <Route exact path="/">
-                                <Redirect exact to="/swap" />
+                                <Redirect exact to={appRoutes.swap.makeUrl()} />
                             </Route>
-                            <Route path="/swap/:leftTokenRoot([0][:][0-9a-f]{64})?/:rightTokenRoot([0][:][0-9a-f]{64})?">
+
+                            <Route path={appRoutes.swap.path}>
                                 <Swap />
                             </Route>
-                            <Route exact path="/pool/:leftTokenAddress([0][:][0-9a-f]{64})?/:rightTokenAddress([0][:][0-9a-f]{64})?">
+
+                            <Route exact path={appRoutes.poolList.path}>
+                                <PoolsPage />
+                            </Route>
+                            <Route exact path={appRoutes.poolItem.path}>
+                                <PoolsItemPage />
+                            </Route>
+                            <Route exact path={appRoutes.poolCreate.path}>
                                 <Pool />
                             </Route>
-                            <Route exact path="/farming">
-                                <Farming />
-                            </Route>
-                            <Route exact path="/farming/create">
-                                <CreateFarmPool />
-                            </Route>
-                            <Route exact path="/tokens">
+
+                            <Route exact path={appRoutes.tokenList.path}>
                                 <Tokens />
                             </Route>
-                            <Route exact path="/tokens/:address">
+                            <Route exact path={appRoutes.tokenItem.path}>
                                 <Token />
                             </Route>
-                            <Route exact path="/pairs">
+
+                            <Route exact path={appRoutes.pairList.path}>
                                 <Pairs />
                             </Route>
-                            <Route exact path="/pairs/:poolAddress">
+                            <Route exact path={appRoutes.pairItem.path}>
                                 <Pair />
                             </Route>
-                            <Route exact path="/builder">
+
+                            <Route exact path={appRoutes.farming.path}>
+                                <Farming />
+                            </Route>
+                            <Route exact path={appRoutes.farmingCreate.path}>
+                                <CreateFarmPool />
+                            </Route>
+
+                            <Route exact path={appRoutes.builder.path}>
                                 <Builder />
                             </Route>
-                            <Route path="/builder/create">
+                            <Route path={appRoutes.builderCreate.path}>
                                 <CreateToken />
                             </Route>
-                            <Route exact path="/builder/:tokenRoot">
-                                <ManageToken />
+                            <Route exact path={appRoutes.builderItem.path}>
+                                <CustomToken />
                             </Route>
                         </Switch>
                     </main>

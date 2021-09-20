@@ -3,8 +3,7 @@ import { useIntl } from 'react-intl'
 
 import './index.scss'
 
-
-type Props = {
+export type PaginationProps = {
     currentPage: number;
     disabled?: boolean;
     totalPages: number;
@@ -13,15 +12,14 @@ type Props = {
     onSubmit: (value: number) => void;
 }
 
-
-export function Pagination({
+export const Pagination = React.memo(({
     currentPage = 1,
     disabled,
     totalPages = 0,
     onNext,
     onPrev,
     onSubmit,
-}: Props): JSX.Element {
+}: PaginationProps): JSX.Element => {
     const intl = useIntl()
 
     const [value, setValue] = React.useState(currentPage)
@@ -74,7 +72,7 @@ export function Pagination({
             <button
                 type="button"
                 className="btn pagination__btn"
-                disabled={disabled}
+                disabled={disabled || currentPage === 1}
                 onClick={onPrev}
             >
                 <svg
@@ -87,7 +85,7 @@ export function Pagination({
             <button
                 type="button"
                 className="btn pagination__btn"
-                disabled={disabled}
+                disabled={disabled || currentPage === totalPages}
                 onClick={onNext}
             >
                 <svg
@@ -99,4 +97,4 @@ export function Pagination({
             </button>
         </div>
     )
-}
+})

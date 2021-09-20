@@ -116,12 +116,13 @@ export function getCrossExchangeSlippage(value: string, stepsCounts: number): st
         .toFixed()
 }
 
-export function getReducedCrossExchangeFee(iteratee: SwapRouteStep[], isInverted?: boolean): BigNumber {
+export function getReducedCrossExchangeFee(iteratee: SwapRouteStep[]): BigNumber {
     const fee = iteratee.reduceRight(
         (acc, step, idx, steps) => (
-            acc.plus(step.fee)
-                .times((isInverted ? steps[idx - 1]?.expectedAmount : steps[idx - 1]?.amount) || 1)
-                .div((isInverted ? steps[idx - 1]?.amount : steps[idx - 1]?.expectedAmount) || 1)
+            acc
+                .plus(step.fee)
+                .times((steps[idx - 1]?.amount) || 1)
+                .div((steps[idx - 1]?.expectedAmount) || 1)
         ),
         new BigNumber(0),
     )
@@ -148,8 +149,8 @@ export function getReducedCrossExchangeAmount(
 
         const isInverted = pair.roots?.left.toString() !== currentRoot
 
-        const leftBalanceBN = new BigNumber(pair.balances.left).shiftedBy(-pair.decimals.left)
-        const rightBalanceBN = new BigNumber(pair.balances.right).shiftedBy(-pair.decimals.right)
+        const leftBalanceBN = new BigNumber(pair.balances.left)
+        const rightBalanceBN = new BigNumber(pair.balances.right)
 
         currentRoot = isInverted ? pair.roots?.left.toString() : pair.roots?.right.toString()
 
@@ -160,8 +161,11 @@ export function getReducedCrossExchangeAmount(
     }, initialAmount)
 }
 
-export function getCrossExchangePriceImpact(amount: BigNumber, expectedAmount: BigNumber): BigNumber {
-    return new BigNumber(new BigNumber(amount).minus(expectedAmount))
+export function getCrossExchangePriceImpact(
+    amount: BigNumber,
+    expectedAmount: BigNumber,
+): BigNumber {
+    return new BigNumber(amount.minus(expectedAmount))
         .div(amount)
         .times(100)
         .dp(2, BigNumber.ROUND_UP)

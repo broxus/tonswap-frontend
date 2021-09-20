@@ -94,6 +94,12 @@ export class TokensListService {
         })
     }
 
+    public getUri(address: string): string | undefined {
+        return this.data.tokens.find(
+            token => token.address === address,
+        )?.logoURI
+    }
+
     /**
      * Returns computed fetching state value
      */

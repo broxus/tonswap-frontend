@@ -8,14 +8,10 @@ import {
 } from 'mobx'
 import uniqBy from 'lodash.uniqby'
 
-import { API_URL } from '@/constants'
 import { DexConstants } from '@/misc'
 import {
     CandlestickGraphShape,
     CommonGraphShape,
-    OhlcvGraphModel,
-    TvlGraphModel,
-    VolumeGraphModel,
 } from '@/modules/Chart/types'
 import {
     DEFAULT_PAIR_STORE_DATA,
@@ -23,13 +19,12 @@ import {
 } from '@/modules/Pairs/constants'
 import {
     PairGraphRequest,
-    PairResponse,
     PairStoreData,
     PairStoreGraphData,
     PairStoreState,
 } from '@/modules/Pairs/types'
+import { PairsApi, usePairsApi } from '@/modules/Pairs/hooks/useApi'
 import {
-    TransactionsInfoResponse,
     TransactionsRequest,
 } from '@/modules/Transactions/types'
 import { getImportedTokens } from '@/stores/TokensCacheService'
@@ -49,6 +44,8 @@ export class PairStore {
      * @protected
      */
     protected state: PairStoreState = DEFAULT_PAIR_STORE_STATE
+
+    protected readonly api: PairsApi = usePairsApi()
 
     constructor(protected readonly address: string) {
         makeAutoObservable(this, {
@@ -118,19 +115,11 @@ export class PairStore {
         try {
             this.changeState('isLoading', true)
 
-            const response = await fetch(`${API_URL}/pairs/address/${this.address}`, {
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
+            const result = await this.api.pair({
+                address: this.address,
             })
 
-            if (response.ok) {
-                const result: PairResponse = await response.json()
-                this.changeData('pair', result)
-            }
+            this.changeData('pair', result)
         }
         catch (e) {}
         finally {
@@ -197,20 +186,12 @@ export class PairStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-            const response = await fetch(`${API_URL}/pairs/address/${this.address}/ohlcv`, {
+            const result = await this.api.pairOhlcv({
+                address: this.address,
+            }, {
                 body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
             })
-
-            if (response.ok) {
-                const result: OhlcvGraphModel[] = await response.json()
-                this.changeGraphData('ohlcv', result.concat(this.graphData.ohlcv))
-            }
+            this.changeGraphData('ohlcv', result.concat(this.graphData.ohlcv))
         }
         catch (e) {}
         finally {
@@ -249,20 +230,14 @@ export class PairStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-            const response = await fetch(`${API_URL}/pairs/address/${this.address}/tvl`, {
+
+            const result = await this.api.pairTvl({
+                address: this.address,
+            }, {
                 body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
             })
 
-            if (response.ok) {
-                const result: TvlGraphModel[] = await response.json()
-                this.changeGraphData('tvl', result.concat(this.graphData.tvl))
-            }
+            this.changeGraphData('tvl', result.concat(this.graphData.tvl))
         }
         catch (e) {}
         finally {
@@ -301,20 +276,12 @@ export class PairStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-            const response = await fetch(`${API_URL}/pairs/address/${this.address}/volume`, {
+            const result = await this.api.pairVolume({
+                address: this.address,
+            }, {
                 body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
             })
-
-            if (response.ok) {
-                const result: VolumeGraphModel[] = await response.json()
-                this.changeGraphData('volume', result.concat(this.graphData.volume))
-            }
+            this.changeGraphData('volume', result.concat(this.graphData.volume))
         }
         catch (e) {}
         finally {
@@ -420,20 +387,12 @@ export class PairStore {
             if (this.transactionsEvents.length > 0) {
                 body.eventType = this.transactionsEvents
             }
-            const response = await fetch(`${API_URL}/transactions`, {
+
+            const result = await this.api.transactions({}, {
                 body: JSON.stringify(body),
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                method: 'POST',
-                mode: 'cors',
             })
 
-            if (response.ok) {
-                const result: TransactionsInfoResponse = await response.json()
-                this.changeData('transactionsData', result)
-            }
+            this.changeData('transactionsData', result)
         }
         catch (e) {}
         finally {

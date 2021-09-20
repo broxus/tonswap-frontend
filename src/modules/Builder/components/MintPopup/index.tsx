@@ -9,7 +9,7 @@ import { BuilderField } from '@/modules/Builder/components/BuilderField'
 import { MintSubmitButton } from '@/modules/Builder/components/MintSubmitButton'
 import { useMintForm } from '@/modules/Builder/hooks/useMintForm'
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
-import { TargetAddressField } from '@/modules/Builder/components/TargetAddressField'
+import { MintAddressField } from '@/modules/Builder/components/MintAddressField'
 import { MintDetails } from '@/modules/Builder/components/MintDetails'
 
 type Props = {
@@ -18,9 +18,8 @@ type Props = {
 
 
 function Popup({ onDismiss }: Props): JSX.Element {
-    const { rootToken } = useParams<{ rootToken: string }>()
-
     const intl = useIntl()
+    const { rootToken } = useParams<{ rootToken: string }>()
     const managingToken = useManageTokenStore(rootToken)
     const mintForm = useMintForm()
 
@@ -30,7 +29,7 @@ function Popup({ onDismiss }: Props): JSX.Element {
             <div className="popup__wrap">
                 <button
                     type="button"
-                    className="btn popup-close btn-icon"
+                    className="btn btn-icon popup-close"
                     onClick={onDismiss}
                 >
                     <Icon icon="close" />
@@ -40,22 +39,24 @@ function Popup({ onDismiss }: Props): JSX.Element {
                         id: 'BUILDER_MANAGE_TOKEN_MINT_POPUP_TITLE',
                     })}
                 </h2>
-                <TargetAddressField />
-                <BuilderField
-                    disabled={managingToken.isMinting}
-                    label={intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MINT_LABEL_AMOUNT' })}
-                    type="number"
-                    isValid={
-                        managingToken.amountToMint.length > 0
-                    }
-                    value={managingToken.amountToMint}
-                    onChange={mintForm.onChangeData('amountToMint')}
-                />
+                <div className="form-builder">
+                    <MintAddressField />
+                    <BuilderField
+                        disabled={managingToken.isMinting}
+                        label={intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MINT_LABEL_AMOUNT' })}
+                        type="number"
+                        isValid={
+                            managingToken.amountToMint.length > 0
+                        }
+                        value={managingToken.amountToMint}
+                        onChange={mintForm.onChangeData('amountToMint')}
+                    />
+                </div>
                 <MintDetails />
-                <div style={{ display: 'flex', columnGap: '10px' }}>
+                <div className="popup-actions">
                     <button className="btn btn-tertiary btn-lg form-submit btn-block" onClick={onDismiss} type="button">
                         {intl.formatMessage({
-                            id: 'BUILDER_MANAGE_TOKEN_TRANSFER_BTN_TEXT_CANCEL',
+                            id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_CANCEL',
                         })}
                     </button>
                     <MintSubmitButton closePopup={onDismiss} />

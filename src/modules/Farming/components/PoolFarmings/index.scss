@@ -1,0 +1,16 @@
+.pool-farming-list {
+    &.list {
+        --list-grid-template: minmax(20%, 40%) minmax(100px, 120px) minmax(95px, 100px) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 220px);
+        min-height: auto;
+    }
+
+    .changes-direction:not(.changes-direction-up),
+    .changes-direction:not(.changes-direction-down) {
+        opacity: 1;
+    }
+
+    .message {
+        height: 100px;
+        padding-top: 32px;
+    }
+}

@@ -25,6 +25,7 @@ export const DEFAULT_SWAP_BILL: SwapBill = {
 
 export const DEFAULT_SWAP_STORE_DATA: SwapStoreData = {
     bestCrossExchangeRoute: undefined,
+    bill: DEFAULT_SWAP_BILL,
     crossPairs: [],
     leftAmount: '',
     leftToken: undefined,

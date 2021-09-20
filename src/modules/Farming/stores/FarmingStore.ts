@@ -19,7 +19,7 @@ import {
     FarmAbi,
     TokenWallet, UserPendingReward,
 } from '@/misc'
-import {DEFAULT_FARMING_STORE_DATA, DEFAULT_FARMING_STORE_STATE, OWNERS_WHITE_LIST} from '@/modules/Farming/constants'
+import { DEFAULT_FARMING_STORE_DATA, DEFAULT_FARMING_STORE_STATE, OWNERS_WHITE_LIST } from '@/modules/Farming/constants'
 import { FarmingStoreData, FarmingStoreState, FarmPool } from '@/modules/Farming/types'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { filterEmpty, loadUniWTON } from '@/modules/Farming/utils'
