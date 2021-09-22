@@ -247,7 +247,7 @@ export function usePoolContent(): UsePoolContent {
                 userDataAddress,
                 poolRewardData._accTonPerShare,
                 poolRewardData._lastRewardTime,
-                `${farmEnd || 0}`,
+                `${farmEnd ? farmEnd / 1000 : 0}`,
             )
         }
         catch (e) {
