@@ -1,0 +1,32 @@
+.tooltip {
+    position: fixed;
+    z-index: 10;
+    padding: 12px;
+    margin-top: 8px;
+    background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(64px);
+    border-radius: 2px;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.6px;
+
+    h4 {
+        margin-bottom: 4px;
+        line-height: 16px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.75px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    p {
+        margin: 0 0 0.5em;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}

@@ -1,0 +1,15 @@
+.amount-input {
+    position: relative;
+
+    &_with-btn {
+        .text-input {
+            padding-right: 65px;
+        }
+    }
+
+    .btn {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+    }
+}

@@ -12,6 +12,7 @@ export const defaultProps = {
     xmlns: 'http://www.w3.org/2000/svg',
 }
 
+
 /* eslint-disable */
 const library: Record<string, React.ElementType> = {
     arrowDown: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 20 20" {...getSize(20, 20, ratio)}><path d="M10 12.5L5 7.5H15L10 12.5Z"/></svg>,
@@ -29,6 +30,10 @@ const library: Record<string, React.ElementType> = {
     reverse: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 36 36" {...getSize(36, 36, ratio)}><path d="M16 24L12 28M12 28L8 24M12 28C12 28 12 20.6863 12 16C12 13.6667 16 12 16 12" strokeWidth={1.4}/><path d="M20 12L24 8M24 8L28 12M24 8C24 8 24 15.3137 24 20C24 22.3333 20 24 20 24" strokeWidth={1.4}/></svg>,
     reverseHorizontal: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 24 24" {...getSize(24, 24, ratio)}><path d="M15.6001 13.2002L18.0001 15.6002M18.0001 15.6002L15.6001 18.0002M18.0001 15.6002C18.0001 15.6002 13.6119 15.6002 10.8001 15.6002C9.40015 15.6002 8.40015 13.2002 8.40015 13.2002" strokeWidth={1.4}/><path d="M8.39985 10.7998L5.99985 8.3998M5.99985 8.3998L8.39985 5.9998M5.99985 8.3998C5.99985 8.3998 10.3881 8.3998 13.1999 8.3998C14.5999 8.3998 15.5999 10.7998 15.5999 10.7998" strokeWidth={1.4}/></svg>,
     star: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 24 24" {...getSize(24, 24, ratio)}><path d="M14.6258 8.82306L14.7857 9.24051L15.2317 9.27097L22.2779 9.7522L16.8465 14.5363L16.5284 14.8165L16.6294 15.2283L18.3978 22.4392L12.3794 18.4874L11.9952 18.2351L11.611 18.4874L5.59272 22.4392L7.36114 15.2283L7.46204 14.8168L7.14433 14.5366L1.72029 9.7522L8.75876 9.27096L9.20473 9.24047L9.36467 8.82306L11.9952 1.95785L14.6258 8.82306Z" stroke="currentColor" strokeWidth={1.4}/></svg>,
+    user: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 20 20" {...getSize(20, 20, ratio)}><path fillRule="evenodd" clipRule="evenodd" d="M6 6C6 3.7944 7.7944 2 10 2C12.2056 2 14 3.7944 14 6C14 8.2056 12.2056 10 10 10C7.7944 10 6 8.2056 6 6ZM10.9333 11.375C12.5514 11.375 14.0757 12.0208 15.2256 13.1936C16.3698 14.3606 17 15.901 17 17.5312C17 17.7901 16.7911 18 16.5333 18H3.46667C3.20894 18 3 17.7901 3 17.5312C3 15.901 3.63016 14.3606 4.77439 13.1936C5.92426 12.0208 7.44864 11.375 9.06667 11.375H10.9333Z" fill="currentColor"/></svg>,
+    warning: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 24 24" {...getSize(24, 24, ratio)}><path fillRule="evenodd" clipRule="evenodd" d="M12.9354 3.55908C12.5117 2.85289 11.4883 2.85289 11.0646 3.55908L0.991306 20.3478C0.555036 21.0749 1.0788 22 1.92675 22H22.0732C22.9212 22 23.445 21.0749 23.0087 20.3478L12.9354 3.55908Z" fill="#EB4361" fillOpacity="0.32" /><path d="M10.63 20H13.38L13.38 17H10.63L10.63 20Z" fill="#EB4361"/><path d="M10.63 15H13.38L13.38 7H10.63L10.63 15Z" fill="#EB4361"/></svg>,
+    check: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 10 8" {...getSize(10, 8, ratio)}><path d="M1.5 4L4 6.5L8.5 1" stroke="currentColor" strokeWidth="1.8"/></svg>,
+    directionRight: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 28 14" {...getSize(28, 14, ratio)}><path d="M20 1L26 7M26 7L20 13M26 7H0" stroke="currentColor" strokeOpacity={0.48} strokeWidth={1.6} /></svg>,
 }
 
 

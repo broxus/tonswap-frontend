@@ -4,7 +4,7 @@ import * as React from 'react'
 type Props = {
     address: string;
     className?: string;
-    size?: 'small' | 'xsmall';
+    size?: 'small' | 'xsmall' | 'medium';
 }
 
 
@@ -118,6 +118,9 @@ export function UserAvatar({ address, size, className }: Props): JSX.Element {
             break
         case 'xsmall':
             pxSize = 20
+            break
+        case 'medium':
+            pxSize = 32
             break
         default:
             pxSize = 36

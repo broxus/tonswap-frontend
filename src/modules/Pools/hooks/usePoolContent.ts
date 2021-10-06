@@ -12,13 +12,14 @@ import { useWallet } from '@/stores/WalletService'
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 import { useApi } from '@/modules/Pools/hooks/useApi'
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
-import { PoolFarmingsProps } from '@/modules/Farming/components/PoolFarmings'
+import { FarmingTableProps } from '@/modules/Farming/components/FarmingTable'
 import {
     amountOrZero, error, getPrice, shareAmount,
 } from '@/utils'
 import {
     Farm, Pool, PoolData, UserPendingReward,
 } from '@/misc'
+import { appRoutes } from '@/routes'
 
 type RewardInfo = {
     amount: string
@@ -48,7 +49,7 @@ type UsePoolContent = {
     totalLeft?: string;
     totalRight?: string;
     burnVisible?: boolean;
-    farmItems?: PoolFarmingsProps['items'];
+    farmItems?: FarmingTableProps['items'];
     pool?: PoolData;
     pairAddress?: Address;
     ownerAddress?: Address;
@@ -172,14 +173,20 @@ export function usePoolContent(): UsePoolContent {
         farm.map(({ info, balance: { reward }}) => ({
             tvl: info.tvl,
             tvlChange: info.tvl_change,
-            apr: `${amountOrZero(info.apr, 0)}%`,
-            share: `${amountOrZero(info.share, 0)}%`,
-            leftTokenAddress: info.left_address as string,
-            rightTokenAddress: info.right_address as string,
-            leftTokenUri: tokensList.getUri(info.left_address as string),
-            rightTokenUri: tokensList.getUri(info.right_address as string),
-            leftToken: info.left_currency as string,
-            rightToken: info.right_currency as string,
+            apr: info.apr,
+            share: info.share,
+            startTime: info.farm_start_time,
+            endTime: info.farm_end_time,
+            leftToken: {
+                address: info.left_address as string,
+                name: info.left_currency as string,
+                uri: tokensList.getUri(info.left_address as string),
+            },
+            rightToken: {
+                address: info.right_address as string,
+                name: info.right_currency as string,
+                uri: tokensList.getUri(info.right_address as string),
+            },
             rewardsIcons: info.reward_token_root_info.map(rewardToken => ({
                 address: rewardToken.reward_root_address,
                 uri: tokensList.getUri(rewardToken.reward_root_address),
@@ -192,6 +199,10 @@ export function usePoolContent(): UsePoolContent {
                     value: amount,
                 })
             )),
+            link: appRoutes.farmingItem.makeUrl({
+                address: info.pool_address,
+            }),
+            balanceWarning: info.is_low_balance,
         }))
     ), [farm])
 
@@ -312,8 +323,8 @@ export function usePoolContent(): UsePoolContent {
                 api.pair({ address: pairAddress.toString() }),
             ])
             await Promise.all([
-                tokensCache.fetchAndImportIfNotExist(poolData.left.address),
-                tokensCache.fetchAndImportIfNotExist(poolData.right.address),
+                tokensCache.fetchIfNotExist(poolData.left.address),
+                tokensCache.fetchIfNotExist(poolData.right.address),
             ])
             const farmData = await getFarmData(
                 new Address(poolData.lp.address),

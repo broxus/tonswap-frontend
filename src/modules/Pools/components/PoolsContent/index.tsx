@@ -2,7 +2,6 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { Search } from '@/modules/Pools/components/Search'
 import { usePoolsContent } from '@/modules/Pools/hooks/usePoolsContent'
 import { Pagination } from '@/components/common/Pagination'
 import { ContentLoader } from '@/components/common/ContentLoader'
@@ -16,13 +15,11 @@ export const PoolsContent = observer((): JSX.Element => {
     const intl = useIntl()
     const {
         loading, totalPages, items, query, currentPage,
-        onSearch, onSubmit, onNext, onPrev,
+        onSubmit, onNext, onPrev,
     } = usePoolsContent()
 
     return (
         <>
-            <Search onSearch={onSearch} />
-
             <div className="card card--small card--flat">
                 <div className="list polls-list">
                     <div className="list__header">

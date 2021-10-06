@@ -7,9 +7,9 @@ import { useFavoritePairs } from '@/stores/FavoritePairs'
 import { concatSymbols } from '@/utils'
 
 type Props = {
-    poolAddress: string
-    leftSymbol?: string
-    rightSymbol?: string
+    poolAddress: string;
+    leftSymbol?: string;
+    rightSymbol?: string;
 }
 
 function TogglePoolButtonInner({

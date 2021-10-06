@@ -7,7 +7,7 @@ import ton, {
 } from 'ton-inpage-provider'
 
 import { TokenAbi } from '@/misc/abi'
-import { debug } from '@/utils'
+import { debug, error } from '@/utils'
 
 
 export type CustomToken = {
@@ -101,6 +101,39 @@ export class TokenWallet {
         )
 
         return balance.toString()
+    }
+
+    public static async balanceByTokenRoot(
+        ownerAddress: Address,
+        tokenRootAddress: Address,
+    ): Promise<string> {
+        try {
+            const walletAddress = await TokenWallet.walletAddress({
+                owner: ownerAddress,
+                root: tokenRootAddress,
+            })
+            return await TokenWallet.balance({
+                wallet: walletAddress,
+            })
+        }
+        catch (e) {
+            error(e)
+            return '0'
+        }
+    }
+
+    public static async balanceByWalletAddress(
+        walletAddress: Address,
+    ): Promise<string> {
+        try {
+            return await TokenWallet.balance({
+                wallet: walletAddress,
+            })
+        }
+        catch (e) {
+            error(e)
+            return '0'
+        }
     }
 
     public static async rootOwnerAddress(

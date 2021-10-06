@@ -11,6 +11,7 @@ import { PoolField } from '@/modules/Farming/components/PoolField'
 import { useCreateFarmPoolStore } from '@/modules/Farming/stores/CreateFarmPoolStore'
 import { useWallet } from '@/stores/WalletService'
 
+import './index.scss'
 
 export function Create(): JSX.Element {
     const intl = useIntl()

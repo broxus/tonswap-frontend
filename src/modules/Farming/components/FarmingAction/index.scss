@@ -1,0 +1,15 @@
+.farming-action {
+    &__ctrl {
+        display: grid;
+        grid-template-columns: 1fr max-content;
+        align-items: center;
+        column-gap: 8px;
+    }
+
+    &__hint {
+        margin-top: 4px;
+        font-size: 12px;
+        line-height: 16px;
+        color: rgba(255, 255, 255, 0.48);
+    }
+}

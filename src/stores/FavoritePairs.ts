@@ -5,8 +5,6 @@ import {
     error, isObject, isString, storage as storageInstance,
 } from '@/utils'
 
-const STORAGE_KEY = 'favorite_pairs'
-
 type Storage = {
     get: (ket: string) => string | null
     set: (key: string, value: string) => void
@@ -34,12 +32,13 @@ export class FavoritePairs {
     constructor(
         protected readonly storage: Storage,
         protected readonly wallet: WalletService,
+        protected readonly storageKey: string,
     ) {
         this.syncWithStorage()
         makeAutoObservable(this)
 
         window.addEventListener('storage', e => {
-            if (e.key === STORAGE_KEY) {
+            if (e.key === this.storageKey) {
                 this.syncWithStorage()
             }
         })
@@ -101,7 +100,7 @@ export class FavoritePairs {
 
     public saveToStorage(): void {
         const storageData = JSON.stringify(this.state.data)
-        this.storage.set(STORAGE_KEY, storageData)
+        this.storage.set(this.storageKey, storageData)
     }
 
     public syncWithStorage(): void {
@@ -109,7 +108,7 @@ export class FavoritePairs {
     }
 
     public readFromStorage(): Data {
-        const storageData = this.storage.get(STORAGE_KEY)
+        const storageData = this.storage.get(this.storageKey)
 
         if (!storageData) {
             return {}
@@ -127,7 +126,7 @@ export class FavoritePairs {
                     if (Array.isArray(value)) {
                         acc[key] = value.filter(item => (
                             isObject(item)
-                            && isString(item.name)
+                            && (item.name ? isString(item.name) : true)
                             && isString(item.address)
                         ))
                     }
@@ -205,6 +204,14 @@ export class FavoritePairs {
 const favoritePairs = new FavoritePairs(
     storageInstance,
     useWallet(),
+    'favorite_pairs',
+)
+
+const favoriteFarmings = new FavoritePairs(
+    storageInstance,
+    useWallet(),
+    'favorite_farmings',
 )
 
 export const useFavoritePairs = (): FavoritePairs => favoritePairs
+export const useFavoriteFarmings = (): FavoritePairs => favoriteFarmings

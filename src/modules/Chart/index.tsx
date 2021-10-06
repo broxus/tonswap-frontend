@@ -66,7 +66,7 @@ export function Chart({
                 )
             }
         }
-    }, 50), [chart.current, series, timeframe])
+    }, 50), [chart.current, series, timeframe, load])
 
     const listener = React.useRef<typeof handler>()
 
@@ -168,7 +168,7 @@ export function Chart({
             listener.current = handler
             chart.current?.timeScale().subscribeVisibleTimeRangeChange(listener.current)
         }
-    }, [data, series, timeframe])
+    }, [data, series, timeframe, handler])
 
     return <div ref={chartRef} className="chart" />
 }

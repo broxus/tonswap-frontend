@@ -1,0 +1,23 @@
+.farming-status {
+    display: inline-block;
+    vertical-align: top;
+    font-size: 12px;
+    line-height: 24px;
+    border-radius: 24px;
+    padding: 0 8px;
+}
+
+.farming-status_active {
+    background: rgba(74, 180, 74, 0.16);
+    color: #4AB44A;
+}
+
+.farming-status_ended {
+    background: rgba(235, 67, 97, 0.16);
+    color: #EB4361;
+}
+
+.farming-status_waiting {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+}
