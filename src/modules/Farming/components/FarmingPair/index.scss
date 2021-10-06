@@ -1,0 +1,45 @@
+.farming-pair {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+
+    &__status {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+
+        &::after {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 8px;
+            border-radius: 8px;
+        }
+
+        &_active::after {
+            background: #4AB44A;
+        }
+
+        &_waiting::after {
+            background: #E6AC00;
+        }
+
+        &_ended::after {
+            background: rgba(255,255,255,0.56);;
+        }
+    }
+
+    &__user {
+        color: #4AB44A;
+
+        &_private {
+            color: #EB4361;
+        }
+    }
+
+    .icon {
+        vertical-align: top;
+    }
+}

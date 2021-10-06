@@ -97,6 +97,6 @@ export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.El
                 </Observer>
             </div>
         </div>,
-        document.body,
+        document.getElementById('root') as Element,
     )
 }

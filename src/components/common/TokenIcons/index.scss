@@ -1,0 +1,23 @@
+.token-icons {
+    display: flex;
+
+    &__item {
+        margin-left: -8px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+
+    &__more {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #4D4E63;
+        font-size: 12px;
+        cursor: default;
+    }
+}

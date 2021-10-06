@@ -53,8 +53,23 @@ export const apiRoutes = {
     currencyTvl: new Route<{ address: string }>(
         '/currencies/:address/tvl',
     ),
+}
+
+export const farmingApiRoutes = {
+    transactions: new Route(
+        '/transactions',
+    ),
     farmingPools: new Route(
         '/farming_pools',
+    ),
+    farmingPool: new Route<{ address: string }>(
+        '/farming_pools/:address',
+    ),
+    graphicTvl: new Route(
+        '/graphic/tvl',
+    ),
+    graphicApr: new Route(
+        '/graphic/apr',
     ),
 }
 
@@ -85,6 +100,9 @@ export const appRoutes = {
     ),
     farming: new Route(
         '/farming',
+    ),
+    farmingItem: new Route<{ address: string }>(
+        '/farming/:address',
     ),
     farmingCreate: new Route(
         '/farming/create',

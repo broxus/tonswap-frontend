@@ -32,3 +32,170 @@
         p { margin: 12px 0 }
     }
 }
+
+.farming-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 40px 0 16px 0;
+
+    .icon {
+        svg {
+            fill: #fff;
+        }
+    }
+}
+
+.farming-list {
+    &-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+        margin: 36px 0 16px;
+    }
+}
+
+.farming-management,
+.farming-details,
+.farming-balance {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+
+    @media only screen and (max-width: 767px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.farming-balance-panel {
+    font-size: 14px;
+    line-height: 20px;
+    flex-grow: 1;
+    height: 100%;
+    padding: 24px;
+
+    &_deposit {
+        background: radial-gradient(100% 100% at 100% 0%, rgba(74, 180, 74, 0.32) 0%, rgba(255, 255, 255, 0.08) 100%);
+    }
+
+    &_withdraw {
+        background: radial-gradient(100% 100% at 100% 0%, rgba(237, 28, 120, 0.32) 0%, rgba(255, 255, 255, 0.08) 100%);
+    }
+
+    &__title {
+        margin: 0 0 16px;
+        font-size: 18px;
+        line-height: 24px;
+        font-weight: bold;
+    }
+
+    &__text {
+        margin: 0 0 25px;
+    }
+
+    &__tabs {
+        display: flex;
+        margin: 0 0 17px;
+        gap: 12px;
+
+        li {
+            padding: 0 0 7px 0;
+            cursor: pointer;
+            border-bottom: 1px solid transparent;
+            opacity: 0.57;
+
+            &.active {
+                border-block-color: #fff;
+                opacity: 1;
+            }
+        }
+    }
+}
+
+.farming-panel {
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.08);
+
+    &_compact {
+        padding: 16px 24px;
+    }
+
+    &__title {
+        margin: 0 0 4px;
+        line-height: 24px;
+        font-size: 18px;
+        font-weight: bold;
+
+        &_small {
+            margin: 0 0 8px;
+            font-size: 14px;
+            font-weight: normal;
+        }
+    }
+
+    &__text {
+        font-size: 14px;
+        line-height: 20px;
+        color: rgba(255, 255, 255, 0.56);
+    }
+
+    &__label {
+        font-size: 12px;
+        line-height: 16px;
+        letter-spacing: 0.6px;
+        color: rgba(255, 255, 255, 0.48);
+        margin: 0 0 4px;
+    }
+
+    &__value {
+        font-size: 20px;
+        line-height: 24px;
+        letter-spacing: 0.15px;
+    }
+
+    &__token {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0 0 8px;
+        word-break: break-word;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__rows {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+}
+
+.farming-map {
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    gap: 12px;
+    margin: 16px 0 0;
+    font-size: 14px;
+    line-height: 20px;
+
+    &__label {
+        color: rgba(255, 255, 255, 0.56);
+    }
+
+    &__value {
+        justify-self: flex-end;
+    }
+}
+
+.farming-stats {
+    display: grid;
+    grid-template-columns: 284px 1fr;
+    gap: 16px;
+
+    @media only screen and (max-width: 767px) {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+}

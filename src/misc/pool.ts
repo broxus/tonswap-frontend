@@ -5,13 +5,6 @@ import { DexAbi } from '@/misc/abi'
 import { Dex } from '@/misc/dex'
 import { TokenWallet } from '@/misc/token-wallet'
 
-type PoolAddresses = {
-    left: Address;
-    right: Address;
-    lp: Address;
-    lpWallet: Address;
-}
-
 type TokenData = {
     inPool: string;
     address: string;
@@ -33,17 +26,6 @@ const WITHDRAW_FAIL_METHOD = 'dexPairOperationCancelled'
 
 export class Pool {
 
-    static async addresses(pair: Address, owner: Address): Promise<PoolAddresses> {
-        const { left, right, lp } = await Dex.pairTokenRoots(pair)
-        const lpWallet = await TokenWallet.walletAddress({
-            owner,
-            root: lp,
-        })
-        return {
-            left, right, lp, lpWallet,
-        }
-    }
-
     static async pools(
         poolAddresses: Address[],
         walletAddress: Address,
@@ -59,15 +41,15 @@ export class Pool {
         poolAddress: Address,
         walletAddress: Address,
     ): Promise<PoolData> {
-        const poolAddresses = await Pool.addresses(poolAddress, walletAddress)
+        const pairTokenRoots = await Dex.pairTokenRoots(poolAddress)
         const [
             lpDecimals, lpSymbol,
             pairBalances, walletLp,
         ] = await Promise.all([
-            TokenWallet.decimal(poolAddresses.lp),
-            TokenWallet.symbol(poolAddresses.lp),
+            TokenWallet.decimal(pairTokenRoots.lp),
+            TokenWallet.symbol(pairTokenRoots.lp),
             Dex.pairBalances(poolAddress),
-            Pool.walletBalanceOrZero(poolAddresses.lpWallet),
+            TokenWallet.balanceByTokenRoot(walletAddress, pairTokenRoots.lp),
         ])
 
         return {
@@ -76,26 +58,17 @@ export class Pool {
                 inPool: pairBalances.lp,
                 inWallet: walletLp,
                 decimals: Number(lpDecimals),
-                address: poolAddresses.lp.toString(),
+                address: pairTokenRoots.lp.toString(),
                 symbol: lpSymbol,
             },
             left: {
                 inPool: pairBalances.left,
-                address: poolAddresses.left.toString(),
+                address: pairTokenRoots.left.toString(),
             },
             right: {
                 inPool: pairBalances.right,
-                address: poolAddresses.right.toString(),
+                address: pairTokenRoots.right.toString(),
             },
-        }
-    }
-
-    static async walletBalanceOrZero(address: Address): Promise<string> {
-        try {
-            return await TokenWallet.balance({ wallet: address })
-        }
-        catch (e) {
-            return '0'
         }
     }
 
@@ -103,8 +76,11 @@ export class Pool {
         poolAddress: Address,
         walletAddress: Address,
     ): Promise<void> {
-        const poolAddresses = await Pool.addresses(poolAddress, walletAddress)
-        const walletLpBalance = await Pool.walletBalanceOrZero(poolAddresses.lpWallet)
+        const pairTokenRoots = await Dex.pairTokenRoots(poolAddress)
+        const walletLpBalance = await TokenWallet.balanceByTokenRoot(
+            walletAddress,
+            pairTokenRoots.lp,
+        )
 
         if (new BigNumber(walletLpBalance).isZero()) {
             return
@@ -143,9 +119,9 @@ export class Pool {
 
         await Dex.withdrawLiquidity(
             walletAddress,
-            poolAddresses.left,
-            poolAddresses.right,
-            poolAddresses.lp,
+            pairTokenRoots.left,
+            pairTokenRoots.right,
+            pairTokenRoots.lp,
             walletLpBalance,
             payloadId,
         )

@@ -1,0 +1,10 @@
+.farming-user-info {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 16px;
+
+    @media only screen and (max-width: 767px) {
+        grid-auto-flow: row;
+    }
+}

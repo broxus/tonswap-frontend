@@ -3,19 +3,4 @@
     align-items: center;
     column-gap: 10px;
     text-transform: uppercase;
-
-    &_active,
-    &_no-active {
-        &::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            border-radius: 8px;
-            background: #4AB44A;
-        }
-    }
-
-    &_no-active {
-        background: rgba(255,255,255,0.56);
-    }
 }

@@ -113,7 +113,7 @@ export class TokensCacheService {
                 runInAction(() => {
                     this.data.tokens = this.data.tokens.map(
                         token => (
-                            token.root === customToken.root ? { ...customToken } : token
+                            token.root === customToken.root ? { ...token, ...customToken } : token
                         ),
                     )
                 })
@@ -173,7 +173,16 @@ export class TokensCacheService {
      */
     public add(token: TokenCache): void {
         const tokens = this.tokens.slice()
-        tokens.push(token)
+        const index = tokens.findIndex(item => item.root === token.root)
+        if (index > -1) {
+            tokens[index] = {
+                ...tokens[index],
+                ...token,
+            }
+        }
+        else {
+            tokens.push(token)
+        }
         this.data.tokens = tokens
     }
 
@@ -209,7 +218,7 @@ export class TokensCacheService {
         }
     }
 
-    public async fetchAndImportIfNotExist(root: string): Promise<void> {
+    public async fetchIfNotExist(root: string): Promise<void> {
         let token = this.get(root)
 
         if (token) {
@@ -219,7 +228,7 @@ export class TokensCacheService {
         token = await TokenWallet.getTokenData(root)
 
         if (token) {
-            this.import(token)
+            this.add(token)
         }
     }
 

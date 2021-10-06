@@ -1,0 +1,23 @@
+.farming-table {
+    &.list {
+        --list-grid-template: minmax(220px, 40%) minmax(100px, 100px) minmax(100px, 110px) minmax(100px, 100px) minmax(90px, 90px) minmax(90px, 90px) minmax(130px, 150px) minmax(100px, 140px);
+        min-height: auto;
+    }
+
+    .changes-direction:not(.changes-direction-up),
+    .changes-direction:not(.changes-direction-down) {
+        opacity: 1;
+    }
+
+    &__message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 57px;
+        padding: 32px 0 0;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0.5px;
+        color: #FFF;
+    }
+}

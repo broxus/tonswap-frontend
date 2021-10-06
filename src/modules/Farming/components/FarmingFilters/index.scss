@@ -1,0 +1,56 @@
+.farming-filters {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr max-content;
+    column-gap: 20px;
+}
+
+.farming-filters-popup {
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    right: 0;
+    padding: 20px;
+    width: 320px;
+    margin-top: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0px 8px 16px rgba(43, 51, 56, 0.08);
+    backdrop-filter: blur(80px);
+
+    &__title {
+        margin: 0 0 16px;
+        line-height: 20px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    &__sub-title {
+        margin: 16px 0 8px 0;
+        line-height: 20px;
+        font-size: 14px;
+        font-weight: normal;
+    }
+
+    &__cols {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
+        column-gap: 10px;
+    }
+
+    &__rows {
+        display: grid;
+        grid-auto-flow: row;
+        row-gap: 8px;
+    }
+
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        padding: 24px 0 0;
+        margin: 24px 0 0;
+        column-gap: 10px;
+    }
+}

@@ -167,8 +167,8 @@ export function usePoolsContent(): UsePoolsContent {
             ])
             await Promise.all(
                 result[0].map(pool => Promise.all([
-                    tokensCache.fetchAndImportIfNotExist(pool.left.address),
-                    tokensCache.fetchAndImportIfNotExist(pool.right.address),
+                    tokensCache.fetchIfNotExist(pool.left.address),
+                    tokensCache.fetchIfNotExist(pool.right.address),
                 ])),
             )
             return result

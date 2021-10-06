@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 
 import { SectionTitle } from '@/components/common/SectionTitle'
-import { FilterForm } from '@/components/common/FilterForm'
+import { FilterField } from '@/components/common/FilterField'
 
 import './style.scss'
 
@@ -27,10 +27,9 @@ export function Search({
                 {intl.formatMessage({ id: 'POOLS_LIST_FAV_TITLE' })}
             </SectionTitle>
 
-            <FilterForm
+            <FilterField
                 size="s"
                 placeholder={intl.formatMessage({ id: 'POOLS_LIST_FILTER_PLACEHOLDER' })}
-                showSubmit={false}
                 onChange={onChange}
                 value={value}
             />

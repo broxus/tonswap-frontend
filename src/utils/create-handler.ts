@@ -4,10 +4,11 @@ import { Params, Route } from '@/routes'
 export const createHandler = <P extends Params>(
     route: Route<P>,
     baseUrl: string = API_URL,
-) => <Result>() => async <T = Result>(
+) => <Result, Body extends {} = {}>() => async (
         routeParams: P,
         fetchParams?: RequestInit,
-    ): Promise<T> => {
+        bodyData?: Body,
+    ): Promise<Result> => {
         const path = route.makeUrl(routeParams)
         const url = `${baseUrl}${path}`
         const response = await fetch(url, {
@@ -17,6 +18,7 @@ export const createHandler = <P extends Params>(
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
             },
+            body: bodyData ? JSON.stringify(bodyData) : undefined,
             ...fetchParams,
         })
 
@@ -24,7 +26,7 @@ export const createHandler = <P extends Params>(
             throw response
         }
 
-        const result: T = await response.json()
+        const result: Result = await response.json()
 
         return result
     }

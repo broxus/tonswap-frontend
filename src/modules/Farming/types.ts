@@ -102,7 +102,7 @@ export type RewardTokenRootInfo = {
 
 export type FarmingPoolInfo = {
     apr: string;
-    farm_end_time: number;
+    farm_end_time?: number;
     farm_start_time: number;
     left_address?: string;
     left_currency?: string;
@@ -118,9 +118,150 @@ export type FarmingPoolInfo = {
     tvl: string;
     tvl_change: string;
     user_token_balance: string;
+    is_low_balance: boolean;
+}
+
+export type FarmingPoolsResponse = {
+    favorite_pools_info: FarmingPoolInfo[];
+    favorite_total_count: number;
+    pools_info: FarmingPoolInfo[];
+    total_count: number;
+}
+
+export type FarmingPoolsOrdering =
+    | 'tvlascending'
+    | 'tvldescending'
+    | 'aprascending'
+    | 'aprdescending'
+    | 'shareascending'
+    | 'sharedescending'
+
+export type FarmingPoolsRequest = {
+    aprGe?: string;
+    aprLe?: string;
+    favoritePoolAddresses?: string[];
+    isActive?: boolean;
+    isAwaitingStart?: boolean;
+    isWithMyFarming?: boolean;
+    limit?: number;
+    offset?: number;
+    ordering?: FarmingPoolsOrdering;
+    tvlGe?: string;
+    tvlLe?: string;
+    userAddress?: string;
+    whiteCurrencyAddresses?: string[];
+    whiteListUri?: string;
+    rootAddresses?: string[];
+    leftAddress?: string;
+    rightAddress?: string;
+    leftCurrency?: string;
+    rightCurrency?: string;
+    isLowBalance?: boolean;
+}
+
+export type FarmingPoolFilter = {
+    leftRoot?: string;
+    rightRoot?: string;
+    state?: 'awaiting' | 'active' | 'noActive';
+    ownerInclude?: boolean;
+    tvlFrom?: string;
+    tvlTo?: string;
+    aprFrom?: string;
+    aprTo?: string;
+    isLowBalance?: boolean;
 }
 
 export type FarmingPoolResponse = {
-    pools_info: FarmingPoolInfo[];
-    total_count: number;
+    apr: string;
+    apr_change: string;
+    farm_end_time?: number;
+    farm_start_time: number;
+    left_address?: string;
+    left_balance?: string;
+    left_currency?: string;
+    pool_address: string;
+    pool_balance: string;
+    pool_owner_address: string;
+    reward_token_root_info: {
+        reward_currency: string;
+        reward_per_second: string;
+        reward_root_address: string;
+        reward_token_scale: number;
+    }[];
+    right_address?: string;
+    right_balance?: string;
+    right_currency?: string;
+    share: string;
+    share_change: string;
+    token_root_address: string;
+    token_root_currency: string;
+    token_root_scale: number,
+    tvl: string;
+    tvl_change: string;
+    is_low_balance: boolean;
+}
+
+export type FarmingPoolRequest = {
+    userAddress?: string;
+}
+
+export type EventType =
+    | 'deposit'
+    | 'withdraw'
+    | 'claim'
+    | 'rewarddeposit'
+
+export type TransactionsOrdering =
+    | 'blocktimeascending'
+    | 'blocktimedescending'
+    | 'lpvolumeascending'
+    | 'lpvolumedescending'
+    | 'tvascending'
+    | 'tvdescending'
+
+export type Transaction = {
+    kind: string;
+    messageHash: string;
+    poolAddress: string;
+    timestampBlock: number;
+    tokenAddress: string;
+    tokenCurrency: string;
+    tokenExec: string;
+    transactionHash: string;
+    tvExec: string;
+    userAddress: string;
+}
+
+export type TransactionsResponse = {
+    totalCount: number,
+    transactions: Transaction[],
+}
+
+export type TransactionsRequest = {
+    eventTypes?: EventType[];
+    limit?: number;
+    offset?: number;
+    ordering?: TransactionsOrdering;
+    poolAddress?: string;
+    rootTokenAmountGe?: string;
+    rootTokenAmountLe?: string;
+    timestampBlockGe?: number;
+    timestampBlockLe?: number;
+    tvGe?: string;
+    tvLe?: string;
+    userAddress?: string;
+    whiteCurrencyAddresses?: string[];
+    whiteListUri?: string[];
+}
+
+export type FarmingGraphicResponse = {
+    data: string;
+    timestamp: number;
+}[]
+
+export type FarmingGraphicRequest = {
+    farmingPoolAddress: string;
+    from: number;
+    timeframe: 'H1' | 'D1';
+    to: number;
 }

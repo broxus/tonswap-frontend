@@ -52,7 +52,9 @@ export const PoolContent = observer((): JSX.Element | null => {
                             <Breadcrumb
                                 items={[{
                                     link: appRoutes.poolList.makeUrl(),
-                                    title: 'Pools overview',
+                                    title: intl.formatMessage({
+                                        id: 'POOLS_LIST_ITEM_OVERVIEW',
+                                    }),
                                 }, {
                                     title: intl.formatMessage({
                                         id: 'POOLS_LIST_ITEM_TITLE',

@@ -16,6 +16,7 @@ import Builder from '@/pages/builder'
 import CreateToken from '@/pages/builder/create'
 import CustomToken from '@/pages/builder/token'
 import Farming from '@/pages/farming'
+import FarmingItem from '@/pages/farming/item'
 import CreateFarmPool from '@/pages/farming/create'
 import Pairs from '@/pages/pairs'
 import Pair from '@/pages/pairs/item'
@@ -82,6 +83,9 @@ export function App(): JSX.Element {
                             </Route>
                             <Route exact path={appRoutes.farmingCreate.path}>
                                 <CreateFarmPool />
+                            </Route>
+                            <Route exact path={appRoutes.farmingItem.path}>
+                                <FarmingItem />
                             </Route>
 
                             <Route exact path={appRoutes.builder.path}>

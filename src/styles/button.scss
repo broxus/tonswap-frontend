@@ -99,6 +99,15 @@
     &:hover {
         background-color: darken(#c5e4f3, 10%);
     }
+
+    &.btn-dark {
+        background-color: #050A2E;
+        color: #C5E4F3;
+
+        &:hover {
+            background-color: rgba(5, 10, 46, 0.88);
+        }
+    }
 }
 
 .btn-secondary {
@@ -112,7 +121,8 @@
     min-height: 44px;
     padding: 0 16px;
 
-    &:hover {
+    &:hover,
+    &.active {
         background: #c5e4f3;
         color: #293166;
     }
@@ -132,6 +142,11 @@
     &:hover {
         background-color: rgba(197, 228, 243, 0.24);
         color: #c5e4f3;
+    }
+
+    .btn__counter {
+        background: #C5E4F3;
+        color: #050B2E;
     }
 }
 
@@ -166,6 +181,15 @@
     &:hover {
         border-color: rgba(255, 255, 255, 0.78);
         color: #ffffff;
+    }
+
+    &.btn-dark {
+        border: 1px solid rgba(5, 10, 46, 0.32);
+        color: #050A2E;
+
+        &:hover {
+            border: 1px solid rgba(5, 10, 46, 0.56);
+        }
     }
 }
 
@@ -212,4 +236,13 @@
     display: flex;
     align-items: center;
     column-gap: 10px;
+}
+
+.btn__counter {
+    padding: 0 5px;
+    line-height: 20px;
+    min-width: 20px;
+    border-radius: 20px;
+    font-size: 12px;
+    text-align: center;
 }
