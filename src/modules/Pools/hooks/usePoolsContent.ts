@@ -4,7 +4,7 @@ import { Address } from 'ton-inpage-provider'
 import { useIntl } from 'react-intl'
 
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
-import { FarmingPoolInfo } from '@/modules/Farming/types'
+import { FarmingPoolsItemResponse } from '@/modules/Farming/types'
 import { useFavoritePairs } from '@/stores/FavoritePairs'
 import { useWallet } from '@/stores/WalletService'
 import { useTokensList } from '@/stores/TokensListService'
@@ -117,7 +117,7 @@ export function usePoolsContent(): UsePoolsContent {
     const getFarmingPools = async (
         userAddress: string,
         limit: number = 100,
-    ): Promise<FarmingPoolInfo[]> => {
+    ): Promise<FarmingPoolsItemResponse[]> => {
         const { total_count, pools_info } = await api.farmingPools({}, {
             body: JSON.stringify({
                 limit,

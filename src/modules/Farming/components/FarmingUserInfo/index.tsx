@@ -1,4 +1,3 @@
-import BigNumber from 'bignumber.js'
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
@@ -10,7 +9,7 @@ import { amountOrZero, parseCurrencyBillions, shareAmount } from '@/utils'
 import './index.scss'
 
 type Props = {
-    tvl: string;
+    userUsdtBalance: string | null;
     userLpBalance: string;
     leftTokenRoot?: string;
     rightTokenRoot?: string;
@@ -27,7 +26,7 @@ type Props = {
 }
 
 function FarmingUserInfoInner({
-    tvl,
+    userUsdtBalance,
     userLpBalance,
     leftTokenRoot,
     rightTokenRoot,
@@ -47,28 +46,34 @@ function FarmingUserInfoInner({
     const leftToken = leftTokenRoot && tokensCache.get(leftTokenRoot)
     const rightToken = rightTokenRoot && tokensCache.get(rightTokenRoot)
     const rewardTokens = rewardTokensRoots.map(root => tokensCache.get(root))
-    const totalBalance = new BigNumber(tvl).dividedBy(2)
-    const leftUserBalance = pairBalanceLp && pairBalanceLeft && userLpBalance
-        && new BigNumber(userLpBalance).times(pairBalanceLeft).dividedBy(pairBalanceLp)
-    const userBalance = leftUserBalance && pairBalanceLeft
-        && totalBalance.times(leftUserBalance).dividedBy(pairBalanceLeft).times(2)
 
     return (
         <div className="farming-user-info">
             <div className="farming-panel">
                 <div className="farming-panel__rows">
-                    {userBalance && (
-                        <div>
-                            <div className="farming-panel__label">
-                                {intl.formatMessage({
-                                    id: 'FARMING_USER_INFO_FARMING_BALANCE',
-                                })}
-                            </div>
-                            <div className="farming-panel__value">
-                                {parseCurrencyBillions(userBalance)}
-                            </div>
+                    <div>
+                        <div className="farming-panel__label">
+                            {intl.formatMessage({
+                                id: 'FARMING_USER_INFO_FARMING_BALANCE',
+                            })}
                         </div>
-                    )}
+                        <div className="farming-panel__value">
+                            {userUsdtBalance === null ? intl.formatMessage({
+                                id: 'FARMING_USER_INFO_NULL',
+                            }) : parseCurrencyBillions(userUsdtBalance)}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="farming-panel__label">
+                            {intl.formatMessage({
+                                id: 'FARMING_USER_INFO_LP_TOKENS',
+                            }, {
+                                symbol: lpTokenSymbol,
+                            })}
+                        </div>
+                        {amountOrZero(userLpBalance, lpTokenDecimals)}
+                    </div>
 
                     {
                         leftToken
@@ -92,12 +97,12 @@ function FarmingUserInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: shareAmount(
+                                        amount: amountOrZero(shareAmount(
                                             userLpBalance,
                                             pairBalanceLeft,
                                             pairBalanceLp,
                                             leftToken.decimals,
-                                        ),
+                                        ), 0),
                                         symbol: leftToken.symbol,
                                     })}
                                 </div>
@@ -110,29 +115,18 @@ function FarmingUserInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: shareAmount(
+                                        amount: amountOrZero(shareAmount(
                                             userLpBalance,
                                             pairBalanceRight,
                                             pairBalanceLp,
                                             rightToken.decimals,
-                                        ),
+                                        ), 0),
                                         symbol: rightToken.symbol,
                                     })}
                                 </div>
                             </div>
                         )
                     }
-
-                    <div>
-                        <div className="farming-panel__label">
-                            {intl.formatMessage({
-                                id: 'FARMING_USER_INFO_LP_TOKENS',
-                            }, {
-                                symbol: lpTokenSymbol,
-                            })}
-                        </div>
-                        {amountOrZero(userLpBalance, lpTokenDecimals)}
-                    </div>
 
                     <div>
                         <div className="farming-panel__label">

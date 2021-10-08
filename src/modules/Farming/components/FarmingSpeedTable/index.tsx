@@ -16,7 +16,6 @@ type Props = {
     endTime: number;
 }
 
-// TODO: Pagination
 export function FarmingSpeedTableInner({
     rewardTokensRoots,
     roundStartTimes,
@@ -67,7 +66,7 @@ export function FarmingSpeedTableInner({
                                         {intl.formatMessage({
                                             id: 'FARMING_TOKEN',
                                         }, {
-                                            amount: amountOrZero(rps[idx], token.decimals),
+                                            amount: amountOrZero(rps[idx], 0),
                                             symbol: token.symbol,
                                         })}
                                     </div>

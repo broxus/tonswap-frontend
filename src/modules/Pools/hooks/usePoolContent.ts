@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js'
 import { useIntl } from 'react-intl'
 
 import { PairResponse } from '@/modules/Pairs/types'
-import { FarmingPoolInfo, RewardTokenRootInfo } from '@/modules/Farming/types'
+import { FarmingPoolsItemResponse, RewardTokenRootInfo } from '@/modules/Farming/types'
 import { useTokensList } from '@/stores/TokensListService'
 import { useDexAccount } from '@/stores/DexAccountService'
 import { useWallet } from '@/stores/WalletService'
@@ -22,17 +22,18 @@ import {
 import { appRoutes } from '@/routes'
 
 type RewardInfo = {
-    amount: string
-    symbol: string
+    vested: string;
+    entitled: string;
+    symbol: string;
 }
 
 type FarmingBalanceInfo = {
-    reward: RewardInfo[],
+    reward: RewardInfo[];
 }
 
 type FarmInfo = {
-    info: FarmingPoolInfo,
-    balance: FarmingBalanceInfo,
+    info: FarmingPoolsItemResponse;
+    balance: FarmingBalanceInfo;
 }
 
 type UsePoolContent = {
@@ -53,8 +54,8 @@ type UsePoolContent = {
     pool?: PoolData;
     pairAddress?: Address;
     ownerAddress?: Address;
-    leftToken?: TokenCache
-    rightToken?: TokenCache
+    leftToken?: TokenCache;
+    rightToken?: TokenCache;
     withdrawLiquidity?: () => void;
 }
 
@@ -174,6 +175,7 @@ export function usePoolContent(): UsePoolContent {
             tvl: info.tvl,
             tvlChange: info.tvl_change,
             apr: info.apr,
+            aprChange: info.apr_change,
             share: info.share,
             startTime: info.farm_start_time,
             endTime: info.farm_end_time,
@@ -191,12 +193,20 @@ export function usePoolContent(): UsePoolContent {
                 address: rewardToken.reward_root_address,
                 uri: tokensList.getUri(rewardToken.reward_root_address),
             })),
-            rewards: reward.map(({ amount, symbol }) => (
+            vestedRewards: reward.map(({ vested, symbol }) => (
                 intl.formatMessage({
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
                     symbol,
-                    value: amount,
+                    value: vested,
+                })
+            )),
+            entitledRewards: reward.map(({ entitled, symbol }) => (
+                intl.formatMessage({
+                    id: 'POOLS_LIST_TOKEN_BALANCE',
+                }, {
+                    symbol,
+                    value: entitled,
                 })
             )),
             link: appRoutes.farmingItem.makeUrl({
@@ -222,7 +232,7 @@ export function usePoolContent(): UsePoolContent {
         root: Address,
         owner: Address,
         limit: number = 100,
-    ): Promise<FarmingPoolInfo[]> => {
+    ): Promise<FarmingPoolsItemResponse[]> => {
         const { total_count, pools_info } = await api.farmingPools({}, {
             body: JSON.stringify({
                 limit,
@@ -251,7 +261,6 @@ export function usePoolContent(): UsePoolContent {
         farmEnd?: number,
     ): Promise<RewardInfo[]> => {
         const poolRewardData = await Farm.poolCalculateRewardData(poolAddress)
-        const isExpired = farmEnd ? (farmEnd - new Date().getTime()) < 0 : false
         let userReward: UserPendingReward | undefined
         try {
             userReward = await Farm.userPendingReward(
@@ -265,13 +274,14 @@ export function usePoolContent(): UsePoolContent {
             error(e)
         }
         return rewardTokenInfo.map(({ reward_currency, reward_scale }, index) => {
-            const poolDebt = userReward && !isExpired ? userReward._pool_debt[index] : '0'
-            const vested = userReward && !isExpired ? userReward._vested[index] : '0'
-            const reward = new BigNumber(vested).plus(poolDebt)
-            const amount = amountOrZero(reward, reward_scale)
+            const poolDebt = userReward ? userReward._pool_debt[index] : '0'
+            const vested = userReward ? userReward._vested[index] : '0'
+            const entitled = userReward ? userReward._entitled[index] : '0'
+            const totalVested = new BigNumber(vested).plus(poolDebt)
 
             return {
-                amount,
+                vested: amountOrZero(totalVested, reward_scale),
+                entitled: amountOrZero(entitled, reward_scale),
                 symbol: reward_currency,
             }
         })

@@ -3,6 +3,10 @@
     grid-template-rows: max-content 1fr;
     grid-gap: 28px;
 
+    .chart {
+        min-height: 300px;
+    }
+
     &__head {
         display: flex;
         align-items: center;
