@@ -22,11 +22,15 @@ const LIMIT = 10
 type Props = {
     poolAddress: string;
     userAddress?: string;
+    lpTokenSymbol: string;
+    isExternalLpToken: boolean;
 }
 
 export function FarmingTransactionsInner({
     poolAddress,
     userAddress,
+    lpTokenSymbol,
+    isExternalLpToken,
 }: Props): JSX.Element {
     const api = useApi()
     const intl = useIntl()
@@ -109,11 +113,13 @@ export function FarmingTransactionsInner({
                     }]}
                 />
 
-                <Checkbox
-                    label="Only my transactions"
-                    onChange={setOnlyUser}
-                    checked={onlyUser}
-                />
+                {userAddress && (
+                    <Checkbox
+                        label="Only my transactions"
+                        onChange={setOnlyUser}
+                        checked={onlyUser}
+                    />
+                )}
             </div>
 
             <div className="card card--small card--flat">
@@ -174,7 +180,14 @@ export function FarmingTransactionsInner({
                                                 {transaction.kind}
                                             </div>
                                             <div className="list__cell list__cell--right">
-                                                {parseCurrencyBillions(transaction.tvExec)}
+                                                {
+                                                    transaction.tokenCurrency === lpTokenSymbol
+                                                    && isExternalLpToken === true
+                                                        ? intl.formatMessage({
+                                                            id: 'TRANSACTIONS_LIST_NULL',
+                                                        })
+                                                        : parseCurrencyBillions(transaction.tvExec)
+                                                }
                                             </div>
                                             <div className="list__cell list__cell--right">
                                                 {intl.formatMessage({

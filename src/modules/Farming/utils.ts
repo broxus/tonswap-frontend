@@ -5,7 +5,7 @@ import ton, { Address, Contract } from 'ton-inpage-provider'
 import {
     Farm, FarmAbi, TokenWallet, UserPendingReward,
 } from '@/misc'
-import { amountOrZero, error } from '@/utils'
+import { error } from '@/utils'
 
 
 export async function loadUniWTON(): Promise<BigNumber> {
@@ -327,43 +327,4 @@ export async function getUserAmount(
         error(e)
         return '0'
     }
-}
-
-export async function getFarmBalance(
-    poolAddress: Address,
-    walletAddress: Address,
-    rewardTokenInfo: {
-        symbol: string,
-        scale: number,
-        address: string;
-    }[],
-    farmEndTime?: number,
-): Promise<{
-    amount: string;
-    symbol: string;
-    address: string;
-}[]> {
-    const isExpired = farmEndTime ? (farmEndTime - new Date().getTime()) < 0 : false
-    let userReward: UserPendingReward | undefined
-    try {
-        const userDataAddress = await Farm.userDataAddress(poolAddress, walletAddress)
-        const poolRewardData = await Farm.poolCalculateRewardData(poolAddress)
-        userReward = await Farm.userPendingReward(
-            userDataAddress,
-            poolRewardData._accTonPerShare,
-            poolRewardData._lastRewardTime,
-            `${farmEndTime ? farmEndTime / 1000 : 0}`,
-        )
-    }
-    catch (e) {
-        error(e)
-    }
-    return rewardTokenInfo.map(({ symbol, scale, address }, index) => {
-        const poolDebt = userReward && !isExpired ? userReward._pool_debt[index] : '0'
-        const vested = userReward && !isExpired ? userReward._vested[index] : '0'
-        const reward = new BigNumber(vested).plus(poolDebt)
-        const amount = amountOrZero(reward, scale)
-
-        return { amount, symbol, address }
-    })
 }

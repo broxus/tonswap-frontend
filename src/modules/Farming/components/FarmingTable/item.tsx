@@ -5,7 +5,6 @@ import { useIntl } from 'react-intl'
 import { TvlChange } from '@/components/common/TvlChange'
 import { TokenIcons } from '@/components/common/TokenIcons'
 import { FarmingPair } from '@/modules/Farming/components/FarmingPair'
-import { FarmingDate } from '@/modules/Farming/components/FarmingDate'
 import {
     amountOrZero, concatSymbols, getChangesDirection,
     parseCurrencyBillions,
@@ -14,26 +13,28 @@ import {
 import './index.scss'
 
 type Token = {
-    address: string
-    name?: string
-    uri?: string
+    address: string;
+    name?: string;
+    uri?: string;
 }
 
 export type FarmingTableItemProps = {
-    leftToken: Token
-    rightToken?: Token
-    rewardsIcons: Token[]
-    tvl: string
-    tvlChange: string
-    apr: string
-    share: string
-    rewards: string[]
-    startTime: number
-    endTime?: number
-    isOwner?: boolean
-    isPublic?: boolean
-    balanceWarning?: boolean
-    link?: string
+    leftToken: Token;
+    rightToken?: Token;
+    rewardsIcons: Token[];
+    tvl: string | null;
+    tvlChange: string | null;
+    apr: string | null;
+    aprChange: string | null;
+    share: string;
+    vestedRewards: string[];
+    entitledRewards: string[];
+    startTime: number;
+    endTime?: number;
+    isOwner?: boolean;
+    isPublic?: boolean;
+    balanceWarning?: boolean;
+    link?: string;
 }
 
 export function FarmingTableItem({
@@ -43,8 +44,10 @@ export function FarmingTableItem({
     tvl,
     tvlChange,
     apr,
+    aprChange,
     share,
-    rewards,
+    vestedRewards,
+    entitledRewards,
     startTime,
     endTime,
     isOwner,
@@ -54,6 +57,9 @@ export function FarmingTableItem({
 }: FarmingTableItemProps): JSX.Element {
     const Tag = (link ? Link : 'div') as React.ElementType
     const intl = useIntl()
+    const nullMessage = intl.formatMessage({
+        id: 'FARMING_TABLE_NULL',
+    })
 
     return (
         <Tag className="list__row" to={link}>
@@ -70,26 +76,36 @@ export function FarmingTableItem({
             </div>
             <div className="list__cell list__cell--left">
                 <TokenIcons
-                    limit={3}
+                    limit={2}
                     icons={rewardsIcons}
                     title={intl.formatMessage({ id: 'FARMING_TABLE_REWARDS_TITLE' })}
                 />
             </div>
             <div className="list__cell list__cell--left list__cell--right">
-                {parseCurrencyBillions(tvl)}
+                {tvl === null ? nullMessage : parseCurrencyBillions(tvl)}
             </div>
             <div className="list__cell list__cell--left list__cell--right">
-                <TvlChange
-                    changesDirection={getChangesDirection(tvlChange)}
-                    priceChange={tvlChange}
-                />
+                {tvlChange === null ? nullMessage : (
+                    <TvlChange
+                        changesDirection={getChangesDirection(tvlChange)}
+                        priceChange={tvlChange}
+                    />
+                )}
             </div>
             <div className="list__cell list__cell--left list__cell--right">
-                {intl.formatMessage({
+                {apr === null ? nullMessage : intl.formatMessage({
                     id: 'FARMING_TABLE_APR_VALUE',
                 }, {
                     value: amountOrZero(apr, 0),
                 })}
+            </div>
+            <div className="list__cell list__cell--left list__cell--right">
+                {aprChange === null ? nullMessage : (
+                    <TvlChange
+                        changesDirection={getChangesDirection(aprChange)}
+                        priceChange={aprChange}
+                    />
+                )}
             </div>
             <div className="list__cell list__cell--left list__cell--right">
                 {intl.formatMessage({
@@ -99,15 +115,14 @@ export function FarmingTableItem({
                 })}
             </div>
             <div className="list__cell list__cell--left list__cell--right">
-                {rewards.map(value => (
+                {vestedRewards.map(value => (
                     <div key={value}>{value}</div>
                 ))}
             </div>
             <div className="list__cell list__cell--left list__cell--right">
-                <FarmingDate
-                    startTime={startTime}
-                    endTime={endTime}
-                />
+                {entitledRewards.map(value => (
+                    <div key={value}>{value}</div>
+                ))}
             </div>
         </Tag>
     )

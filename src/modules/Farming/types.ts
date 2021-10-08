@@ -100,7 +100,7 @@ export type RewardTokenRootInfo = {
     reward_scale: number;
 }
 
-export type FarmingPoolInfo = {
+export type FarmingPoolsItemResponse = {
     apr: string;
     farm_end_time?: number;
     farm_start_time: number;
@@ -119,12 +119,13 @@ export type FarmingPoolInfo = {
     tvl_change: string;
     user_token_balance: string;
     is_low_balance: boolean;
+    apr_change: string;
 }
 
 export type FarmingPoolsResponse = {
-    favorite_pools_info: FarmingPoolInfo[];
+    favorite_pools_info: FarmingPoolsItemResponse[];
     favorite_total_count: number;
-    pools_info: FarmingPoolInfo[];
+    pools_info: FarmingPoolsItemResponse[];
     total_count: number;
 }
 
@@ -199,6 +200,21 @@ export type FarmingPoolResponse = {
     tvl: string;
     tvl_change: string;
     is_low_balance: boolean;
+    user_usdt_balance: string;
+    pool_info: {
+        vesting_period: number;
+        vesting_ratio: number;
+        rounds_info: {
+            start_time: number;
+            end_time?: number;
+            reward_info: {
+                rewardPerSec: string;
+                rewardTokenCurrency: string;
+                rewardTokenRootAddress: string;
+                rewardTokenScale: string;
+            }[];
+        }[];
+    };
 }
 
 export type FarmingPoolRequest = {

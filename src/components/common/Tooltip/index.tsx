@@ -63,7 +63,7 @@ export function Tooltip({
             >
                 {children}
             </div>,
-            document.getElementById('root') as Element,
+            document.body,
         )
         : null
 }

@@ -274,7 +274,7 @@ function FarmingConfigInner({
                 )}
             </div>
         </div>,
-        document.getElementById('root') as Element,
+        document.body,
     )
 }
 

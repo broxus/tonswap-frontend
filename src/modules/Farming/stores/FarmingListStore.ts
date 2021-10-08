@@ -1,30 +1,25 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import BigNumber from 'bignumber.js'
+import { makeAutoObservable, runInAction, toJS } from 'mobx'
 import { Address } from 'ton-inpage-provider'
 
 import { FarmingApi, useApi } from '@/modules/Farming/hooks/useApi'
 import {
-    FarmingPoolFilter, FarmingPoolInfo, FarmingPoolsRequest,
+    FarmingPoolFilter, FarmingPoolsItemResponse, FarmingPoolsRequest,
 } from '@/modules/Farming/types'
-import { getFarmBalance } from '@/modules/Farming/utils'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { getImportedTokens, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { FavoritePairs, useFavoriteFarmings } from '@/stores/FavoritePairs'
-import { lastOfCalls } from '@/utils'
-import { DexConstants } from '@/misc'
+import { error, lastOfCalls } from '@/utils'
+import { DexConstants, Farm } from '@/misc'
 
-type RewardInfo = {
-    amount: string;
-    symbol: string;
-    address: string;
-}
-
-type FarmInfo = {
-    info: FarmingPoolInfo;
-    reward: RewardInfo[];
+type Reward = {
+    vested: string[];
+    entitled: string[];
 }
 
 type State = {
-    data: FarmInfo[];
+    data: FarmingPoolsItemResponse[];
+    rewards: Reward[],
     totalPage: number;
     currentPage: number;
     loading: boolean;
@@ -34,6 +29,7 @@ type State = {
 
 const defaultState: State = Object.freeze({
     data: [],
+    rewards: [],
     totalPage: 1,
     currentPage: 1,
     loading: false,
@@ -48,7 +44,11 @@ export class FarmingListStore {
 
     protected state: State = defaultState
 
-    protected lastOfFetchData: () => Promise<Promise<[FarmInfo[], number]> | undefined>
+    protected lastOfFetchData: () => Promise<Promise<[
+        FarmingPoolsItemResponse[],
+        Reward[],
+        number,
+    ]> | undefined>
 
     constructor(
         protected api: FarmingApi,
@@ -92,7 +92,7 @@ export class FarmingListStore {
     }
 
     protected async fetchFarmingPools(): Promise<{
-        pools: FarmingPoolInfo[],
+        pools: FarmingPoolsItemResponse[],
         total: number,
     }> {
         const result = await this.api.farmingPools({}, {}, this.params())
@@ -103,38 +103,66 @@ export class FarmingListStore {
         }
     }
 
-    protected async fetchData(): Promise<[FarmInfo[], number]> {
-        const { pools, total } = await this.fetchFarmingPools()
-
-        const rewards = await Promise.all(
-            pools.map(item => (
-                getFarmBalance(
-                    new Address(item.pool_address),
-                    new Address(this.wallet.address as string),
-                    item.reward_token_root_info.map(tokenInfo => ({
-                        symbol: tokenInfo.reward_currency,
-                        scale: tokenInfo.reward_scale,
-                        address: tokenInfo.reward_root_address,
-                    })),
-                    item.farm_end_time,
-                )
-            )),
-        )
-
-        const farmInfos = pools.map((info, index) => ({
-            info,
-            reward: rewards[index],
-        }))
-        const totalPage = Math.ceil(total / PAGE_SIZE)
-
-        return [farmInfos, totalPage]
-    }
-
-    public async getData(): Promise<void> {
+    protected async fetchReward(
+        pool: FarmingPoolsItemResponse,
+    ): Promise<Reward> {
         if (!this.wallet.address) {
             throw new Error('Wallet must be connected')
         }
 
+        try {
+            const userDataAddress = await Farm.userDataAddress(
+                new Address(pool.pool_address),
+                new Address(this.wallet.address),
+            )
+            const poolRewardData = await Farm.poolCalculateRewardData(
+                new Address(pool.pool_address),
+            )
+            const reward = await Farm.userPendingReward(
+                userDataAddress,
+                poolRewardData._accTonPerShare,
+                poolRewardData._lastRewardTime,
+                `${pool.farm_end_time ? pool.farm_end_time / 1000 : 0}`,
+            )
+            const vested = reward._vested.map((item, index) => (
+                new BigNumber(item).plus(reward._pool_debt[index]).toFixed()
+            ))
+            const entitled = reward._entitled
+
+            return { vested, entitled }
+        }
+        catch (e) {
+            error(e)
+            return {
+                vested: [],
+                entitled: [],
+            }
+        }
+    }
+
+    protected async fetchRewards(
+        pools: FarmingPoolsItemResponse[],
+    ): Promise<Reward[]> {
+        if (!this.wallet.address) {
+            return []
+        }
+
+        return Promise.all(pools.map(this.fetchReward))
+    }
+
+    protected async fetchData(): Promise<[
+        FarmingPoolsItemResponse[],
+        Reward[],
+        number,
+    ]> {
+        const { pools, total } = await this.fetchFarmingPools()
+        const rewards = await this.fetchRewards(pools)
+        const totalPage = Math.ceil(total / PAGE_SIZE)
+
+        return [pools, rewards, totalPage]
+    }
+
+    public async getData(): Promise<void> {
         runInAction(() => {
             this.state.loading = true
         })
@@ -145,12 +173,30 @@ export class FarmingListStore {
             return
         }
 
-        const tokensRoots = FarmingListStore.getTokensRoots(result[0])
-        tokensRoots.forEach(root => this.tokensCache.fetchIfNotExist(root))
-
         runInAction(() => {
-            [this.state.data, this.state.totalPage] = result
+            [
+                this.state.data,
+                this.state.rewards,
+                this.state.totalPage,
+            ] = result
             this.state.loading = false
+        })
+
+        this.syncTokens()
+    }
+
+    public syncTokens(): void {
+        this.state.data.forEach(item => {
+            if (item.left_address && item.right_address) {
+                this.tokensCache.fetchIfNotExist(item.left_address)
+                this.tokensCache.fetchIfNotExist(item.right_address)
+            }
+            else {
+                this.tokensCache.fetchIfNotExist(item.token_root_address)
+            }
+            item.reward_token_root_info.forEach(reward => {
+                this.tokensCache.fetchIfNotExist(reward.reward_root_address)
+            })
         })
     }
 
@@ -186,7 +232,11 @@ export class FarmingListStore {
     }
 
     public get data(): State['data'] {
-        return this.state.data
+        return toJS(this.state.data)
+    }
+
+    public get rewards(): Reward[] {
+        return toJS(this.state.rewards)
     }
 
     public get loading(): State['loading'] {
@@ -201,6 +251,10 @@ export class FarmingListStore {
         return this.state.currentPage
     }
 
+    public get filter(): State['filter'] {
+        return toJS(this.state.filter)
+    }
+
     public get query(): State['query'] {
         return this.state.query
     }
@@ -211,24 +265,6 @@ export class FarmingListStore {
         }
 
         return this.favoritePairs.addresses
-    }
-
-    static getTokensRoots(poolsInfo: FarmInfo[]): string[] {
-        const roots = poolsInfo.reduce<string[]>((acc, item) => {
-            if (item.info.left_address && item.info.right_address) {
-                acc.push(item.info.left_address)
-                acc.push(item.info.right_address)
-            }
-            else {
-                acc.push(item.info.token_root_address)
-            }
-            item.reward.forEach(({ address }) => {
-                acc.push(address)
-            })
-            return acc
-        }, [])
-
-        return [...new Set(roots)]
     }
 
 }

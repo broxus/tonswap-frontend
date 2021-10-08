@@ -264,6 +264,7 @@ export default {
     FARMING_TABLE_TVL: 'TVL',
     FARMING_TABLE_TVL_CHANGE: 'TVL change',
     FARMING_TABLE_APR: 'APR',
+    FARMING_TABLE_APR_CHANGE: 'APR change',
     FARMING_TABLE_SHARE: 'Share',
     FARMING_TABLE_YOUR_REWARD: 'Your reward',
     FARMING_TABLE_ENTITLED_REWARD: 'Entitled reward',
@@ -272,6 +273,7 @@ export default {
     FARMING_TABLE_REWARDS_TITLE: 'Reward tokens',
     FARMING_TABLE_APR_VALUE: '{value}%',
     FARMING_TABLE_SHARE_VALUE: '{value}%',
+    FARMING_TABLE_NULL: 'N/A',
 
     FARMING_DATE_WAITING: 'Starts {date}',
     FARMING_DATE_ACTIVE: 'Ends {date}',
@@ -355,21 +357,23 @@ export default {
     FARMING_CONFIG_CONFIRMATION_NO: 'No, cancel',
 
     FARMING_BASE_INFO_TVL: 'TVL',
-    FARMING_BASE_INFO_TOKENS: 'Apportionment, tokens',
-    FARMING_BASE_INFO_LP_TOKENS: 'Apportionment, {symbol}',
+    FARMING_BASE_INFO_TOKENS: 'LP breakdown, tokens',
+    FARMING_BASE_INFO_LP_TOKENS: 'LP token, {symbol}',
     FARMING_BASE_INFO_APR: 'APR',
     FARMING_BASE_INFO_APR_VALUE: '{value}%',
     FARMING_BASE_INFO_REWARD: 'Remaining reward balance',
     FARMING_BASE_INFO_SPEED: 'Farming speed, sec',
+    FARMING_BASE_INFO_NULL: 'N/A',
 
     FARMING_USER_INFO_FARMING_BALANCE: 'Farming balance',
-    FARMING_USER_INFO_TOKENS: 'Apportionment, tokens',
-    FARMING_USER_INFO_LP_TOKENS: 'Apportionment, {symbol}',
+    FARMING_USER_INFO_TOKENS: 'LP breakdown, tokens',
+    FARMING_USER_INFO_LP_TOKENS: 'LP token, {symbol}',
     FARMING_USER_INFO_ENTITLED_TITLE: 'Entitled reward',
     FARMING_USER_INFO_UNCLAIMED_TITLE: 'Unclaimed reward',
     FARMING_USER_INFO_DEBT_TITLE: 'Farm debt',
     FARMING_USER_INFO_SHARE: 'Share in farming pool',
     FARMING_USER_INFO_SHARE_VALUE: '{value}%',
+    FARMING_USER_INFO_NULL: 'N/A',
 
     FARMING_ADDRESSES_TITLE: 'Addresses',
     FARMING_ADDRESSES_POOL: 'Farming pool contract address',
@@ -384,7 +388,7 @@ export default {
     FARMING_VESTING_PERIOD_TITLE: 'Vesting period',
     FARMING_VESTING_PERIOD_VALUE: '{days, plural, =0 {0 days} one {# day} other {# days}}',
     FARMING_VESTING_VESTING_UNTIL: 'Current vesting until, UTC',
-    FARMING_VESTING_NOTHING: '—',
+    FARMING_VESTING_NULL: '—',
 
     FARMING_CHART_TAB_TVL: 'TVL',
     FARMING_CHART_TAB_APR: 'APR',
@@ -554,4 +558,5 @@ export default {
     TRANSACTIONS_LIST_EVENT_DEPOSIT: 'Adds',
     TRANSACTIONS_LIST_EVENT_WITHDRAW: 'Removes',
     TRANSACTIONS_LIST_NO_TRANSACTIONS: 'No transactions',
+    TRANSACTIONS_LIST_NULL: 'N/A',
 }

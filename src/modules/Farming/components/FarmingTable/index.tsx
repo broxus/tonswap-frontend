@@ -9,13 +9,13 @@ import { FarmingTableItem, FarmingTableItemProps } from '@/modules/Farming/compo
 import './index.scss'
 
 export type FarmingTableProps = {
-    items: FarmingTableItemProps[]
-    loading?: boolean
-    totalPages: number
-    currentPage?: number
-    onNext?: () => void
-    onPrev?: () => void
-    onSubmit?: (page: number) => void
+    items: FarmingTableItemProps[];
+    loading?: boolean;
+    totalPages: number;
+    currentPage?: number;
+    onNext?: () => void;
+    onPrev?: () => void;
+    onSubmit?: (page: number) => void;
 }
 
 export function FarmingTable({
@@ -49,13 +49,16 @@ export function FarmingTable({
                         {intl.formatMessage({ id: 'FARMING_TABLE_APR' })}
                     </div>
                     <div className="list__cell list__cell--right">
+                        {intl.formatMessage({ id: 'FARMING_TABLE_APR_CHANGE' })}
+                    </div>
+                    <div className="list__cell list__cell--right">
                         {intl.formatMessage({ id: 'FARMING_TABLE_SHARE' })}
                     </div>
                     <div className="list__cell list__cell--right">
                         {intl.formatMessage({ id: 'FARMING_TABLE_YOUR_REWARD' })}
                     </div>
                     <div className="list__cell list__cell--right">
-                        {intl.formatMessage({ id: 'FARMING_TABLE_DATE' })}
+                        {intl.formatMessage({ id: 'FARMING_TABLE_ENTITLED_REWARD' })}
                     </div>
                 </div>
 

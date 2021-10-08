@@ -29,18 +29,20 @@ export function useDropdown<T extends HTMLDivElement>(
         }
 
         if (visible && autoClose) {
-            document.addEventListener('click', onClickDocument)
+            setTimeout(() => {
+                document.addEventListener('click', onClickDocument, false)
+            }, 0)
         }
 
         return () => {
             if (autoClose && visible) {
-                document.removeEventListener('click', onClickDocument)
+                document.removeEventListener('click', onClickDocument, false)
             }
         }
     }, [
         visible,
         setVisible,
-        popupRef,
+        popupRef.current,
         autoClose,
     ])
 
