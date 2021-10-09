@@ -215,6 +215,11 @@ export type FarmingPoolResponse = {
             }[];
         }[];
     };
+    history_info: {
+        left_amount: string;
+        right_amount: string;
+        usdt_amount: string;
+    };
 }
 
 export type FarmingPoolRequest = {

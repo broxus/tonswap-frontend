@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
-import { DateTime } from 'luxon'
 import { observer } from 'mobx-react-lite'
 
 import { Icon } from '@/components/common/Icon'
@@ -10,7 +9,9 @@ import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { FarmingStatus } from '@/modules/Farming/components/FarmingStatus'
 import { FarmingToggleButton } from '@/modules/Farming/components/FarmingToggleButton'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amountOrZero, concatSymbols, isExists } from '@/utils'
+import {
+    amountOrZero, concatSymbols, formatDate, isExists,
+} from '@/utils'
 
 import './index.scss'
 
@@ -48,10 +49,6 @@ export function FarmingHeadInner({
     const rewardTokens = rewardTokenRoots
         .map(root => tokensCache.get(root))
         .filter(isExists)
-
-    const formatDate = (time: number) => DateTime
-        .fromMillis(time)
-        .toFormat('MMM dd, yyyy, HH:mm')
 
     return (
         <div className="farming-header">

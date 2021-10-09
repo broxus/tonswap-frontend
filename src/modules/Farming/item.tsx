@@ -196,44 +196,40 @@ export function FarmingInner(): JSX.Element {
                                 )
                             }
 
-                            {
-                                farmingData.userInFarming
-                                && farmingData.userUsdtBalance !== undefined
-                                && farmingData.userLpFarmingAmount
-                                && farmingData.rewardTokensAddress
-                                && farmingData.userPendingRewardVested
-                                && farmingData.userPendingRewardEntitled
-                                && farmingData.userPendingRewardDebt
-                                && farmingData.userShare
-                                && (
-                                    <>
-                                        <div className="farming-title">
-                                            <SectionTitle size="small">
-                                                {intl.formatMessage({
-                                                    id: 'FARMING_ITEM_USER_INFO_TITLE',
-                                                })}
-                                            </SectionTitle>
-                                        </div>
+                            {farmingData.userInFarming && (
+                                <>
+                                    <div className="farming-title">
+                                        <SectionTitle size="small">
+                                            {intl.formatMessage({
+                                                id: 'FARMING_ITEM_USER_INFO_TITLE',
+                                            })}
+                                        </SectionTitle>
+                                    </div>
 
-                                        <FarmingUserInfo
-                                            userUsdtBalance={farmingData.userUsdtBalance}
-                                            userLpBalance={farmingData.userLpFarmingAmount}
-                                            leftTokenRoot={farmingData.leftTokenAddress}
-                                            rightTokenRoot={farmingData.rightTokenAddress}
-                                            lpTokenSymbol={farmingData.lpTokenSymbol}
-                                            lpTokenDecimals={farmingData.lpTokenDecimals}
-                                            pairBalanceLeft={farmingData.pairBalanceLeft}
-                                            pairBalanceRight={farmingData.pairBalanceRight}
-                                            pairBalanceLp={farmingData.pairBalanceLp}
-                                            rewardTokensRoots={farmingData.rewardTokensAddress}
-                                            unclaimedAmounts={farmingData.userPendingRewardVested}
-                                            entitledAmounts={farmingData.userPendingRewardEntitled}
-                                            debtAmounts={farmingData.userPendingRewardDebt}
-                                            userShare={farmingData.userShare}
-                                        />
-                                    </>
-                                )
-                            }
+                                    <FarmingUserInfo
+                                        userUsdtBalance={farmingData.userUsdtBalance}
+                                        userLpFarmingAmount={farmingData.userLpFarmingAmount}
+                                        leftTokenAddress={farmingData.leftTokenAddress}
+                                        rightTokenAddress={farmingData.rightTokenAddress}
+                                        lpTokenSymbol={farmingData.lpTokenSymbol}
+                                        lpTokenDecimals={farmingData.lpTokenDecimals}
+                                        pairBalanceLeft={farmingData.pairBalanceLeft}
+                                        pairBalanceRight={farmingData.pairBalanceRight}
+                                        pairBalanceLp={farmingData.pairBalanceLp}
+                                        rewardTokensAddress={farmingData.rewardTokensAddress}
+                                        unclaimedAmounts={farmingData.userPendingRewardVested}
+                                        entitledAmounts={farmingData.userPendingRewardEntitled}
+                                        debtAmounts={farmingData.userPendingRewardDebt}
+                                        userShare={farmingData.userShare}
+                                        userHistoryUsdtBalance={farmingData.userHistoryUsdtBalance}
+                                        userHistoryLeftAmount={farmingData.userHistoryLeftAmount}
+                                        userHistoryRightAmount={farmingData.userHistoryRightAmount}
+                                        vestingTime={farmingData.vestingTime}
+                                        rewardTotalBalance={farmingData.rewardTotalBalance}
+                                        userHistoryLastUpdateTime={farmingData.userHistoryLastUpdateTime}
+                                    />
+                                </>
+                            )}
 
                             {farmingData.isAdmin === true && (
                                 <>

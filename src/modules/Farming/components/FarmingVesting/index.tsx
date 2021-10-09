@@ -1,7 +1,8 @@
 import * as React from 'react'
 import BigNumber from 'bignumber.js'
-import { DateTime } from 'luxon'
 import { useIntl } from 'react-intl'
+
+import { formatDate } from '@/utils'
 
 type Props = {
     vestingRatio?: number;
@@ -19,7 +20,7 @@ export function FarmingVesting({
         id: 'FARMING_VESTING_NULL',
     })
     const vestingTimeFormated = vestingTime && vestingTime > 0
-        ? DateTime.fromMillis(vestingTime).toFormat('MMM dd, yyyy, HH:mm')
+        ? formatDate(vestingTime)
         : undefined
 
     return (
