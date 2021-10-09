@@ -1,10 +1,11 @@
-import { FARMING_POOL_API_URL } from '@/constants'
+import { API_URL, FARMING_POOL_API_URL } from '@/constants'
 import {
     FarmingGraphicRequest, FarmingGraphicResponse, FarmingPoolRequest,
     FarmingPoolResponse, FarmingPoolsRequest, FarmingPoolsResponse,
     TransactionsRequest, TransactionsResponse,
 } from '@/modules/Farming/types'
-import { farmingApiRoutes } from '@/routes'
+import { CurrencyInfo } from '@/modules/Currencies/types'
+import { apiRoutes, farmingApiRoutes } from '@/routes'
 import { createHandler } from '@/utils/create-handler'
 
 const farmingApi = {
@@ -28,6 +29,10 @@ const farmingApi = {
         farmingApiRoutes.graphicApr,
         FARMING_POOL_API_URL,
     )<FarmingGraphicResponse, FarmingGraphicRequest>(),
+    currency: createHandler(
+        apiRoutes.currency,
+        API_URL,
+    )<CurrencyInfo>(),
 }
 
 export type FarmingApi = typeof farmingApi

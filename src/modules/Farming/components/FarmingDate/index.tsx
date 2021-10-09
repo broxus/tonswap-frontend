@@ -3,6 +3,7 @@ import { useIntl } from 'react-intl'
 import { DateTime } from 'luxon'
 
 import { FarmingStatus, getFarmingStatus } from '@/modules/Farming/utils'
+import { formatDate } from '@/utils'
 
 import './index.scss'
 
@@ -26,12 +27,12 @@ export function FarmingDate({
         }, {
             date: DateTime.fromMillis(startTime).toRelative(),
         })
-        date = DateTime.fromMillis(startTime).toFormat('MMM dd, yyyy, HH:mm')
+        date = formatDate(startTime)
     }
 
     if (status === FarmingStatus.ACTIVE && !endTime) {
         label = intl.formatMessage({ id: 'FARMING_DATE_INFINITE' })
-        date = DateTime.fromMillis(startTime).toFormat('MMM dd, yyyy, HH:mm')
+        date = formatDate(startTime)
     }
 
     if (status === FarmingStatus.ACTIVE && endTime) {
@@ -40,12 +41,12 @@ export function FarmingDate({
         }, {
             date: DateTime.fromMillis(endTime).toRelative(),
         })
-        date = DateTime.fromMillis(endTime).toFormat('MMM dd, yyyy, HH:mm')
+        date = formatDate(endTime)
     }
 
     if (status === FarmingStatus.ENDED && endTime) {
         label = intl.formatMessage({ id: 'FARMING_DATE_ENDED' })
-        date = DateTime.fromMillis(endTime).toFormat('MMM dd, yyyy, HH:mm')
+        date = formatDate(endTime)
     }
 
     return (

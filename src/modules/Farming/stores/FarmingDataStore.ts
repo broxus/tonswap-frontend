@@ -3,10 +3,11 @@ import { Address } from 'ton-inpage-provider'
 import { makeAutoObservable, runInAction, toJS } from 'mobx'
 
 import { FarmingApi, useApi } from '@/modules/Farming/hooks/useApi'
-import { FarmingPoolResponse, Transaction } from '@/modules/Farming/types'
+import { FarmingPoolResponse, Transaction, TransactionsRequest } from '@/modules/Farming/types'
 import { getUserAmount, getUserPendingReward } from '@/modules/Farming/utils'
+import { CurrencyInfo } from '@/modules/Currencies/types'
 import { useWallet, WalletService } from '@/stores/WalletService'
-import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
+import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import {
     Dex, Farm, PairBalances, PoolDetails,
     TokenWallet, UserPendingReward,
@@ -18,6 +19,7 @@ type PoolData = {
     apiResponse: FarmingPoolResponse;
     poolDetails?: PoolDetails;
     pairBalances?: PairBalances;
+    rewardCurrencies: CurrencyInfo[];
 }
 
 type UserData = {
@@ -28,6 +30,7 @@ type UserData = {
     userLpFarmingAmount: string;
     userPendingReward?: UserPendingReward;
     userLastWithdrawTransaction?: Transaction;
+    userLastDepositTransaction?: Transaction;
 }
 
 type State = {
@@ -60,6 +63,7 @@ export class FarmingDataStore {
         apiResponse: FarmingPoolResponse,
         poolDetails?: PoolDetails,
         pairBalances?: PairBalances,
+        rewardCurrencies: CurrencyInfo[],
     }> {
         const [apiResponse, poolDetails] = await Promise.all([
             this.api.farmingPool({
@@ -86,10 +90,53 @@ export class FarmingDataStore {
             )
             : undefined
 
+        const rewardCurrencies = await Promise.all(
+            apiResponse.reward_token_root_info
+                .map(reward => this.api.currency({
+                    address: reward.reward_root_address,
+                })),
+        )
+
         return {
             apiResponse,
             poolDetails,
             pairBalances,
+            rewardCurrencies,
+        }
+    }
+
+    protected async getUserLastTransactions(
+        poolAddress: Address,
+        ownerAddress: Address,
+    ): Promise<{
+        deposit?: Transaction,
+        withdraw?: Transaction,
+    }> {
+        const defaultParams = {
+            limit: 1,
+            offset: 0,
+            poolAddress: poolAddress.toString(),
+            userAddress: ownerAddress.toString(),
+            ordering: 'blocktimedescending',
+        } as TransactionsRequest
+
+        const [
+            depositTransactions,
+            withdrawTransactions,
+        ] = await Promise.all([
+            this.api.transactions({}, {}, {
+                ...defaultParams,
+                eventTypes: ['deposit'],
+            }),
+            this.api.transactions({}, {}, {
+                ...defaultParams,
+                eventTypes: ['withdraw'],
+            }),
+        ])
+
+        return {
+            deposit: depositTransactions.transactions?.[0],
+            withdraw: withdrawTransactions.transactions?.[0],
         }
     }
 
@@ -106,6 +153,7 @@ export class FarmingDataStore {
         userLpFarmingAmount: string,
         userPendingReward?: UserPendingReward,
         userLastWithdrawTransaction?: Transaction,
+        userLastDepositTransaction?: Transaction,
     }> {
         if (!this.wallet.address) {
             throw new Error('Wallet must be connected')
@@ -136,6 +184,7 @@ export class FarmingDataStore {
 
         const [
             userLpWalletAmount, userLpFarmingAmount, userPendingReward,
+            userLastTransactions,
         ] = await Promise.all([
             TokenWallet.balanceByWalletAddress(
                 userLpWalletAddress,
@@ -148,17 +197,11 @@ export class FarmingDataStore {
                 userPoolDataAddress,
                 farmEndSeconds,
             ),
+            this.getUserLastTransactions(
+                poolAddress,
+                ownerAddress,
+            ),
         ])
-
-        const { transactions } = await this.api.transactions({}, {}, {
-            limit: 1,
-            offset: 0,
-            eventTypes: ['withdraw'],
-            ordering: 'blocktimedescending',
-            poolAddress: poolAddress.toString(),
-            userAddress: ownerAddress.toString(),
-        })
-        const [userLastWithdrawTransaction] = transactions
 
         return {
             userPoolDataAddress,
@@ -167,7 +210,8 @@ export class FarmingDataStore {
             userLpWalletAmount,
             userLpFarmingAmount,
             userPendingReward,
-            userLastWithdrawTransaction,
+            userLastDepositTransaction: userLastTransactions.deposit,
+            userLastWithdrawTransaction: userLastTransactions.withdraw,
         }
     }
 
@@ -283,6 +327,51 @@ export class FarmingDataStore {
         return this.state.poolData?.apiResponse.user_usdt_balance
     }
 
+    public get userHistoryUsdtBalance(): string | undefined | null {
+        if (this.isExternalLpToken === true) {
+            return null
+        }
+
+        return this.state.poolData?.apiResponse.history_info.usdt_amount
+    }
+
+    public get userHistoryLeftAmount(): string | undefined | null {
+        if (this.isExternalLpToken === true) {
+            return null
+        }
+
+        return this.state.poolData?.apiResponse.history_info.left_amount
+    }
+
+    public get userHistoryRightAmount(): string | undefined | null {
+        if (this.isExternalLpToken === true) {
+            return null
+        }
+
+        return this.state.poolData?.apiResponse.history_info.right_amount
+    }
+
+    public get userHistoryLastUpdateTime(): number | undefined {
+        const { userData } = this.state
+
+        if (!userData) {
+            return undefined
+        }
+
+        const depositTimestamp = userData.userLastDepositTransaction?.timestampBlock
+        const withdrawTimestamp = userData.userLastWithdrawTransaction?.timestampBlock
+
+        if (!depositTimestamp && !withdrawTimestamp) {
+            return undefined
+        }
+
+        if (depositTimestamp && withdrawTimestamp) {
+            return Math.max(depositTimestamp, withdrawTimestamp)
+        }
+
+        return depositTimestamp || withdrawTimestamp
+    }
+
     public get leftTokenAddress(): string | undefined {
         return this.state.poolData?.apiResponse.left_address
     }
@@ -378,6 +467,48 @@ export class FarmingDataStore {
 
     public get rewardTokensBalance(): string[] | undefined {
         return toJS(this.state.poolData?.poolDetails?.rewardTokenBalance)
+    }
+
+    public get rewardTotalBalance(): string | undefined {
+        const { poolData } = this.state
+
+        if (
+            !poolData
+            || !this.userPendingRewardDebt
+            || !this.userPendingRewardEntitled
+            || !this.userPendingRewardVested
+            || !this.rewardTokensAddress
+        ) {
+            return undefined
+        }
+
+        const rewardTokens = this.rewardTokensAddress
+            .map(tokenAddress => this.tokensCache.get(tokenAddress))
+
+        if (rewardTokens.includes(undefined)) {
+            return undefined
+        }
+
+        const reduceReward = (acc: BigNumber, item: string, index: number): BigNumber => {
+            const { decimals } = rewardTokens[index] as TokenCache
+            const currency = poolData.rewardCurrencies[index]
+            const current = new BigNumber(item).shiftedBy(-decimals).multipliedBy(currency.price)
+            return acc.plus(current)
+        }
+
+        const debtBalance = this.userPendingRewardDebt
+            .reduce<BigNumber>(reduceReward, new BigNumber(0))
+
+        const entitledBalance = this.userPendingRewardEntitled
+            .reduce<BigNumber>(reduceReward, new BigNumber(0))
+
+        const vestedBalance = this.userPendingRewardVested
+            .reduce<BigNumber>(reduceReward, new BigNumber(0))
+
+        return debtBalance
+            .plus(entitledBalance)
+            .plus(vestedBalance)
+            .toFixed()
     }
 
     public get userInFarming(): boolean {

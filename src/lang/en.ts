@@ -375,6 +375,11 @@ export default {
     FARMING_USER_INFO_SHARE: 'Share in farming pool',
     FARMING_USER_INFO_SHARE_VALUE: '{value}%',
     FARMING_USER_INFO_NULL: 'N/A',
+    FARMING_USER_INFO_HISTORY_BALANCE: 'History balance',
+    FARMING_USER_INFO_HISTORY_TOKENS: 'History LP breakdown, tokens',
+    FARMING_USER_INFO_VESTING_TIME: 'Current vesting until, UTC',
+    FARMING_USER_INFO_TOTAL_REWARD: 'Reward balance',
+    FARMING_USER_INFO_HISTORY_LAST_UPD: 'Last update, UTC',
 
     FARMING_ADDRESSES_TITLE: 'Addresses',
     FARMING_ADDRESSES_POOL: 'Farming pool contract address',
