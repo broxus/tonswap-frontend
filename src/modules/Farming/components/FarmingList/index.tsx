@@ -110,7 +110,6 @@ export function FarmingListInner({
         tokensCache,
     ])
 
-
     return (
         <>
             <div className="farming-list-header">

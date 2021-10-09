@@ -69,24 +69,31 @@ function FarmingsInner(): JSX.Element {
                 />
             )}
 
-            <FarmingList
-                key="all"
-                lowBalanceEnabled
-                title={intl.formatMessage({
-                    id: 'FARMING_LIST_TITLE_ALL',
-                })}
-                currentPage={farmingListStore.currentPage}
-                loading={farmingListStore.loading}
-                onChangeFilter={farmingListStore.changeFilter}
-                onChangeQuery={farmingListStore.changeQuery}
-                onNextPage={farmingListStore.nextPage}
-                onPrevPage={farmingListStore.prevPage}
-                onSubmitPage={farmingListStore.submitPage}
-                totalPages={farmingListStore.totalPages}
-                data={farmingListStore.data}
-                vestedRewards={farmingListStore.rewards.map(item => item.vested)}
-                entitledRewards={farmingListStore.rewards.map(item => item.entitled)}
-            />
+            <div
+                // FIXME: Remove minHeight and div when site footer will exists, and filter popup will not jump
+                style={{
+                    minHeight: '661px',
+                }}
+            >
+                <FarmingList
+                    key="all"
+                    lowBalanceEnabled
+                    title={intl.formatMessage({
+                        id: 'FARMING_LIST_TITLE_ALL',
+                    })}
+                    currentPage={farmingListStore.currentPage}
+                    loading={farmingListStore.loading}
+                    onChangeFilter={farmingListStore.changeFilter}
+                    onChangeQuery={farmingListStore.changeQuery}
+                    onNextPage={farmingListStore.nextPage}
+                    onPrevPage={farmingListStore.prevPage}
+                    onSubmitPage={farmingListStore.submitPage}
+                    totalPages={farmingListStore.totalPages}
+                    data={farmingListStore.data}
+                    vestedRewards={farmingListStore.rewards.map(item => item.vested)}
+                    entitledRewards={farmingListStore.rewards.map(item => item.entitled)}
+                />
+            </div>
         </div>
     )
 }
