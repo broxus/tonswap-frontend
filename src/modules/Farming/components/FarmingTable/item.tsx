@@ -60,6 +60,17 @@ export function FarmingTableItem({
     const nullMessage = intl.formatMessage({
         id: 'FARMING_TABLE_NULL',
     })
+    const shareFormatted = intl.formatMessage({
+        id: 'FARMING_TABLE_SHARE_VALUE',
+    }, {
+        value: amountOrZero(share, 0),
+    })
+    const aprFormatted = apr ? intl.formatMessage({
+        id: 'FARMING_TABLE_APR_VALUE',
+    }, {
+        value: amountOrZero(apr, 0),
+    }) : undefined
+    const tvlFormatted = tvl ? parseCurrencyBillions(tvl) : undefined
 
     return (
         <Tag className="list__row" to={link}>
@@ -76,13 +87,16 @@ export function FarmingTableItem({
             </div>
             <div className="list__cell list__cell--left">
                 <TokenIcons
-                    limit={2}
+                    limit={1}
                     icons={rewardsIcons}
                     title={intl.formatMessage({ id: 'FARMING_TABLE_REWARDS_TITLE' })}
                 />
             </div>
-            <div className="list__cell list__cell--left list__cell--right">
-                {tvl === null ? nullMessage : parseCurrencyBillions(tvl)}
+            <div
+                className="list__cell list__cell--left list__cell--right"
+                title={tvlFormatted}
+            >
+                {tvl === null ? nullMessage : tvlFormatted}
             </div>
             <div className="list__cell list__cell--left list__cell--right">
                 {tvlChange === null ? nullMessage : (
@@ -92,12 +106,11 @@ export function FarmingTableItem({
                     />
                 )}
             </div>
-            <div className="list__cell list__cell--left list__cell--right">
-                {apr === null ? nullMessage : intl.formatMessage({
-                    id: 'FARMING_TABLE_APR_VALUE',
-                }, {
-                    value: amountOrZero(apr, 0),
-                })}
+            <div
+                className="list__cell list__cell--left list__cell--right"
+                title={aprFormatted}
+            >
+                {apr === null ? nullMessage : aprFormatted}
             </div>
             <div className="list__cell list__cell--left list__cell--right">
                 {aprChange === null ? nullMessage : (
@@ -107,23 +120,22 @@ export function FarmingTableItem({
                     />
                 )}
             </div>
-            <div className="list__cell list__cell--left list__cell--right">
-                {intl.formatMessage({
-                    id: 'FARMING_TABLE_SHARE_VALUE',
-                }, {
-                    value: amountOrZero(share, 0),
-                })}
+            <div
+                className="list__cell list__cell--left list__cell--right"
+                title={shareFormatted}
+            >
+                {shareFormatted}
             </div>
-            <div className="list__cell list__cell--left list__cell--right">
-                {vestedRewards.map(value => (
-                    <div key={value}>{value}</div>
-                ))}
-            </div>
-            <div className="list__cell list__cell--left list__cell--right">
-                {entitledRewards.map(value => (
-                    <div key={value}>{value}</div>
-                ))}
-            </div>
+            <div
+                className="list__cell list__cell--left list__cell--right"
+                dangerouslySetInnerHTML={{ __html: vestedRewards.join('<br />') }}
+                title={vestedRewards.join('&#013;')}
+            />
+            <div
+                className="list__cell list__cell--left list__cell--right"
+                dangerouslySetInnerHTML={{ __html: entitledRewards.join('<br />') }}
+                title={entitledRewards.join('&#013;')}
+            />
         </Tag>
     )
 }

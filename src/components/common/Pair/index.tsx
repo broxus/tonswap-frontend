@@ -16,7 +16,9 @@ export function Pair({
     return (
         <div className="pair">
             <PairIcons small {...pairIcons} />
-            {pairLabel}
+            <span className="pair__label" title={pairLabel}>
+                {pairLabel}
+            </span>
         </div>
     )
 }

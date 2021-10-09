@@ -130,6 +130,7 @@ export function FarmingInner(): JSX.Element {
                                 && farmingData.poolAddress
                                 && (
                                     <FarmingHead
+                                        apr={farmingData.apr}
                                         leftTokenRoot={farmingData.leftTokenAddress}
                                         rightTokenRoot={farmingData.rightTokenAddress}
                                         rootTokenAddress={farmingData.lpTokenAddress}
@@ -192,6 +193,45 @@ export function FarmingInner(): JSX.Element {
                                 && farmingData.rewardBalanceIsZero === true
                                 && (
                                     <FarmingMessageAdminZeroBalance />
+                                )
+                            }
+
+                            {
+                                farmingData.userInFarming
+                                && farmingData.userUsdtBalance !== undefined
+                                && farmingData.userLpFarmingAmount
+                                && farmingData.rewardTokensAddress
+                                && farmingData.userPendingRewardVested
+                                && farmingData.userPendingRewardEntitled
+                                && farmingData.userPendingRewardDebt
+                                && farmingData.userShare
+                                && (
+                                    <>
+                                        <div className="farming-title">
+                                            <SectionTitle size="small">
+                                                {intl.formatMessage({
+                                                    id: 'FARMING_ITEM_USER_INFO_TITLE',
+                                                })}
+                                            </SectionTitle>
+                                        </div>
+
+                                        <FarmingUserInfo
+                                            userUsdtBalance={farmingData.userUsdtBalance}
+                                            userLpBalance={farmingData.userLpFarmingAmount}
+                                            leftTokenRoot={farmingData.leftTokenAddress}
+                                            rightTokenRoot={farmingData.rightTokenAddress}
+                                            lpTokenSymbol={farmingData.lpTokenSymbol}
+                                            lpTokenDecimals={farmingData.lpTokenDecimals}
+                                            pairBalanceLeft={farmingData.pairBalanceLeft}
+                                            pairBalanceRight={farmingData.pairBalanceRight}
+                                            pairBalanceLp={farmingData.pairBalanceLp}
+                                            rewardTokensRoots={farmingData.rewardTokensAddress}
+                                            unclaimedAmounts={farmingData.userPendingRewardVested}
+                                            entitledAmounts={farmingData.userPendingRewardEntitled}
+                                            debtAmounts={farmingData.userPendingRewardDebt}
+                                            userShare={farmingData.userShare}
+                                        />
+                                    </>
                                 )
                             }
 
@@ -326,45 +366,6 @@ export function FarmingInner(): JSX.Element {
                                     </div>
                                 </>
                             )}
-
-                            {
-                                farmingData.userInFarming
-                                && farmingData.userUsdtBalance !== undefined
-                                && farmingData.userLpFarmingAmount
-                                && farmingData.rewardTokensAddress
-                                && farmingData.userPendingRewardVested
-                                && farmingData.userPendingRewardEntitled
-                                && farmingData.userPendingRewardDebt
-                                && farmingData.userShare
-                                && (
-                                    <>
-                                        <div className="farming-title">
-                                            <SectionTitle size="small">
-                                                {intl.formatMessage({
-                                                    id: 'FARMING_ITEM_USER_INFO_TITLE',
-                                                })}
-                                            </SectionTitle>
-                                        </div>
-
-                                        <FarmingUserInfo
-                                            userUsdtBalance={farmingData.userUsdtBalance}
-                                            userLpBalance={farmingData.userLpFarmingAmount}
-                                            leftTokenRoot={farmingData.leftTokenAddress}
-                                            rightTokenRoot={farmingData.rightTokenAddress}
-                                            lpTokenSymbol={farmingData.lpTokenSymbol}
-                                            lpTokenDecimals={farmingData.lpTokenDecimals}
-                                            pairBalanceLeft={farmingData.pairBalanceLeft}
-                                            pairBalanceRight={farmingData.pairBalanceRight}
-                                            pairBalanceLp={farmingData.pairBalanceLp}
-                                            rewardTokensRoots={farmingData.rewardTokensAddress}
-                                            unclaimedAmounts={farmingData.userPendingRewardVested}
-                                            entitledAmounts={farmingData.userPendingRewardEntitled}
-                                            debtAmounts={farmingData.userPendingRewardDebt}
-                                            userShare={farmingData.userShare}
-                                        />
-                                    </>
-                                )
-                            }
 
                             <div className="farming-title">
                                 <SectionTitle size="small">
