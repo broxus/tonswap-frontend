@@ -377,13 +377,6 @@ export class WalletService {
     }
 
     /**
-     *
-     */
-    public get isConnected(): boolean {
-        return this.address !== undefined
-    }
-
-    /**
      * Internal instance of the Ton Subscription for Contract updates
      * @type {Subscription<'contractStateChanged'> | undefined}
      * @protected
