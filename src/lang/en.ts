@@ -292,6 +292,7 @@ export default {
     FARMING_ITEM_BREADCRUMB_ITEM: '{symbol} farming pool',
     FARMING_ITEM_NOT_FOUND: 'Farming pool not found',
     FARMING_ITEM_TITLE: '{symbol} farming pool',
+    FARMING_ITEM_APR: '{value}%',
     FARMING_ITEM_BALANCE_TITLE: 'Farming balance',
     FARMING_ITEM_MANAGEMENT_TITLE: 'Pool management',
     FARMING_ITEM_USER_INFO_TITLE: 'My farming performance',

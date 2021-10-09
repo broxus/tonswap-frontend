@@ -10,11 +10,12 @@ import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { FarmingStatus } from '@/modules/Farming/components/FarmingStatus'
 import { FarmingToggleButton } from '@/modules/Farming/components/FarmingToggleButton'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { concatSymbols, isExists } from '@/utils'
+import { amountOrZero, concatSymbols, isExists } from '@/utils'
 
 import './index.scss'
 
 type Props = {
+    apr?: string | null;
     leftTokenRoot?: string;
     rightTokenRoot?: string;
     rootTokenAddress: string;
@@ -26,6 +27,7 @@ type Props = {
 }
 
 export function FarmingHeadInner({
+    apr,
     leftTokenRoot,
     rightTokenRoot,
     rootTokenAddress,
@@ -76,10 +78,23 @@ export function FarmingHeadInner({
                 )}
                 <div className="farming-header__main">
                     <h2 className="section-title">
-                        {intl.formatMessage({ id: 'FARMING_ITEM_TITLE' }, { symbol })}
+                        {intl.formatMessage({
+                            id: 'FARMING_ITEM_TITLE',
+                        }, {
+                            symbol,
+                        })}
                     </h2>
                     <div className="farming-header__status">
-                        <div className="farming-header__date">
+                        {apr && (
+                            <div>
+                                {intl.formatMessage({
+                                    id: 'FARMING_ITEM_APR',
+                                }, {
+                                    value: amountOrZero(apr, 0),
+                                })}
+                            </div>
+                        )}
+                        <div>
                             {startTime ? formatDate(startTime) : ''}
                             {endTime ? ` - ${formatDate(endTime)}` : ''}
                         </div>
@@ -95,7 +110,6 @@ export function FarmingHeadInner({
                     <>
                         <Icon icon="directionRight" ratio={1.8} />
                         <TokenIcons
-                            // TODO: Show tooltip
                             size="medium"
                             icons={rewardTokens.map(item => ({
                                 address: item.root,
