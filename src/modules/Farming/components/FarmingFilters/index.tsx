@@ -25,7 +25,7 @@ export function FarmingFilters({
 }: Props): JSX.Element {
     const intl = useIntl()
     const locationFilter = useLocationFilter(queryParamPrefix)
-    const [filter, setFilter] = React.useState<FarmingPoolFilter>({})
+    const [filter, setFilter] = React.useState<FarmingPoolFilter>(locationFilter.parse())
     const [query, setQuery] = React.useState('')
     const [tokenListVisible, setTokenListVisible] = React.useState(false)
     const dropdown = useDropdown(!tokenListVisible)
@@ -38,10 +38,8 @@ export function FarmingFilters({
         setTokenListVisible(false)
     }
 
-    const onSubmitFilter = (value: FarmingPoolFilter) => {
+    const onChangeFilter = (value: FarmingPoolFilter) => {
         setFilter(value)
-        dropdown.hide()
-        onSubmit(value)
     }
 
     const onChangeQuery = (e: React.FormEvent<HTMLInputElement>) => {
@@ -49,19 +47,24 @@ export function FarmingFilters({
         onQuery(e.currentTarget.value)
     }
 
-    const filterCount = Object.values(filter)
-        .filter(item => item !== undefined)
-        .length
+    const enabledFilterCount = Object.entries(filter)
+        .reduce((acc, [key, value]) => {
+            if (key === 'isLowBalance' && value === false) {
+                return acc
+            }
+            if (value === '') {
+                return acc
+            }
+            return value === undefined ? acc : acc + 1
+        }, 0)
 
     React.useEffect(() => {
         locationFilter.update(filter)
     }, [filter])
 
     React.useEffect(() => {
-        const currentFilters = locationFilter.parse()
-        setFilter(currentFilters)
-        onSubmit(currentFilters)
-    }, [])
+        onSubmit(filter)
+    }, [filter])
 
     return (
         <div className="farming-filters">
@@ -84,8 +87,8 @@ export function FarmingFilters({
                 {intl.formatMessage({
                     id: 'FARMING_FILTER_FORM_BUTTON',
                 })}
-                {filterCount > 0 && (
-                    <span className="btn__counter">{filterCount}</span>
+                {enabledFilterCount > 0 && (
+                    <span className="btn__counter">{enabledFilterCount}</span>
                 )}
             </button>
 
@@ -94,9 +97,10 @@ export function FarmingFilters({
                     <FarmingFiltersPopup
                         filter={filter}
                         lowBalanceEnabled={lowBalanceEnabled}
+                        resetEnabled={enabledFilterCount > 0}
                         onOpenTokenList={onOpenTokenList}
                         onCloseTokenList={onCloseTokenList}
-                        onSubmit={onSubmitFilter}
+                        onChangeFilter={onChangeFilter}
                     />
                 </div>
             )}

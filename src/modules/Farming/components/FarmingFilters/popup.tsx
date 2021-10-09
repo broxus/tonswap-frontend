@@ -11,29 +11,37 @@ import './index.scss'
 type Props = {
     filter?: FarmingPoolFilter
     lowBalanceEnabled?: boolean;
-    onOpenTokenList?: () => void
-    onCloseTokenList?: () => void
-    onSubmit?: (filter: FarmingPoolFilter) => void
+    resetEnabled?: boolean;
+    onOpenTokenList?: () => void;
+    onCloseTokenList?: () => void;
+    onChangeFilter: (filter: FarmingPoolFilter) => void;
 }
 
 export function FarmingFiltersPopup({
-    filter,
+    filter = {},
     lowBalanceEnabled,
+    resetEnabled,
     onOpenTokenList,
     onCloseTokenList,
-    onSubmit,
+    onChangeFilter,
 }: Props): JSX.Element {
     const intl = useIntl()
-    const [filterState, setFilterState] = React.useState<FarmingPoolFilter>({
-        isLowBalance: lowBalanceEnabled,
-    })
+    const [tvlFrom, setTvlFrom] = React.useState(filter.tvlFrom || '')
+    const [tvlTo, setTvlTo] = React.useState(filter.tvlTo || '')
+    const [aprFrom, setAprFrom] = React.useState(filter.aprFrom || '')
+    const [aprTo, setAprTo] = React.useState(filter.aprTo || '')
+
+    const applyEnabled = (filter.aprTo || '') !== aprTo
+        || (filter.aprFrom || '') !== aprFrom
+        || (filter.tvlTo || '') !== tvlTo
+        || (filter.tvlFrom || '') !== tvlFrom
 
     const changeFilter = (key: keyof FarmingPoolFilter) => (
         (value: FarmingPoolFilter[typeof key]) => {
-            setFilterState(prev => ({
-                ...prev,
+            onChangeFilter({
+                ...filter,
                 [key]: value,
-            }))
+            })
         }
     )
 
@@ -46,13 +54,26 @@ export function FarmingFiltersPopup({
     }
 
     const submit = () => {
-        if (onSubmit) {
-            onSubmit(filterState)
-        }
+        onChangeFilter({
+            ...filter,
+            tvlFrom,
+            tvlTo,
+            aprFrom,
+            aprTo,
+        })
     }
 
-    const clear = () => {
-        setFilterState({})
+    const reset = () => {
+        setTvlFrom('')
+        setTvlTo('')
+        setAprFrom('')
+        setAprTo('')
+        onChangeFilter({})
+    }
+
+    const onSubmitForm = (e: React.FormEvent) => {
+        e.preventDefault()
+        submit()
     }
 
     const onChangeAwaiting = (value: boolean) => {
@@ -79,12 +100,11 @@ export function FarmingFiltersPopup({
         changeFilter('isLowBalance')(value)
     }
 
-    React.useEffect(() => {
-        setFilterState(filter || {})
-    }, [filter])
-
     return (
-        <div className="farming-filters-popup">
+        <form
+            className="farming-filters-popup"
+            onSubmit={onSubmitForm}
+        >
             <h3 className="farming-filters-popup__title">
                 {intl.formatMessage({
                     id: 'FARMING_FILTER_TITLE',
@@ -97,14 +117,14 @@ export function FarmingFiltersPopup({
             </h4>
             <div className="farming-filters-popup__cols">
                 <TokenSelector
-                    root={filterState.leftRoot}
+                    root={filter.leftRoot}
                     onOpen={onOpenTokenList}
                     onClose={onCloseTokenList}
                     onSelect={changeFilter('leftRoot')}
                 />
 
                 <TokenSelector
-                    root={filterState.rightRoot}
+                    root={filter.rightRoot}
                     onOpen={onOpenTokenList}
                     onClose={onCloseTokenList}
                     onSelect={changeFilter('rightRoot')}
@@ -121,7 +141,7 @@ export function FarmingFiltersPopup({
                         label={intl.formatMessage({
                             id: 'FARMING_FILTER_AWAITING',
                         })}
-                        checked={filterState.state === 'awaiting'}
+                        checked={filter.state === 'awaiting'}
                         onChange={onChangeAwaiting}
                     />
                 </div>
@@ -130,7 +150,7 @@ export function FarmingFiltersPopup({
                         label={intl.formatMessage({
                             id: 'FARMING_FILTER_ACTIVE',
                         })}
-                        checked={filterState.state === 'active'}
+                        checked={filter.state === 'active'}
                         onChange={onChangeActive}
                     />
                 </div>
@@ -139,7 +159,7 @@ export function FarmingFiltersPopup({
                         label={intl.formatMessage({
                             id: 'FARMING_FILTER_UNACTIVE',
                         })}
-                        checked={filterState.state === 'noActive'}
+                        checked={filter.state === 'noActive'}
                         onChange={onChangeUnactive}
                     />
                 </div>
@@ -155,7 +175,7 @@ export function FarmingFiltersPopup({
                         label={intl.formatMessage({
                             id: 'FARMING_FILTER_WITH_MY_FARMING',
                         })}
-                        checked={filterState.ownerInclude === true}
+                        checked={filter.ownerInclude === true}
                         onChange={onChangeWithMyFarming}
                     />
                 </div>
@@ -164,7 +184,7 @@ export function FarmingFiltersPopup({
                         label={intl.formatMessage({
                             id: 'FARMING_FILTER_WITHOUT_MY_FARMING',
                         })}
-                        checked={filterState.ownerInclude === false}
+                        checked={filter.ownerInclude === false}
                         onChange={onChangeWithoutMyFarming}
                     />
                 </div>
@@ -182,7 +202,7 @@ export function FarmingFiltersPopup({
                                 label={intl.formatMessage({
                                     id: 'FARMING_FILTER_WITH_LOW_BALANCE',
                                 })}
-                                checked={filterState.isLowBalance === true}
+                                checked={filter.isLowBalance === true}
                                 onChange={onChangeLowBalance}
                             />
                         </div>
@@ -199,15 +219,15 @@ export function FarmingFiltersPopup({
                     placeholder={intl.formatMessage({
                         id: 'FARMING_FILTER_FROM',
                     })}
-                    value={filterState.tvlFrom}
-                    onChange={changeFilter('tvlFrom')}
+                    value={tvlFrom}
+                    onChange={setTvlFrom}
                 />
                 <TextInput
                     placeholder={intl.formatMessage({
                         id: 'FARMING_FILTER_TO',
                     })}
-                    value={filterState.tvlTo}
-                    onChange={changeFilter('tvlTo')}
+                    value={tvlTo}
+                    onChange={setTvlTo}
                 />
             </div>
             <h4 className="farming-filters-popup__sub-title">
@@ -220,37 +240,38 @@ export function FarmingFiltersPopup({
                     placeholder={intl.formatMessage({
                         id: 'FARMING_FILTER_FROM',
                     })}
-                    value={filterState.aprFrom}
-                    onChange={changeFilter('aprFrom')}
+                    value={aprFrom}
+                    onChange={setAprFrom}
                 />
                 <TextInput
                     placeholder={intl.formatMessage({
                         id: 'FARMING_FILTER_TO',
                     })}
-                    value={filterState.aprTo}
-                    onChange={changeFilter('aprTo')}
+                    value={aprTo}
+                    onChange={setAprTo}
                 />
             </div>
             <div className="farming-filters-popup__footer">
                 <button
                     type="button"
                     className="btn btn-tertiary btn-s"
-                    onClick={clear}
+                    onClick={reset}
+                    disabled={!resetEnabled}
                 >
                     {intl.formatMessage({
                         id: 'FARMING_FILTER_CLEAR',
                     })}
                 </button>
                 <button
-                    type="button"
+                    type="submit"
                     className="btn btn-primary btn-s"
-                    onClick={submit}
+                    disabled={!applyEnabled}
                 >
                     {intl.formatMessage({
                         id: 'FARMING_FILTER_APPLY',
                     })}
                 </button>
             </div>
-        </div>
+        </form>
     )
 }
