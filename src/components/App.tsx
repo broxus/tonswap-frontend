@@ -99,9 +99,11 @@ export function App(): JSX.Element {
                             </Route>
                         </Switch>
                     </main>
-                    <Account key="account" />
-                    <WalletConnectingModal />
-                    <WalletUpdateModal />
+                    <div className="wallets">
+                        <Account key="account" />
+                        <WalletConnectingModal />
+                        <WalletUpdateModal />
+                    </div>
                 </div>
             </Router>
         </IntlProvider>

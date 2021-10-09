@@ -1,109 +1,33 @@
-.tools {
-    position: absolute;
-    right: 20px;
-    top: 13px;
-
-    &__bar {
+.wallet {
+    &__wrapper {
         align-items: center;
+        column-gap: 15px;
         display: flex;
         justify-content: space-between;
     }
 
-    @media only screen and (max-width: 767px) {
-        background: linear-gradient(0deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08));
-        padding: 12px 16px;
-        position: static;
-    }
-}
-
-button.tools-btn {
-    @media only screen and (max-width: 767px) {
-        background-color: #c5e4f3;
-        color: #293166;
-        display: block;
-        width: 100%;
-    }
-}
-
-.tools-ton {
-    color: #ffffff;
-    flex-wrap: wrap;
-    font-size: 14px;
-    letter-spacing: 0.75px;
-    line-height: 20px;
-    padding: 10px 16px;
-
-    @media only screen and (max-width: 767px) {
-        display: none;
-        padding-left: 0;
-    }
-}
-
-.tools-wallet {
-    align-items: center;
-    background: rgba(197, 228, 243, 0.16);
-    color: #c5e4f3;
-    display: flex;
-    justify-content: center;
-    padding: 8px 16px;
-
-    &:hover {
-        background: rgba(197, 228, 243, 1);
-        color: #293166;
-    }
-
-    &__ava {
-        height: 24px;
-        margin-right: 10px;
+    &__user-avatar {
+        position: relative;
         width: 24px;
-
-        img {
-            width: 100%;
-        }
     }
 
-    &__id {
+    &__address {
         font-size: 14px;
-        letter-spacing: 0.75px;
+        letter-spacing: 0.5px;
         line-height: 20px;
-        white-space: nowrap;
+    }
+
+    &__balance {
+        color: rgba(255, 255, 255, 0.56);
+        font-size: 12px;
+        letter-spacing: 0.6px;
+        line-height: 16px;
     }
 }
 
-button.tools-context,
-button.tools-exit {
-    align-items: center;
-    background: rgba(197, 228, 243, 0.16);
-    border-radius: 0;
-    display: flex;
-    justify-content: center;
-    margin-left: 10px;
-    padding: 3px;
-
+.btn.btn-logout {
+    padding: 0;
     svg {
         fill: #c5e4f3;
-    }
-
-    &:hover {
-        background: rgba(197, 228, 243, 1);
-
-        svg {
-            fill: #293166;
-        }
-    }
-}
-
-button.tools-exit {
-    @media only screen and (max-width: 767px) {
-        display: none;
-    }
-}
-
-button.tools-context {
-    display: none;
-    margin: 0;
-
-    @media only screen and (max-width: 767px) {
-        display: flex;
     }
 }

@@ -1,4 +1,5 @@
 import {
+    action,
     makeAutoObservable,
     reaction,
     runInAction,
@@ -69,7 +70,10 @@ export class WalletService {
     constructor() {
         this.#contractSubscriber = undefined
 
-        makeAutoObservable(this)
+        makeAutoObservable(this, {
+            connect: action.bound,
+            disconnect: action.bound,
+        })
 
         reaction(
             () => this.data.contract,
@@ -370,6 +374,13 @@ export class WalletService {
 
     public get isConnected(): boolean {
         return Boolean(this.address)
+    }
+
+    /**
+     *
+     */
+    public get isConnected(): boolean {
+        return this.address !== undefined
     }
 
     /**
