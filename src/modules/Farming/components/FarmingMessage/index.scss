@@ -1,4 +1,7 @@
+@import '~@/styles/_mix';
+
 .farming-message {
+    position: relative;
     display: flex;
     justify-content: space-between;
     gap: 24px;
@@ -46,5 +49,20 @@
         @media only screen and (max-width: 767px) {
             justify-content: flex-end;
         }
+    }
+
+    &__close {
+        @include btn-reset;
+
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #293166;
     }
 }

@@ -1,8 +1,12 @@
 .farming-transactions {
     &__list {
         &.list {
-            --list-grid-template: minmax(70px, 10%) minmax(120px, 28%) minmax(300px, 40%) minmax(120px, 12%) minmax(120px, 12%);
             min-height: auto;
+            --list-grid-template: minmax(100px, 120px) minmax(100px, 200px) minmax(300px, 50%) minmax(100px, 200px) minmax(100px, 200px);
+
+            &.action {
+                --list-grid-template: minmax(100px, 100px) minmax(200px, 220px) minmax(200px, 220px) minmax(320px, 50%) minmax(100px, 100px) minmax(100px, 100px);
+            }
         }
     }
 

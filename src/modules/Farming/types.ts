@@ -252,6 +252,8 @@ export type Transaction = {
     transactionHash: string;
     tvExec: string;
     userAddress: string;
+    leftExec: string | null;
+    rightExec: string | null;
 }
 
 export type TransactionsResponse = {
