@@ -240,6 +240,7 @@ export function usePoolContent(): UsePoolContent {
                 userAddress: owner.toString(),
                 rootAddresses: [root.toString()],
                 ordering: 'tvlascending',
+                isLowBalance: false,
             }),
         })
         let poolsInfo = pools_info.filter(item => (

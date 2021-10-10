@@ -224,6 +224,7 @@ export type FarmingPoolResponse = {
 
 export type FarmingPoolRequest = {
     userAddress?: string;
+    afterZeroBalance?: boolean;
 }
 
 export type EventType =
