@@ -2,9 +2,10 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 
+import { Icon } from '@/components/common/Icon'
 import { appRoutes } from '@/routes'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amountOrZero } from '@/utils'
+import { amountOrZero, storage } from '@/utils'
 
 import './index.scss'
 
@@ -14,6 +15,8 @@ type Props = {
     rightTokenRoot: string;
     rootTokenSymbol: string;
 }
+
+const DISABLED_STORAGE_KEY = 'farming_message_get_lp_disabled'
 
 export function FarmingMessageGetLp({
     apr,
@@ -25,13 +28,28 @@ export function FarmingMessageGetLp({
     const tokensCache = useTokensCache()
     const leftToken = tokensCache.get(leftTokenRoot)
     const rightToken = tokensCache.get(rightTokenRoot)
+    const [disabled, setDisabled] = React.useState(
+        storage.get(DISABLED_STORAGE_KEY) === '1',
+    )
 
-    if (!leftToken || !rightToken) {
+    const dismiss = () => {
+        storage.set(DISABLED_STORAGE_KEY, '1')
+        setDisabled(true)
+    }
+
+    if (!leftToken || !rightToken || disabled) {
         return null
     }
 
     return (
         <div className="farming-message">
+            <button
+                type="button"
+                className="farming-message__close"
+                onClick={dismiss}
+            >
+                <Icon icon="close" ratio={0.9} />
+            </button>
             <div>
                 <h3>
                     {intl.formatMessage({

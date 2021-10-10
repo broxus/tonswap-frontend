@@ -471,6 +471,8 @@ export function FarmingInner(): JSX.Element {
                                             userAddress={wallet.address}
                                             isExternalLpToken={farmingData.isExternalLpToken}
                                             lpTokenSymbol={farmingData.lpTokenSymbol}
+                                            leftTokenSymbol={farmingData.leftTokenSymbol}
+                                            rightTokenSymbol={farmingData.rightTokenSymbol}
                                         />
                                     </>
                                 )

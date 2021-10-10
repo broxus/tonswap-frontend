@@ -1,25 +1,29 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
+import classNames from 'classnames'
 
 import './index.scss'
 
 type Props = {
-    children: React.ReactNode
-    target: React.RefObject<HTMLElement>
+    children: React.ReactNode;
+    target: React.RefObject<HTMLElement>;
+    alignX?: 'left' | 'right';
 }
 
 export function Tooltip({
     children,
     target,
+    alignX = 'left',
 }: Props): JSX.Element | null {
     const [visible, setVisible] = React.useState(false)
+
     let top = 0,
         left = 0
 
     if (visible && target.current) {
         const rect = target.current.getBoundingClientRect()
         top = rect.top + rect.height
-        left = rect.left
+        left = alignX === 'left' ? rect.left : rect.right
     }
 
     React.useEffect(() => {
@@ -55,7 +59,10 @@ export function Tooltip({
     return visible
         ? ReactDOM.createPortal(
             <div
-                className="tooltip"
+                className={classNames('tooltip', {
+                    tooltip_x_left: alignX === 'left',
+                    tooltip_x_right: alignX === 'right',
+                })}
                 style={{
                     top: `${top}px`,
                     left: `${left}px`,
