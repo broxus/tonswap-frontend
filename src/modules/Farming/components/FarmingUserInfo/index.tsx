@@ -234,7 +234,7 @@ function FarmingUserInfoInner({
                                                 id: 'FARMING_TOKEN',
                                             }, {
                                                 amount: amountOrZero(userHistoryRightAmount, 0),
-                                                symbol: leftToken.symbol,
+                                                symbol: rightToken.symbol,
                                             })
                                     }
                                 </div>

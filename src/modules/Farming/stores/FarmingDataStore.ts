@@ -70,6 +70,7 @@ export class FarmingDataStore {
                 address: poolAddress,
             }, {}, {
                 userAddress: this.wallet.address,
+                afterZeroBalance: true,
             }),
             this.wallet.isConnected
                 ? Farm.poolGetDetails(

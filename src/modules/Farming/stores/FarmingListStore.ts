@@ -87,7 +87,7 @@ export class FarmingListStore {
             favoritePoolAddresses: this.favoritePools,
             whiteCurrencyAddresses: getImportedTokens(),
             whiteListUri: DexConstants.TokenListURI,
-            isLowBalance: this.favoritePairs ? true : (filter.isLowBalance || false),
+            isLowBalance: this.favoritePairs ? undefined : Boolean(filter.isLowBalance),
         }
     }
 
