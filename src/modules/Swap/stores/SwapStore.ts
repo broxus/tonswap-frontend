@@ -392,15 +392,20 @@ export class SwapStore {
                             transaction.inMessage.src,
                             result.input.result.received.toString(),
                             'success',
+                            result.input,
                         ),
                     )
 
-                    if (results.some(({ status }) => status === undefined)) {
+                    if (results.some(({ status }) => status === undefined) || results.length === 0) {
                         return undefined
                     }
 
-                    if (results.every(({ status }) => status === 'success')) {
-                        return E.right({ input: result.input, transaction })
+                    if (results.length > 0 && results.every(({ status }) => status === 'success')) {
+                        const stepResult = results.slice().pop() as SwapRouteResult
+                        return E.right({
+                            input: stepResult.input!,
+                            transaction: stepResult.transaction!,
+                        })
                     }
 
                     const cancelStepIndex = results.findIndex(

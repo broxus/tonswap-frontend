@@ -1,5 +1,9 @@
 import {
-    Address, Contract, DecodedAbiFunctionInputs, FullContractState, Transaction,
+    Address,
+    Contract,
+    DecodedAbiFunctionInputs,
+    FullContractState,
+    Transaction,
 } from 'ton-inpage-provider'
 
 import { DexAbi } from '@/misc'
@@ -66,6 +70,7 @@ export type SwapRoute = {
 
 export type SwapRouteResult = {
     amount?: string;
+    input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairExchangeSuccess'>,
     status?: 'success' | 'cancel';
     step: SwapRouteStep;
     transaction?: Transaction;
