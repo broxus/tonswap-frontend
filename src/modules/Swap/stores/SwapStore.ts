@@ -807,7 +807,7 @@ export class SwapStore {
      * @param {SwapSuccessResult['transaction']} transaction
      * @protected
      */
-    protected handleSwapSuccess({ input, transaction }: SwapSuccessResult): void {
+    protected async handleSwapSuccess({ input, transaction }: SwapSuccessResult): Promise<void> {
         this.transactionReceipt = {
             amount: input.result.received.toString(),
             hash: transaction.id.hash,
@@ -826,7 +826,13 @@ export class SwapStore {
         this.changeData('leftAmount', '')
         this.changeData('rightAmount', '')
         this.forceInvalidate()
-        this.toDirectSwap()
+
+        if (!this.isCrossExchangeOnly) {
+            this.toDirectSwap()
+        }
+
+        await this.syncPairState()
+        await this.syncCrossExchangePairsStates()
     }
 
     /**
@@ -2115,6 +2121,17 @@ export class SwapStore {
      */
     public get isCrossExchangeAvailable(): boolean {
         return this.routes.length > 0
+    }
+
+    /**
+     * Returns `true` if only cross-exchange available, otherwise `false`.
+     * @returns {boolean}
+     */
+    public get isCrossExchangeOnly(): boolean {
+        return (
+            (this.pair === undefined || !this.isEnoughLiquidity)
+            && this.isCrossExchangeAvailable
+        )
     }
 
     /**
