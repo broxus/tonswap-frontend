@@ -26,6 +26,7 @@ import Tokens from '@/pages/tokens'
 import Token from '@/pages/tokens/item'
 import { PoolsPage } from '@/pages/pools'
 import { PoolsItemPage } from '@/pages/pools/item'
+import { PoolsRemoveLiquidityPage } from '@/pages/pools/removeLiquidity'
 import { noop } from '@/utils'
 import { appRoutes } from '@/routes'
 
@@ -56,6 +57,9 @@ export function App(): JSX.Element {
 
                             <Route exact path={appRoutes.poolList.path}>
                                 <PoolsPage />
+                            </Route>
+                            <Route exact path={appRoutes.poolRemoveLiquidity.path}>
+                                <PoolsRemoveLiquidityPage />
                             </Route>
                             <Route exact path={appRoutes.poolItem.path}>
                                 <PoolsItemPage />

@@ -24,15 +24,14 @@ export const PoolContent = observer((): JSX.Element | null => {
     const tokensList = useTokensList()
     const {
         pool,
-        loading, withdrawLoading,
+        loading,
         pairAddress, ownerAddress,
         walletLeft, walletRight,
         priceLeftToRight, priceRightToLeft,
         totalLp, totalLeft, totalRight,
         lockedLp, lockedLeft, lockedRight,
         leftToken, rightToken,
-        burnVisible, farmItems,
-        withdrawLiquidity,
+        farmItems,
     } = usePoolContent()
 
     return (
@@ -173,13 +172,8 @@ export const PoolContent = observer((): JSX.Element | null => {
                                             symbol: rightToken?.symbol,
                                         }),
                                     }]}
-                                    addLiquidityLink={appRoutes.poolCreate.makeUrl({
-                                        leftTokenRoot: pool.left.address,
-                                        rightTokenRoot: pool.right.address,
-                                    })}
-                                    burnDisabled={withdrawLoading}
-                                    onClickBurn={withdrawLiquidity}
-                                    burnVisible={burnVisible}
+                                    leftTokenRoot={pool.left.address}
+                                    rightTokenRoot={pool.right.address}
                                 />
 
                                 <BalancePanel

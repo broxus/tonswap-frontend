@@ -1,16 +1,13 @@
 @import '~@/styles/_mix';
 
-.select-button {
+.token-selector {
     @include btn-reset;
 
     display: flex;
     align-items: center;
     justify-content: space-between;
     column-gap: 13px;
-    height: 36px;
-    padding: 0 12px;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    font-size: 14px;
     cursor: pointer;
     color: rgba(255, 255, 255, 0.56);
 
@@ -18,14 +15,33 @@
         fill: #fff;
     }
 
+    &_size {
+        &_small {
+            height: 36px;
+            padding: 0 12px;
+            font-size: 14px;
+        }
+
+        &_medium {
+            height: 44px;
+            padding: 0 12px 0 20px;
+            font-size: 16px;
+        }
+    }
+
     &_dirty {
         border-color: rgba(255, 255, 255, 0.24);
         color: #fff;
     }
 
-    &__label {
-        max-width: 100%;
-        white-space: nowrap;
+    &__value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+    }
+
+    &__symbol {
         overflow: hidden;
         text-overflow: ellipsis;
     }

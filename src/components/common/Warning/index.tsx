@@ -21,8 +21,9 @@ export function Warning({
             })}
         >
             <h4 className="warning__title">{title}</h4>
+
             {text && (
-                <p className="warning__text">{text}</p>
+                <div className="warning__text" dangerouslySetInnerHTML={{ __html: text }} />
             )}
         </div>
     )

@@ -1,23 +1,16 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
-import { observer } from 'mobx-react-lite'
-
-import { WalletService } from '@/stores/WalletService'
 
 type Props = {
-    wallet: WalletService;
+    onClickConnect: () => void;
     message?: string;
 }
 
-export const ConnectWallet = observer(({
-    wallet,
+export function ConnectWallet({
+    onClickConnect,
     message,
-}: Props): JSX.Element => {
+}: Props): JSX.Element {
     const intl = useIntl()
-
-    const onClickConnect = () => {
-        wallet.connect()
-    }
 
     return (
         <div className="card card--small card--flat">
@@ -35,4 +28,4 @@ export const ConnectWallet = observer(({
             </div>
         </div>
     )
-})
+}

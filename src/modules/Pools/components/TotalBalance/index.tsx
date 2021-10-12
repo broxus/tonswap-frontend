@@ -2,25 +2,23 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
 
-import { ContentLoader } from '@/components/common/ContentLoader'
 import { TokenIcon } from '@/components/common/TokenIcon'
+import { appRoutes } from '@/routes'
 
 type Token = {
-    uri?: string
-    amount: string
-    address: string
+    uri?: string;
+    amount: string;
+    address: string;
 }
 
 type Props = {
-    name: string
-    balance: string
-    balancePerc?: string
-    apportionment: Token[]
-    commission?: Token[]
-    addLiquidityLink: string
-    burnVisible?: boolean
-    burnDisabled?: boolean
-    onClickBurn?: () => void
+    name: string;
+    balance: string;
+    balancePerc?: string;
+    apportionment: Token[];
+    commission?: Token[];
+    leftTokenRoot: string;
+    rightTokenRoot: string;
 }
 
 export function TotalBalance({
@@ -29,10 +27,8 @@ export function TotalBalance({
     balancePerc,
     apportionment,
     commission,
-    addLiquidityLink,
-    burnVisible,
-    burnDisabled,
-    onClickBurn,
+    leftTokenRoot,
+    rightTokenRoot,
 }: Props): JSX.Element {
     const intl = useIntl()
 
@@ -88,22 +84,15 @@ export function TotalBalance({
                     </div>
 
                     <div className="balance-buttons balance-buttons_inline">
-                        {burnVisible && (
-                            <button
-                                type="button"
-                                className="btn btn--empty btn-s btn-with-icon"
-                                onClick={onClickBurn}
-                                disabled={burnDisabled}
-                            >
-                                {intl.formatMessage({ id: 'POOLS_LIST_BURN_BUTTON' })}
-                                {burnDisabled && (
-                                    <ContentLoader slim size="s" />
-                                )}
-                            </button>
-                        )}
+                        <Link
+                            className="btn btn--empty btn-s btn-with-icon"
+                            to={appRoutes.poolRemoveLiquidity.makeUrl({ leftTokenRoot, rightTokenRoot })}
+                        >
+                            {intl.formatMessage({ id: 'POOLS_LIST_BURN_BUTTON' })}
+                        </Link>
                         <Link
                             className="btn btn-primary btn-s"
-                            to={addLiquidityLink}
+                            to={appRoutes.poolCreate.makeUrl({ leftTokenRoot, rightTokenRoot })}
                         >
                             {intl.formatMessage({ id: 'POOLS_LIST_ADD_BUTTON' })}
                         </Link>

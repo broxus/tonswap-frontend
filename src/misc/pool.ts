@@ -1,5 +1,6 @@
-import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
-import BigNumber from 'bignumber.js'
+import ton, {
+    Address, Contract, Subscriber, TransactionId,
+} from 'ton-inpage-provider'
 
 import { DexAbi } from '@/misc/abi'
 import { Dex } from '@/misc/dex'
@@ -73,27 +74,19 @@ export class Pool {
     }
 
     static async withdrawLiquidity(
-        poolAddress: Address,
         walletAddress: Address,
-    ): Promise<void> {
-        const pairTokenRoots = await Dex.pairTokenRoots(poolAddress)
-        const walletLpBalance = await TokenWallet.balanceByTokenRoot(
-            walletAddress,
-            pairTokenRoots.lp,
-        )
-
-        if (new BigNumber(walletLpBalance).isZero()) {
-            return
-        }
-
+        leftAddress: Address,
+        rightAddress: Address,
+        lpAddress: Address,
+        amount: string,
+    ): Promise<TransactionId> {
         const payloadId = new Date().getTime().toString()
         const owner = new Contract(DexAbi.Callbacks, walletAddress)
         const subscriber = new Subscriber(ton)
-        const statusStream = subscriber
+        const transactionsStream = subscriber
             .transactions(walletAddress)
             .flatMap(item => item.transactions)
-            /* eslint-disable consistent-return */
-            .filterMap(async (transaction): Promise<boolean | void> => {
+            .filterMap<TransactionId | null>(async transaction => {
                 const result = await owner.decodeTransaction({
                     transaction,
                     methods: [WITHDRAW_SUCCESS_METHOD, WITHDRAW_FAIL_METHOD],
@@ -103,30 +96,35 @@ export class Pool {
                     && result.method === WITHDRAW_SUCCESS_METHOD
                     && result.input.id === payloadId
                 ) {
-                    subscriber.unsubscribe()
-                    return true
+                    return transaction.id
                 }
                 if (
                     result
                     && result.method === WITHDRAW_FAIL_METHOD
                     && result.input.id === payloadId
                 ) {
-                    subscriber.unsubscribe()
-                    throw new Error('Operation canceled')
+                    return null
                 }
+                return undefined
             })
             .first()
 
         await Dex.withdrawLiquidity(
             walletAddress,
-            pairTokenRoots.left,
-            pairTokenRoots.right,
-            pairTokenRoots.lp,
-            walletLpBalance,
+            leftAddress,
+            rightAddress,
+            lpAddress,
+            amount,
             payloadId,
         )
 
-        await statusStream
+        const transactionId = await transactionsStream
+
+        if (!transactionId) {
+            throw new Error('Dex pair operation cancelled')
+        }
+
+        return transactionId
     }
 
 }

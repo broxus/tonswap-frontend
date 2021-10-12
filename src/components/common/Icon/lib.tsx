@@ -34,6 +34,7 @@ const library: Record<string, React.ElementType> = {
     warning: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 24 24" {...getSize(24, 24, ratio)}><path fillRule="evenodd" clipRule="evenodd" d="M12.9354 3.55908C12.5117 2.85289 11.4883 2.85289 11.0646 3.55908L0.991306 20.3478C0.555036 21.0749 1.0788 22 1.92675 22H22.0732C22.9212 22 23.445 21.0749 23.0087 20.3478L12.9354 3.55908Z" fill="#EB4361" fillOpacity="0.32" /><path d="M10.63 20H13.38L13.38 17H10.63L10.63 20Z" fill="#EB4361"/><path d="M10.63 15H13.38L13.38 7H10.63L10.63 15Z" fill="#EB4361"/></svg>,
     check: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 10 8" {...getSize(10, 8, ratio)}><path d="M1.5 4L4 6.5L8.5 1" stroke="currentColor" strokeWidth="1.8"/></svg>,
     directionRight: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 28 14" {...getSize(28, 14, ratio)}><path d="M20 1L26 7M26 7L20 13M26 7H0" stroke="currentColor" strokeOpacity={0.48} strokeWidth={1.6} /></svg>,
+    success: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 64 64" {...getSize(64, 64, ratio)}><path d="M5.3335 33.7017L23.5972 52.0002L58.6668 16.9652L53.632 12L23.5972 42L10.2986 28.7015L5.3335 33.7017Z" fill="currentColor" /></svg>,
 }
 
 
