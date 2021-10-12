@@ -38,7 +38,6 @@ type FarmInfo = {
 
 type UsePoolContent = {
     loading?: boolean;
-    withdrawLoading?: boolean;
     priceLeftToRight?: string;
     priceRightToLeft?: string;
     lockedLp?: string;
@@ -49,14 +48,12 @@ type UsePoolContent = {
     totalLp?: string;
     totalLeft?: string;
     totalRight?: string;
-    burnVisible?: boolean;
     farmItems?: FarmingTableProps['items'];
     pool?: PoolData;
     pairAddress?: Address;
     ownerAddress?: Address;
     leftToken?: TokenCache;
     rightToken?: TokenCache;
-    withdrawLiquidity?: () => void;
 }
 
 export function usePoolContent(): UsePoolContent {
@@ -69,7 +66,6 @@ export function usePoolContent(): UsePoolContent {
     const dexBalances = useDexBalances()
     const tokensCache = useTokensCache()
     const [loading, setLoading] = React.useState(true)
-    const [withdrawLoading, setWithdrawLoading] = React.useState(false)
     const [pool, setPool] = React.useState<PoolData | undefined>()
     const [pair, setPair] = React.useState<PairResponse | undefined>()
     const [farm, setFarm] = React.useState<FarmInfo[]>([])
@@ -166,10 +162,6 @@ export function usePoolContent(): UsePoolContent {
             .toFixed()
     ), [walletRight, lockedRight])
 
-    const burnVisible = React.useMemo(() => (
-        pool ? !(new BigNumber(pool.lp.inWallet)).isZero() : false
-    ), [pool])
-
     const farmItems = React.useMemo(() => (
         farm.map(({ info, balance: { reward }}) => ({
             tvl: info.tvl,
@@ -215,18 +207,6 @@ export function usePoolContent(): UsePoolContent {
             balanceWarning: info.is_low_balance,
         }))
     ), [farm])
-
-    const withdrawLiquidity = async () => {
-        setWithdrawLoading(true)
-        try {
-            await Pool.withdrawLiquidity(pairAddress, ownerAddress)
-            setPool(await Pool.pool(pairAddress, ownerAddress))
-        }
-        catch (e) {
-            error(e)
-        }
-        setWithdrawLoading(false)
-    }
 
     const getFarmingPools = async (
         root: Address,
@@ -361,7 +341,6 @@ export function usePoolContent(): UsePoolContent {
 
     return {
         loading,
-        withdrawLoading,
         priceLeftToRight,
         priceRightToLeft,
         lockedLp,
@@ -372,13 +351,11 @@ export function usePoolContent(): UsePoolContent {
         totalLp,
         totalLeft,
         totalRight,
-        burnVisible,
         farmItems,
         pool,
         pairAddress,
         ownerAddress,
         leftToken,
         rightToken,
-        withdrawLiquidity,
     }
 }

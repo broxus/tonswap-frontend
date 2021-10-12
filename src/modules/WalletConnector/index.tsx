@@ -1,9 +1,9 @@
 import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 
-import { ConnectWallet } from '@/modules/WalletConnector/components/ConnectWallet'
-import { ConnectInstall } from '@/modules/WalletConnector/components/ConnectInstall'
 import { ContentLoader } from '@/components/common/ContentLoader'
+import { ConnectWallet } from '@/modules/WalletConnector/components/ConnectWallet'
+import { WalletInstaller } from '@/modules/WalletConnector/WalletInstaller'
 import { useWallet } from '@/stores/WalletService'
 
 type Props = {
@@ -17,28 +17,26 @@ export const WalletConnector = observer(({
 }: Props): JSX.Element => {
     const wallet = useWallet()
 
+    const onClickConnect = () => {
+        wallet.connect()
+    }
+
     return (
-        <>
-            {wallet.isInitializing || wallet.isConnecting ? (
+        <WalletInstaller>
+            {wallet.isConnecting ? (
                 <ContentLoader />
             ) : (
                 <>
-                    {!wallet.hasProvider ? (
-                        <ConnectInstall />
+                    {!wallet.isConnected ? (
+                        <ConnectWallet
+                            onClickConnect={onClickConnect}
+                            message={message}
+                        />
                     ) : (
-                        <>
-                            {!wallet.isConnected ? (
-                                <ConnectWallet
-                                    wallet={wallet}
-                                    message={message}
-                                />
-                            ) : (
-                                children
-                            )}
-                        </>
+                        children
                     )}
                 </>
             )}
-        </>
+        </WalletInstaller>
     )
 })

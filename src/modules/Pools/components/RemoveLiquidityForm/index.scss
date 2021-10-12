@@ -1,0 +1,100 @@
+.remove-liquidity-form {
+    display: grid;
+    gap: 32px;
+    padding: 32px;
+    max-width: 520px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+
+    &__title {
+        font-size: 28px;
+        line-height: 36px;
+        letter-spacing: 0.25px;
+        font-weight: bold;
+    }
+
+    &__label {
+        font-size: 20px;
+        line-height: 24px;
+        letter-spacing: 0.15px;
+        font-weight: bold;
+        margin: 0 0 16px;
+
+        &_medium {
+            font-size: 16px;
+            line-height: 20px;
+            letter-spacing: 0.25px;
+        }
+
+        &_translucent {
+            color: rgba(255, 255, 255, 0.56);
+        }
+    }
+
+    &__cols {
+        display: grid;
+        grid-auto-columns: minmax(0, 1fr);
+        grid-auto-flow: column;
+        gap: 12px;
+    }
+
+    &__receive {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 16px;
+        font-size: 24px;
+        font-weight: bold;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        word-break: break-word;
+    }
+
+    &__value {
+        display: flex;
+        align-items: center;
+        min-height: 1em;
+        line-height: 1;
+    }
+
+    &__hint {
+        margin: 4px 0 0;
+        font-size: 12px;
+        line-height: 16px;
+        letter-spacing: 0.6px;
+        color: rgba(255, 255, 255, 0.48);
+    }
+}
+
+.remove-liquidity-form-stats {
+    padding: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.75px;
+    color: #fff;
+
+    &__title {
+        color: rgba(255,255,255,0.8);
+        margin: 0 0 14px;
+    }
+
+    &__item {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        margin: 0 0 4px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__value {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

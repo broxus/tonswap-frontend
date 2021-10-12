@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 import classNames from 'classnames'
 
-import { TextInput } from '@/components/common/TextInput'
+import { TextInput, TextInputProps } from '@/components/common/TextInput'
 
 import './index.scss'
 
@@ -11,7 +11,9 @@ type Props = {
     disabled?: boolean;
     maxIsVisible?: boolean;
     onChange?: (value: string) => void;
-    onClickMax?: () => void
+    onClickMax?: () => void;
+    size?: TextInputProps['size'];
+    invalid?: boolean;
 }
 
 export function AmountInput({
@@ -20,13 +22,16 @@ export function AmountInput({
     maxIsVisible = true,
     onChange,
     onClickMax,
+    size = 'small',
+    invalid,
 }: Props): JSX.Element {
     const intl = useIntl()
 
     return (
         <div
             className={classNames('amount-input', {
-                'amount-input_with-btn': Boolean(onClickMax),
+                'amount-input_with-btn': maxIsVisible,
+                [`amount-input_size_${size}`]: Boolean(size),
             })}
         >
             <TextInput
@@ -36,12 +41,17 @@ export function AmountInput({
                 placeholder={intl.formatMessage({
                     id: 'AMOUNT_INPUT_PLACEHOLDER',
                 })}
+                size={size}
+                invalid={invalid}
             />
 
             {maxIsVisible && (
                 <button
                     type="button"
-                    className="btn btn-xs btn-tertiary"
+                    className={classNames('btn btn-tertiary', {
+                        'btn-xs': size === 'small',
+                        'btn-s': size === 'medium',
+                    })}
                     onClick={onClickMax}
                     disabled={disabled}
                 >

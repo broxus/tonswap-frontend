@@ -21,4 +21,18 @@
     &_dirty {
         border-color: rgba(255, 255, 255, 0.24);
     }
+
+    &_invalid {
+        border-color: #EB4361;
+    }
+
+    &_size {
+        &_small {
+            height: 36px;
+        }
+
+        &_medium {
+            height: 44px;
+        }
+    }
 }

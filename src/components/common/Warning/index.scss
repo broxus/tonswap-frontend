@@ -20,6 +20,14 @@
         font-size: 12px;
         line-height: 16px;
         letter-spacing: 0.6px;
+
+        p {
+            margin: 0 0 0.5em;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
     }
 
     &_theme {
