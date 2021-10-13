@@ -89,19 +89,6 @@ function FarmingUserInfoInner({
                         </div>
                     )}
 
-                    {userLpFarmingAmount && (
-                        <div>
-                            <div className="farming-panel__label">
-                                {intl.formatMessage({
-                                    id: 'FARMING_USER_INFO_LP_TOKENS',
-                                }, {
-                                    symbol: lpTokenSymbol,
-                                })}
-                            </div>
-                            {amountOrZero(userLpFarmingAmount, lpTokenDecimals)}
-                        </div>
-                    )}
-
                     {
                         leftToken
                         && rightToken
@@ -155,6 +142,19 @@ function FarmingUserInfoInner({
                             </div>
                         )
                     }
+
+                    {userLpFarmingAmount && (
+                        <div>
+                            <div className="farming-panel__label">
+                                {intl.formatMessage({
+                                    id: 'FARMING_USER_INFO_LP_TOKENS',
+                                }, {
+                                    symbol: lpTokenSymbol,
+                                })}
+                            </div>
+                            {amountOrZero(userLpFarmingAmount, lpTokenDecimals)}
+                        </div>
+                    )}
 
                     {userShare !== undefined && (
                         <div>
