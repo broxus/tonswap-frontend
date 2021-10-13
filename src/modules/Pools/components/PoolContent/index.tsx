@@ -31,7 +31,7 @@ export const PoolContent = observer((): JSX.Element | null => {
         totalLp, totalLeft, totalRight,
         lockedLp, lockedLeft, lockedRight,
         leftToken, rightToken,
-        farmItems,
+        farmItems, totalShare,
     } = usePoolContent()
 
     return (
@@ -151,6 +151,7 @@ export const PoolContent = observer((): JSX.Element | null => {
 
                             <div className="pools-balances">
                                 <TotalBalance
+                                    share={totalShare}
                                     name={pool.lp.symbol}
                                     balance={amountOrZero(totalLp, pool.lp.decimals)}
                                     apportionment={[{

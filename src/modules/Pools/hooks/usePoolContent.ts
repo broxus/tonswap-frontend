@@ -54,6 +54,7 @@ type UsePoolContent = {
     ownerAddress?: Address;
     leftToken?: TokenCache;
     rightToken?: TokenCache;
+    totalShare?: string;
 }
 
 export function usePoolContent(): UsePoolContent {
@@ -161,6 +162,16 @@ export function usePoolContent(): UsePoolContent {
             .plus(lockedRight)
             .toFixed()
     ), [walletRight, lockedRight])
+
+    const totalShare = React.useMemo(() => (
+        pool && totalLp
+            ? new BigNumber(totalLp)
+                .multipliedBy(100)
+                .div(pool.lp.inPool)
+                .decimalPlaces(8, BigNumber.ROUND_DOWN)
+                .toFixed()
+            : undefined
+    ), [pool, totalLp])
 
     const farmItems = React.useMemo(() => (
         farm.map(({ info, balance: { reward }}) => ({
@@ -357,5 +368,6 @@ export function usePoolContent(): UsePoolContent {
         ownerAddress,
         leftToken,
         rightToken,
+        totalShare,
     }
 }

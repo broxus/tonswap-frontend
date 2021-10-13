@@ -273,75 +273,66 @@ function RemoveLiquidityFormInner({
                             })}
                         </div>
 
-                        <div className="remove-liquidity-form__cols">
-                            <div className="remove-liquidity-form-stats">
-                                <div className="remove-liquidity-form-stats__title">
+
+                        <div className="remove-liquidity-form-stats">
+                            <div className="remove-liquidity-form-stats__head">
+                                <span />
+                                <span>
                                     {intl.formatMessage({
                                         id: 'REMOVE_LIQUIDITY_FORM_NOW',
                                     })}
-                                </div>
-                                <div className="remove-liquidity-form-stats__item">
-                                    <span>
-                                        {intl.formatMessage({
-                                            id: 'REMOVE_LIQUIDITY_FORM_SHARE',
-                                        })}
-                                    </span>
-                                    <span className="remove-liquidity-form-stats__value">
-                                        {currentShare && intl.formatMessage({
-                                            id: 'REMOVE_LIQUIDITY_FORM_SHARE_VALUE',
-                                        }, {
-                                            value: currentShare,
-                                        })}
-                                    </span>
-                                </div>
-                                <div className="remove-liquidity-form-stats__item">
-                                    <span>{leftToken.symbol}</span>
-                                    <span className="remove-liquidity-form-stats__value">
-                                        {currentLeftAmount && amountOrZero(currentLeftAmount, 0)}
-                                    </span>
-                                </div>
-                                <div className="remove-liquidity-form-stats__item">
-                                    <span>{rightToken.symbol}</span>
-                                    <span className="remove-liquidity-form-stats__value">
-                                        {currentRightAmount && amountOrZero(currentRightAmount, 0)}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="remove-liquidity-form-stats">
-                                <div className="remove-liquidity-form-stats__title">
+                                </span>
+                                <span>
                                     {intl.formatMessage({
                                         id: 'REMOVE_LIQUIDITY_FORM_AFTER',
                                     })}
-                                </div>
-                                <div className="remove-liquidity-form-stats__item">
-                                    <span>
-                                        {intl.formatMessage({
-                                            id: 'REMOVE_LIQUIDITY_FORM_SHARE',
-                                        })}
-                                    </span>
-                                    <span className="remove-liquidity-form-stats__value">
-                                        {resultShare && amountIsValid ? intl.formatMessage({
-                                            id: 'REMOVE_LIQUIDITY_FORM_SHARE_VALUE',
-                                        }, {
-                                            value: resultShare,
-                                        }) : '—'}
-                                    </span>
-                                </div>
-                                <div className="remove-liquidity-form-stats__item">
-                                    <span>{leftToken.symbol}</span>
-                                    <span className="remove-liquidity-form-stats__value">
-                                        {resultLeftAmount && amountIsValid ? amountOrZero(resultLeftAmount, 0) : '—'}
-                                    </span>
-                                </div>
-                                <div className="remove-liquidity-form-stats__item">
-                                    <span>{rightToken.symbol}</span>
-                                    <span className="remove-liquidity-form-stats__value">
-                                        {resultRightAmount && amountIsValid ? amountOrZero(resultRightAmount, 0) : '—'}
-                                    </span>
-                                </div>
+                                </span>
+                            </div>
+                            <div className="remove-liquidity-form-stats__item">
+                                <span>
+                                    {intl.formatMessage({
+                                        id: 'REMOVE_LIQUIDITY_FORM_SHARE',
+                                    })}
+                                </span>
+                                <span className="remove-liquidity-form-stats__value">
+                                    {currentShare && intl.formatMessage({
+                                        id: 'REMOVE_LIQUIDITY_FORM_SHARE_VALUE',
+                                    }, {
+                                        value: currentShare,
+                                    })}
+                                </span>
+                                <span className="remove-liquidity-form-stats__value">
+                                    {resultShare && amountIsValid && intl.formatMessage({
+                                        id: 'REMOVE_LIQUIDITY_FORM_SHARE_VALUE',
+                                    }, {
+                                        value: resultShare,
+                                    })}
+                                </span>
+                            </div>
+                            <div className="remove-liquidity-form-stats__item">
+                                <span>
+                                    {leftToken.symbol}
+                                </span>
+                                <span className="remove-liquidity-form-stats__value">
+                                    {currentLeftAmount && amountOrZero(currentLeftAmount, 0)}
+                                </span>
+                                <span className="remove-liquidity-form-stats__value">
+                                    {resultLeftAmount && amountIsValid && amountOrZero(resultLeftAmount, 0)}
+                                </span>
+                            </div>
+                            <div className="remove-liquidity-form-stats__item">
+                                <span>
+                                    {rightToken.symbol}
+                                </span>
+                                <span className="remove-liquidity-form-stats__value">
+                                    {currentRightAmount && amountOrZero(currentRightAmount, 0)}
+                                </span>
+                                <span className="remove-liquidity-form-stats__value">
+                                    {resultRightAmount && amountIsValid && amountOrZero(resultRightAmount, 0)}
+                                </span>
                             </div>
                         </div>
+
                     </div>
                 )
             }

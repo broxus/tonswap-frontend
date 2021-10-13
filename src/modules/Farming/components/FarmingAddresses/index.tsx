@@ -2,6 +2,7 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { CopyToClipboard } from '@/components/common/CopyToClipboard'
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { useTokensCache } from '@/stores/TokensCacheService'
 
@@ -41,6 +42,7 @@ function FarmingAddressesInner({
                         </div>
                         <div className="farming-map__value">
                             <AccountExplorerLink address={poolAddress} />
+                            <CopyToClipboard text={poolAddress} />
                         </div>
                     </React.Fragment>
                 )}
@@ -54,6 +56,7 @@ function FarmingAddressesInner({
                         </div>
                         <div className="farming-map__value">
                             <AccountExplorerLink address={ownerAddress} />
+                            <CopyToClipboard text={ownerAddress} />
                         </div>
                     </React.Fragment>
                 )}
@@ -68,6 +71,7 @@ function FarmingAddressesInner({
                         </div>
                         <div className="farming-map__value">
                             <AccountExplorerLink address={userAddress} />
+                            <CopyToClipboard text={userAddress} />
                         </div>
                     </React.Fragment>
                 )}
@@ -81,6 +85,7 @@ function FarmingAddressesInner({
                         </div>
                         <div className="farming-map__value">
                             <AccountExplorerLink address={tokenRoot} />
+                            <CopyToClipboard text={tokenRoot} />
                         </div>
                     </React.Fragment>
                 )}
@@ -97,6 +102,7 @@ function FarmingAddressesInner({
                             </div>
                             <div className="farming-map__value">
                                 <AccountExplorerLink address={token.root} />
+                                <CopyToClipboard text={token.root} />
                             </div>
                         </React.Fragment>
                     )

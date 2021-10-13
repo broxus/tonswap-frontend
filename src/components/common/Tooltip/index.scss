@@ -24,6 +24,19 @@
         transform: translateX(-100%);
     }
 
+    &_align_top-center {
+        margin-top: -8px;
+        transform: translate(-50%, -100%);
+    }
+
+    &_align_bottom-center {
+        transform: translateX(-50%);
+    }
+
+    &_size_small {
+        padding: 3px 6px;
+    }
+
     h4 {
         margin-bottom: 4px;
         line-height: 16px;

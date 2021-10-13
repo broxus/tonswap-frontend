@@ -1,0 +1,13 @@
+.copy-to-clipboard {
+    cursor: pointer;
+    opacity: 0.56;
+    transition: opacity 0.25s ease;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    .icon {
+        vertical-align: top;
+    }
+}
