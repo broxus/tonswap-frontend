@@ -15,7 +15,7 @@ type Token = {
 type Props = {
     name: string;
     balance: string;
-    balancePerc?: string;
+    share?: string;
     walletLpAmount?: string;
     apportionment: Token[];
     commission?: Token[];
@@ -26,7 +26,7 @@ type Props = {
 export function TotalBalance({
     name,
     balance,
-    balancePerc,
+    share,
     walletLpAmount,
     apportionment,
     commission,
@@ -44,12 +44,12 @@ export function TotalBalance({
 
                 <div className="balance-rows">
                     <div className="balance-section">
+                        <h5 className="balance-section__title">
+                            {intl.formatMessage({ id: 'POOLS_LIST_TOTAL_BALANCE_AMOUNT' }, { name })}
+                        </h5>
                         <div className="balance-section__content">
                             <div className="balance-amount">
                                 {balance}
-                                {balancePerc !== undefined && (
-                                    <span className="balance-amount__perc">{balancePerc}</span>
-                                )}
                             </div>
                         </div>
                     </div>
@@ -85,6 +85,23 @@ export function TotalBalance({
                             </div>
                         )}
                     </div>
+
+                    {share !== undefined && (
+                        <div className="balance-section">
+                            <h5 className="balance-section__title">
+                                {intl.formatMessage({
+                                    id: 'POOLS_LIST_TOTAL_SHARE_TITLE',
+                                })}
+                            </h5>
+                            <div className="balance-section__content">
+                                {intl.formatMessage({
+                                    id: 'POOLS_LIST_TOTAL_SHARE',
+                                }, {
+                                    value: share,
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="balance-buttons balance-buttons_inline">
                         {walletLpAmount && new BigNumber(walletLpAmount).isGreaterThan(0) && (

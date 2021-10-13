@@ -25,6 +25,8 @@ export default {
     PAGINATION_BEFORE_TEXT: 'Page',
     PAGINATION_PAGE_OF: 'of {totalPages}',
 
+    COPY_CLIPBOARD_SUCCESS: 'Copied',
+
     SWAP_HEADER_TITLE: 'Swap tokens',
     SWAP_SETTINGS_DROP_TITLE: 'Transaction Settings',
     SWAP_SETTINGS_DROP_NOTE: 'Slippage tolerance',
@@ -114,7 +116,10 @@ export default {
     POOLS_LIST_TABLE_LP_TOKENS: 'LP tokens',
     POOLS_LIST_TABLE_LEFT_TOKEN: 'Left token',
     POOLS_LIST_TABLE_RIGHT_TOKEN: 'Right token',
-    POOLS_LIST_TOTAL_BALANCE_TITLE: 'Total balance, {name}',
+    POOLS_LIST_TOTAL_BALANCE_TITLE: 'Total balance',
+    POOLS_LIST_TOTAL_BALANCE_AMOUNT: 'Amount, {name}',
+    POOLS_LIST_TOTAL_SHARE_TITLE: 'Share in Liquidity pool',
+    POOLS_LIST_TOTAL_SHARE: '{value}%',
     POOLS_LIST_TOTAL_APPORTIONMENT: 'Total apportionment',
     POOLS_LIST_TOTAL_COMMISSION_REWARD: 'Total commission reward',
     POOLS_LIST_BURN_BUTTON: 'Burn Liquidity',

@@ -77,8 +77,6 @@
 }
 
 .remove-liquidity-form-stats {
-    padding: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
     font-size: 14px;
     line-height: 20px;
     letter-spacing: 0.75px;
@@ -89,19 +87,25 @@
         margin: 0 0 14px;
     }
 
-    &__item {
-        display: flex;
-        gap: 4px;
-        justify-content: space-between;
-        margin: 0 0 4px;
+    &__head {
+        display: grid;
+        grid-template-columns: 15% 1fr 1fr;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        padding: 0 0 4px;
+        margin: 0 0 2px;
+        text-align: right;
+        color: rgba(255, 255, 255, 0.56);
+    }
 
-        &:last-child {
-            margin-bottom: 0;
-        }
+    &__item {
+        display: grid;
+        grid-template-columns: 15% 1fr 1fr;
+        padding: 4px 0;
+        gap: 10px;
+        word-break: break-all;
     }
 
     &__value {
-        word-break: break-all;
         text-align: right;
     }
 }
