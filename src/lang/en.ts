@@ -82,7 +82,9 @@ export default {
     REMOVE_LIQUIDITY_FORM_WARNING_NOT_EXIST_TITLE: 'Pool doesn’t exist',
     REMOVE_LIQUIDITY_FORM_WARNING_NOT_EXIST_TEXT: 'You need to create pool, before you can to continue.',
     REMOVE_LIQUIDITY_FORM_INPUT_AMOUNT: 'Input amount of LP tokens to burn',
-    REMOVE_LIQUIDITY_FORM_LP_BALANCE: 'Available balance: {value}',
+    REMOVE_LIQUIDITY_FORM_BALANCE: 'Available balance: {value}',
+    REMOVE_LIQUIDITY_FORM_ERROR_TO_BIG: 'Available balance: {value}<br />Requested amount is too big',
+
     REMOVE_LIQUIDITY_FORM_RECEIVE: 'You will receive',
     REMOVE_LIQUIDITY_FORM_POSITION: 'Your position in the pool',
     REMOVE_LIQUIDITY_FORM_NOW: 'Now',
@@ -407,7 +409,7 @@ export default {
     FARMING_USER_INFO_NULL: 'N/A',
     FARMING_USER_INFO_HISTORY_BALANCE: 'History balance',
     FARMING_USER_INFO_HISTORY_TOKENS: 'History LP breakdown, tokens',
-    FARMING_USER_INFO_VESTING_TIME: 'Current vesting until, UTC',
+    FARMING_USER_INFO_VESTING_TIME: 'Vesting end date, UTC',
     FARMING_USER_INFO_TOTAL_REWARD: 'Reward balance',
     FARMING_USER_INFO_HISTORY_LAST_UPD: 'Last update, UTC',
 
@@ -421,9 +423,12 @@ export default {
     FARMING_VESTING_TITLE: 'Vesting',
     FARMING_VESTING_RATIO_TITLE: 'Vesting ratio',
     FARMING_VESTING_RATIO_VALUE: '{value}%',
+    FARMING_VESTING_RATIO_HINT: 'Vesting ratio refers to the percentage of remuneration that will be sent to vesting',
     FARMING_VESTING_PERIOD_TITLE: 'Vesting period',
     FARMING_VESTING_PERIOD_VALUE: '{days, plural, =0 {0 days} one {# day} other {# days}}',
-    FARMING_VESTING_VESTING_UNTIL: 'Current vesting until, UTC',
+    FARMING_VESTING_PERIOD_HINT: 'Vesting period is the time frame in which vesting will take place',
+    FARMING_VESTING_VESTING_UNTIL: 'Vesting end date, UTC',
+    FARMING_VESTING_VESTING_HINT: 'Vesting end date is the date by which all remuneration will be received',
     FARMING_VESTING_NULL: '—',
 
     FARMING_CHART_TAB_TVL: 'TVL',

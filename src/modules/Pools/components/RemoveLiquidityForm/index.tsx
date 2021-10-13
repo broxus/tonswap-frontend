@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import BigNumber from 'bignumber.js'
 import * as React from 'react'
 import { useIntl } from 'react-intl'
@@ -24,9 +25,10 @@ type Props = {
     resultRightAmount?: string;
     leftTokenAddress?: string;
     rightTokenAddress?: string;
-    lpAmount?: string;
-    lpAmountIsValid?: boolean;
-    lpAmountIsWell?: boolean;
+    amount?: string;
+    amountIsValid?: boolean;
+    amountIsPositiveNum?: boolean;
+    amountIsLessOrEqualBalance?: boolean;
     userLpTotalAmount?: string;
     lpDecimals?: number;
     lpTokenSymbol?: string;
@@ -35,7 +37,7 @@ type Props = {
     onClickConnect: () => void;
     onChangeLeftToken: (address: string) => void;
     onChangeRightToken: (address: string) => void;
-    onChangeLpAmount: (value: string) => void;
+    onChangeAmount: (value: string) => void;
     onSubmit: () => void;
 }
 
@@ -50,9 +52,10 @@ function RemoveLiquidityFormInner({
     resultRightAmount,
     leftTokenAddress,
     rightTokenAddress,
-    lpAmount = '',
-    lpAmountIsValid,
-    lpAmountIsWell,
+    amount = '',
+    amountIsValid,
+    amountIsPositiveNum,
+    amountIsLessOrEqualBalance,
     userLpTotalAmount,
     lpDecimals,
     lpTokenSymbol,
@@ -61,7 +64,7 @@ function RemoveLiquidityFormInner({
     onClickConnect,
     onChangeLeftToken,
     onChangeRightToken,
-    onChangeLpAmount,
+    onChangeAmount,
     onSubmit,
 }: Props): JSX.Element {
     const intl = useIntl()
@@ -69,21 +72,41 @@ function RemoveLiquidityFormInner({
     const leftToken = leftTokenAddress && tokensCache.get(leftTokenAddress)
     const rightToken = rightTokenAddress && tokensCache.get(rightTokenAddress)
 
+    const userHasLiquidity = React.useMemo(
+        () => userLpTotalAmount && new BigNumber(userLpTotalAmount).isGreaterThan(0),
+        [userLpTotalAmount],
+    )
+
+    const amountInputIsInvalid = amount.length > 0 && (!amountIsLessOrEqualBalance || !amountIsPositiveNum)
+
+    const totalAmountFormatted = userLpTotalAmount && lpDecimals !== undefined
+        ? amountOrZero(userLpTotalAmount, lpDecimals)
+        : '0'
+
+    const amountInputHint = amount.length > 0 && amountIsPositiveNum && !amountIsLessOrEqualBalance
+        ? intl.formatMessage({
+            id: 'REMOVE_LIQUIDITY_FORM_ERROR_TO_BIG',
+        }, {
+            value: totalAmountFormatted,
+        })
+        : intl.formatMessage({
+            id: 'REMOVE_LIQUIDITY_FORM_BALANCE',
+        }, {
+            value: totalAmountFormatted,
+        })
+
     const submit = (e: React.FormEvent) => {
         e.preventDefault()
         onSubmit()
     }
 
     const setMax = () => {
-        if (userLpTotalAmount) {
-            onChangeLpAmount(amountOrZero(userLpTotalAmount, lpDecimals))
+        if (userLpTotalAmount && lpDecimals) {
+            onChangeAmount(
+                new BigNumber(userLpTotalAmount).shiftedBy(-lpDecimals).toFixed(),
+            )
         }
     }
-
-    const userHasLiquidity = React.useMemo(
-        () => userLpTotalAmount && new BigNumber(userLpTotalAmount).isGreaterThan(0),
-        [userLpTotalAmount],
-    )
 
     React.useEffect(() => {
         if (leftTokenAddress) {
@@ -167,8 +190,8 @@ function RemoveLiquidityFormInner({
             {
                 walletConnected
                 && userHasLiquidity
-                && leftTokenAddress
-                && rightTokenAddress
+                && leftToken
+                && rightToken
                 && (
                     <div>
                         <div className="remove-liquidity-form__label">
@@ -180,22 +203,21 @@ function RemoveLiquidityFormInner({
                         <AmountInput
                             maxIsVisible
                             size="medium"
-                            value={lpAmount}
-                            onChange={onChangeLpAmount}
+                            value={amount}
+                            onChange={onChangeAmount}
                             onClickMax={setMax}
                             disabled={loading || !walletConnected}
-                            invalid={!lpAmountIsWell && lpAmount.length > 0}
+                            invalid={amountInputIsInvalid}
                         />
 
-                        <div className="remove-liquidity-form__hint">
-                            {intl.formatMessage({
-                                id: 'REMOVE_LIQUIDITY_FORM_LP_BALANCE',
-                            }, {
-                                value: userLpTotalAmount && lpDecimals !== undefined
-                                    ? amountOrZero(userLpTotalAmount, lpDecimals)
-                                    : '0',
+                        <div
+                            className={classNames('remove-liquidity-form__hint', {
+                                'remove-liquidity-form__hint_error': amountInputIsInvalid,
                             })}
-                        </div>
+                            dangerouslySetInnerHTML={{
+                                __html: amountInputHint,
+                            }}
+                        />
                     </div>
                 )
             }
@@ -299,23 +321,23 @@ function RemoveLiquidityFormInner({
                                         })}
                                     </span>
                                     <span className="remove-liquidity-form-stats__value">
-                                        {resultShare && lpAmountIsValid && intl.formatMessage({
+                                        {resultShare && amountIsValid ? intl.formatMessage({
                                             id: 'REMOVE_LIQUIDITY_FORM_SHARE_VALUE',
                                         }, {
                                             value: resultShare,
-                                        })}
+                                        }) : '—'}
                                     </span>
                                 </div>
                                 <div className="remove-liquidity-form-stats__item">
                                     <span>{leftToken.symbol}</span>
                                     <span className="remove-liquidity-form-stats__value">
-                                        {resultLeftAmount && lpAmountIsValid && amountOrZero(resultLeftAmount, 0)}
+                                        {resultLeftAmount && amountIsValid ? amountOrZero(resultLeftAmount, 0) : '—'}
                                     </span>
                                 </div>
                                 <div className="remove-liquidity-form-stats__item">
                                     <span>{rightToken.symbol}</span>
                                     <span className="remove-liquidity-form-stats__value">
-                                        {resultRightAmount && lpAmountIsValid && amountOrZero(resultRightAmount, 0)}
+                                        {resultRightAmount && amountIsValid ? amountOrZero(resultRightAmount, 0) : '—'}
                                     </span>
                                 </div>
                             </div>
@@ -328,7 +350,7 @@ function RemoveLiquidityFormInner({
                 <button
                     type="submit"
                     className="btn btn-primary btn-lg"
-                    disabled={!lpAmountIsValid || loading}
+                    disabled={!amountIsValid || loading}
                 >
                     {loading ? (
                         <ContentLoader slim />

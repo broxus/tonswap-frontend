@@ -185,11 +185,21 @@
     line-height: 20px;
 
     &__label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         color: rgba(255, 255, 255, 0.56);
     }
 
     &__value {
         justify-self: flex-end;
+    }
+
+    &__info {
+        .icon {
+            display: block;
+            cursor: pointer;
+        }
     }
 }
 

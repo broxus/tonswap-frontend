@@ -35,6 +35,7 @@ const library: Record<string, React.ElementType> = {
     check: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 10 8" {...getSize(10, 8, ratio)}><path d="M1.5 4L4 6.5L8.5 1" stroke="currentColor" strokeWidth="1.8"/></svg>,
     directionRight: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 28 14" {...getSize(28, 14, ratio)}><path d="M20 1L26 7M26 7L20 13M26 7H0" stroke="currentColor" strokeOpacity={0.48} strokeWidth={1.6} /></svg>,
     success: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 64 64" {...getSize(64, 64, ratio)}><path d="M5.3335 33.7017L23.5972 52.0002L58.6668 16.9652L53.632 12L23.5972 42L10.2986 28.7015L5.3335 33.7017Z" fill="currentColor" /></svg>,
+    infoFill: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 16 16" {...getSize(16, 16, ratio)}><path fillRule="evenodd" clipRule="evenodd" d="M8 16C12.4183 16 16 12.4183 16 8C16 3.58172 12.4183 0 8 0C3.58172 0 0 3.58172 0 8C0 12.4183 3.58172 16 8 16ZM6.875 5.25V3H9.125V5.25H6.875ZM6.875 13.625V6.875H9.125V13.625H6.875Z" fill="white" fillOpacity="0.48" /></svg>,
 }
 
 

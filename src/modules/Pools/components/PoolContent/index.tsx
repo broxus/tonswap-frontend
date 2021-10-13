@@ -174,6 +174,7 @@ export const PoolContent = observer((): JSX.Element | null => {
                                     }]}
                                     leftTokenRoot={pool.left.address}
                                     rightTokenRoot={pool.right.address}
+                                    walletLpAmount={pool.lp.inWallet}
                                 />
 
                                 <BalancePanel

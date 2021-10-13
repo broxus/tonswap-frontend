@@ -5,7 +5,7 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import {
-    CustomToken, Dex, PairBalances, Pool, TokenWallet,
+    CustomToken, Dex, PairBalances, PairTokenRoots, Pool, TokenWallet,
 } from '@/misc'
 import { error, shareAmount } from '@/utils'
 
@@ -13,6 +13,7 @@ type Data = {
     lpToken?: CustomToken;
     userLpTotalAmount: string;
     pairBalances: PairBalances;
+    pairTokens: PairTokenRoots;
     leftTokenAddress: string;
     rightTokenAddress: string;
 }
@@ -79,9 +80,17 @@ export class RemoveLiquidityStore {
                 owner: new Address(ownerAddress),
                 root: pairLpRoot,
             })
-            const userLpTotalAmount = await TokenWallet.balanceByWalletAddress(userLpWalletAddress)
-            const lpToken = await TokenWallet.getTokenData(pairLpRoot.toString())
-            const pairBalances = await Dex.pairBalances(pairAddress)
+            const [
+                userLpTotalAmount,
+                lpToken,
+                pairBalances,
+                pairTokens,
+            ] = await Promise.all([
+                TokenWallet.balanceByWalletAddress(userLpWalletAddress),
+                TokenWallet.getTokenData(pairLpRoot.toString()),
+                Dex.pairBalances(pairAddress),
+                Dex.pairTokenRoots(pairAddress),
+            ])
 
             this.tokensCache.fetchIfNotExist(leftTokenAddress)
             this.tokensCache.fetchIfNotExist(rightTokenAddress)
@@ -90,6 +99,7 @@ export class RemoveLiquidityStore {
                 this.state.data = {
                     lpToken,
                     pairBalances,
+                    pairTokens,
                     userLpTotalAmount,
                     leftTokenAddress,
                     rightTokenAddress,
@@ -153,7 +163,6 @@ export class RemoveLiquidityStore {
             await this.syncData()
 
             runInAction(() => {
-                this.state.amount = ''
                 this.state.transactionHash = transactionId.hash
             })
         }
@@ -169,6 +178,7 @@ export class RemoveLiquidityStore {
     }
 
     public reset(): void {
+        this.state.amount = ''
         this.state.transactionHash = undefined
     }
 
@@ -188,17 +198,31 @@ export class RemoveLiquidityStore {
         return this.state.amount
     }
 
-    public get amountIsWell(): boolean {
-        if (!this.userLpTotalAmount || this.lpTokenDecimals === undefined) {
+    public get amountIsPositiveNum(): boolean {
+        if (this.lpTokenDecimals === undefined) {
             return false
         }
 
         const amountBN = new BigNumber(this.amount)
             .shiftedBy(this.lpTokenDecimals)
 
-        if (amountBN.isNaN() || !amountBN.isFinite() || amountBN.isLessThan(0)) {
+        if (!amountBN.isNaN() && amountBN.isFinite() && amountBN.isGreaterThanOrEqualTo(0)) {
+            return true
+        }
+
+        return false
+    }
+
+    public get amountIsLessOrEqualBalance(): boolean {
+        if (
+            !this.userLpTotalAmount || !this.amountIsPositiveNum
+            || this.lpTokenDecimals === undefined
+        ) {
             return false
         }
+
+        const amountBN = new BigNumber(this.amount)
+            .shiftedBy(this.lpTokenDecimals)
 
         return amountBN
             .minus(this.userLpTotalAmount)
@@ -206,11 +230,13 @@ export class RemoveLiquidityStore {
     }
 
     public get amountIsValid(): boolean {
-        if (!this.amountIsWell) {
-            return false
+        const isZero = new BigNumber(this.amount).isZero()
+
+        if (this.amountIsPositiveNum && this.amountIsLessOrEqualBalance && !isZero) {
+            return true
         }
 
-        return !new BigNumber(this.amount).isZero()
+        return false
     }
 
     public get userLpTotalAmount(): string | undefined {
@@ -241,12 +267,23 @@ export class RemoveLiquidityStore {
         return this.tokensCache.get(this.state.data.rightTokenAddress)
     }
 
+    public get isInverted(): boolean | undefined {
+        if (!this.state.data) {
+            return undefined
+        }
+
+        const pairLeftAddress = this.state.data.pairTokens.left.toString()
+        const actualLeftAddress = this.state.data.leftTokenAddress
+
+        return pairLeftAddress !== actualLeftAddress
+    }
+
     public get pairAmountLeft(): string | undefined {
-        return this.state.data?.pairBalances.left
+        return this.state.data?.pairBalances[this.isInverted ? 'right' : 'left']
     }
 
     public get pairAmountRight(): string | undefined {
-        return this.state.data?.pairBalances.right
+        return this.state.data?.pairBalances[this.isInverted ? 'left' : 'right']
     }
 
     public get pairAmountLp(): string | undefined {
