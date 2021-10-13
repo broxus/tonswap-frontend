@@ -10,7 +10,17 @@
     line-height: 16px;
     letter-spacing: 0.6px;
 
-    &_x_right {
+    &_align_top-left {
+        margin-top: -8px;
+        transform: translateY(-100%);
+    }
+
+    &_align_top-right {
+        margin-top: -8px;
+        transform: translate(-100%, -100%);
+    }
+
+    &_align_bottom-right {
         transform: translateX(-100%);
     }
 

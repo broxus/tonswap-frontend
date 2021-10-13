@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { Link } from 'react-router-dom'
@@ -15,6 +16,7 @@ type Props = {
     name: string;
     balance: string;
     balancePerc?: string;
+    walletLpAmount?: string;
     apportionment: Token[];
     commission?: Token[];
     leftTokenRoot: string;
@@ -25,6 +27,7 @@ export function TotalBalance({
     name,
     balance,
     balancePerc,
+    walletLpAmount,
     apportionment,
     commission,
     leftTokenRoot,
@@ -84,12 +87,14 @@ export function TotalBalance({
                     </div>
 
                     <div className="balance-buttons balance-buttons_inline">
-                        <Link
-                            className="btn btn--empty btn-s btn-with-icon"
-                            to={appRoutes.poolRemoveLiquidity.makeUrl({ leftTokenRoot, rightTokenRoot })}
-                        >
-                            {intl.formatMessage({ id: 'POOLS_LIST_BURN_BUTTON' })}
-                        </Link>
+                        {walletLpAmount && new BigNumber(walletLpAmount).isGreaterThan(0) && (
+                            <Link
+                                className="btn btn--empty btn-s btn-with-icon"
+                                to={appRoutes.poolRemoveLiquidity.makeUrl({ leftTokenRoot, rightTokenRoot })}
+                            >
+                                {intl.formatMessage({ id: 'POOLS_LIST_BURN_BUTTON' })}
+                            </Link>
+                        )}
                         <Link
                             className="btn btn-primary btn-s"
                             to={appRoutes.poolCreate.makeUrl({ leftTokenRoot, rightTokenRoot })}

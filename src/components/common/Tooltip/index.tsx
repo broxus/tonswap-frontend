@@ -8,12 +8,16 @@ type Props = {
     children: React.ReactNode;
     target: React.RefObject<HTMLElement>;
     alignX?: 'left' | 'right';
+    alignY?: 'top' | 'bottom';
+    width?: number;
 }
 
 export function Tooltip({
     children,
     target,
     alignX = 'left',
+    alignY = 'bottom',
+    width,
 }: Props): JSX.Element | null {
     const [visible, setVisible] = React.useState(false)
 
@@ -22,7 +26,7 @@ export function Tooltip({
 
     if (visible && target.current) {
         const rect = target.current.getBoundingClientRect()
-        top = rect.top + rect.height
+        top = alignY === 'bottom' ? rect.top + rect.height : rect.top
         left = alignX === 'left' ? rect.left : rect.right
     }
 
@@ -60,12 +64,14 @@ export function Tooltip({
         ? ReactDOM.createPortal(
             <div
                 className={classNames('tooltip', {
-                    tooltip_x_left: alignX === 'left',
-                    tooltip_x_right: alignX === 'right',
+                    'tooltip_align_top-left': alignX === 'left' && alignY === 'top',
+                    'tooltip_align_top-right': alignX === 'right' && alignY === 'top',
+                    'tooltip_align_bottom-right': alignX === 'right' && alignY === 'bottom',
                 })}
                 style={{
                     top: `${top}px`,
                     left: `${left}px`,
+                    width: width && `${width}px`,
                 }}
             >
                 {children}
