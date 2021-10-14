@@ -24,6 +24,8 @@ type State = {
     loading: boolean;
     processing: boolean;
     transactionHash?: string;
+    receivedLeft?: string;
+    receivedRight?: string;
 }
 
 const defaultState: State = Object.freeze({
@@ -160,11 +162,13 @@ export class RemoveLiquidityStore {
                 this.amountShifted,
             )
 
-            await this.syncData()
-
             runInAction(() => {
                 this.state.transactionHash = transactionId.hash
+                this.state.receivedLeft = this.willReceiveLeft
+                this.state.receivedRight = this.willReceiveRight
             })
+
+            await this.syncData()
         }
         catch (e) {
             error(e)
@@ -179,6 +183,8 @@ export class RemoveLiquidityStore {
 
     public reset(): void {
         this.state.amount = ''
+        this.state.receivedLeft = undefined
+        this.state.receivedRight = undefined
         this.state.transactionHash = undefined
     }
 
@@ -300,7 +306,7 @@ export class RemoveLiquidityStore {
         return result.isNaN() ? '0' : result.toFixed()
     }
 
-    public get receiveLeft(): string | undefined {
+    public get willReceiveLeft(): string | undefined {
         if (
             !this.amountShifted || !this.pairAmountLeft || !this.pairAmountLp
             || !this.leftToken || !this.amountIsValid
@@ -316,7 +322,7 @@ export class RemoveLiquidityStore {
         )
     }
 
-    public get receiveRight(): string | undefined {
+    public get willReceiveRight(): string | undefined {
         if (
             !this.amountShifted || !this.pairAmountRight || !this.pairAmountLp
             || !this.rightToken || !this.amountIsValid
@@ -330,6 +336,14 @@ export class RemoveLiquidityStore {
             this.pairAmountLp,
             this.rightToken.decimals,
         )
+    }
+
+    public get receivedLeft(): string | undefined {
+        return this.state.receivedLeft
+    }
+
+    public get receivedRight(): string | undefined {
+        return this.state.receivedRight
     }
 
     public get currentShare(): string | undefined {

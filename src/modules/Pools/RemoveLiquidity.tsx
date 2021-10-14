@@ -53,8 +53,8 @@ export function PoolsRemoveLiquidityInner(): JSX.Element {
         <div className="section section--large">
             <WalletInstaller>
                 <RemoveLiquidityForm
-                    receiveLeft={removeLiquidityStore.receiveLeft}
-                    receiveRight={removeLiquidityStore.receiveRight}
+                    receiveLeft={removeLiquidityStore.willReceiveLeft}
+                    receiveRight={removeLiquidityStore.willReceiveRight}
                     currentShare={removeLiquidityStore.currentShare}
                     resultShare={removeLiquidityStore.resultShare}
                     currentLeftAmount={removeLiquidityStore.currentLeftAmount}
@@ -88,8 +88,8 @@ export function PoolsRemoveLiquidityInner(): JSX.Element {
 
                 {removeLiquidityStore.transactionHash && (
                     <RemoveLiquiditySuccess
-                        leftAmount={removeLiquidityStore.receiveLeft}
-                        rightAmount={removeLiquidityStore.receiveRight}
+                        leftAmount={removeLiquidityStore.receivedLeft}
+                        rightAmount={removeLiquidityStore.receivedRight}
                         lpAmount={removeLiquidityStore.amount}
                         lpSymbol={removeLiquidityStore.lpTokenSymbol}
                         leftTokenAddress={leftTokenRoot}
