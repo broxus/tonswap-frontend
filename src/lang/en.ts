@@ -130,6 +130,8 @@ export default {
     POOLS_LIST_APPORTIONMENT: 'LP breakdown, tokens',
     POOLS_LIST_NOTHING_FOUND: 'Nothing found',
     POOLS_LIST_EMPTY_TABLE: 'Favorite pools will be displayed here',
+    POOLS_LIST_EMPTY_TABLE_META: 'You can add favorite pools in {link} section',
+    POOLS_LIST_EMPTY_TABLE_META_LINK_TEXT: 'Pairs',
     POOLS_LIST_TOKEN_BALANCE: '{value} {symbol}',
     POOLS_FARMINGS_TITLE: 'Farming pools',
 

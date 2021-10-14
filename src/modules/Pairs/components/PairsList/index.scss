@@ -16,6 +16,14 @@
     }
 
     &__token {
+        &-fave-wrapper {
+            margin-left: -5px;
+            .btn.btn-icon {
+                max-width: fit-content;
+                padding: 0 5px;
+            }
+        }
+
         &-icons-wrapper {
             min-width: 40px;
         }

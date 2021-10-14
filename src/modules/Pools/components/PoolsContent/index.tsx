@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { observer } from 'mobx-react-lite'
-import { useIntl } from 'react-intl'
+import { FormattedMessage, useIntl } from 'react-intl'
+import { Link } from 'react-router-dom'
 
 import { usePoolsContent } from '@/modules/Pools/hooks/usePoolsContent'
 import { Pagination } from '@/components/common/Pagination'
@@ -11,11 +12,18 @@ import { Item } from './item'
 
 import './style.scss'
 
+
 export const PoolsContent = observer((): JSX.Element => {
     const intl = useIntl()
     const {
-        loading, totalPages, items, query, currentPage,
-        onSubmit, onNext, onPrev,
+        loading,
+        totalPages,
+        items,
+        query,
+        currentPage,
+        onSubmit,
+        onNext,
+        onPrev,
     } = usePoolsContent()
 
     return (
@@ -38,11 +46,27 @@ export const PoolsContent = observer((): JSX.Element => {
                     </div>
 
                     {!loading && items.length === 0 ? (
-                        <div className="message message_faded">
+                        <div className="message">
                             {query ? (
                                 <p>{intl.formatMessage({ id: 'POOLS_LIST_NOTHING_FOUND' })}</p>
                             ) : (
-                                <p>{intl.formatMessage({ id: 'POOLS_LIST_EMPTY_TABLE' })}</p>
+                                <>
+                                    <p>{intl.formatMessage({ id: 'POOLS_LIST_EMPTY_TABLE' })}</p>
+                                    <p className="message_faded__text small">
+                                        <FormattedMessage
+                                            id="POOLS_LIST_EMPTY_TABLE_META"
+                                            values={{
+                                                link: (
+                                                    <Link to="/pairs">
+                                                        {intl.formatMessage({
+                                                            id: 'POOLS_LIST_EMPTY_TABLE_META_LINK_TEXT',
+                                                        })}
+                                                    </Link>
+                                                ),
+                                            }}
+                                        />
+                                    </p>
+                                </>
                             )}
                         </div>
                     ) : (

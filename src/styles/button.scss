@@ -101,8 +101,8 @@
     }
 
     &.btn-dark {
-        background-color: #050A2E;
-        color: #C5E4F3;
+        background-color: #050a2e;
+        color: #c5e4f3;
 
         &:hover {
             background-color: rgba(5, 10, 46, 0.88);
@@ -145,8 +145,8 @@
     }
 
     .btn__counter {
-        background: #C5E4F3;
-        color: #050B2E;
+        background: #c5e4f3;
+        color: #050b2e;
     }
 }
 
@@ -185,7 +185,7 @@
 
     &.btn-dark {
         border: 1px solid rgba(5, 10, 46, 0.32);
-        color: #050A2E;
+        color: #050a2e;
 
         &:hover {
             border: 1px solid rgba(5, 10, 46, 0.56);
@@ -223,9 +223,9 @@
     &.btn-fav {
         &.active {
             svg {
-                fill: #E6AC00;
+                fill: #c5e4f3;
                 path {
-                    stroke: #E6AC00;
+                    stroke: #c5e4f3;
                 }
             }
         }
@@ -233,16 +233,16 @@
 }
 
 .btn-with-icon {
-    display: flex;
     align-items: center;
     column-gap: 10px;
+    display: flex;
 }
 
 .btn__counter {
-    padding: 0 5px;
-    line-height: 20px;
-    min-width: 20px;
     border-radius: 20px;
     font-size: 12px;
+    line-height: 20px;
+    min-width: 20px;
+    padding: 0 5px;
     text-align: center;
 }

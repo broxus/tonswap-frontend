@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 
+import { TogglePoolButton } from '@/modules/Pools/components/TogglePoolButton'
 import { PairIcons } from '@/modules/Pairs/components/PairIcons'
 import { PairInfo } from '@/modules/Pairs/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
@@ -34,6 +35,14 @@ export function Item({ pair, idx }: Props): JSX.Element {
             <div className="list__cell hide-540">{idx}</div>
             <div className="list__cell">
                 <div className="list__cell-inner">
+                    <div className="pairs-list__token-fave-wrapper">
+                        <TogglePoolButton
+                            poolAddress={pair.meta.poolAddress}
+                            leftSymbol={baseToken?.symbol}
+                            rightSymbol={counterToken?.symbol}
+                            iconRatio={0.8}
+                        />
+                    </div>
                     <div className="pairs-list__token-icons-wrapper">
                         <PairIcons
                             leftToken={baseToken}
