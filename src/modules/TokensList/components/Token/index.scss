@@ -1,0 +1,20 @@
+.token {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-weight: normal;
+
+    &_size {
+        &_xsmall {
+            font-size: 14px;
+            letter-spacing: 0.75px;
+            line-height: 20px;
+        }
+
+        &_small {
+            font-size: 16px;
+            letter-spacing: 0.25px;
+            line-height: 20px;
+        }
+    }
+}

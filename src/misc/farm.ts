@@ -79,6 +79,24 @@ export class Farm {
         return id
     }
 
+    public static async poolWithdraw(
+        amount: string,
+        poolAddress: Address,
+        owner: Address,
+    ): Promise<TransactionId> {
+        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const { id } = await poolContract.methods.withdraw({
+            amount,
+            nonce: 0,
+            send_gas_to: owner,
+        }).send({
+            from: owner,
+            bounce: true,
+            amount: '5000000000',
+        })
+        return id
+    }
+
     public static async poolWithdrawAll(
         poolAddress: Address,
         owner: Address,

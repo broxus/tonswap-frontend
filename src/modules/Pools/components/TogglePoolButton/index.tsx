@@ -7,14 +7,16 @@ import { useFavoritePairs } from '@/stores/FavoritePairs'
 import { concatSymbols } from '@/utils'
 
 type Props = {
-    poolAddress: string
-    leftSymbol?: string
-    rightSymbol?: string
+    iconRatio?: number;
+    leftSymbol?: string;
+    poolAddress: string;
+    rightSymbol?: string;
 }
 
 function TogglePoolButtonInner({
-    poolAddress,
+    iconRatio,
     leftSymbol,
+    poolAddress,
     rightSymbol,
 }: Props): JSX.Element | null {
     const favoritePairs = useFavoritePairs()
@@ -23,18 +25,23 @@ function TogglePoolButtonInner({
         return null
     }
 
+    const onClick: React.MouseEventHandler<HTMLButtonElement> = event => {
+        event.preventDefault()
+        favoritePairs.toggle(
+            poolAddress,
+            concatSymbols(leftSymbol, rightSymbol),
+        )
+    }
+
     return (
         <button
             type="button"
             className={classNames('btn btn-md btn-square btn-icon btn-fav', {
                 active: favoritePairs.addresses.includes(poolAddress),
             })}
-            onClick={() => favoritePairs.toggle(
-                poolAddress,
-                concatSymbols(leftSymbol, rightSymbol),
-            )}
+            onClick={onClick}
         >
-            <Icon icon="star" />
+            <Icon icon="star" ratio={iconRatio} />
         </button>
     )
 }

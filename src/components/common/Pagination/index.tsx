@@ -4,12 +4,12 @@ import { useIntl } from 'react-intl'
 import './index.scss'
 
 export type PaginationProps = {
-    currentPage: number;
+    currentPage?: number;
     disabled?: boolean;
     totalPages: number;
-    onNext: () => void;
-    onPrev: () => void;
-    onSubmit: (value: number) => void;
+    onNext?: () => void;
+    onPrev?: () => void;
+    onSubmit?: (value: number) => void;
 }
 
 export const Pagination = React.memo(({

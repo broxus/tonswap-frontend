@@ -24,15 +24,14 @@ export const PoolContent = observer((): JSX.Element | null => {
     const tokensList = useTokensList()
     const {
         pool,
-        loading, withdrawLoading,
+        loading,
         pairAddress, ownerAddress,
         walletLeft, walletRight,
         priceLeftToRight, priceRightToLeft,
         totalLp, totalLeft, totalRight,
         lockedLp, lockedLeft, lockedRight,
         leftToken, rightToken,
-        burnVisible, farmItems,
-        withdrawLiquidity,
+        farmItems, totalShare,
     } = usePoolContent()
 
     return (
@@ -52,7 +51,9 @@ export const PoolContent = observer((): JSX.Element | null => {
                             <Breadcrumb
                                 items={[{
                                     link: appRoutes.poolList.makeUrl(),
-                                    title: 'Pools overview',
+                                    title: intl.formatMessage({
+                                        id: 'POOLS_LIST_ITEM_OVERVIEW',
+                                    }),
                                 }, {
                                     title: intl.formatMessage({
                                         id: 'POOLS_LIST_ITEM_TITLE',
@@ -150,6 +151,7 @@ export const PoolContent = observer((): JSX.Element | null => {
 
                             <div className="pools-balances">
                                 <TotalBalance
+                                    share={totalShare}
                                     name={pool.lp.symbol}
                                     balance={amountOrZero(totalLp, pool.lp.decimals)}
                                     apportionment={[{
@@ -171,13 +173,9 @@ export const PoolContent = observer((): JSX.Element | null => {
                                             symbol: rightToken?.symbol,
                                         }),
                                     }]}
-                                    addLiquidityLink={appRoutes.poolCreate.makeUrl({
-                                        leftTokenRoot: pool.left.address,
-                                        rightTokenRoot: pool.right.address,
-                                    })}
-                                    burnDisabled={withdrawLoading}
-                                    onClickBurn={withdrawLiquidity}
-                                    burnVisible={burnVisible}
+                                    leftTokenRoot={pool.left.address}
+                                    rightTokenRoot={pool.right.address}
+                                    walletLpAmount={pool.lp.inWallet}
                                 />
 
                                 <BalancePanel

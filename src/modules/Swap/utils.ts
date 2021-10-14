@@ -2,8 +2,10 @@ import BigNumber from 'bignumber.js'
 import {
     Address,
     Contract,
+    DecodedAbiFunctionInputs,
     DecodedAbiFunctionOutputs,
-    FullContractState, Transaction,
+    FullContractState,
+    Transaction,
 } from 'ton-inpage-provider'
 
 import { DexAbi } from '@/misc'
@@ -17,6 +19,7 @@ export function fillStepResult(
     src?: Address,
     amount?: SwapRouteResult['amount'],
     status?: SwapRouteResult['status'],
+    input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairExchangeSuccess'>,
 ): SwapRouteResult {
     if (
         result.step.pair.address?.toString() === src?.toString()
@@ -25,6 +28,7 @@ export function fillStepResult(
         return {
             ...result,
             amount,
+            input,
             status,
             transaction,
         }

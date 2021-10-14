@@ -5,6 +5,7 @@ import ton, { Address, Contract } from 'ton-inpage-provider'
 import {
     Farm, FarmAbi, TokenWallet, UserPendingReward,
 } from '@/misc'
+import { error } from '@/utils'
 
 
 export async function loadUniWTON(): Promise<BigNumber> {
@@ -262,4 +263,68 @@ export async function executeAction(
     await subscription.unsubscribe()
     // eslint-disable-next-line no-return-await
     return await TokenWallet.balance({ wallet: new Address(userWalletAddress) })
+}
+
+export enum FarmingStatus {
+    WAITING = 0,
+    ACTIVE = 1,
+    ENDED = 2,
+}
+
+export function getFarmingStatus(
+    startTime: number,
+    endTime?: number,
+): FarmingStatus {
+    const currentTime = new Date().getTime()
+    let status: FarmingStatus = FarmingStatus.ACTIVE
+
+    if (currentTime < startTime) {
+        status = FarmingStatus.WAITING
+    }
+    else if (endTime && currentTime >= startTime && currentTime < endTime) {
+        status = FarmingStatus.ACTIVE
+    }
+    else if (endTime && currentTime >= endTime) {
+        status = FarmingStatus.ENDED
+    }
+    else if (!endTime && currentTime > startTime) {
+        status = FarmingStatus.ACTIVE
+    }
+
+    return status
+}
+
+export async function getUserPendingReward(
+    poolAddress: Address,
+    userDataAddress: Address,
+    farmEndSeconds: string,
+): Promise<UserPendingReward | undefined> {
+    const poolRewardData = await Farm.poolCalculateRewardData(poolAddress)
+    try {
+        return await Farm.userPendingReward(
+            userDataAddress,
+            poolRewardData._accTonPerShare,
+            poolRewardData._lastRewardTime,
+            farmEndSeconds,
+        )
+    }
+    catch (e) {
+        error(e)
+        return undefined
+    }
+}
+
+export async function getUserAmount(
+    userDataAddress: Address,
+): Promise<string> {
+    try {
+        const { amount } = await Farm.userDataAmountAndRewardDebt(
+            userDataAddress,
+        )
+        return amount
+    }
+    catch (e) {
+        error(e)
+        return '0'
+    }
 }

@@ -10,7 +10,7 @@ export type TokenIconProps = {
     address?: string;
     name?: string;
     className?: string;
-    size?: 'small' | 'xsmall';
+    size?: 'small' | 'xsmall' | 'medium';
     uri?: string;
 }
 
@@ -19,7 +19,7 @@ export function TokenIcon({
     address,
     className,
     name,
-    size,
+    size = 'medium',
     uri,
 }: TokenIconProps): JSX.Element | null {
     if (uri !== undefined) {

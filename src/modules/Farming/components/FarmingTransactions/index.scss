@@ -1,0 +1,36 @@
+.farming-transactions {
+    &__list {
+        &.list {
+            min-height: auto;
+            --list-grid-template: minmax(100px, 120px) minmax(100px, 200px) minmax(300px, 50%) minmax(100px, 200px) minmax(100px, 200px);
+
+            &.action {
+                --list-grid-template: minmax(100px, 100px) minmax(200px, 220px) minmax(200px, 220px) minmax(320px, 50%) minmax(100px, 100px) minmax(100px, 100px);
+            }
+        }
+    }
+
+    &__head {
+        margin: 0 0 24px;
+        display: flex;
+        justify-content: space-between;
+
+        @media only screen and (max-width: 767px) {
+            flex-direction: column-reverse;
+            align-items: flex-start;
+            gap: 20px;
+        }
+    }
+
+    &__message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 57px;
+        padding: 32px 0 0;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0.5px;
+        color: #FFF;
+    }
+}

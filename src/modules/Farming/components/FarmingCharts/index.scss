@@ -1,0 +1,57 @@
+.farming-charts {
+    display: grid;
+    grid-template-rows: max-content 1fr;
+    grid-gap: 28px;
+
+    .chart {
+        min-height: 300px;
+    }
+
+    &__head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__tabs {
+        display: flex;
+
+        li {
+            font-size: 14px;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid transparent;
+            color: rgba(255, 255, 255, 0.56);
+            letter-spacing: 0.6px;
+
+            &.active {
+                border-bottom-color: #fff;
+                color: #fff;
+            }
+        }
+
+        &_bordered {
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+
+            li {
+                border: none;
+
+                &.active {
+                    border: none;
+                    background: #fff;
+                    color: #000;
+                }
+            }
+        }
+    }
+}
+
+.farming-chart {
+    &__message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        opacity: 0.48;
+    }
+}

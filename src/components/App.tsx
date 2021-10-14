@@ -16,6 +16,7 @@ import Builder from '@/pages/builder'
 import CreateToken from '@/pages/builder/create'
 import CustomToken from '@/pages/builder/token'
 import Farming from '@/pages/farming'
+import FarmingItem from '@/pages/farming/item'
 import CreateFarmPool from '@/pages/farming/create'
 import Pairs from '@/pages/pairs'
 import Pair from '@/pages/pairs/item'
@@ -25,6 +26,7 @@ import Tokens from '@/pages/tokens'
 import Token from '@/pages/tokens/item'
 import { PoolsPage } from '@/pages/pools'
 import { PoolsItemPage } from '@/pages/pools/item'
+import { PoolsRemoveLiquidityPage } from '@/pages/pools/removeLiquidity'
 import { noop } from '@/utils'
 import { appRoutes } from '@/routes'
 
@@ -56,6 +58,9 @@ export function App(): JSX.Element {
                             <Route exact path={appRoutes.poolList.path}>
                                 <PoolsPage />
                             </Route>
+                            <Route exact path={appRoutes.poolRemoveLiquidity.path}>
+                                <PoolsRemoveLiquidityPage />
+                            </Route>
                             <Route exact path={appRoutes.poolItem.path}>
                                 <PoolsItemPage />
                             </Route>
@@ -83,6 +88,9 @@ export function App(): JSX.Element {
                             <Route exact path={appRoutes.farmingCreate.path}>
                                 <CreateFarmPool />
                             </Route>
+                            <Route exact path={appRoutes.farmingItem.path}>
+                                <FarmingItem />
+                            </Route>
 
                             <Route exact path={appRoutes.builder.path}>
                                 <Builder />
@@ -95,9 +103,11 @@ export function App(): JSX.Element {
                             </Route>
                         </Switch>
                     </main>
-                    <Account key="account" />
-                    <WalletConnectingModal />
-                    <WalletUpdateModal />
+                    <div className="wallets">
+                        <Account key="account" />
+                        <WalletConnectingModal />
+                        <WalletUpdateModal />
+                    </div>
                 </div>
             </Router>
         </IntlProvider>

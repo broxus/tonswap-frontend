@@ -115,7 +115,7 @@ function ConfirmationPopup(): JSX.Element {
                                 <TokenIcon
                                     address={swap.leftToken?.root}
                                     name={swap.leftToken?.symbol}
-                                    small
+                                    size="small"
                                     uri={swap.leftToken?.icon}
                                 />
                             </span>
@@ -146,7 +146,7 @@ function ConfirmationPopup(): JSX.Element {
                                 <TokenIcon
                                     address={swap.rightToken?.root}
                                     name={swap.rightToken?.symbol}
-                                    small
+                                    size="small"
                                     uri={swap.rightToken?.icon}
                                 />
                             </span>

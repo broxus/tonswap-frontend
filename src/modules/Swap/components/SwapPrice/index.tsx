@@ -27,11 +27,7 @@ function Price(): JSX.Element | null {
             <div>
                 {(() => {
                     switch (true) {
-                        case (
-                            (swap.pair === undefined || !swap.isEnoughLiquidity)
-                            && swap.isCrossExchangeAvailable
-                            && swap.isCrossExchangeMode
-                        ):
+                        case swap.isCrossExchangeOnly && swap.isCrossExchangeMode:
                             return (
                                 <div
                                     className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"

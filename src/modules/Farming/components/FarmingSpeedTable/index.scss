@@ -1,0 +1,17 @@
+.farming-speed {
+    &.list {
+        --list-grid-template: minmax(20%, 50%) minmax(25%, 33%) minmax(25%, 33%);
+        min-height: auto;
+    }
+
+    &__token {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 8px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}

@@ -392,15 +392,20 @@ export class SwapStore {
                             transaction.inMessage.src,
                             result.input.result.received.toString(),
                             'success',
+                            result.input,
                         ),
                     )
 
-                    if (results.some(({ status }) => status === undefined)) {
+                    if (results.some(({ status }) => status === undefined) || results.length === 0) {
                         return undefined
                     }
 
-                    if (results.every(({ status }) => status === 'success')) {
-                        return E.right({ input: result.input, transaction })
+                    if (results.length > 0 && results.every(({ status }) => status === 'success')) {
+                        const stepResult = results.slice().pop() as SwapRouteResult
+                        return E.right({
+                            input: stepResult.input!,
+                            transaction: stepResult.transaction!,
+                        })
                     }
 
                     const cancelStepIndex = results.findIndex(
@@ -802,7 +807,7 @@ export class SwapStore {
      * @param {SwapSuccessResult['transaction']} transaction
      * @protected
      */
-    protected handleSwapSuccess({ input, transaction }: SwapSuccessResult): void {
+    protected async handleSwapSuccess({ input, transaction }: SwapSuccessResult): Promise<void> {
         this.transactionReceipt = {
             amount: input.result.received.toString(),
             hash: transaction.id.hash,
@@ -821,7 +826,13 @@ export class SwapStore {
         this.changeData('leftAmount', '')
         this.changeData('rightAmount', '')
         this.forceInvalidate()
-        this.toDirectSwap()
+
+        if (!this.isCrossExchangeOnly) {
+            this.toDirectSwap()
+        }
+
+        await this.syncPairState()
+        await this.syncCrossExchangePairsStates()
     }
 
     /**
@@ -2110,6 +2121,17 @@ export class SwapStore {
      */
     public get isCrossExchangeAvailable(): boolean {
         return this.routes.length > 0
+    }
+
+    /**
+     * Returns `true` if only cross-exchange available, otherwise `false`.
+     * @returns {boolean}
+     */
+    public get isCrossExchangeOnly(): boolean {
+        return (
+            (this.pair === undefined || !this.isEnoughLiquidity)
+            && this.isCrossExchangeAvailable
+        )
     }
 
     /**

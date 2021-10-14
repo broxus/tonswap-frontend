@@ -1,16 +1,10 @@
-import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
-import BigNumber from 'bignumber.js'
+import ton, {
+    Address, Contract, Subscriber, TransactionId,
+} from 'ton-inpage-provider'
 
 import { DexAbi } from '@/misc/abi'
 import { Dex } from '@/misc/dex'
 import { TokenWallet } from '@/misc/token-wallet'
-
-type PoolAddresses = {
-    left: Address;
-    right: Address;
-    lp: Address;
-    lpWallet: Address;
-}
 
 type TokenData = {
     inPool: string;
@@ -33,17 +27,6 @@ const WITHDRAW_FAIL_METHOD = 'dexPairOperationCancelled'
 
 export class Pool {
 
-    static async addresses(pair: Address, owner: Address): Promise<PoolAddresses> {
-        const { left, right, lp } = await Dex.pairTokenRoots(pair)
-        const lpWallet = await TokenWallet.walletAddress({
-            owner,
-            root: lp,
-        })
-        return {
-            left, right, lp, lpWallet,
-        }
-    }
-
     static async pools(
         poolAddresses: Address[],
         walletAddress: Address,
@@ -59,15 +42,15 @@ export class Pool {
         poolAddress: Address,
         walletAddress: Address,
     ): Promise<PoolData> {
-        const poolAddresses = await Pool.addresses(poolAddress, walletAddress)
+        const pairTokenRoots = await Dex.pairTokenRoots(poolAddress)
         const [
             lpDecimals, lpSymbol,
             pairBalances, walletLp,
         ] = await Promise.all([
-            TokenWallet.decimal(poolAddresses.lp),
-            TokenWallet.symbol(poolAddresses.lp),
+            TokenWallet.decimal(pairTokenRoots.lp),
+            TokenWallet.symbol(pairTokenRoots.lp),
             Dex.pairBalances(poolAddress),
-            Pool.walletBalanceOrZero(poolAddresses.lpWallet),
+            TokenWallet.balanceByTokenRoot(walletAddress, pairTokenRoots.lp),
         ])
 
         return {
@@ -76,48 +59,34 @@ export class Pool {
                 inPool: pairBalances.lp,
                 inWallet: walletLp,
                 decimals: Number(lpDecimals),
-                address: poolAddresses.lp.toString(),
+                address: pairTokenRoots.lp.toString(),
                 symbol: lpSymbol,
             },
             left: {
                 inPool: pairBalances.left,
-                address: poolAddresses.left.toString(),
+                address: pairTokenRoots.left.toString(),
             },
             right: {
                 inPool: pairBalances.right,
-                address: poolAddresses.right.toString(),
+                address: pairTokenRoots.right.toString(),
             },
-        }
-    }
-
-    static async walletBalanceOrZero(address: Address): Promise<string> {
-        try {
-            return await TokenWallet.balance({ wallet: address })
-        }
-        catch (e) {
-            return '0'
         }
     }
 
     static async withdrawLiquidity(
-        poolAddress: Address,
         walletAddress: Address,
-    ): Promise<void> {
-        const poolAddresses = await Pool.addresses(poolAddress, walletAddress)
-        const walletLpBalance = await Pool.walletBalanceOrZero(poolAddresses.lpWallet)
-
-        if (new BigNumber(walletLpBalance).isZero()) {
-            return
-        }
-
+        leftAddress: Address,
+        rightAddress: Address,
+        lpAddress: Address,
+        amount: string,
+    ): Promise<TransactionId> {
         const payloadId = new Date().getTime().toString()
         const owner = new Contract(DexAbi.Callbacks, walletAddress)
         const subscriber = new Subscriber(ton)
-        const statusStream = subscriber
+        const transactionsStream = subscriber
             .transactions(walletAddress)
             .flatMap(item => item.transactions)
-            /* eslint-disable consistent-return */
-            .filterMap(async (transaction): Promise<boolean | void> => {
+            .filterMap<TransactionId | null>(async transaction => {
                 const result = await owner.decodeTransaction({
                     transaction,
                     methods: [WITHDRAW_SUCCESS_METHOD, WITHDRAW_FAIL_METHOD],
@@ -127,30 +96,35 @@ export class Pool {
                     && result.method === WITHDRAW_SUCCESS_METHOD
                     && result.input.id === payloadId
                 ) {
-                    subscriber.unsubscribe()
-                    return true
+                    return transaction.id
                 }
                 if (
                     result
                     && result.method === WITHDRAW_FAIL_METHOD
                     && result.input.id === payloadId
                 ) {
-                    subscriber.unsubscribe()
-                    throw new Error('Operation canceled')
+                    return null
                 }
+                return undefined
             })
             .first()
 
         await Dex.withdrawLiquidity(
             walletAddress,
-            poolAddresses.left,
-            poolAddresses.right,
-            poolAddresses.lp,
-            walletLpBalance,
+            leftAddress,
+            rightAddress,
+            lpAddress,
+            amount,
             payloadId,
         )
 
-        await statusStream
+        const transactionId = await transactionsStream
+
+        if (!transactionId) {
+            throw new Error('Dex pair operation cancelled')
+        }
+
+        return transactionId
     }
 
 }

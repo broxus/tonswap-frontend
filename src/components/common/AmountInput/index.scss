@@ -1,0 +1,29 @@
+.amount-input {
+    position: relative;
+
+    &_with-btn {
+        .text-input {
+            padding-right: 65px;
+        }
+    }
+
+    &_size {
+        &_small {
+            .btn {
+                top: 2px;
+                right: 2px;
+            }
+        }
+
+        &_medium {
+            .btn {
+                top: 4px;
+                right: 4px;
+            }
+        }
+    }
+
+    .btn {
+        position: absolute;
+    }
+}

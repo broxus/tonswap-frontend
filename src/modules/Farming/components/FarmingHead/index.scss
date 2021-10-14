@@ -1,0 +1,39 @@
+.farming-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    column-gap: 12px;
+    row-gap: 10px;
+
+    @media only screen and (max-width: 767px) {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    &__info {
+        display: flex;
+        align-items: center;
+        column-gap: 12px;
+        row-gap: 8px;
+
+        @media only screen and (max-width: 767px) {
+            display: grid;
+            grid-template-columns: max-content max-content minmax(max-content, 1fr);
+        }
+    }
+
+    &__main {
+        @media only screen and (max-width: 767px) {
+            grid-area: 2 / 1 / auto / span 3;
+        }
+    }
+
+    &__status {
+        display: flex;
+        align-items: center;
+        column-gap: 16px;
+        margin: 4px 0 0;
+        font-size: 14px;
+        line-height: 20px;
+    }
+}

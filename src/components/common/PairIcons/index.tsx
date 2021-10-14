@@ -22,20 +22,22 @@ export function PairIcons({
                 'pair-tokens-icons--small': small,
             })}
         >
-            <TokenIcon
-                size="small"
-                address={leftToken?.address}
-                className="pair-tokens-icon"
-                name={leftToken?.name}
-                uri={leftToken?.uri}
-            />
-            <TokenIcon
-                size="small"
-                address={rightToken?.address}
-                className="pair-tokens-icon"
-                name={rightToken?.name}
-                uri={rightToken?.uri}
-            />
+            {leftToken && (
+                <TokenIcon
+                    size={small ? 'small' : undefined}
+                    address={leftToken?.address}
+                    name={leftToken?.name}
+                    uri={leftToken?.uri}
+                />
+            )}
+            {rightToken && (
+                <TokenIcon
+                    size={small ? 'small' : undefined}
+                    address={rightToken?.address}
+                    name={rightToken?.name}
+                    uri={rightToken?.uri}
+                />
+            )}
         </div>
     )
 }

@@ -1,0 +1,68 @@
+@import '~@/styles/_mix';
+
+.farming-message {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    margin: 24px 0 0;
+    padding: 24px;
+    font-size: 14px;
+    line-height: 20px;
+    background: #C5E4F3;
+    color: #000;
+
+    &_danger {
+        background: #EB4361;
+        color: #fff;
+    }
+
+    @media only screen and (max-width: 767px) {
+        flex-direction: column;
+
+    }
+
+    h3 {
+        margin: 0 0 4px;
+        font-size: 18px;
+        line-height: 24px;
+        font-weight: bold;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    p {
+        margin: 0 0 1em;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        align-items: center;
+        column-gap: 12px;
+
+        @media only screen and (max-width: 767px) {
+            justify-content: flex-end;
+        }
+    }
+
+    &__close {
+        @include btn-reset;
+
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #293166;
+    }
+}

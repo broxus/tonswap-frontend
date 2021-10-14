@@ -1,0 +1,23 @@
+.farming-table {
+    &.list {
+        --list-grid-template: minmax(200px, 50%) minmax(50px, 50px) minmax(90px, 130px) minmax(85px, 85px) minmax(50px, 60px) minmax(85px, 85px) minmax(90px, 90px) minmax(145px, 170px) minmax(145px, 170px);
+        min-height: auto;
+    }
+
+    .changes-direction:not(.changes-direction-up),
+    .changes-direction:not(.changes-direction-down) {
+        opacity: 1;
+    }
+
+    &__message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 57px;
+        padding: 32px 0 0;
+        font-size: 14px;
+        line-height: 20px;
+        letter-spacing: 0.5px;
+        color: #FFF;
+    }
+}

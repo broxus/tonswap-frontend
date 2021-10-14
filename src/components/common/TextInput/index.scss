@@ -1,0 +1,38 @@
+@import '~@/styles/_mix';
+
+.text-input {
+    @include input-reset;
+
+    height: 36px;
+    padding: 0 12px;
+    font-size: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #fff;
+    cursor: text;
+
+    &::placeholder {
+        color: rgba(255, 255, 255, 0.56);
+    }
+
+    &:disabled {
+        color: rgba(255, 255, 255, 0.72);
+    }
+
+    &_dirty {
+        border-color: rgba(255, 255, 255, 0.24);
+    }
+
+    &_invalid {
+        border-color: #EB4361;
+    }
+
+    &_size {
+        &_small {
+            height: 36px;
+        }
+
+        &_medium {
+            height: 44px;
+        }
+    }
+}

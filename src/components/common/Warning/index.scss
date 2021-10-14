@@ -1,0 +1,44 @@
+.warning {
+    padding: 12px;
+    border-left: 4px solid transparent;
+    color: #fff;
+
+    &__title {
+        margin: 0 0 4px;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 16px;
+        letter-spacing: 0.75px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__text {
+        margin: 0;
+        font-size: 12px;
+        line-height: 16px;
+        letter-spacing: 0.6px;
+
+        p {
+            margin: 0 0 0.5em;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    &_theme {
+        &_danger {
+            border-left-color: #EB4361;
+            background: rgba(235, 67, 97, 0.48);
+        }
+
+        &_warning {
+            border-left-color: #E6AC00;
+            background: rgba(230, 172, 0, 0.48);
+        }
+    }
+}

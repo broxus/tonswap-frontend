@@ -5,38 +5,39 @@ import BigNumber from 'bignumber.js'
 import { useIntl } from 'react-intl'
 
 import { PairResponse } from '@/modules/Pairs/types'
-import { FarmingPoolInfo, RewardTokenRootInfo } from '@/modules/Farming/types'
+import { FarmingPoolsItemResponse, RewardTokenRootInfo } from '@/modules/Farming/types'
 import { useTokensList } from '@/stores/TokensListService'
 import { useDexAccount } from '@/stores/DexAccountService'
 import { useWallet } from '@/stores/WalletService'
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 import { useApi } from '@/modules/Pools/hooks/useApi'
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
-import { PoolFarmingsProps } from '@/modules/Farming/components/PoolFarmings'
+import { FarmingTableProps } from '@/modules/Farming/components/FarmingTable'
 import {
     amountOrZero, error, getPrice, shareAmount,
 } from '@/utils'
 import {
     Farm, Pool, PoolData, UserPendingReward,
 } from '@/misc'
+import { appRoutes } from '@/routes'
 
 type RewardInfo = {
-    amount: string
-    symbol: string
+    vested: string;
+    entitled: string;
+    symbol: string;
 }
 
 type FarmingBalanceInfo = {
-    reward: RewardInfo[],
+    reward: RewardInfo[];
 }
 
 type FarmInfo = {
-    info: FarmingPoolInfo,
-    balance: FarmingBalanceInfo,
+    info: FarmingPoolsItemResponse;
+    balance: FarmingBalanceInfo;
 }
 
 type UsePoolContent = {
     loading?: boolean;
-    withdrawLoading?: boolean;
     priceLeftToRight?: string;
     priceRightToLeft?: string;
     lockedLp?: string;
@@ -47,14 +48,13 @@ type UsePoolContent = {
     totalLp?: string;
     totalLeft?: string;
     totalRight?: string;
-    burnVisible?: boolean;
-    farmItems?: PoolFarmingsProps['items'];
+    farmItems?: FarmingTableProps['items'];
     pool?: PoolData;
     pairAddress?: Address;
     ownerAddress?: Address;
-    leftToken?: TokenCache
-    rightToken?: TokenCache
-    withdrawLiquidity?: () => void;
+    leftToken?: TokenCache;
+    rightToken?: TokenCache;
+    totalShare?: string;
 }
 
 export function usePoolContent(): UsePoolContent {
@@ -67,7 +67,6 @@ export function usePoolContent(): UsePoolContent {
     const dexBalances = useDexBalances()
     const tokensCache = useTokensCache()
     const [loading, setLoading] = React.useState(true)
-    const [withdrawLoading, setWithdrawLoading] = React.useState(false)
     const [pool, setPool] = React.useState<PoolData | undefined>()
     const [pair, setPair] = React.useState<PairResponse | undefined>()
     const [farm, setFarm] = React.useState<FarmInfo[]>([])
@@ -164,54 +163,67 @@ export function usePoolContent(): UsePoolContent {
             .toFixed()
     ), [walletRight, lockedRight])
 
-    const burnVisible = React.useMemo(() => (
-        pool ? !(new BigNumber(pool.lp.inWallet)).isZero() : false
-    ), [pool])
+    const totalShare = React.useMemo(() => (
+        pool && totalLp
+            ? new BigNumber(totalLp)
+                .multipliedBy(100)
+                .div(pool.lp.inPool)
+                .decimalPlaces(8, BigNumber.ROUND_DOWN)
+                .toFixed()
+            : undefined
+    ), [pool, totalLp])
 
     const farmItems = React.useMemo(() => (
         farm.map(({ info, balance: { reward }}) => ({
             tvl: info.tvl,
             tvlChange: info.tvl_change,
-            apr: `${amountOrZero(info.apr, 0)}%`,
-            share: `${amountOrZero(info.share, 0)}%`,
-            leftTokenAddress: info.left_address as string,
-            rightTokenAddress: info.right_address as string,
-            leftTokenUri: tokensList.getUri(info.left_address as string),
-            rightTokenUri: tokensList.getUri(info.right_address as string),
-            leftToken: info.left_currency as string,
-            rightToken: info.right_currency as string,
+            apr: info.apr,
+            aprChange: info.apr_change,
+            share: info.share,
+            startTime: info.farm_start_time,
+            endTime: info.farm_end_time,
+            leftToken: {
+                address: info.left_address as string,
+                name: info.left_currency as string,
+                uri: tokensList.getUri(info.left_address as string),
+            },
+            rightToken: {
+                address: info.right_address as string,
+                name: info.right_currency as string,
+                uri: tokensList.getUri(info.right_address as string),
+            },
             rewardsIcons: info.reward_token_root_info.map(rewardToken => ({
                 address: rewardToken.reward_root_address,
                 uri: tokensList.getUri(rewardToken.reward_root_address),
             })),
-            rewards: reward.map(({ amount, symbol }) => (
+            vestedRewards: reward.map(({ vested, symbol }) => (
                 intl.formatMessage({
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
                     symbol,
-                    value: amount,
+                    value: vested,
                 })
             )),
+            entitledRewards: reward.map(({ entitled, symbol }) => (
+                intl.formatMessage({
+                    id: 'POOLS_LIST_TOKEN_BALANCE',
+                }, {
+                    symbol,
+                    value: entitled,
+                })
+            )),
+            link: appRoutes.farmingItem.makeUrl({
+                address: info.pool_address,
+            }),
+            balanceWarning: info.is_low_balance,
         }))
     ), [farm])
-
-    const withdrawLiquidity = async () => {
-        setWithdrawLoading(true)
-        try {
-            await Pool.withdrawLiquidity(pairAddress, ownerAddress)
-            setPool(await Pool.pool(pairAddress, ownerAddress))
-        }
-        catch (e) {
-            error(e)
-        }
-        setWithdrawLoading(false)
-    }
 
     const getFarmingPools = async (
         root: Address,
         owner: Address,
         limit: number = 100,
-    ): Promise<FarmingPoolInfo[]> => {
+    ): Promise<FarmingPoolsItemResponse[]> => {
         const { total_count, pools_info } = await api.farmingPools({}, {
             body: JSON.stringify({
                 limit,
@@ -219,6 +231,7 @@ export function usePoolContent(): UsePoolContent {
                 userAddress: owner.toString(),
                 rootAddresses: [root.toString()],
                 ordering: 'tvlascending',
+                isLowBalance: false,
             }),
         })
         let poolsInfo = pools_info.filter(item => (
@@ -240,7 +253,6 @@ export function usePoolContent(): UsePoolContent {
         farmEnd?: number,
     ): Promise<RewardInfo[]> => {
         const poolRewardData = await Farm.poolCalculateRewardData(poolAddress)
-        const isExpired = farmEnd ? (farmEnd - new Date().getTime()) < 0 : false
         let userReward: UserPendingReward | undefined
         try {
             userReward = await Farm.userPendingReward(
@@ -254,13 +266,14 @@ export function usePoolContent(): UsePoolContent {
             error(e)
         }
         return rewardTokenInfo.map(({ reward_currency, reward_scale }, index) => {
-            const poolDebt = userReward && !isExpired ? userReward._pool_debt[index] : '0'
-            const vested = userReward && !isExpired ? userReward._vested[index] : '0'
-            const reward = new BigNumber(vested).plus(poolDebt)
-            const amount = amountOrZero(reward, reward_scale)
+            const poolDebt = userReward ? userReward._pool_debt[index] : '0'
+            const vested = userReward ? userReward._vested[index] : '0'
+            const entitled = userReward ? userReward._entitled[index] : '0'
+            const totalVested = new BigNumber(vested).plus(poolDebt)
 
             return {
-                amount,
+                vested: amountOrZero(totalVested, reward_scale),
+                entitled: amountOrZero(entitled, reward_scale),
                 symbol: reward_currency,
             }
         })
@@ -312,8 +325,8 @@ export function usePoolContent(): UsePoolContent {
                 api.pair({ address: pairAddress.toString() }),
             ])
             await Promise.all([
-                tokensCache.fetchAndImportIfNotExist(poolData.left.address),
-                tokensCache.fetchAndImportIfNotExist(poolData.right.address),
+                tokensCache.fetchIfNotExist(poolData.left.address),
+                tokensCache.fetchIfNotExist(poolData.right.address),
             ])
             const farmData = await getFarmData(
                 new Address(poolData.lp.address),
@@ -339,7 +352,6 @@ export function usePoolContent(): UsePoolContent {
 
     return {
         loading,
-        withdrawLoading,
         priceLeftToRight,
         priceRightToLeft,
         lockedLp,
@@ -350,13 +362,12 @@ export function usePoolContent(): UsePoolContent {
         totalLp,
         totalLeft,
         totalRight,
-        burnVisible,
         farmItems,
         pool,
         pairAddress,
         ownerAddress,
         leftToken,
         rightToken,
-        withdrawLiquidity,
+        totalShare,
     }
 }

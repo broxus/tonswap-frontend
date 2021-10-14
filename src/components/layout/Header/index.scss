@@ -1,8 +1,8 @@
 .header {
-    padding: 18px 20px;
-    display: flex;
     align-items: center;
+    display: flex;
     justify-content: flex-start;
+    padding: 18px 20px;
 
     @media only screen and (max-width: 767px) {
         justify-content: space-between;

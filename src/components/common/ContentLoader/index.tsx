@@ -7,7 +7,7 @@ import './index.scss'
 
 type Props = {
     slim?: boolean
-    size?: 's'
+    size?: 's' | 'l'
 }
 
 export function ContentLoader({

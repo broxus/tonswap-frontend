@@ -14,68 +14,55 @@ export function Account(): JSX.Element | null {
     const intl = useIntl()
     const wallet = useWallet()
 
-    const connect = async () => {
-        await wallet.connect()
-    }
-    const disconnect = async () => {
-        await wallet.disconnect()
-    }
-
     return (
         <Observer>
             {() => (wallet.isInitialized ? (
-                <div className="tools">
-                    {!wallet.account ? (
+                <div key="ton-wallet" className="wallet">
+                    {!wallet.isConnected ? (
                         <button
                             key="guest"
                             type="button"
-                            className="btn btn-secondary tools-btn"
+                            className="btn btn-secondary"
                             disabled={wallet.isConnecting}
                             aria-disabled={wallet.isConnecting}
-                            onClick={connect}
+                            onClick={wallet.connect}
                         >
                             {intl.formatMessage({
                                 id: 'WALLET_BTN_TEXT_CONNECT',
                             })}
                         </button>
                     ) : (
-                        <div key="authorized" className="tools__bar">
-                            {wallet.balance && (
-                                <div key="balance" className="tools-ton">
-                                    {intl.formatMessage({
-                                        id: 'WALLET_BALANCE_HINT',
-                                    }, {
-                                        balance: amount(
-                                            wallet.balance,
-                                            9,
-                                        ) || 0,
-                                    })}
-                                </div>
-                            )}
-                            <div key="wallet" className="tools-wallet">
-                                <div className="tools-wallet__ava">
-                                    <UserAvatar
-                                        address={wallet.address as string}
-                                        size="small"
-                                    />
-                                </div>
-                                <div className="tools-wallet__id">
+                        <div key="wrapper" className="wallet__wrapper">
+                            <div className="wallet__user-avatar">
+                                <UserAvatar
+                                    address={wallet.address!}
+                                    size="small"
+                                />
+                            </div>
+                            <div className="wallet__info">
+                                <div className="wallet__address">
                                     {sliceAddress(wallet.address)}
                                 </div>
+                                {wallet.balance !== undefined && (
+                                    <div key="balance" className="wallet__balance">
+                                        {intl.formatMessage({
+                                            id: 'WALLET_BALANCE_HINT',
+                                        }, {
+                                            balance: amount(
+                                                wallet.balance,
+                                                9,
+                                            ) || 0,
+                                            currency: 'TON',
+                                        })}
+                                    </div>
+                                )}
                             </div>
+
                             <button
                                 key="logout"
                                 type="button"
-                                className="btn tools-exit"
-                                onClick={disconnect}
-                            >
-                                <Icon icon="logout" />
-                            </button>
-                            <button
-                                key="logout-device"
-                                type="button"
-                                className="btn tools-context"
-                                onClick={disconnect}
+                                className="btn btn-logout"
+                                onClick={wallet.disconnect}
                             >
                                 <Icon icon="logout" />
                             </button>

@@ -1,0 +1,38 @@
+.checkbox {
+    display: inline-flex;
+    column-gap: 10px;
+    vertical-align: top;
+    line-height: 20px;
+    font-size: 14px;
+    align-items: center;
+    cursor: pointer;
+
+    input {
+        display: none;
+
+        &:checked {
+            + .checkbox__icon {
+                background: #C5E4F3;
+                border-color: #C5E4F3;
+
+                .icon {
+                    display: block;
+                }
+            }
+        }
+    }
+
+    &__icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.48);
+        color: #050A2E;
+
+        .icon {
+            display: none;
+        }
+    }
+}

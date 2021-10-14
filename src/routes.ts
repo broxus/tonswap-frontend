@@ -53,8 +53,23 @@ export const apiRoutes = {
     currencyTvl: new Route<{ address: string }>(
         '/currencies/:address/tvl',
     ),
+}
+
+export const farmingApiRoutes = {
+    transactions: new Route(
+        '/transactions',
+    ),
     farmingPools: new Route(
         '/farming_pools',
+    ),
+    farmingPool: new Route<{ address: string }>(
+        '/farming_pools/:address',
+    ),
+    graphicTvl: new Route(
+        '/graphic/tvl',
+    ),
+    graphicApr: new Route(
+        '/graphic/apr',
     ),
 }
 
@@ -64,6 +79,9 @@ export const appRoutes = {
     ),
     poolList: new Route(
         '/pools',
+    ),
+    poolRemoveLiquidity: new Route<{ leftTokenRoot?: string, rightTokenRoot?: string }>(
+        '/pools/remove/:leftTokenRoot([0][:][0-9a-f]{64})?/:rightTokenRoot([0][:][0-9a-f]{64})?',
     ),
     poolItem: new Route<{ address: string }>(
         '/pools/:address([0][:][0-9a-f]{64})?',
@@ -85,6 +103,9 @@ export const appRoutes = {
     ),
     farming: new Route(
         '/farming',
+    ),
+    farmingItem: new Route<{ address: string }>(
+        '/farming/:address',
     ),
     farmingCreate: new Route(
         '/farming/create',
