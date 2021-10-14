@@ -72,6 +72,10 @@ function RemoveLiquidityFormInner({
     const leftToken = leftTokenAddress && tokensCache.get(leftTokenAddress)
     const rightToken = rightTokenAddress && tokensCache.get(rightTokenAddress)
 
+    const nullMessage = intl.formatMessage({
+        id: 'REMOVE_LIQUIDITY_FORM_SHARE_NULL',
+    })
+
     const userHasLiquidity = React.useMemo(
         () => userLpTotalAmount && new BigNumber(userLpTotalAmount).isGreaterThan(0),
         [userLpTotalAmount],
@@ -302,11 +306,11 @@ function RemoveLiquidityFormInner({
                                     })}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {resultShare && amountIsValid && intl.formatMessage({
+                                    {resultShare && amountIsValid ? intl.formatMessage({
                                         id: 'REMOVE_LIQUIDITY_FORM_SHARE_VALUE',
                                     }, {
                                         value: resultShare,
-                                    })}
+                                    }) : nullMessage}
                                 </span>
                             </div>
                             <div className="remove-liquidity-form-stats__item">
@@ -317,7 +321,11 @@ function RemoveLiquidityFormInner({
                                     {currentLeftAmount && amountOrZero(currentLeftAmount, 0)}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {resultLeftAmount && amountIsValid && amountOrZero(resultLeftAmount, 0)}
+                                    {
+                                        resultLeftAmount && amountIsValid
+                                            ? amountOrZero(resultLeftAmount, 0)
+                                            : nullMessage
+                                    }
                                 </span>
                             </div>
                             <div className="remove-liquidity-form-stats__item">
@@ -328,7 +336,11 @@ function RemoveLiquidityFormInner({
                                     {currentRightAmount && amountOrZero(currentRightAmount, 0)}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {resultRightAmount && amountIsValid && amountOrZero(resultRightAmount, 0)}
+                                    {
+                                        resultRightAmount && amountIsValid
+                                            ? amountOrZero(resultRightAmount, 0)
+                                            : nullMessage
+                                    }
                                 </span>
                             </div>
                         </div>

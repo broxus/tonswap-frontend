@@ -95,6 +95,7 @@ export default {
     REMOVE_LIQUIDITY_FORM_SHARE_VALUE: '{value}%',
     REMOVE_LIQUIDITY_FORM_CONFIRM: 'Confirm',
     REMOVE_LIQUIDITY_FORM_CONNECT: 'Connect to a wallet',
+    REMOVE_LIQUIDITY_FORM_SHARE_NULL: '—',
 
     REMOVE_LIQUIDITY_PROCESS_TITLE: 'Waiting for confirmation',
     REMOVE_LIQUIDITY_PROCESS_TEXT: 'Burning {amount} {symbol}',
