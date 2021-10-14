@@ -5,6 +5,7 @@ import { DateTime } from 'luxon'
 import { Tooltip } from '@/components/common/Tooltip'
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Transaction } from '@/modules/Farming/types'
+import { INTL_TRANSACTION_TYPE_ID_BY_KIND } from '@/modules/Farming/constants'
 import { amountOrZero, parseCurrencyBillions } from '@/utils'
 
 import './index.scss'
@@ -36,7 +37,9 @@ export function FarmingTransactionsItem({
         <div className="list__row">
             {!isActionTable && (
                 <div className="list__cell list__cell--left">
-                    {transaction.kind}
+                    {intl.formatMessage({
+                        id: INTL_TRANSACTION_TYPE_ID_BY_KIND[transaction.kind],
+                    })}
                 </div>
             )}
 

@@ -231,7 +231,7 @@ export type EventType =
     | 'deposit'
     | 'withdraw'
     | 'claim'
-    | 'rewarddeposit'
+    | 'rewarddeposit';
 
 export type TransactionsOrdering =
     | 'blocktimeascending'
@@ -239,10 +239,16 @@ export type TransactionsOrdering =
     | 'lpvolumeascending'
     | 'lpvolumedescending'
     | 'tvascending'
-    | 'tvdescending'
+    | 'tvdescending';
+
+export type TransactionsKind =
+    | 'Claim'
+    | 'Deposit'
+    | 'Withdraw'
+    | 'RewardDeposit';
 
 export type Transaction = {
-    kind: string;
+    kind: TransactionsKind;
     messageHash: string;
     poolAddress: string;
     timestampBlock: number;
