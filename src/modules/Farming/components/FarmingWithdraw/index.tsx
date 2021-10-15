@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
@@ -13,11 +14,12 @@ enum Tab {
 
 type Props = {
     loading?: boolean;
-    farmingAmount: string;
+    farmingAmount?: string;
     withdrawAmount?: string;
     withdrawDisabled?: boolean;
     claimDisabled?: boolean;
-    rootTokenSymbol: string;
+    tokenSymbol: string;
+    tokenDecimals: number;
     rewardTokenRoots: string[];
     rewardAmounts: string[];
     onChangeWithdraw: (value: string) => void;
@@ -27,11 +29,12 @@ type Props = {
 
 export function FarmingWithdrawInner({
     loading,
-    farmingAmount,
+    farmingAmount = '0',
     withdrawAmount,
     withdrawDisabled,
     claimDisabled,
-    rootTokenSymbol,
+    tokenSymbol,
+    tokenDecimals,
     rewardTokenRoots,
     rewardAmounts,
     onChangeWithdraw,
@@ -50,6 +53,16 @@ export function FarmingWithdrawInner({
             }
         ))
         .filter(isExists)
+
+    const maxValue = React.useMemo(
+        () => new BigNumber(farmingAmount).shiftedBy(-tokenDecimals).toFixed(),
+        [farmingAmount, tokenDecimals],
+    )
+
+    const balance = React.useMemo(
+        () => amountOrZero(farmingAmount, tokenDecimals),
+        [farmingAmount, tokenDecimals],
+    )
 
     const onClickClaimTab = () => {
         setActiveTab(Tab.Claim)
@@ -97,7 +110,10 @@ export function FarmingWithdrawInner({
                     value={rewards.map(({ amount, symbol }) => (
                         intl.formatMessage({
                             id: 'FARMING_BALANCE_TOKEN',
-                        }, { amount, symbol })
+                        }, {
+                            amount,
+                            symbol,
+                        })
                     )).join(', ')}
                     onSubmit={onClaim}
                 />
@@ -107,7 +123,7 @@ export function FarmingWithdrawInner({
                 <FarmingAction
                     loading={loading}
                     value={withdrawAmount || ''}
-                    maxValue={farmingAmount}
+                    maxValue={maxValue}
                     submitDisabled={withdrawDisabled}
                     action={intl.formatMessage({
                         id: 'FARMING_BALANCE_WITHDRAW_ACTION_WITHDRAW',
@@ -115,8 +131,8 @@ export function FarmingWithdrawInner({
                     hint={intl.formatMessage({
                         id: 'FARMING_BALANCE_WITHDRAW_BALANCE',
                     }, {
-                        value: farmingAmount,
-                        symbol: rootTokenSymbol,
+                        value: balance,
+                        symbol: tokenSymbol,
                     })}
                     onChange={onChangeWithdraw}
                     onSubmit={onWithdraw}
