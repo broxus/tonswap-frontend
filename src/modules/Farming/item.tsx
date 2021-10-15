@@ -13,9 +13,9 @@ import {
     FarmingMessageAdminLowBalance, FarmingMessageAdminZeroBalance, FarmingMessageFarmEnded,
     FarmingMessageGetLp, FarmingMessageLowBalance,
 } from '@/modules/Farming/components/FarmingMessage'
-import { FarmingDeposit } from '@/modules/Farming/components/FarmingDeposit'
-import { FarmingWithdraw } from '@/modules/Farming/components/FarmingWithdraw'
-import { FarmingAdminDeposit } from '@/modules/Farming/components/FarmingAdminDeposit'
+import { FarmingDeposit } from '@/modules/Farming/FarmingDeposit'
+import { FarmingWithdraw } from '@/modules/Farming/FarmingWithdraw'
+import { FarmingAdminDeposit } from '@/modules/Farming/FarmingAdminDeposit'
 import { FarmingAdminWithdraw } from '@/modules/Farming/components/FarmingAdminWithdraw'
 import { FarmingUserInfo } from '@/modules/Farming/components/FarmingUserInfo'
 import { FarmingBaseInfo } from '@/modules/Farming/components/FarmingBaseInfo'
@@ -26,16 +26,12 @@ import { FarmingSpeedTable } from '@/modules/Farming/components/FarmingSpeedTabl
 import { FarmingTransactions } from '@/modules/Farming/components/FarmingTransactions'
 import { FarmingCharts } from '@/modules/Farming/components/FarmingCharts'
 import { useFarmingDataStore } from '@/modules/Farming/stores/FarmingDataStore'
-import { useFarmingClaimStore } from '@/modules/Farming/stores/FarmingClaimStore'
-import { useFarmingWithdrawStore } from '@/modules/Farming/stores/FarmingWithdrawStore'
-import { useFarmingDepositStore } from '@/modules/Farming/stores/FarmingDepositStore'
-import { useFarmingAdminDepositStore } from '@/modules/Farming/stores/FarmingAdminDepositStore'
 import { useFarmingRoundConfigStore } from '@/modules/Farming/stores/FarmingRoundConfigStore'
 import { useFarmingEndDateConfigStore } from '@/modules/Farming/stores/FarmingEndDateConfigStore'
 import { useFarmingAdminWithdrawStore } from '@/modules/Farming/stores/FarmingAdminWithdrawStore'
 import { useWallet } from '@/stores/WalletService'
-import { amountOrZero, concatSymbols } from '@/utils'
 import { appRoutes } from '@/routes'
+import { concatSymbols } from '@/utils'
 
 import './index.scss'
 
@@ -44,10 +40,6 @@ export function FarmingInner(): JSX.Element {
     const params = useParams<{address: string}>()
     const [configVisible, setConfigVisible] = React.useState(false)
     const farmingData = useFarmingDataStore()
-    const farmingClaimStore = useFarmingClaimStore()
-    const farmingWithdrawStore = useFarmingWithdrawStore()
-    const farmingDepositStore = useFarmingDepositStore()
-    const farmingAdminDepositStore = useFarmingAdminDepositStore()
     const farmingRoundConfigStore = useFarmingRoundConfigStore()
     const farmingEndDateConfigStore = useFarmingEndDateConfigStore()
     const farmingAdminWithdrawStore = useFarmingAdminWithdrawStore()
@@ -67,11 +59,7 @@ export function FarmingInner(): JSX.Element {
         }
 
         return () => {
-            farmingWithdrawStore.dispose()
-            farmingClaimStore.dispose()
             farmingData.dispose()
-            farmingDepositStore.dispose()
-            farmingAdminDepositStore.dispose()
             farmingRoundConfigStore.dispose()
             farmingEndDateConfigStore.dispose()
             farmingAdminWithdrawStore.dispose()
@@ -279,19 +267,7 @@ export function FarmingInner(): JSX.Element {
                                     </div>
 
                                     <div className="farming-management">
-                                        <FarmingAdminDeposit
-                                            formData={(farmingData.rewardTokensAddress || []).map((address, index) => ({
-                                                tokenRoot: address,
-                                                amount: farmingAdminDepositStore.amounts[index],
-                                                loading: farmingAdminDepositStore.loadings[index],
-                                                valid: farmingAdminDepositStore.amountsIsValid[index],
-                                                userBalance: (farmingData.userRewardTokensBalance || [])[index],
-                                                poolBalance: (farmingData.rewardTokensBalanceCumulative || [])[index],
-                                            }))}
-                                            showWarning={!farmingAdminDepositStore.enoughTokensBalance}
-                                            onChange={farmingAdminDepositStore.setAmount}
-                                            onSubmit={farmingAdminDepositStore.deposit}
-                                        />
+                                        <FarmingAdminDeposit />
 
                                         {
                                             farmingData.rewardTokensAddress
@@ -321,44 +297,8 @@ export function FarmingInner(): JSX.Element {
                                         </SectionTitle>
                                     </div>
                                     <div className="farming-balance">
-                                        {farmingData.lpTokenSymbol && (
-                                            <FarmingDeposit
-                                                loading={farmingDepositStore.loading}
-                                                walletAmount={amountOrZero(
-                                                    farmingData.userLpWalletAmount,
-                                                    farmingData.lpTokenDecimals,
-                                                )}
-                                                depositAmount={farmingDepositStore.amount}
-                                                depositDisabled={!farmingDepositStore.amountIsValid}
-                                                rootTokenSymbol={farmingData.lpTokenSymbol}
-                                                onChangeDeposit={farmingDepositStore.setAmount}
-                                                onDeposit={farmingDepositStore.deposit}
-                                            />
-                                        )}
-
-                                        {
-                                            farmingData.lpTokenSymbol
-                                            && farmingData.rewardTokensAddress
-                                            && farmingData.userPendingRewardVested
-                                            && (
-                                                <FarmingWithdraw
-                                                    loading={farmingWithdrawStore.loading || farmingClaimStore.loading}
-                                                    farmingAmount={amountOrZero(
-                                                        farmingData.userLpFarmingAmount,
-                                                        farmingData.lpTokenDecimals,
-                                                    )}
-                                                    withdrawAmount={farmingWithdrawStore.amount}
-                                                    withdrawDisabled={!farmingWithdrawStore.amountIsValid}
-                                                    claimDisabled={!farmingClaimStore.claimIsAvailable}
-                                                    rootTokenSymbol={farmingData.lpTokenSymbol}
-                                                    rewardTokenRoots={farmingData.rewardTokensAddress}
-                                                    rewardAmounts={farmingData.userPendingRewardVested}
-                                                    onChangeWithdraw={farmingWithdrawStore.setAmount}
-                                                    onWithdraw={farmingWithdrawStore.withdraw}
-                                                    onClaim={farmingClaimStore.claim}
-                                                />
-                                            )
-                                        }
+                                        <FarmingDeposit />
+                                        <FarmingWithdraw />
                                     </div>
                                 </>
                             )}

@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js'
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 
@@ -31,6 +32,16 @@ export function FarmingAdminDepositInput({
 }: Props): JSX.Element {
     const intl = useIntl()
 
+    const maxValue = React.useMemo(
+        () => new BigNumber(balance).shiftedBy(-decimals).toFixed(),
+        [balance, decimals],
+    )
+
+    const balanceFormatted = React.useMemo(
+        () => amountOrZero(balance, decimals),
+        [balance, decimals],
+    )
+
     const onChangeAction = (value: string) => {
         onChange(index, value)
     }
@@ -47,12 +58,12 @@ export function FarmingAdminDepositInput({
             hint={intl.formatMessage({
                 id: 'FARMING_ADMIN_DEPOSIT_HINT',
             }, {
-                amount: amountOrZero(balance, decimals),
+                amount: balanceFormatted,
                 symbol,
             })}
             value={amount}
             submitDisabled={!valid}
-            maxValue={amountOrZero(balance, decimals)}
+            maxValue={maxValue}
             loading={loading}
             onChange={onChangeAction}
             onSubmit={onSubmitAction}

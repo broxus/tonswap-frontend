@@ -1,29 +1,43 @@
+import BigNumber from 'bignumber.js'
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
 import { FarmingAction } from '@/modules/Farming/components/FarmingAction'
+import { amountOrZero } from '@/utils'
 
 type Props = {
-    walletAmount: string;
+    walletAmount?: string;
     depositAmount?: string;
     depositDisabled?: boolean;
-    rootTokenSymbol: string;
+    tokenSymbol: string;
+    tokenDecimals: number;
     loading?: boolean;
     onChangeDeposit: (value: string) => void;
     onDeposit: (amount: string) => void;
 }
 
 export function FarmingDepositInner({
-    walletAmount,
+    walletAmount = '0',
     depositAmount,
     depositDisabled,
-    rootTokenSymbol,
+    tokenSymbol,
+    tokenDecimals,
     loading,
     onChangeDeposit,
     onDeposit,
 }: Props): JSX.Element {
     const intl = useIntl()
+
+    const maxValue = React.useMemo(
+        () => new BigNumber(walletAmount).shiftedBy(-tokenDecimals).toFixed(),
+        [walletAmount, tokenDecimals],
+    )
+
+    const balance = React.useMemo(
+        () => amountOrZero(walletAmount, tokenDecimals),
+        [walletAmount, tokenDecimals],
+    )
 
     return (
         <div className="farming-balance-panel farming-balance-panel_deposit">
@@ -42,7 +56,7 @@ export function FarmingDepositInner({
             <FarmingAction
                 loading={loading}
                 value={depositAmount || ''}
-                maxValue={walletAmount}
+                maxValue={maxValue}
                 submitDisabled={depositDisabled}
                 action={intl.formatMessage({
                     id: 'FARMING_BALANCE_DEPOSIT_ACTION',
@@ -50,8 +64,8 @@ export function FarmingDepositInner({
                 hint={intl.formatMessage({
                     id: 'FARMING_BALANCE_DEPOSIT_BALANCE',
                 }, {
-                    value: walletAmount,
-                    symbol: rootTokenSymbol,
+                    value: balance,
+                    symbol: tokenSymbol,
                 })}
                 onChange={onChangeDeposit}
                 onSubmit={onDeposit}
