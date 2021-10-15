@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useWallet } from '@/stores/WalletService'
-import { amount, sliceAddress } from '@/utils'
+import { formattedAmount, sliceAddress } from '@/utils'
 
 import './index.scss'
 
@@ -48,7 +48,7 @@ export function Account(): JSX.Element | null {
                                         {intl.formatMessage({
                                             id: 'WALLET_BALANCE_HINT',
                                         }, {
-                                            balance: amount(
+                                            balance: formattedAmount(
                                                 wallet.balance,
                                                 9,
                                             ) || 0,

@@ -7,7 +7,7 @@ import { FarmingTable } from '@/modules/Farming/components/FarmingTable'
 import { FarmingFilters } from '@/modules/Farming/components/FarmingFilters'
 import { FarmingPoolFilter, FarmingPoolsItemResponse } from '@/modules/Farming/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amountOrZero, debounce } from '@/utils'
+import { debounce, formattedAmount } from '@/utils'
 import { appRoutes } from '@/routes'
 
 type Props = {
@@ -77,7 +77,7 @@ export function FarmingListInner({
             }, {
                 symbol: rewardInfo.reward_currency,
                 value: vestedRewards[index]
-                    ? amountOrZero(vestedRewards[index][idx], rewardInfo.reward_scale)
+                    ? formattedAmount(vestedRewards[index][idx], rewardInfo.reward_scale)
                     : '0',
             })),
             entitledRewards: item.reward_token_root_info.map((rewardInfo, idx) => intl.formatMessage({
@@ -85,7 +85,7 @@ export function FarmingListInner({
             }, {
                 symbol: rewardInfo.reward_currency,
                 value: entitledRewards[index]
-                    ? amountOrZero(entitledRewards[index][idx], rewardInfo.reward_scale)
+                    ? formattedAmount(entitledRewards[index][idx], rewardInfo.reward_scale)
                     : '0',
             })),
             share: item.share,

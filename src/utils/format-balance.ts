@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { amount } from '@/utils/amount'
+import { formattedAmount } from './formattedAmount'
 
 
 export function formatBalance(
@@ -9,5 +9,5 @@ export function formatBalance(
     dexAccountBalance?: BigNumber.Value,
 ): string {
     const balance = new BigNumber(value || '0').plus(dexAccountBalance || '0').toFixed()
-    return amount(balance, decimals)
+    return formattedAmount(balance, decimals)
 }

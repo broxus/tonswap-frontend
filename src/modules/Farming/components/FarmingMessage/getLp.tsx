@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { appRoutes } from '@/routes'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amountOrZero, storage } from '@/utils'
+import { formattedAmount, storage } from '@/utils'
 
 import './index.scss'
 
@@ -55,7 +55,7 @@ export function FarmingMessageGetLp({
                     {intl.formatMessage({
                         id: 'FARMING_MESSAGE_GET_LP_TITLE',
                     }, {
-                        apr: amountOrZero(apr, 0),
+                        apr: formattedAmount(apr, 0),
                     })}
                 </h3>
                 <p>

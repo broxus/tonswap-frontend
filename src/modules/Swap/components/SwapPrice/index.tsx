@@ -5,7 +5,7 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { SwapDirection } from '@/modules/Swap/types'
-import { amount } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 import './index.scss'
 
@@ -95,7 +95,7 @@ function Price(): JSX.Element | null {
                                 id: 'SWAP_PRICE_RESULT',
                             }, {
                                 value: swap.priceLeftToRight !== undefined
-                                    ? amount(
+                                    ? formattedAmount(
                                         swap.priceLeftToRight || '0',
                                         swap.leftToken.decimals,
                                     )
@@ -115,7 +115,7 @@ function Price(): JSX.Element | null {
                                 id: 'SWAP_PRICE_RESULT',
                             }, {
                                 value: swap.priceRightToLeft !== undefined
-                                    ? amount(
+                                    ? formattedAmount(
                                         swap.priceRightToLeft || '0',
                                         swap.rightToken.decimals,
                                     )
