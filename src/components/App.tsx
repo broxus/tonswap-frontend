@@ -61,9 +61,6 @@ export function App(): JSX.Element {
                             <Route exact path={appRoutes.poolRemoveLiquidity.path}>
                                 <BurnLiquidity />
                             </Route>
-                            <Route exact path={appRoutes.poolRemoveLiquidity.path}>
-                                <PoolsRemoveLiquidityPage />
-                            </Route>
                             <Route exact path={appRoutes.poolItem.path}>
                                 <Pool />
                             </Route>
