@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
 import { FarmingAction } from '@/modules/Farming/components/FarmingAction'
-import { amountOrZero } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 type Props = {
     walletAmount?: string;
@@ -35,7 +35,7 @@ export function FarmingDepositInner({
     )
 
     const balance = React.useMemo(
-        () => amountOrZero(walletAmount, tokenDecimals),
+        () => formattedAmount(walletAmount, tokenDecimals),
         [walletAmount, tokenDecimals],
     )
 

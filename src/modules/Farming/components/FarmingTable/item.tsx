@@ -6,7 +6,7 @@ import { TvlChange } from '@/components/common/TvlChange'
 import { TokenIcons } from '@/components/common/TokenIcons'
 import { FarmingPair } from '@/modules/Farming/components/FarmingPair'
 import {
-    amountOrZero, concatSymbols, getChangesDirection,
+    concatSymbols, formattedAmount, getChangesDirection,
     parseCurrencyBillions,
 } from '@/utils'
 
@@ -63,12 +63,12 @@ export function FarmingTableItem({
     const shareFormatted = intl.formatMessage({
         id: 'FARMING_TABLE_SHARE_VALUE',
     }, {
-        value: amountOrZero(share, 0),
+        value: formattedAmount(share, 0),
     })
     const aprFormatted = apr ? intl.formatMessage({
         id: 'FARMING_TABLE_APR_VALUE',
     }, {
-        value: amountOrZero(apr, 0),
+        value: formattedAmount(apr, 0),
     }) : undefined
     const tvlFormatted = tvl ? parseCurrencyBillions(tvl) : undefined
 

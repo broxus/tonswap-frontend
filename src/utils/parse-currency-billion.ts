@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js'
 
-import { CURRENCY_OPTIONS } from '@/constants'
+import { formattedAmount } from './formattedAmount'
 
-export function parseCurrencyBillions(value: BigNumber.Value = '0', fixedTo = 2): string {
-    const number = new BigNumber(value)
-    if (number.gte('1e9')) {
+export function parseCurrencyBillions(value: BigNumber.Value, fixedTo = 2): string {
+    const number = new BigNumber(value || 0).shiftedBy(fixedTo).dp(2)
+    if (number.gte('1e12')) {
         return `$${(number.div('1e9')).toFixed(fixedTo)}B`
     }
-    return number.toNumber().toLocaleString('en-US', CURRENCY_OPTIONS)
+    return `$${formattedAmount(number.toFixed(), fixedTo) || '0.00'}`
 }

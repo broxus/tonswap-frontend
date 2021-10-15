@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { FarmingPoolStoreData, FarmPool } from '@/modules/Farming/types'
 import { useFarmingPool } from '@/modules/Farming/stores/FarmingPoolStore'
-import { amount } from '@/utils'
+import { formattedAmount } from '@/utils'
 import {
     isClaimValid, isClosePoolValid,
     isCreatePeriodValid,
@@ -59,7 +59,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                             {intl.formatMessage({
                                 id: 'FARMING_POOL_FORM_WALLET_BALANCE_TEXT',
                             }, {
-                                balance: amount(
+                                balance: formattedAmount(
                                     farmingPool.userWalletBalance,
                                     pool.tokenDecimals,
                                 ) || 0,
@@ -185,7 +185,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                                 {intl.formatMessage({
                                                     id: 'FARMING_POOL_FORM_TOKEN_WALLET_BALANCE_TEXT',
                                                 }, {
-                                                    amount: amount(
+                                                    amount: formattedAmount(
                                                         adminWalletBalance,
                                                         pool.rewardTokenDecimals[idx],
                                                     ) || 0,

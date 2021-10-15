@@ -16,7 +16,7 @@ import { PoolFarmings } from '@/modules/Pools/components/PoolContent/farmings'
 import { TogglePoolButton } from '@/modules/Pools/components/TogglePoolButton'
 import { usePoolContent } from '@/modules/Pools/hooks/usePoolContent'
 import { useTokensList } from '@/stores/TokensListService'
-import { amountOrZero, concatSymbols } from '@/utils'
+import { concatSymbols, formattedAmount } from '@/utils'
 import { appRoutes } from '@/routes'
 
 export const PoolContent = observer((): JSX.Element | null => {
@@ -96,7 +96,7 @@ export const PoolContent = observer((): JSX.Element | null => {
                                         label={intl.formatMessage({
                                             id: 'PAIR_TOKEN_PRICE',
                                         }, {
-                                            amount: amountOrZero(
+                                            amount: formattedAmount(
                                                 priceLeftToRight,
                                                 rightToken?.decimals,
                                             ),
@@ -115,7 +115,7 @@ export const PoolContent = observer((): JSX.Element | null => {
                                         label={intl.formatMessage({
                                             id: 'PAIR_TOKEN_PRICE',
                                         }, {
-                                            amount: amountOrZero(
+                                            amount: formattedAmount(
                                                 priceRightToLeft,
                                                 leftToken?.decimals,
                                             ),
@@ -153,7 +153,7 @@ export const PoolContent = observer((): JSX.Element | null => {
                                 <TotalBalance
                                     share={totalShare}
                                     name={pool.lp.symbol}
-                                    balance={amountOrZero(totalLp, pool.lp.decimals)}
+                                    balance={formattedAmount(totalLp, pool.lp.decimals)}
                                     apportionment={[{
                                         uri: tokensList.getUri(pool.left.address),
                                         address: pool.left.address,
@@ -181,7 +181,7 @@ export const PoolContent = observer((): JSX.Element | null => {
                                 <BalancePanel
                                     title={intl.formatMessage({ id: 'POOLS_LIST_WALLET_BALANCE' })}
                                     symbol={pool.lp.symbol}
-                                    balance={amountOrZero(pool.lp.inWallet, pool.lp.decimals)}
+                                    balance={formattedAmount(pool.lp.inWallet, pool.lp.decimals)}
                                     tokens={[{
                                         uri: tokensList.getUri(pool.left.address),
                                         address: pool.left.address,
@@ -206,7 +206,7 @@ export const PoolContent = observer((): JSX.Element | null => {
                                 <BalancePanel
                                     title="Locked in farming pools"
                                     symbol={pool.lp.symbol}
-                                    balance={amountOrZero(lockedLp, pool.lp.decimals)}
+                                    balance={formattedAmount(lockedLp, pool.lp.decimals)}
                                     tokens={[{
                                         uri: tokensList.getUri(pool.left.address),
                                         address: pool.left.address,

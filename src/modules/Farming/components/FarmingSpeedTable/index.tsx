@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amountOrZero, formatDate } from '@/utils'
+import { formatDate, formattedAmount } from '@/utils'
 
 import './index.scss'
 
@@ -61,7 +61,7 @@ export function FarmingSpeedTableInner({
                                         {intl.formatMessage({
                                             id: 'FARMING_TOKEN',
                                         }, {
-                                            amount: amountOrZero(rps[idx], 0),
+                                            amount: formattedAmount(rps[idx], 0),
                                             symbol: token.symbol,
                                         })}
                                     </div>

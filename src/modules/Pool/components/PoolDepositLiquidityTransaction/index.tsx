@@ -6,7 +6,7 @@ import { useIntl } from 'react-intl'
 import { usePool } from '@/modules/Pool/stores/PoolStore'
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { amount } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 
 type Props = {
@@ -48,7 +48,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     __html: intl.formatMessage({
                                         id: 'POOL_SUPPLY_RECEIPT_LEAD_SUCCESSFUL_AMOUNT',
                                     }, {
-                                        value: amount(
+                                        value: formattedAmount(
                                             pool.transaction.successData.share || '0',
                                             pool.transaction.successData.lpDecimals,
                                         ),
@@ -99,7 +99,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {pool.transaction.successData.leftSymbol}
                                 </div>
                                 <div>
-                                    {amount(
+                                    {formattedAmount(
                                         pool.transaction.successData.newLeft,
                                         pool.transaction.successData.leftDecimals,
                                     )}
@@ -110,7 +110,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {pool.transaction.successData.rightSymbol}
                                 </div>
                                 <div>
-                                    {amount(
+                                    {formattedAmount(
                                         pool.transaction.successData.newRight,
                                         pool.transaction.successData.rightDecimals,
                                     )}

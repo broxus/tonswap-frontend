@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite'
 
 import { FarmingAction } from '@/modules/Farming/components/FarmingAction'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amountOrZero, isExists } from '@/utils'
+import { formattedAmount, isExists } from '@/utils'
 
 enum Tab {
     Claim = 1,
@@ -48,7 +48,7 @@ export function FarmingWithdrawInner({
     const rewards = rewardTokens
         .map((token, index) => (
             token && {
-                amount: amountOrZero(rewardAmounts[index], token.decimals),
+                amount: formattedAmount(rewardAmounts[index], token.decimals),
                 symbol: token.symbol,
             }
         ))
@@ -60,7 +60,7 @@ export function FarmingWithdrawInner({
     )
 
     const balance = React.useMemo(
-        () => amountOrZero(farmingAmount, tokenDecimals),
+        () => formattedAmount(farmingAmount, tokenDecimals),
         [farmingAmount, tokenDecimals],
     )
 
