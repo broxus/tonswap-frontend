@@ -28,8 +28,8 @@ function CurrencyInner(): JSX.Element {
     ), [store.currency?.address, tokensCache.tokens])
 
     return (
-        <>
-            <section className="section section--large">
+        <div className="container container--large">
+            <section className="section">
                 <Breadcrumb
                     items={[{
                         link: '/tokens',
@@ -107,7 +107,7 @@ function CurrencyInner(): JSX.Element {
             <CurrencyPairs key="pairs" />
 
             <CurrencyTransactions key="transactions" />
-        </>
+        </div>
     )
 }
 

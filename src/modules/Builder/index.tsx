@@ -22,28 +22,30 @@ export function Builder(): JSX.Element {
     }, [])
 
     return (
-        <section className="builder section section--large">
-            <header className="section__header">
-                <h2 className="section-title">
-                    {intl.formatMessage({
-                        id: 'BUILDER_HEADER_TITLE',
-                    })}
-                </h2>
-                <div className="section__header-actions">
-                    <FilterField className="filter" />
-                    <Link to="/builder/create" className="btn btn-primary">
+        <div className="container container--large">
+            <section className="builder section">
+                <header className="section__header">
+                    <h2 className="section-title">
                         {intl.formatMessage({
-                            id: 'BUILDER_HEADER_CREATE_LINK_TEXT',
+                            id: 'BUILDER_HEADER_TITLE',
                         })}
-                    </Link>
-                </div>
-            </header>
+                    </h2>
+                    <div className="section__header-actions">
+                        <FilterField className="filter" />
+                        <Link to="/builder/create" className="btn btn-primary">
+                            {intl.formatMessage({
+                                id: 'BUILDER_HEADER_CREATE_LINK_TEXT',
+                            })}
+                        </Link>
+                    </div>
+                </header>
 
-            <div className="card card--small card--flat">
-                <div className="card__wrap">
-                    <BuilderTokensList />
+                <div className="card card--small card--flat">
+                    <div className="card__wrap">
+                        <BuilderTokensList />
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     )
 }

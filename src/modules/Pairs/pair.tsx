@@ -62,8 +62,8 @@ function PairInner(): JSX.Element {
     )
 
     return (
-        <>
-            <section className="section section--large">
+        <div className="container container--large">
+            <section className="section">
                 <Breadcrumb
                     items={[{
                         link: '/pairs',
@@ -162,7 +162,7 @@ function PairInner(): JSX.Element {
             </section>
 
             <PairTransactions />
-        </>
+        </div>
     )
 }
 

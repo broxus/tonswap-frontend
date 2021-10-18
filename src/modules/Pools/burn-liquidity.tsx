@@ -50,7 +50,7 @@ export function BurnLiquidityInner(): JSX.Element {
     }, [wallet.address, leftTokenRoot, rightTokenRoot])
 
     return (
-        <div className="section section--large">
+        <div className="container container--small">
             <WalletInstaller>
                 <RemoveLiquidityForm
                     receiveLeft={removeLiquidityStore.willReceiveLeft}

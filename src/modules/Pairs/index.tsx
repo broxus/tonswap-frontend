@@ -47,39 +47,41 @@ export function Pairs(): JSX.Element {
     }, [])
 
     return (
-        <section className="section section--large">
-            <header className="section__header">
-                <h2 className="section-title">
-                    {intl.formatMessage({
-                        id: 'PAIRS_HEADER_TITLE',
-                    })}
-                </h2>
-            </header>
+        <div className="container container--large">
+            <section className="section">
+                <header className="section__header">
+                    <h2 className="section-title">
+                        {intl.formatMessage({
+                            id: 'PAIRS_HEADER_TITLE',
+                        })}
+                    </h2>
+                </header>
 
-            <div className="card card--small card--flat">
-                <Observer>
-                    {() => (
-                        <>
-                            <PairsList
-                                pairs={store.pairs}
-                                isLoading={store.isLoading}
-                                offset={store.limit * (store.currentPage - 1)}
-                                ordering={store.ordering}
-                                onSwitchOrdering={onSwitchOrdering}
-                            />
+                <div className="card card--small card--flat">
+                    <Observer>
+                        {() => (
+                            <>
+                                <PairsList
+                                    pairs={store.pairs}
+                                    isLoading={store.isLoading}
+                                    offset={store.limit * (store.currentPage - 1)}
+                                    ordering={store.ordering}
+                                    onSwitchOrdering={onSwitchOrdering}
+                                />
 
-                            <Pagination
-                                currentPage={store.currentPage}
-                                disabled={store.isLoading}
-                                totalPages={store.totalPages}
-                                onNext={onNextPage}
-                                onPrev={onPrevPage}
-                                onSubmit={onChangePage}
-                            />
-                        </>
-                    )}
-                </Observer>
-            </div>
-        </section>
+                                <Pagination
+                                    currentPage={store.currentPage}
+                                    disabled={store.isLoading}
+                                    totalPages={store.totalPages}
+                                    onNext={onNextPage}
+                                    onPrev={onPrevPage}
+                                    onSubmit={onChangePage}
+                                />
+                            </>
+                        )}
+                    </Observer>
+                </div>
+            </section>
+        </div>
     )
 }

@@ -13,23 +13,25 @@ export function Pools(): JSX.Element {
     const intl = useIntl()
 
     return (
-        <div className="section section--large">
-            <div className="section__header">
-                <SectionTitle>
-                    {intl.formatMessage({ id: 'POOLS_LIST_TITLE' })}
-                </SectionTitle>
+        <div className="container container--large">
+            <section className="section">
+                <div className="section__header">
+                    <SectionTitle>
+                        {intl.formatMessage({ id: 'POOLS_LIST_TITLE' })}
+                    </SectionTitle>
 
-                <Link to="/pool" className="btn btn-primary">
-                    {intl.formatMessage({ id: 'POOLS_LIST_HEADER_BUTTON' })}
-                </Link>
-            </div>
-            <WalletConnector
-                message={intl.formatMessage({ id: 'POOLS_LIST_CONNECT_WALLET_TITLE' })}
-            >
-                <AccountConnector>
-                    <PoolsContent />
-                </AccountConnector>
-            </WalletConnector>
+                    <Link to="/pool" className="btn btn-primary">
+                        {intl.formatMessage({ id: 'POOLS_LIST_HEADER_BUTTON' })}
+                    </Link>
+                </div>
+                <WalletConnector
+                    message={intl.formatMessage({ id: 'POOLS_LIST_CONNECT_WALLET_TITLE' })}
+                >
+                    <AccountConnector>
+                        <PoolsContent />
+                    </AccountConnector>
+                </WalletConnector>
+            </section>
         </div>
     )
 }

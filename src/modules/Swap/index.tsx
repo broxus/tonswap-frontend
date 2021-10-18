@@ -31,7 +31,7 @@ export function Swap(): JSX.Element {
     const form = useSwapForm()
 
     return (
-        <section className="section section--small">
+        <div className="container container--small">
             <div className="card">
                 <div className="card__wrap">
                     <header className="card__header">
@@ -166,6 +166,6 @@ export function Swap(): JSX.Element {
                     onImport={form.onDismissImporting}
                 />
             )}
-        </section>
+        </div>
     )
 }

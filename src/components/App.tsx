@@ -7,6 +7,7 @@ import {
     Switch,
 } from 'react-router-dom'
 
+import { Footer } from '@/components/layout/Footer'
 import { WalletConnectingModal } from '@/components/common/WalletConnectingModal'
 import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
@@ -103,11 +104,12 @@ export function App(): JSX.Element {
                             </Route>
                         </Switch>
                     </main>
-                    <div className="wallets">
-                        <Account key="account" />
-                        <WalletConnectingModal />
-                        <WalletUpdateModal />
-                    </div>
+                    <Footer key="footer" />
+                </div>
+                <div className="wallets">
+                    <Account key="account" />
+                    <WalletConnectingModal />
+                    <WalletUpdateModal />
                 </div>
             </Router>
         </IntlProvider>

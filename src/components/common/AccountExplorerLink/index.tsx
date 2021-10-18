@@ -16,7 +16,7 @@ export function AccountExplorerLink({ address, children, className }: Props): JS
     return (
         <a
             className={className}
-            href={`https://ton-explorer.com/accounts/${address}`}
+            href={`https://tonscan.io/accounts/${address}`}
             title={intl.formatMessage({ id: 'OPEN_IN_EXPLORER' })}
             target="_blank"
             rel="noopener noreferrer"

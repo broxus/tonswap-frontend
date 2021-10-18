@@ -26,9 +26,21 @@
     padding: 12px;
 }
 
+.container {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin: 0 auto;
+    padding: 0 20px;
+    width: 100%;
+
+    &--small { max-width: 520px; }
+
+    &--large { max-width: 1200px; }
+}
+
 .section {
     box-sizing: border-box;
-    margin: 0 auto;
     padding: 0;
     width: 100%;
 
@@ -69,9 +81,6 @@
         display: flex;
         justify-content: space-between;
     }
-
-    &--small { max-width: 520px; }
-    &--large { max-width: 1200px; }
 
     + .section {
         margin-top: 64px;
