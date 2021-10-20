@@ -14,6 +14,39 @@ export function Footer(): JSX.Element {
     const intl = useIntl()
     const wallet = useWallet()
 
+    const toolbar = (
+        <div className="toolbar">
+            <Observer>
+                {() => (
+                    <>
+                        {(!wallet.isInitialized && !wallet.isInitializing) && (
+                            <a
+                                href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk"
+                                className="btn btn--xl btn-tertiary footer-tool"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {intl.formatMessage({
+                                    id: 'WALLET_INSTALLATION_LINK_TEXT',
+                                })}
+                            </a>
+                        )}
+                    </>
+                )}
+            </Observer>
+            <a
+                href="https://github.com/broxus/tonswap-frontend"
+                className="btn btn--xl btn--empty footer-tool"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                {intl.formatMessage({
+                    id: 'FOOTER_GITHUB_LINK_TEXT',
+                })}
+            </a>
+        </div>
+    )
+
     return (
         <footer className="footer">
             <div className="container container--large">
@@ -22,6 +55,7 @@ export function Footer(): JSX.Element {
                         <Link to="/" className="footer-logo">
                             <Logo />
                         </Link>
+                        {toolbar}
                     </div>
                     <nav className="footer-nav">
                         <div className="footer-nav__col">
@@ -118,34 +152,7 @@ export function Footer(): JSX.Element {
                         </div>
                     </nav>
                     <div className="footer__right">
-                        <Observer>
-                            {() => (
-                                <div className="toolbar">
-                                    {(!wallet.isInitialized && !wallet.isInitializing) && (
-                                        <a
-                                            href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk"
-                                            className="btn btn--xl btn-tertiary footer-tool"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            {intl.formatMessage({
-                                                id: 'WALLET_INSTALLATION_LINK_TEXT',
-                                            })}
-                                        </a>
-                                    )}
-                                </div>
-                            )}
-                        </Observer>
-                        <a
-                            href="https://github.com/broxus/tonswap-frontend"
-                            className="btn btn--xl btn--empty footer-tool"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {intl.formatMessage({
-                                id: 'FOOTER_GITHUB_LINK_TEXT',
-                            })}
-                        </a>
+                        {toolbar}
                     </div>
                 </div>
                 <div className="footer__bottom">
@@ -192,6 +199,18 @@ export function Footer(): JSX.Element {
                         </li>
                     </ul>
                     <div className="footer__sub">
+                        <p
+                            className="footer-copyright"
+                            dangerouslySetInnerHTML={{
+                                __html: intl.formatMessage({
+                                    id: 'FOOTER_COPYRIGHTS',
+                                }, {
+                                    year: new Date().getFullYear(),
+                                }, {
+                                    ignoreTag: true,
+                                }),
+                            }}
+                        />
                         <nav className="footer-subnav">
                             <ul>
                                 <li>
@@ -229,18 +248,6 @@ export function Footer(): JSX.Element {
                                 </li>
                             </ul>
                         </nav>
-                        <p
-                            className="footer-copyright"
-                            dangerouslySetInnerHTML={{
-                                __html: intl.formatMessage({
-                                    id: 'FOOTER_COPYRIGHTS',
-                                }, {
-                                    year: new Date().getFullYear(),
-                                }, {
-                                    ignoreTag: true,
-                                }),
-                            }}
-                        />
                     </div>
                 </div>
             </div>
