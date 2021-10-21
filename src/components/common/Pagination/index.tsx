@@ -56,7 +56,7 @@ export const Pagination = React.memo(({
             </div>
             <input
                 className="pagination__input"
-                inputMode="numeric"
+                inputMode="decimal"
                 readOnly={disabled}
                 type="text"
                 value={value}

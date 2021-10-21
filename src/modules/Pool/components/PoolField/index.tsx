@@ -61,7 +61,7 @@ function Field({
             <div className="form-fieldset__main">
                 <input
                     className="form-input"
-                    inputMode="numeric"
+                    inputMode="decimal"
                     pattern="^[0-9]*[.]?[0-9]*$"
                     placeholder="0.0"
                     readOnly={props.readOnly}

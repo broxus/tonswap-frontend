@@ -58,7 +58,7 @@ function Field({
                     <input
                         className="form-input"
                         id={props.id}
-                        inputMode="numeric"
+                        inputMode="decimal"
                         pattern="^[0-9]*[.]?[0-9]*$"
                         placeholder="0.0"
                         readOnly={props.readOnly}

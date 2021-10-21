@@ -78,7 +78,7 @@ export function Create(): JSX.Element {
                                             creatingToken.decimals.length > 0
                                             && (+creatingToken.decimals > 0 && +creatingToken.decimals <= 18)
                                         }
-                                        inputMode="numeric"
+                                        inputMode="decimal"
                                         pattern="^[0-9]+$"
                                         value={creatingToken.decimals}
                                         onChange={creatingTokenForm.onChangeData('decimals')}

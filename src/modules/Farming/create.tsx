@@ -135,7 +135,7 @@ export function Create(): JSX.Element {
                                         hint={intl.formatMessage({
                                             id: 'FARMING_CREATE_FIELD_FARM_VESTING_RATIO_HINT',
                                         })}
-                                        inputMode="numeric"
+                                        inputMode="decimal"
                                         isValid={creatingPool.isVestingValid}
                                         label={intl.formatMessage({
                                             id: 'FARMING_CREATE_FIELD_FARM_VESTING_RATIO_LABEL',
@@ -154,7 +154,7 @@ export function Create(): JSX.Element {
                                         hint={intl.formatMessage({
                                             id: 'FARMING_CREATE_FIELD_FARM_VESTING_PERIOD_HINT',
                                         })}
-                                        inputMode="numeric"
+                                        inputMode="decimal"
                                         isValid={creatingPool.isVestingValid}
                                         label={intl.formatMessage({
                                             id: 'FARMING_CREATE_FIELD_FARM_VESTING_PERIOD_LABEL',
@@ -197,7 +197,7 @@ export function Create(): JSX.Element {
                                                         : intl.formatMessage({
                                                             id: 'FARMING_CREATE_FIELD_TOTAL_REWARD_HINT',
                                                         })}
-                                                    inputMode="numeric"
+                                                    inputMode="decimal"
                                                     isValid={token.isRewardTotalValid}
                                                     label={intl.formatMessage({
                                                         id: 'FARMING_CREATE_FIELD_TOTAL_REWARD_LABEL',
