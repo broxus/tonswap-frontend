@@ -1,10 +1,9 @@
 .tokens-list {
     &.list {
-        --list-grid-template: minmax(30%, 70%) minmax(200px, 250px) minmax(200px, 250px) minmax(200px, 250px) minmax(200px, 250px);
+        --list-grid-template: minmax(30%, 70%) minmax(100px, 150px) minmax(100px, 150px) minmax(200px, 250px) minmax(100px, 150px);
 
         @media only screen and (max-width: 824px) {
             --list-grid-template: minmax(30%, 50%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
         }
-
     }
 }

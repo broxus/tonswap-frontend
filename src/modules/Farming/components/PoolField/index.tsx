@@ -7,6 +7,7 @@ type Props = {
     disabled?: boolean;
     label: string;
     hint?: string;
+    inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
     isValid?: boolean;
     placeholder?: string;
     readOnly?: boolean;
@@ -33,12 +34,13 @@ export function PoolField({ isValid = true, autoFocus = false, ...props }: Props
             <div className="form-fieldset__main">
                 <input
                     autoFocus={autoFocus}
-                    type="text"
                     className="form-input"
-                    placeholder={props.placeholder}
-                    value={props.value}
+                    inputMode={props.inputMode}
                     disabled={props.disabled}
+                    placeholder={props.placeholder}
                     readOnly={props.readOnly}
+                    type="text"
+                    value={props.value}
                     onChange={onChange}
                 />
             </div>

@@ -77,171 +77,176 @@ export function Create(): JSX.Element {
     }, [])
 
     return (
-        <section className="section section--small">
-            <div className="card">
-                <div className="card__wrap">
-                    <header className="card__header">
-                        <h2 className="card-title">
-                            {intl.formatMessage({
-                                id: 'FARMING_CREATE_HEADER_TITLE',
-                            })}
-                        </h2>
-                    </header>
-
-                    <div className="form form-create-farm-pool">
-                        <Observer>
-                            {() => (
-                                <PoolField
-                                    autoFocus
-                                    label={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_TOKEN_ROOT_LABEL',
-                                    })}
-                                    hint={creatingPool.farmToken.symbol != null
-                                        ? creatingPool.farmToken.symbol
-                                        : intl.formatMessage({
-                                            id: 'FARMING_CREATE_FIELD_FARM_TOKEN_ROOT_HINT',
-                                        })}
-                                    placeholder="0:000000..."
-                                    isValid={creatingPool.farmToken.isValid}
-                                    readOnly={creatingPool.isCreating}
-                                    value={creatingPool.farmToken.root || ''}
-                                    onChange={onChangeFarmToken}
-                                />
-                            )}
-                        </Observer>
-
-                        <Observer>
-                            {() => (
-                                <PoolField
-                                    label={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_START_LABEL',
-                                    })}
-                                    hint={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_START_HINT',
-                                    })}
-                                    placeholder="YYYY/MM/DD HH:MM"
-                                    isValid={creatingPool.farmStart.isValid}
-                                    readOnly={creatingPool.isCreating}
-                                    value={creatingPool.farmStart.value || ''}
-                                    onChange={onChangeDate('farmStart')}
-                                />
-                            )}
-                        </Observer>
-
-                        <Observer>
-                            {() => (
-                                <PoolField
-                                    label={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_VESTING_RATIO_LABEL',
-                                    })}
-                                    hint={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_VESTING_RATIO_HINT',
-                                    })}
-                                    placeholder="50"
-                                    isValid={creatingPool.isVestingValid}
-                                    readOnly={creatingPool.isCreating}
-                                    value={creatingPool.farmVesting.vestingRatio || ''}
-                                    onChange={onChangeVesting('vestingRatio')}
-                                />
-                            )}
-                        </Observer>
-
-                        <Observer>
-                            {() => (
-                                <PoolField
-                                    label={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_VESTING_PERIOD_LABEL',
-                                    })}
-                                    hint={intl.formatMessage({
-                                        id: 'FARMING_CREATE_FIELD_FARM_VESTING_PERIOD_HINT',
-                                    })}
-                                    placeholder="86400"
-                                    isValid={creatingPool.isVestingValid}
-                                    readOnly={creatingPool.isCreating}
-                                    value={creatingPool.farmVesting.vestingPeriod || ''}
-                                    onChange={onChangeVesting('vestingPeriod')}
-                                />
-                            )}
-                        </Observer>
-
-                        <Observer>
-                            {() => (
-                                <>
-                                    {creatingPool.rewardTokens.map((token, idx) => (
-                                        // eslint-disable-next-line react/no-array-index-key
-                                        <React.Fragment key={idx}>
-                                            <PoolField
-                                                label={intl.formatMessage({
-                                                    id: 'FARMING_CREATE_FIELD_REWARD_TOKEN_ROOT_LABEL',
-                                                })}
-                                                hint={token.symbol != null
-                                                    ? token.symbol
-                                                    : intl.formatMessage({
-                                                        id: 'FARMING_CREATE_FIELD_REWARD_TOKEN_ROOT_HINT',
-                                                    })}
-                                                placeholder="0:000000..."
-                                                isValid={token.isValid}
-                                                readOnly={creatingPool.isCreating}
-                                                value={token.root || ''}
-                                                onChange={onChangeRewardTokenRoot(idx)}
-                                            />
-
-                                            <PoolField
-                                                label={intl.formatMessage({
-                                                    id: 'FARMING_CREATE_FIELD_TOTAL_REWARD_LABEL',
-                                                })}
-                                                hint={token.symbol != null
-                                                    ? intl.formatMessage({
-                                                        id: 'FARMING_CREATE_FIELD_TOKEN_TOTAL_REWARD_HINT',
-                                                    }, { symbol: token.symbol })
-                                                    : intl.formatMessage({
-                                                        id: 'FARMING_CREATE_FIELD_TOTAL_REWARD_HINT',
-                                                    })}
-                                                placeholder="0.0"
-                                                isValid={token.isRewardTotalValid}
-                                                readOnly={creatingPool.isCreating}
-                                                value={token.farmSpeed || ''}
-                                                onChange={onChangeRewardTokenRewardAmount(idx)}
-                                            />
-                                        </React.Fragment>
-                                    ))}
-                                </>
-                            )}
-                        </Observer>
-
-                        <div className="form-create-farm-pool__actions">
-                            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                            <a onClick={creatingPool.addRewardToken}>
+        <div className="container container--small">
+            <section className="section">
+                <div className="card">
+                    <div className="card__wrap">
+                        <header className="card__header">
+                            <h2 className="card-title">
                                 {intl.formatMessage({
-                                    id: 'FARMING_CREATE_ADD_REWARD_TOKEN_LINK_TEXT',
+                                    id: 'FARMING_CREATE_HEADER_TITLE',
                                 })}
-                            </a>
-                        </div>
+                            </h2>
+                        </header>
 
-                        <PoolCreatingParams />
+                        <div className="form form-create-farm-pool">
+                            <Observer>
+                                {() => (
+                                    <PoolField
+                                        autoFocus
+                                        hint={creatingPool.farmToken.symbol != null
+                                            ? creatingPool.farmToken.symbol
+                                            : intl.formatMessage({
+                                                id: 'FARMING_CREATE_FIELD_FARM_TOKEN_ROOT_HINT',
+                                            })}
+                                        isValid={creatingPool.farmToken.isValid}
+                                        label={intl.formatMessage({
+                                            id: 'FARMING_CREATE_FIELD_FARM_TOKEN_ROOT_LABEL',
+                                        })}
+                                        placeholder="0:000000..."
+                                        readOnly={creatingPool.isCreating}
+                                        value={creatingPool.farmToken.root || ''}
+                                        onChange={onChangeFarmToken}
+                                    />
+                                )}
+                            </Observer>
 
-                        <Observer>
-                            {() => (
-                                <button
-                                    type="button"
-                                    className="btn btn-primary btn-lg form-submit btn-block"
-                                    aria-disabled={creatingPool.isCreating || !creatingPool.isValid}
-                                    disabled={creatingPool.isCreating || !creatingPool.isValid}
-                                    onClick={create}
-                                >
-                                    {creatingPool.isCreating ? (
-                                        <div className="popup-main__loader">
-                                            <Icon icon="loader" />
-                                        </div>
-                                    ) : intl.formatMessage({
-                                        id: 'FARMING_CREATE_BTN_TEXT_SUBMIT',
+                            <Observer>
+                                {() => (
+                                    <PoolField
+                                        hint={intl.formatMessage({
+                                            id: 'FARMING_CREATE_FIELD_FARM_START_HINT',
+                                        })}
+                                        label={intl.formatMessage({
+                                            id: 'FARMING_CREATE_FIELD_FARM_START_LABEL',
+                                        })}
+                                        isValid={creatingPool.farmStart.isValid}
+                                        placeholder="YYYY/MM/DD HH:MM"
+                                        readOnly={creatingPool.isCreating}
+                                        value={creatingPool.farmStart.value || ''}
+                                        onChange={onChangeDate('farmStart')}
+                                    />
+                                )}
+                            </Observer>
+
+                            <Observer>
+                                {() => (
+                                    <PoolField
+                                        hint={intl.formatMessage({
+                                            id: 'FARMING_CREATE_FIELD_FARM_VESTING_RATIO_HINT',
+                                        })}
+                                        inputMode="numeric"
+                                        isValid={creatingPool.isVestingValid}
+                                        label={intl.formatMessage({
+                                            id: 'FARMING_CREATE_FIELD_FARM_VESTING_RATIO_LABEL',
+                                        })}
+                                        placeholder="50"
+                                        readOnly={creatingPool.isCreating}
+                                        value={creatingPool.farmVesting.vestingRatio || ''}
+                                        onChange={onChangeVesting('vestingRatio')}
+                                    />
+                                )}
+                            </Observer>
+
+                            <Observer>
+                                {() => (
+                                    <PoolField
+                                        hint={intl.formatMessage({
+                                            id: 'FARMING_CREATE_FIELD_FARM_VESTING_PERIOD_HINT',
+                                        })}
+                                        inputMode="numeric"
+                                        isValid={creatingPool.isVestingValid}
+                                        label={intl.formatMessage({
+                                            id: 'FARMING_CREATE_FIELD_FARM_VESTING_PERIOD_LABEL',
+                                        })}
+                                        placeholder="86400"
+                                        readOnly={creatingPool.isCreating}
+                                        value={creatingPool.farmVesting.vestingPeriod || ''}
+                                        onChange={onChangeVesting('vestingPeriod')}
+                                    />
+                                )}
+                            </Observer>
+
+                            <Observer>
+                                {() => (
+                                    <>
+                                        {creatingPool.rewardTokens.map((token, idx) => (
+                                            // eslint-disable-next-line react/no-array-index-key
+                                            <React.Fragment key={idx}>
+                                                <PoolField
+                                                    hint={token.symbol != null
+                                                        ? token.symbol
+                                                        : intl.formatMessage({
+                                                            id: 'FARMING_CREATE_FIELD_REWARD_TOKEN_ROOT_HINT',
+                                                        })}
+                                                    isValid={token.isValid}
+                                                    label={intl.formatMessage({
+                                                        id: 'FARMING_CREATE_FIELD_REWARD_TOKEN_ROOT_LABEL',
+                                                    })}
+                                                    placeholder="0:000000..."
+                                                    readOnly={creatingPool.isCreating}
+                                                    value={token.root || ''}
+                                                    onChange={onChangeRewardTokenRoot(idx)}
+                                                />
+
+                                                <PoolField
+                                                    hint={token.symbol != null
+                                                        ? intl.formatMessage({
+                                                            id: 'FARMING_CREATE_FIELD_TOKEN_TOTAL_REWARD_HINT',
+                                                        }, { symbol: token.symbol })
+                                                        : intl.formatMessage({
+                                                            id: 'FARMING_CREATE_FIELD_TOTAL_REWARD_HINT',
+                                                        })}
+                                                    inputMode="numeric"
+                                                    isValid={token.isRewardTotalValid}
+                                                    label={intl.formatMessage({
+                                                        id: 'FARMING_CREATE_FIELD_TOTAL_REWARD_LABEL',
+                                                    })}
+                                                    placeholder="0.0"
+                                                    readOnly={creatingPool.isCreating}
+                                                    value={token.farmSpeed || ''}
+                                                    onChange={onChangeRewardTokenRewardAmount(idx)}
+                                                />
+                                            </React.Fragment>
+                                        ))}
+                                    </>
+                                )}
+                            </Observer>
+
+                            <div className="form-create-farm-pool__actions">
+                                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                                <a onClick={creatingPool.addRewardToken}>
+                                    {intl.formatMessage({
+                                        id: 'FARMING_CREATE_ADD_REWARD_TOKEN_LINK_TEXT',
                                     })}
-                                </button>
-                            )}
-                        </Observer>
+                                </a>
+                            </div>
+
+                            <PoolCreatingParams />
+
+                            <Observer>
+                                {() => (
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary btn-lg form-submit btn-block"
+                                        aria-disabled={creatingPool.isCreating || !creatingPool.isValid}
+                                        disabled={creatingPool.isCreating || !creatingPool.isValid}
+                                        onClick={create}
+                                    >
+                                        {creatingPool.isCreating ? (
+                                            <div className="popup-main__loader">
+                                                <Icon icon="loader" />
+                                            </div>
+                                        ) : intl.formatMessage({
+                                            id: 'FARMING_CREATE_BTN_TEXT_SUBMIT',
+                                        })}
+                                    </button>
+                                )}
+                            </Observer>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     )
 }

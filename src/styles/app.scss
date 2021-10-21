@@ -27,11 +27,12 @@
 }
 
 .container {
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0;
     width: 100%;
 
     &--small { max-width: 520px; }

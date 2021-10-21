@@ -9,6 +9,7 @@ type Props = {
     label: string;
     id?: string;
     type?: string;
+    inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
     isValid?: boolean;
     readOnly?: boolean;
     pattern?: string;
@@ -46,13 +47,14 @@ function Field({
                 </div>
                 <div className="form-fieldset__main">
                     <input
-                        disabled={props.disabled}
-                        type={type}
                         className="form-input"
-                        placeholder={props.placeholder}
-                        value={props.value}
-                        readOnly={props.readOnly}
+                        disabled={props.disabled}
+                        inputMode={props.inputMode}
                         pattern={props.pattern}
+                        placeholder={props.placeholder}
+                        readOnly={props.readOnly}
+                        type={type}
+                        value={props.value}
                         onChange={onChange}
                     />
                 </div>

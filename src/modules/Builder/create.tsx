@@ -76,8 +76,9 @@ export function Create(): JSX.Element {
                                         })}
                                         isValid={
                                             creatingToken.decimals.length > 0
-                                        && (+creatingToken.decimals > 0 && +creatingToken.decimals <= 18)
+                                            && (+creatingToken.decimals > 0 && +creatingToken.decimals <= 18)
                                         }
+                                        inputMode="numeric"
                                         pattern="^[0-9]+$"
                                         value={creatingToken.decimals}
                                         onChange={creatingTokenForm.onChangeData('decimals')}
