@@ -1,4 +1,4 @@
-import { UTCTimestamp } from 'lightweight-charts'
+import { BarData, LineData } from 'lightweight-charts'
 
 export type Timeframe = 'H1' | 'D1'
 
@@ -25,15 +25,6 @@ export type VolumeGraphModel = {
     timestamp: number;
 }
 
-export type CandlestickGraphShape = {
-    close: string;
-    high: string;
-    low: string;
-    open: string;
-    time: UTCTimestamp;
-}
+export type CandlestickGraphShape = BarData
 
-export type CommonGraphShape = {
-    time: UTCTimestamp;
-    value: string;
-}
+export type CommonGraphShape = LineData

@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
-import { error, formatBalance } from '@/utils'
+import { error, formattedBalance } from '@/utils'
 
 
 export type TokenFormattedBalanceOptions = {
@@ -34,7 +34,7 @@ export function useTokenFormattedBalance(
     } = { ...options }
 
     const [balance, setBalance] = React.useState(
-        formatBalance(
+        formattedBalance(
             token?.balance || '0',
             token?.decimals,
             dexAccountBalance || '0',
@@ -44,7 +44,7 @@ export function useTokenFormattedBalance(
     const [isFetching, setFetchingTo] = React.useState(false)
 
     React.useEffect(() => {
-        setBalance(formatBalance(
+        setBalance(formattedBalance(
             token?.balance || '0',
             token?.decimals,
             dexAccountBalance || '0',
@@ -60,7 +60,7 @@ export function useTokenFormattedBalance(
                 try {
                     await tokensCache.syncToken(token.root)
                     if (mountedTokens[`${subscriberPrefix}-${token.root}`]) {
-                        setBalance(formatBalance(
+                        setBalance(formattedBalance(
                             token.balance || '0',
                             token.decimals,
                             dexAccountBalance || '0',

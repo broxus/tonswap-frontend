@@ -6,7 +6,10 @@ import { observer } from 'mobx-react-lite'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import {
-    formatDate, formattedAmount, parseCurrencyBillions, shareAmount,
+    formatDate,
+    formattedAmount,
+    parseCurrencyBillions,
+    shareAmount,
 } from '@/utils'
 
 import './index.scss'

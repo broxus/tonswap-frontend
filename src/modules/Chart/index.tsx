@@ -141,14 +141,13 @@ export function Chart({
             data.forEach(d => {
                 const { value } = d as CommonGraphShape
                 if (value !== undefined) {
-                    const parsed = parseFloat(value)
                     if (seriesMaxValue !== undefined) {
-                        if (seriesMaxValue < parsed) {
-                            seriesMaxValue = parsed
+                        if (seriesMaxValue < value) {
+                            seriesMaxValue = value
                         }
                     }
                     else {
-                        seriesMaxValue = parsed
+                        seriesMaxValue = value
                     }
                 }
             })
