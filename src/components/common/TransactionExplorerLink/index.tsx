@@ -16,7 +16,7 @@ export function TransactionExplorerLink({ children, className, id }: Props): JSX
     return (
         <a
             className={className}
-            href={`https://ton-explorer.com/transactions/${id}`}
+            href={`https://tonscan.io/transactions/${id}`}
             title={intl.formatMessage({ id: 'OPEN_IN_EXPLORER' })}
             target="_blank"
             rel="noopener noreferrer"

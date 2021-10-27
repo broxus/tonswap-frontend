@@ -49,156 +49,158 @@ export function Token(): JSX.Element {
     }, [tokenRoot])
 
     return (
-        <section className="manage-token section section--large">
-            <header className="section__header">
-                <h2 className="section-title">
-                    {intl.formatMessage({
-                        id: 'BUILDER_MANAGE_TOKEN_HEADER_TITLE',
-                    })}
-                </h2>
-            </header>
+        <div className="container container--large">
+            <section className="manage-token section">
+                <header className="section__header">
+                    <h2 className="section-title">
+                        {intl.formatMessage({
+                            id: 'BUILDER_MANAGE_TOKEN_HEADER_TITLE',
+                        })}
+                    </h2>
+                </header>
 
-            <div className="card card--flat">
-                <div className="card__wrap">
-                    <Observer>
-                        {() => (managingToken.isLoading ? (
-                            <div className="message">
-                                <div className="popup-main__loader">
-                                    <Icon icon="loader" />
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="card-parts">
-                                <div className="card-parts__part">
-                                    <div className="card__header">
-                                        <h2 className="card-title">
-                                            {intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_DESCRIPTION_TEXT',
-                                            })}
-                                        </h2>
-                                    </div>
-                                    <div className="form form-builder">
-                                        <BuilderField
-                                            label={intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_LABEL_NETWORK',
-                                            })}
-                                            readOnly
-                                            value="Mainnet"
-                                        />
-                                        <BuilderField
-                                            className="builder-address-field"
-                                            label={intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_LABEL_ROOT',
-                                            })}
-                                            disabled
-                                            value={managingToken.token?.root}
-                                            onClick={copyToClipboard}
-                                        />
-                                        <BuilderField
-                                            label={intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_LABEL_TOKEN_NAME',
-                                            })}
-                                            readOnly
-                                            value={managingToken.token?.name}
-                                        />
-                                        <BuilderField
-                                            label={intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_LABEL_TOKEN_SYMBOL',
-                                            })}
-                                            readOnly
-                                            value={managingToken.token?.symbol}
-                                        />
-                                        <BuilderField
-                                            label={intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_LABEL_DECIMAL_PLACES',
-                                            })}
-                                            readOnly
-                                            value={`${managingToken.token?.decimals}`}
-                                        />
-                                        <BuilderField
-                                            label={intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_LABEL_TOTAL_SUPPLY',
-                                            })}
-                                            readOnly
-                                            value={managingToken.token?.total_supply}
-                                        />
+                <div className="card card--flat">
+                    <div className="card__wrap">
+                        <Observer>
+                            {() => (managingToken.isLoading ? (
+                                <div className="message">
+                                    <div className="popup-main__loader">
+                                        <Icon icon="loader" />
                                     </div>
                                 </div>
-                                <div className="card-parts__part">
-                                    <div className="card__header">
-                                        <h2 className="card-title">
-                                            {intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_ACTIONS_TEXT',
-                                            })}
-                                        </h2>
-                                    </div>
-                                    <div className="card-block">
-                                        <h3 className="card-block__title">
-                                            {intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_CIRCULATING_SUPPLY_TITLE',
-                                            })}
-                                        </h3>
-                                        <div className="card-block__action">
-                                            <div>
-                                                <div className="card-block__action__name">
-                                                    {intl.formatMessage({
-                                                        id: 'BUILDER_MANAGE_TOKEN_MINT_NAME',
-                                                    })}
-                                                </div>
-                                                <div className="card-block__action__description">
-                                                    {intl.formatMessage({
-                                                        id: 'BUILDER_MANAGE_TOKEN_MINT_DESCRIPTION',
-                                                    })}
-                                                </div>
-                                            </div>
-                                            <MintButton key="mint-button" />
+                            ) : (
+                                <div className="card-parts">
+                                    <div className="card-parts__part">
+                                        <div className="card__header">
+                                            <h2 className="card-title">
+                                                {intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_DESCRIPTION_TEXT',
+                                                })}
+                                            </h2>
                                         </div>
-                                        <div className="card-block__action">
-                                            <div>
-                                                <div className="card-block__action__name">
-                                                    {intl.formatMessage({
-                                                        id: 'BUILDER_MANAGE_TOKEN_BURN_NAME',
-                                                    })}
-                                                </div>
-                                                <div className="card-block__action__description">
-                                                    {intl.formatMessage({
-                                                        id: 'BUILDER_MANAGE_TOKEN_MINT_DESCRIPTION',
-                                                    })}
-                                                </div>
-                                            </div>
-                                            <BurnButton key="burn-button" />
+                                        <div className="form form-builder">
+                                            <BuilderField
+                                                label={intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_LABEL_NETWORK',
+                                                })}
+                                                readOnly
+                                                value="Mainnet"
+                                            />
+                                            <BuilderField
+                                                className="builder-address-field"
+                                                label={intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_LABEL_ROOT',
+                                                })}
+                                                disabled
+                                                value={managingToken.token?.root}
+                                                onClick={copyToClipboard}
+                                            />
+                                            <BuilderField
+                                                label={intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_LABEL_TOKEN_NAME',
+                                                })}
+                                                readOnly
+                                                value={managingToken.token?.name}
+                                            />
+                                            <BuilderField
+                                                label={intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_LABEL_TOKEN_SYMBOL',
+                                                })}
+                                                readOnly
+                                                value={managingToken.token?.symbol}
+                                            />
+                                            <BuilderField
+                                                label={intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_LABEL_DECIMAL_PLACES',
+                                                })}
+                                                readOnly
+                                                value={`${managingToken.token?.decimals}`}
+                                            />
+                                            <BuilderField
+                                                label={intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_LABEL_TOTAL_SUPPLY',
+                                                })}
+                                                readOnly
+                                                value={managingToken.token?.total_supply}
+                                            />
                                         </div>
                                     </div>
-                                    <div className="card-block card-block--alert">
-                                        <h3 className="card-block__title">
-                                            {intl.formatMessage({
-                                                id: 'BUILDER_MANAGE_TOKEN_DANGER_ZONE_TITLE',
-                                            })}
-                                        </h3>
-                                        <div className="card-block__action">
-                                            <div>
-                                                <div className="card-block__action__name">
-                                                    {intl.formatMessage({
-                                                        id: 'BUILDER_MANAGE_TOKEN_TRANSFER_OWNERSHIP_NAME',
-                                                    })}
+                                    <div className="card-parts__part">
+                                        <div className="card__header">
+                                            <h2 className="card-title">
+                                                {intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_ACTIONS_TEXT',
+                                                })}
+                                            </h2>
+                                        </div>
+                                        <div className="card-block">
+                                            <h3 className="card-block__title">
+                                                {intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_CIRCULATING_SUPPLY_TITLE',
+                                                })}
+                                            </h3>
+                                            <div className="card-block__action">
+                                                <div>
+                                                    <div className="card-block__action__name">
+                                                        {intl.formatMessage({
+                                                            id: 'BUILDER_MANAGE_TOKEN_MINT_NAME',
+                                                        })}
+                                                    </div>
+                                                    <div className="card-block__action__description">
+                                                        {intl.formatMessage({
+                                                            id: 'BUILDER_MANAGE_TOKEN_MINT_DESCRIPTION',
+                                                        })}
+                                                    </div>
                                                 </div>
-                                                <div className="card-block__action__description">
-                                                    {intl.formatMessage({
-                                                        id: 'BUILDER_MANAGE_TOKEN_TRANSFER_OWNERSHIP_DESCRIPTION',
-                                                    })}
-                                                </div>
+                                                <MintButton key="mint-button" />
                                             </div>
-                                            <TransferButton key="transfer-button" />
+                                            <div className="card-block__action">
+                                                <div>
+                                                    <div className="card-block__action__name">
+                                                        {intl.formatMessage({
+                                                            id: 'BUILDER_MANAGE_TOKEN_BURN_NAME',
+                                                        })}
+                                                    </div>
+                                                    <div className="card-block__action__description">
+                                                        {intl.formatMessage({
+                                                            id: 'BUILDER_MANAGE_TOKEN_MINT_DESCRIPTION',
+                                                        })}
+                                                    </div>
+                                                </div>
+                                                <BurnButton key="burn-button" />
+                                            </div>
+                                        </div>
+                                        <div className="card-block card-block--alert">
+                                            <h3 className="card-block__title">
+                                                {intl.formatMessage({
+                                                    id: 'BUILDER_MANAGE_TOKEN_DANGER_ZONE_TITLE',
+                                                })}
+                                            </h3>
+                                            <div className="card-block__action">
+                                                <div>
+                                                    <div className="card-block__action__name">
+                                                        {intl.formatMessage({
+                                                            id: 'BUILDER_MANAGE_TOKEN_TRANSFER_OWNERSHIP_NAME',
+                                                        })}
+                                                    </div>
+                                                    <div className="card-block__action__description">
+                                                        {intl.formatMessage({
+                                                            id: 'BUILDER_MANAGE_TOKEN_TRANSFER_OWNERSHIP_DESCRIPTION',
+                                                        })}
+                                                    </div>
+                                                </div>
+                                                <TransferButton key="transfer-button" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </Observer>
+                            ))}
+                        </Observer>
+                    </div>
                 </div>
-            </div>
 
-            <BuilderConfirmationPopup key="confirmation" />
-        </section>
+                <BuilderConfirmationPopup key="confirmation" />
+            </section>
+        </div>
     )
 }

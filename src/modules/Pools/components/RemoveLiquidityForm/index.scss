@@ -1,30 +1,31 @@
 .remove-liquidity-form {
-    display: grid;
-    gap: 32px;
-    padding: 32px;
-    max-width: 520px;
-    margin: 0 auto;
     background: rgba(255, 255, 255, 0.08);
     border-radius: 6px;
+    display: grid;
+    gap: 32px;
+    margin: 0 auto;
+    max-width: 520px;
+    padding: 32px;
+    width: 100%;
 
     &__title {
         font-size: 28px;
-        line-height: 36px;
-        letter-spacing: 0.25px;
         font-weight: bold;
+        letter-spacing: 0.25px;
+        line-height: 36px;
     }
 
     &__label {
         font-size: 20px;
-        line-height: 24px;
-        letter-spacing: 0.15px;
         font-weight: bold;
+        letter-spacing: 0.15px;
+        line-height: 24px;
         margin: 0 0 16px;
 
         &_medium {
             font-size: 16px;
-            line-height: 20px;
             letter-spacing: 0.25px;
+            line-height: 20px;
         }
 
         &_translucent {
@@ -34,9 +35,9 @@
 
     &__cols {
         display: grid;
+        gap: 10px;
         grid-auto-columns: minmax(0, 1fr);
         grid-auto-flow: column;
-        gap: 10px;
 
         @media only screen and (max-width: 767px) {
             grid-auto-flow: row;
@@ -44,68 +45,69 @@
     }
 
     &__receive {
+        align-items: flex-start;
+        background: rgba(255, 255, 255, 0.08);
         display: flex;
         flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-        padding: 16px;
         font-size: 24px;
         font-weight: bold;
-        background: rgba(255, 255, 255, 0.08);
+        gap: 4px;
         overflow: hidden;
+        padding: 16px;
         word-break: break-word;
     }
 
     &__value {
-        display: flex;
         align-items: center;
-        min-height: 1em;
+        display: flex;
         line-height: 1;
+        min-height: 1em;
     }
 
     &__hint {
-        margin: 4px 0 0;
-        font-size: 12px;
-        line-height: 16px;
-        letter-spacing: 0.6px;
         color: rgba(255, 255, 255, 0.48);
+        font-size: 12px;
+        letter-spacing: 0.6px;
+        line-height: 16px;
+        margin: 4px 0 0;
 
         &_error {
-            color: #EB4361;
+            color: #eb4361;
         }
     }
 }
 
 .remove-liquidity-form-stats {
+    color: #ffffff;
     font-size: 14px;
-    line-height: 20px;
     letter-spacing: 0.75px;
-    color: #fff;
+    line-height: 20px;
 
     &__title {
-        color: rgba(255,255,255,0.8);
+        color: rgba(255, 255, 255, 0.8);
         margin: 0 0 14px;
     }
 
     &__head {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+        color: rgba(255, 255, 255, 0.56);
         display: grid;
         grid-template-columns: 15% 1fr 1fr;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
-        padding: 0 0 4px;
         margin: 0 0 2px;
+        padding: 0 0 4px;
         text-align: right;
-        color: rgba(255, 255, 255, 0.56);
     }
 
     &__item {
         display: grid;
+        gap: 10px;
         grid-template-columns: 15% 1fr 1fr;
         padding: 4px 0;
-        gap: 10px;
         word-break: break-all;
     }
 
     &__value {
         text-align: right;
+        word-break: unset;
     }
 }

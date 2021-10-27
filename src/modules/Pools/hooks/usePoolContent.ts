@@ -14,7 +14,7 @@ import { useApi } from '@/modules/Pools/hooks/useApi'
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
 import { FarmingTableProps } from '@/modules/Farming/components/FarmingTable'
 import {
-    amountOrZero, error, getPrice, shareAmount,
+    error, formattedAmount, getPrice, shareAmount,
 } from '@/utils'
 import {
     Farm, Pool, PoolData, UserPendingReward,
@@ -272,8 +272,8 @@ export function usePoolContent(): UsePoolContent {
             const totalVested = new BigNumber(vested).plus(poolDebt)
 
             return {
-                vested: amountOrZero(totalVested, reward_scale),
-                entitled: amountOrZero(entitled, reward_scale),
+                vested: formattedAmount(totalVested.toFixed(), reward_scale),
+                entitled: formattedAmount(entitled, reward_scale),
                 symbol: reward_currency,
             }
         })

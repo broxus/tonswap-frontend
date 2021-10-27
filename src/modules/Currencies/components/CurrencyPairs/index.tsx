@@ -38,7 +38,7 @@ function Pairs(): JSX.Element {
     }
 
     return (
-        <section className="section section--large">
+        <section className="section">
             <header className="section__header">
                 <h2 className="section-title">
                     {intl.formatMessage({

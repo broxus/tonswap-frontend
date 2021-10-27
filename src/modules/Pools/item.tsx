@@ -12,7 +12,7 @@ export const PoolsItem = observer((): JSX.Element => {
     const intl = useIntl()
 
     return (
-        <div className="section section--large">
+        <div className="container container--large">
             <WalletConnector
                 message={intl.formatMessage({ id: 'POOLS_LIST_CONNECT_WALLET_TITLE' })}
             >

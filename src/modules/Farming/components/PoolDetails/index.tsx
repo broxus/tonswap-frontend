@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js'
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { PoolForm } from '@/modules/Farming/components/PoolForm'
 import { FarmPool } from '@/modules/Farming/types'
-import { amount } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 import './index.scss'
 
@@ -42,7 +42,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                         })}
                     </div>
                     <div>
-                        {amount(
+                        {formattedAmount(
                             pool.tokenBalance,
                             pool.tokenDecimals,
                         ) || 0}
@@ -59,7 +59,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 })}
                             </div>
                             <div>
-                                {amount(
+                                {formattedAmount(
                                     pool.farmSpeed[idx],
                                     pool.rewardTokenDecimals[idx],
                                 ) || 0}
@@ -74,7 +74,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 })}
                             </div>
                             <div>
-                                {amount(
+                                {formattedAmount(
                                     pool.rewardTokenBalance[idx],
                                     pool.rewardTokenDecimals[idx],
                                 ) || 0}
@@ -204,7 +204,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 })}
                             </div>
                             <div>
-                                {amount(
+                                {formattedAmount(
                                     pool.userBalance,
                                     pool.tokenDecimals,
                                 ) || 0}
@@ -221,7 +221,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                         })}
                                     </div>
                                     <div>
-                                        {amount(
+                                        {formattedAmount(
                                             pool.userReward?._vested[idx],
                                             pool.rewardTokenDecimals[idx],
                                         ) || 0}
@@ -236,7 +236,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                         })}
                                     </div>
                                     <div>
-                                        {amount(
+                                        {formattedAmount(
                                             pool.userReward?._pool_debt[idx],
                                             pool.rewardTokenDecimals[idx],
                                         ) || 0}
@@ -251,7 +251,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                         })}
                                     </div>
                                     <div>
-                                        {amount(
+                                        {formattedAmount(
                                             pool.userReward?._entitled[idx],
                                             pool.rewardTokenDecimals[idx],
                                         ) || 0}

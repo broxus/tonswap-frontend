@@ -2,8 +2,8 @@ import BigNumber from 'bignumber.js'
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 
+import { formattedAmount } from '@/utils'
 import { FarmingAction } from '@/modules/Farming/components/FarmingAction'
-import { amountOrZero } from '@/utils'
 
 import './index.scss'
 
@@ -38,7 +38,7 @@ export function FarmingAdminDepositInput({
     )
 
     const balanceFormatted = React.useMemo(
-        () => amountOrZero(balance, decimals),
+        () => formattedAmount(balance, decimals),
         [balance, decimals],
     )
 

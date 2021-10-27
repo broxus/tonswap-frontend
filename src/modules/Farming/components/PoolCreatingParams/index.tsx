@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { useCreateFarmPoolStore } from '@/modules/Farming/stores/CreateFarmPoolStore'
-import { amount } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 function CreatingParams(): JSX.Element {
     const intl = useIntl()
@@ -104,7 +104,10 @@ function CreatingParams(): JSX.Element {
                                             })}
                                         </div>
                                         <div>
-                                            {amount(new BigNumber(token.farmSpeed || 0).times(86400).times(30), 0)}
+                                            {formattedAmount(
+                                                new BigNumber(token.farmSpeed || 0).times(86400).times(30).toFixed(),
+                                                0,
+                                            )}
                                         </div>
                                     </div>
                                 </div>

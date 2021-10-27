@@ -13,8 +13,8 @@ import { usePagination } from '@/hooks/usePagination'
 import { useApi } from '@/modules/Pools/hooks/useApi'
 import { ItemProps } from '@/modules/Pools/components/PoolsContent/item'
 import {
-    amountOrZero, concatSymbols, debounce,
-    error, lastOfCalls, shareAmount,
+    concatSymbols, debounce, error,
+    formattedAmount, lastOfCalls, shareAmount,
 } from '@/utils'
 import { Pool, PoolData } from '@/misc'
 import { appRoutes } from '@/routes'
@@ -69,7 +69,7 @@ export function usePoolsContent(): UsePoolsContent {
                     .toFixed()
 
                 return {
-                    lpTokens: amountOrZero(lpTokens, lp.decimals),
+                    lpTokens: formattedAmount(lpTokens, lp.decimals),
                     leftToken: intl.formatMessage({
                         id: 'POOLS_LIST_TOKEN_BALANCE',
                     }, {

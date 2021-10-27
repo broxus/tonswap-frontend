@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 import { TokenCache } from '@/stores/TokensCacheService'
-import { formatAmount } from '@/utils'
+import { truncateDecimals } from '@/utils'
 
 
 type FieldShape = {
@@ -22,7 +22,7 @@ export function useField({ token, ...props }: Props): FieldShape {
         if (value.length === 0) {
             return
         }
-        const validatedAmount = formatAmount(value, token?.decimals)
+        const validatedAmount = truncateDecimals(value, token?.decimals)
         if (props.value !== validatedAmount && validatedAmount != null) {
             props.onChange?.(validatedAmount)
         }

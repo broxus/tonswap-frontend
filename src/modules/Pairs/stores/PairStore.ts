@@ -1,4 +1,4 @@
-import { UTCTimestamp } from 'lightweight-charts'
+import { Time } from 'lightweight-charts'
 import { DateTime } from 'luxon'
 import {
     action,
@@ -24,9 +24,7 @@ import {
     PairStoreState,
 } from '@/modules/Pairs/types'
 import { PairsApi, usePairsApi } from '@/modules/Pairs/hooks/useApi'
-import {
-    TransactionsRequest,
-} from '@/modules/Transactions/types'
+import { TransactionsRequest } from '@/modules/Transactions/types'
 import { getImportedTokens } from '@/stores/TokensCacheService'
 import { parseCurrencyBillions } from '@/utils'
 
@@ -315,11 +313,11 @@ export class PairStore {
      */
     public get ohlcvGraphData(): CandlestickGraphShape[] {
         return uniqBy(this.graphData.ohlcv, 'timestamp').map<CandlestickGraphShape>(item => ({
-            close: item.close,
-            high: item.high,
-            low: item.low,
-            open: item.open,
-            time: (item.timestamp / 1000) as UTCTimestamp,
+            close: parseFloat(item.close),
+            high: parseFloat(item.high),
+            low: parseFloat(item.low),
+            open: parseFloat(item.open),
+            time: (item.timestamp / 1000) as Time,
         }))
     }
 
@@ -341,8 +339,8 @@ export class PairStore {
      */
     public get volumeGraphData(): CommonGraphShape[] {
         return uniqBy(this.graphData.volume, 'timestamp').map<CommonGraphShape>(item => ({
-            time: (item.timestamp / 1000) as UTCTimestamp,
-            value: item.data,
+            time: (item.timestamp / 1000) as Time,
+            value: parseFloat(item.data),
         }))
     }
 
@@ -351,8 +349,8 @@ export class PairStore {
      */
     public get tvlGraphData(): CommonGraphShape[] {
         return uniqBy(this.graphData.tvl, 'timestamp').map<CommonGraphShape>(item => ({
-            time: (item.timestamp / 1000) as UTCTimestamp,
-            value: item.data,
+            time: (item.timestamp / 1000) as Time,
+            value: parseFloat(item.data),
         }))
     }
 

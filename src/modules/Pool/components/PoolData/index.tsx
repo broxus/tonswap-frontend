@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { usePool } from '@/modules/Pool/stores/PoolStore'
-import { amount } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 
 function Data(): JSX.Element {
@@ -24,7 +24,7 @@ function Data(): JSX.Element {
                     {pool.leftToken?.symbol}
                 </div>
                 <div>
-                    {amount(
+                    {formattedAmount(
                         pool.pairBalances?.left || '0',
                         pool.leftToken?.decimals,
                     ) || '0'}
@@ -35,7 +35,7 @@ function Data(): JSX.Element {
                     {pool.rightToken?.symbol}
                 </div>
                 <div>
-                    {amount(
+                    {formattedAmount(
                         pool.pairBalances?.right || '0',
                         pool.rightToken?.decimals,
                     ) || '0'}
@@ -48,7 +48,7 @@ function Data(): JSX.Element {
                     })}
                 </div>
                 <div>
-                    {amount(
+                    {formattedAmount(
                         pool.pairBalances?.lp || '0',
                         pool.lpDecimals,
                     ) || '0'}

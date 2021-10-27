@@ -9,7 +9,7 @@ import { Chart } from '@/modules/Chart'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { PairStoreState } from '@/modules/Pairs/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { formatBalance, getChangesDirection } from '@/utils'
+import { formattedBalance, getChangesDirection } from '@/utils'
 
 import './index.scss'
 
@@ -33,7 +33,7 @@ export function Stats(): JSX.Element {
     ), [store.pair?.meta.counterAddress, tokensCache.tokens])
 
     const leftLocked = React.useMemo(
-        () => formatBalance(
+        () => formattedBalance(
             store.pair?.leftLocked || '0',
             baseToken?.decimals || 0,
         ),
@@ -41,7 +41,7 @@ export function Stats(): JSX.Element {
     )
 
     const rightLocked = React.useMemo(
-        () => formatBalance(
+        () => formattedBalance(
             store.pair?.rightLocked || '0',
             counterToken?.decimals || 0,
         ),

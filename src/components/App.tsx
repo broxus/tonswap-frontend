@@ -7,6 +7,7 @@ import {
     Switch,
 } from 'react-router-dom'
 
+import { Footer } from '@/components/layout/Footer'
 import { WalletConnectingModal } from '@/components/common/WalletConnectingModal'
 import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
@@ -20,13 +21,13 @@ import FarmingItem from '@/pages/farming/item'
 import CreateFarmPool from '@/pages/farming/create'
 import Pairs from '@/pages/pairs'
 import Pair from '@/pages/pairs/item'
-import Pool from '@/pages/pool'
+import AddLiquidityPool from '@/pages/pool'
 import Swap from '@/pages/swap'
 import Tokens from '@/pages/tokens'
 import Token from '@/pages/tokens/item'
-import { PoolsPage } from '@/pages/pools'
-import { PoolsItemPage } from '@/pages/pools/item'
-import { PoolsRemoveLiquidityPage } from '@/pages/pools/removeLiquidity'
+import Pools from '@/pages/pools'
+import Pool from '@/pages/pools/item'
+import BurnLiquidity from '@/pages/pools/burn-liquidity'
 import { noop } from '@/utils'
 import { appRoutes } from '@/routes'
 
@@ -56,16 +57,16 @@ export function App(): JSX.Element {
                             </Route>
 
                             <Route exact path={appRoutes.poolList.path}>
-                                <PoolsPage />
+                                <Pools />
                             </Route>
                             <Route exact path={appRoutes.poolRemoveLiquidity.path}>
-                                <PoolsRemoveLiquidityPage />
+                                <BurnLiquidity />
                             </Route>
                             <Route exact path={appRoutes.poolItem.path}>
-                                <PoolsItemPage />
+                                <Pool />
                             </Route>
                             <Route exact path={appRoutes.poolCreate.path}>
-                                <Pool />
+                                <AddLiquidityPool />
                             </Route>
 
                             <Route exact path={appRoutes.tokenList.path}>
@@ -103,11 +104,12 @@ export function App(): JSX.Element {
                             </Route>
                         </Switch>
                     </main>
-                    <div className="wallets">
-                        <Account key="account" />
-                        <WalletConnectingModal />
-                        <WalletUpdateModal />
-                    </div>
+                    <Footer key="footer" />
+                </div>
+                <div className="wallets">
+                    <Account key="account" />
+                    <WalletConnectingModal />
+                    <WalletUpdateModal />
                 </div>
             </Router>
         </IntlProvider>

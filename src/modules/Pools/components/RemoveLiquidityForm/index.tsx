@@ -10,7 +10,7 @@ import { AmountInput } from '@/components/common/AmountInput'
 import { TokenSelector } from '@/modules/TokensList/components/TokenSelector'
 import { Token } from '@/modules/TokensList/components/Token'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amountOrZero } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 import './index.scss'
 
@@ -84,7 +84,7 @@ function RemoveLiquidityFormInner({
     const amountInputIsInvalid = amount.length > 0 && (!amountIsLessOrEqualBalance || !amountIsPositiveNum)
 
     const totalAmountFormatted = userLpTotalAmount && lpDecimals !== undefined
-        ? amountOrZero(userLpTotalAmount, lpDecimals)
+        ? formattedAmount(userLpTotalAmount, lpDecimals)
         : '0'
 
     const amountInputHint = amount.length > 0 && amountIsPositiveNum && !amountIsLessOrEqualBalance
@@ -246,7 +246,7 @@ function RemoveLiquidityFormInner({
                                     size="xsmall"
                                 />
                                 <div className="remove-liquidity-form__value">
-                                    {new BigNumber(receiveLeft || '0').isZero() ? '0.00' : amountOrZero(receiveLeft, 0)}
+                                    {new BigNumber(receiveLeft || '0').isZero() ? '0.00' : formattedAmount(receiveLeft, 0)}
                                 </div>
                             </div>
 
@@ -256,7 +256,7 @@ function RemoveLiquidityFormInner({
                                     size="xsmall"
                                 />
                                 <div className="remove-liquidity-form__value">
-                                    {new BigNumber(receiveRight || '0').isZero() ? '0.00' : amountOrZero(receiveRight, 0)}
+                                    {new BigNumber(receiveRight || '0').isZero() ? '0.00' : formattedAmount(receiveRight, 0)}
                                 </div>
                             </div>
                         </div>
@@ -318,12 +318,12 @@ function RemoveLiquidityFormInner({
                                     {leftToken.symbol}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {currentLeftAmount && amountOrZero(currentLeftAmount, 0)}
+                                    {currentLeftAmount && formattedAmount(currentLeftAmount, 0)}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
                                     {
                                         resultLeftAmount && amountIsValid
-                                            ? amountOrZero(resultLeftAmount, 0)
+                                            ? formattedAmount(resultLeftAmount, 0)
                                             : nullMessage
                                     }
                                 </span>
@@ -333,12 +333,12 @@ function RemoveLiquidityFormInner({
                                     {rightToken.symbol}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {currentRightAmount && amountOrZero(currentRightAmount, 0)}
+                                    {currentRightAmount && formattedAmount(currentRightAmount, 0)}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
                                     {
                                         resultRightAmount && amountIsValid
-                                            ? amountOrZero(resultRightAmount, 0)
+                                            ? formattedAmount(resultRightAmount, 0)
                                             : nullMessage
                                     }
                                 </span>

@@ -15,7 +15,7 @@ type Params = {
     rightTokenRoot?: string;
 }
 
-export function PoolsRemoveLiquidityInner(): JSX.Element {
+export function BurnLiquidityInner(): JSX.Element {
     const wallet = useWallet()
     const history = useHistory()
     const removeLiquidityStore = useRemoveLiquidityStore()
@@ -50,7 +50,7 @@ export function PoolsRemoveLiquidityInner(): JSX.Element {
     }, [wallet.address, leftTokenRoot, rightTokenRoot])
 
     return (
-        <div className="section section--large">
+        <div className="container container--small">
             <WalletInstaller>
                 <RemoveLiquidityForm
                     receiveLeft={removeLiquidityStore.willReceiveLeft}
@@ -103,4 +103,4 @@ export function PoolsRemoveLiquidityInner(): JSX.Element {
     )
 }
 
-export const PoolsRemoveLiquidity = observer(PoolsRemoveLiquidityInner)
+export const BurnLiquidity = observer(BurnLiquidityInner)

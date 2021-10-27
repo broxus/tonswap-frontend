@@ -15,7 +15,7 @@ import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { TogglePoolButton } from '@/modules/Pools/components/TogglePoolButton'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { getDefaultPerPrice } from '@/modules/Swap/utils'
-import { amount, concatSymbols, isGoodBignumber } from '@/utils'
+import { concatSymbols, formattedAmount, isGoodBignumber } from '@/utils'
 
 import './pair.scss'
 
@@ -62,8 +62,8 @@ function PairInner(): JSX.Element {
     )
 
     return (
-        <>
-            <section className="section section--large">
+        <div className="container container--large">
+            <section className="section">
                 <Breadcrumb
                     items={[{
                         link: '/pairs',
@@ -97,7 +97,7 @@ function PairInner(): JSX.Element {
                                     label={intl.formatMessage({
                                         id: 'PAIR_TOKEN_PRICE',
                                     }, {
-                                        amount: amount(priceLeftToRight, counterToken.decimals) || 0,
+                                        amount: formattedAmount(priceLeftToRight, counterToken.decimals) || 0,
                                         symbolLeft: baseToken.symbol,
                                         symbolRight: counterToken.symbol,
                                     })}
@@ -113,7 +113,7 @@ function PairInner(): JSX.Element {
                                     label={intl.formatMessage({
                                         id: 'PAIR_TOKEN_PRICE',
                                     }, {
-                                        amount: amount(priceRightToLeft, baseToken.decimals) || 0,
+                                        amount: formattedAmount(priceRightToLeft, baseToken.decimals) || 0,
                                         symbolLeft: counterToken.symbol,
                                         symbolRight: baseToken.symbol,
                                     })}
@@ -162,7 +162,7 @@ function PairInner(): JSX.Element {
             </section>
 
             <PairTransactions />
-        </>
+        </div>
     )
 }
 

@@ -1,5 +1,5 @@
-import { UTCTimestamp } from 'lightweight-charts'
 import * as React from 'react'
+import { Time } from 'lightweight-charts'
 import { DateTime } from 'luxon'
 import uniqBy from 'lodash.uniqby'
 import { useIntl } from 'react-intl'
@@ -51,8 +51,8 @@ export function FarmingChart({
 
         const newData = response
             .map(item => ({
-                time: (item.timestamp / 1000) as UTCTimestamp,
-                value: item.data,
+                time: (item.timestamp / 1000) as Time,
+                value: parseFloat(item.data),
             }))
             .concat(data)
 

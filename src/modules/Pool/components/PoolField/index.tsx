@@ -60,11 +60,13 @@ function Field({
             </div>
             <div className="form-fieldset__main">
                 <input
-                    type="text"
                     className="form-input"
+                    inputMode="decimal"
+                    pattern="^[0-9]*[.]?[0-9]*$"
                     placeholder="0.0"
-                    value={props.value}
                     readOnly={props.readOnly}
+                    type="text"
+                    value={props.value}
                     onBlur={field.onBlur}
                     onChange={field.onChange}
                     onKeyPress={props.onKeyPress}

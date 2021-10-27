@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite'
 
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { amountOrZero } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 type Props = {
     tokensRoots: string[]
@@ -58,7 +58,7 @@ function FarmingAdminWithdrawInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: amountOrZero(tokensAmounts[index], token.decimals),
+                                        amount: formattedAmount(tokensAmounts[index], token.decimals),
                                         symbol: token.symbol,
                                     })}
                                 </div>

@@ -2,8 +2,8 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import { useIntl } from 'react-intl'
 
+import { formattedAmount } from '@/utils'
 import { ContentLoader } from '@/components/common/ContentLoader'
-import { amountOrZero } from '@/utils'
 
 import './index.scss'
 
@@ -34,7 +34,7 @@ export function RemoveLiquidityProcess({
                     {intl.formatMessage({
                         id: 'REMOVE_LIQUIDITY_PROCESS_TEXT',
                     }, {
-                        amount: amountOrZero(amount, 0),
+                        amount: formattedAmount(amount, 0),
                         symbol,
                     })}
                 </div>

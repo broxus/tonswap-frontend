@@ -43,6 +43,7 @@ export function AmountInput({
                 })}
                 size={size}
                 invalid={invalid}
+                inputMode="decimal"
             />
 
             {maxIsVisible && (

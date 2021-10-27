@@ -9,6 +9,7 @@ export type TextInputProps = {
     disabled?: boolean;
     onChange?: (value: string) => void;
     invalid?: boolean;
+    inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
     size?: 'small' | 'medium';
 }
 
@@ -18,6 +19,7 @@ export function TextInput({
     disabled,
     onChange,
     invalid,
+    inputMode,
     size,
 }: TextInputProps): JSX.Element {
     return (
@@ -29,6 +31,7 @@ export function TextInput({
                 [`text-input_size_${size}`]: Boolean(size),
             })}
             placeholder={placeholder}
+            inputMode={inputMode}
             value={value}
             onChange={e => onChange && onChange(e.currentTarget.value)}
             disabled={disabled}
