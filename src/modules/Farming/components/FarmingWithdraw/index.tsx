@@ -101,6 +101,7 @@ export function FarmingWithdrawInner({
 
             {activeTab === Tab.Claim && (
                 <FarmingAction
+                    decimals={tokenDecimals}
                     inputDisabled
                     loading={loading}
                     submitDisabled={claimDisabled}
@@ -121,6 +122,7 @@ export function FarmingWithdrawInner({
 
             {activeTab === Tab.Withdraw && (
                 <FarmingAction
+                    decimals={tokenDecimals}
                     loading={loading}
                     value={withdrawAmount || ''}
                     maxValue={maxValue}

@@ -33,6 +33,8 @@ export function useField({ token, ...props }: Props): FieldShape {
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         let { value } = event.target
+        value = value.replace(/[,]/g, '.')
+        value = value.replace(/[.]+/g, '.')
         value = value.replace(/(?!- )[^0-9.]/g, '')
         props.onChange?.(value)
     }

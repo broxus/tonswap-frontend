@@ -7,6 +7,7 @@ import './index.scss'
 
 type Props = {
     action: string;
+    decimals?: number;
     hint?: string;
     value: string;
     inputDisabled?: boolean;
@@ -19,6 +20,7 @@ type Props = {
 
 export function FarmingAction({
     action,
+    decimals,
     hint,
     value,
     inputDisabled,
@@ -42,6 +44,7 @@ export function FarmingAction({
         <div className="farming-action">
             <div className="farming-action__ctrl">
                 <AmountInput
+                    decimals={decimals}
                     disabled={inputDisabled || loading}
                     value={value}
                     onChange={onChange}

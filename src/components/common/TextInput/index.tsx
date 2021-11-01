@@ -7,20 +7,22 @@ export type TextInputProps = {
     placeholder?: string;
     value?: string;
     disabled?: boolean;
-    onChange?: (value: string) => void;
     invalid?: boolean;
     inputMode?: 'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search';
     size?: 'small' | 'medium';
+    onBlur?: React.FocusEventHandler<HTMLInputElement>;
+    onChange?: (value: string) => void;
 }
 
 export function TextInput({
     placeholder,
     value = '',
     disabled,
-    onChange,
     invalid,
     inputMode,
     size,
+    onChange,
+    onBlur,
 }: TextInputProps): JSX.Element {
     return (
         <input
@@ -34,6 +36,7 @@ export function TextInput({
             inputMode={inputMode}
             value={value}
             onChange={e => onChange && onChange(e.currentTarget.value)}
+            onBlur={onBlur}
             disabled={disabled}
         />
     )

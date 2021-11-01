@@ -210,6 +210,7 @@ function RemoveLiquidityFormInner({
                             value={amount}
                             onChange={onChangeAmount}
                             onClickMax={setMax}
+                            decimals={lpDecimals}
                             disabled={loading || !walletConnected}
                             invalid={amountInputIsInvalid}
                         />
