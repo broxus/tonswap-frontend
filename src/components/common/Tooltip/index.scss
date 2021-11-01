@@ -1,14 +1,19 @@
 .tooltip {
     position: fixed;
-    z-index: 10;
+    z-index: 100;
     padding: 12px;
     margin-top: 8px;
-    background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
-    backdrop-filter: blur(64px);
     border-radius: 2px;
     font-size: 12px;
     line-height: 16px;
     letter-spacing: 0.6px;
+    background: #313551;
+
+    @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+        background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
+        -webkit-backdrop-filter: blur(64px);
+        backdrop-filter: blur(64px);
+    }
 
     &_align_top-left {
         margin-top: -8px;

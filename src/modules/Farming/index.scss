@@ -177,30 +177,40 @@
 }
 
 .farming-map {
-    display: grid;
-    grid-template-columns: 1fr max-content;
-    gap: 12px;
     margin: 16px 0 0;
     font-size: 14px;
     line-height: 20px;
 
-    &__label {
+    &__item {
         display: flex;
-        align-items: center;
-        gap: 10px;
+        justify-content: space-between;
+        align-items: baseline;
+        column-gap: 12px;
+        margin: 0 0 12px;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    &__label {
         color: rgba(255, 255, 255, 0.56);
     }
 
     &__value {
         display: flex;
         align-items: center;
-        gap: 8px;
         justify-self: flex-end;
+        text-align: right;
+        gap: 8px;
     }
 
     &__info {
+        display: inline;
+        margin: 0 0 0 5px;
+
         .icon {
-            display: block;
+            vertical-align: text-bottom;
             cursor: pointer;
         }
     }

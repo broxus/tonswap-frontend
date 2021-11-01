@@ -36,72 +36,80 @@ export function FarmingVesting({
                 })}
             </h2>
             <div className="farming-map">
-                <div className="farming-map__label">
-                    {intl.formatMessage({
-                        id: 'FARMING_VESTING_RATIO_TITLE',
-                    })}
-                    <div className="farming-map__info" ref={ratioRef}>
-                        <Icon icon="infoFill" />
-                    </div>
-                    <Tooltip target={ratioRef} alignY="top" width={270}>
+                <div className="farming-map__item">
+                    <div className="farming-map__label">
                         {intl.formatMessage({
-                            id: 'FARMING_VESTING_RATIO_HINT',
+                            id: 'FARMING_VESTING_RATIO_TITLE',
                         })}
-                    </Tooltip>
-                </div>
-                <div className="farming-map__value">
-                    {
-                        vestingRatio === undefined
-                            ? nullMessage
-                            : intl.formatMessage({
-                                id: 'FARMING_VESTING_RATIO_VALUE',
-                            }, {
-                                value: new BigNumber(vestingRatio)
-                                    .div(10)
-                                    .decimalPlaces(1, BigNumber.ROUND_DOWN)
-                                    .toFixed(),
-                            })
-                    }
-                </div>
-                <div className="farming-map__label">
-                    {intl.formatMessage({
-                        id: 'FARMING_VESTING_PERIOD_TITLE',
-                    })}
-                    <div className="farming-map__info" ref={periodRef}>
-                        <Icon icon="infoFill" />
+                        <div className="farming-map__info" ref={ratioRef}>
+                            <Icon icon="infoFill" />
+                        </div>
+                        <Tooltip target={ratioRef} alignY="top" width={270}>
+                            {intl.formatMessage({
+                                id: 'FARMING_VESTING_RATIO_HINT',
+                            })}
+                        </Tooltip>
                     </div>
-                    <Tooltip target={periodRef} alignY="top" width={270}>
-                        {intl.formatMessage({
-                            id: 'FARMING_VESTING_PERIOD_HINT',
-                        })}
-                    </Tooltip>
-                </div>
-                <div className="farming-map__value">
-                    {
-                        vestingPeriodDays === undefined
-                            ? nullMessage
-                            : intl.formatMessage({
-                                id: 'FARMING_VESTING_PERIOD_VALUE',
-                            }, {
-                                days: vestingPeriodDays,
-                            })
-                    }
-                </div>
-                <div className="farming-map__label">
-                    {intl.formatMessage({
-                        id: 'FARMING_VESTING_VESTING_UNTIL',
-                    })}
-                    <div className="farming-map__info" ref={untilRef}>
-                        <Icon icon="infoFill" />
+                    <div className="farming-map__value">
+                        {
+                            vestingRatio === undefined
+                                ? nullMessage
+                                : intl.formatMessage({
+                                    id: 'FARMING_VESTING_RATIO_VALUE',
+                                }, {
+                                    value: new BigNumber(vestingRatio)
+                                        .div(10)
+                                        .decimalPlaces(1, BigNumber.ROUND_DOWN)
+                                        .toFixed(),
+                                })
+                        }
                     </div>
-                    <Tooltip target={untilRef} alignY="top" width={270}>
-                        {intl.formatMessage({
-                            id: 'FARMING_VESTING_VESTING_HINT',
-                        })}
-                    </Tooltip>
                 </div>
-                <div className="farming-map__value">
-                    {vestingTimeFormatted || nullMessage}
+
+                <div className="farming-map__item">
+                    <div className="farming-map__label">
+                        {intl.formatMessage({
+                            id: 'FARMING_VESTING_PERIOD_TITLE',
+                        })}
+                        <div className="farming-map__info" ref={periodRef}>
+                            <Icon icon="infoFill" />
+                        </div>
+                        <Tooltip target={periodRef} alignY="top" width={270}>
+                            {intl.formatMessage({
+                                id: 'FARMING_VESTING_PERIOD_HINT',
+                            })}
+                        </Tooltip>
+                    </div>
+                    <div className="farming-map__value">
+                        {
+                            vestingPeriodDays === undefined
+                                ? nullMessage
+                                : intl.formatMessage({
+                                    id: 'FARMING_VESTING_PERIOD_VALUE',
+                                }, {
+                                    days: vestingPeriodDays,
+                                })
+                        }
+                    </div>
+                </div>
+
+                <div className="farming-map__item">
+                    <div className="farming-map__label">
+                        {intl.formatMessage({
+                            id: 'FARMING_VESTING_VESTING_UNTIL',
+                        })}
+                        <div className="farming-map__info" ref={untilRef}>
+                            <Icon icon="infoFill" />
+                        </div>
+                        <Tooltip target={untilRef} alignY="top" width={270}>
+                            {intl.formatMessage({
+                                id: 'FARMING_VESTING_VESTING_HINT',
+                            })}
+                        </Tooltip>
+                    </div>
+                    <div className="farming-map__value">
+                        {vestingTimeFormatted || nullMessage}
+                    </div>
                 </div>
             </div>
         </div>

@@ -34,7 +34,7 @@ function FarmingAddressesInner({
             </h2>
             <div className="farming-map">
                 {poolAddress && (
-                    <React.Fragment key="pool-address">
+                    <div className="farming-map__item" key="pool-address">
                         <div className="farming-map__label">
                             {intl.formatMessage({
                                 id: 'FARMING_ADDRESSES_POOL',
@@ -44,11 +44,11 @@ function FarmingAddressesInner({
                             <AccountExplorerLink address={poolAddress} />
                             <CopyToClipboard text={poolAddress} />
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
 
                 {ownerAddress && (
-                    <React.Fragment key="owner-address">
+                    <div className="farming-map__item" key="owner-address">
                         <div className="farming-map__label">
                             {intl.formatMessage({
                                 id: 'FARMING_ADDRESSES_OWNER',
@@ -58,12 +58,12 @@ function FarmingAddressesInner({
                             <AccountExplorerLink address={ownerAddress} />
                             <CopyToClipboard text={ownerAddress} />
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
 
 
                 {userAddress && (
-                    <React.Fragment key="user-address">
+                    <div className="farming-map__item" key="user-address">
                         <div className="farming-map__label">
                             {intl.formatMessage({
                                 id: 'FARMING_ADDRESSES_USER',
@@ -73,11 +73,11 @@ function FarmingAddressesInner({
                             <AccountExplorerLink address={userAddress} />
                             <CopyToClipboard text={userAddress} />
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
 
                 {tokenRoot && (
-                    <React.Fragment key="token-address">
+                    <div className="farming-map__item" key="token-address">
                         <div className="farming-map__label">
                             {intl.formatMessage({
                                 id: 'FARMING_ADDRESSES_TOKEN_ROOT',
@@ -87,12 +87,12 @@ function FarmingAddressesInner({
                             <AccountExplorerLink address={tokenRoot} />
                             <CopyToClipboard text={tokenRoot} />
                         </div>
-                    </React.Fragment>
+                    </div>
                 )}
 
                 {rewardTokens.map(token => (
                     token && (
-                        <React.Fragment key={token.root}>
+                        <div className="farming-map__item" key={token.root}>
                             <div className="farming-map__label">
                                 {intl.formatMessage({
                                     id: 'FARMING_ADDRESSES_TOKEN',
@@ -104,7 +104,7 @@ function FarmingAddressesInner({
                                 <AccountExplorerLink address={token.root} />
                                 <CopyToClipboard text={token.root} />
                             </div>
-                        </React.Fragment>
+                        </div>
                     )
                 ))}
             </div>
