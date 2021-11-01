@@ -1,4 +1,10 @@
 .farming-transactions {
+    .tabs {
+        row-gap: 20px;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+
     &__list {
         &.list {
             min-height: auto;
