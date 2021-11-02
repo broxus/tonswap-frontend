@@ -55,7 +55,11 @@ export function useSwapSettings(): SwapSettingsShape {
     }
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
-        swap.changeData('slippage', event.target.value)
+        let { value } = event.target
+        value = value.replace(/[,]/g, '.')
+        value = value.replace(/[.]+/g, '.')
+        value = value.replace(/(?!- )[^0-9.]/g, '')
+        swap.changeData('slippage', value)
     }
 
     React.useEffect(() => {

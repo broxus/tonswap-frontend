@@ -5,9 +5,12 @@ import classNames from 'classnames'
 import { TextInput, TextInputProps } from '@/components/common/TextInput'
 
 import './index.scss'
+import { useField } from '@/hooks/useField'
+
 
 type Props = {
     value?: string;
+    decimals?: number;
     disabled?: boolean;
     maxIsVisible?: boolean;
     onChange?: (value: string) => void;
@@ -17,15 +20,25 @@ type Props = {
 }
 
 export function AmountInput({
-    value,
+    decimals,
     disabled,
-    maxIsVisible = true,
-    onChange,
-    onClickMax,
-    size = 'small',
     invalid,
+    maxIsVisible = true,
+    size = 'small',
+    onClickMax,
+    ...props
 }: Props): JSX.Element {
     const intl = useIntl()
+    const field = useField({
+        decimals,
+    })
+
+    const onChange = (value: string) => {
+        let val = value.replace(/[,]/g, '.')
+        val = val.replace(/[.]+/g, '.')
+        val = val.replace(/(?!- )[^0-9.]/g, '')
+        props.onChange?.(val)
+    }
 
     return (
         <div
@@ -35,8 +48,7 @@ export function AmountInput({
             })}
         >
             <TextInput
-                onChange={onChange}
-                value={value}
+                value={props.value}
                 disabled={disabled}
                 placeholder={intl.formatMessage({
                     id: 'AMOUNT_INPUT_PLACEHOLDER',
@@ -44,6 +56,8 @@ export function AmountInput({
                 size={size}
                 invalid={invalid}
                 inputMode="decimal"
+                onBlur={field.onBlur}
+                onChange={onChange}
             />
 
             {maxIsVisible && (

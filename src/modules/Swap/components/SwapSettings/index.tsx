@@ -41,8 +41,9 @@ function Settings(): JSX.Element {
                     <div className="swap-settings__label">
                         <div className="swap-settings__label-txt">%</div>
                         <input
-                            type="text"
                             className="swap-settings__input"
+                            inputMode="decimal"
+                            type="text"
                             value={swap.slippage}
                             onBlur={settings.onBlur}
                             onChange={settings.onChange}

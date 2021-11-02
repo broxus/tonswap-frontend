@@ -55,6 +55,7 @@ export function FarmingDepositInner({
 
             <FarmingAction
                 loading={loading}
+                decimals={tokenDecimals}
                 value={depositAmount || ''}
                 maxValue={maxValue}
                 submitDisabled={depositDisabled}

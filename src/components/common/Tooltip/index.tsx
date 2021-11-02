@@ -24,27 +24,39 @@ export function Tooltip({
     forceShow,
 }: Props): JSX.Element | null {
     const [visible, setVisible] = React.useState(Boolean(forceShow))
+    const tooltipRef = React.createRef<HTMLDivElement>()
+    const [position, setPosition] = React.useState({
+        top: 0,
+        left: 0,
+    })
 
-    let top = 0,
-        left = 0
+    React.useEffect(() => {
+        if (visible && target.current && tooltipRef.current) {
+            const rect = target.current.getBoundingClientRect()
+            let { top, left } = rect
 
-    if (visible && target.current) {
-        const rect = target.current.getBoundingClientRect()
-        top = rect.top
+            if (alignY === 'bottom') {
+                top = rect.top + rect.height
+            }
 
-        if (alignY === 'bottom') {
-            top = rect.top + rect.height
+            if (alignX === 'right') {
+                left = rect.right
+            }
+
+            if (alignX === 'center') {
+                left = rect.left + (rect.width / 2)
+            }
+
+            const tooltipRect = tooltipRef.current.getBoundingClientRect()
+            const leftOffset = window.innerWidth - tooltipRect.width - left - 8
+
+            if (leftOffset < 0) {
+                left += leftOffset
+            }
+
+            setPosition({ top, left })
         }
-
-        left = rect.left
-
-        if (alignX === 'right') {
-            left = rect.right
-        }
-        if (alignX === 'center') {
-            left = rect.left + (rect.width / 2)
-        }
-    }
+    }, [visible, target.current])
 
     React.useEffect(() => {
         const onMouseover = () => {
@@ -79,6 +91,7 @@ export function Tooltip({
     return visible
         ? ReactDOM.createPortal(
             <div
+                ref={tooltipRef}
                 className={classNames('tooltip', {
                     'tooltip_align_top-left': alignX === 'left' && alignY === 'top',
                     'tooltip_align_top-right': alignX === 'right' && alignY === 'top',
@@ -88,8 +101,8 @@ export function Tooltip({
                     [`tooltip_size_${size}`]: Boolean(size),
                 })}
                 style={{
-                    top: `${top}px`,
-                    left: `${left}px`,
+                    top: `${position.top}px`,
+                    left: `${position.left}px`,
                     width: width && `${width}px`,
                 }}
             >

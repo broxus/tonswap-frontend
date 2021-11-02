@@ -1,6 +1,5 @@
 import * as React from 'react'
 
-import { TokenCache } from '@/stores/TokensCacheService'
 import { truncateDecimals } from '@/utils'
 
 
@@ -10,19 +9,19 @@ type FieldShape = {
 }
 
 type Props = {
-    token?: TokenCache;
+    decimals?: number;
     value?: string;
     onChange?: (value: string) => void;
 }
 
 
-export function useField({ token, ...props }: Props): FieldShape {
+export function useField({ decimals, ...props }: Props): FieldShape {
     const onBlur: React.FocusEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
         if (value.length === 0) {
             return
         }
-        const validatedAmount = truncateDecimals(value, token?.decimals)
+        const validatedAmount = truncateDecimals(value, decimals)
         if (props.value !== validatedAmount && validatedAmount != null) {
             props.onChange?.(validatedAmount)
         }
@@ -33,6 +32,8 @@ export function useField({ token, ...props }: Props): FieldShape {
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         let { value } = event.target
+        value = value.replace(/[,]/g, '.')
+        value = value.replace(/[.]+/g, '.')
         value = value.replace(/(?!- )[^0-9.]/g, '')
         props.onChange?.(value)
     }
