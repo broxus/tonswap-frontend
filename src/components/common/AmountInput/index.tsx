@@ -3,9 +3,9 @@ import { useIntl } from 'react-intl'
 import classNames from 'classnames'
 
 import { TextInput, TextInputProps } from '@/components/common/TextInput'
-import { truncateDecimals } from '@/utils'
 
 import './index.scss'
+import { useField } from '@/hooks/useField'
 
 
 type Props = {
@@ -29,20 +29,9 @@ export function AmountInput({
     ...props
 }: Props): JSX.Element {
     const intl = useIntl()
-
-    const onBlur: React.FocusEventHandler<HTMLInputElement> = event => {
-        const { value } = event.target
-        if (value.length === 0) {
-            return
-        }
-        const validatedAmount = truncateDecimals(value, decimals)
-        if (props.value !== validatedAmount && validatedAmount != null) {
-            props.onChange?.(validatedAmount)
-        }
-        else if (validatedAmount == null) {
-            props.onChange?.('')
-        }
-    }
+    const field = useField({
+        decimals,
+    })
 
     const onChange = (value: string) => {
         let val = value.replace(/[,]/g, '.')
@@ -67,7 +56,7 @@ export function AmountInput({
                 size={size}
                 invalid={invalid}
                 inputMode="decimal"
-                onBlur={onBlur}
+                onBlur={field.onBlur}
                 onChange={onChange}
             />
 

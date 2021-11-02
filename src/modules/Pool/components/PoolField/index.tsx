@@ -32,7 +32,11 @@ function Field({
     ...props
 }: Props): JSX.Element {
     const intl = useIntl()
-    const field = useField(props)
+    const field = useField({
+        decimals: token?.decimals,
+        value: props.value,
+        onChange: props.onChange,
+    })
     const balance = useTokenFormattedBalance(token, {
         subscriberPrefix: 'field',
         dexAccountBalance,
