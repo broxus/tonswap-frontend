@@ -34,14 +34,10 @@ export function AmountInput({
     })
 
     const onChange = (value: string) => {
-        if (
-            props.value
-            && props.value.indexOf('.') > -1
-            && value.charAt(value.length - 1) === '.'
-        ) {
+        let val = value.replace(/[,]/g, '.')
+        if (props.value && props.value.indexOf('.') > -1 && val.charAt(val.length - 1) === '.') {
             return
         }
-        let val = value.replace(/[,]/g, '.')
         val = val.replace(/[.]+/g, '.')
         val = val.replace(/(?!- )[^0-9.]/g, '')
         props.onChange?.(val)

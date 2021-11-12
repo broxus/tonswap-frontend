@@ -32,14 +32,10 @@ export function useField({ decimals, ...props }: Props): FieldShape {
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
         let { value } = event.target
-        if (
-            props.value
-            && props.value.indexOf('.') > -1
-            && value.charAt(value.length - 1) === '.'
-        ) {
+        value = value.replace(/[,]/g, '.')
+        if (props.value && props.value.indexOf('.') > -1 && value.charAt(value.length - 1) === '.') {
             return
         }
-        value = value.replace(/[,]/g, '.')
         value = value.replace(/[.]+/g, '.')
         value = value.replace(/(?!- )[^0-9.]/g, '')
         props.onChange?.(value)
