@@ -6,7 +6,7 @@ import { observer } from 'mobx-react-lite'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import {
-    formatDate,
+    formatDateUTC,
     formattedAmount,
     parseCurrencyBillions,
     shareAmount,
@@ -252,7 +252,7 @@ function FarmingUserInfoInner({
                                     id: 'FARMING_USER_INFO_HISTORY_LAST_UPD',
                                 })}
                             </div>
-                            {formatDate(userHistoryLastUpdateTime)}
+                            {formatDateUTC(userHistoryLastUpdateTime)}
                         </div>
                     )}
                 </div>
@@ -361,7 +361,7 @@ function FarmingUserInfoInner({
                                     id: 'FARMING_USER_INFO_VESTING_TIME',
                                 })}
                             </div>
-                            {formatDate(vestingTime)}
+                            {formatDateUTC(vestingTime)}
                         </div>
                     )}
                 </div>
