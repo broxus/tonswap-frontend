@@ -3,9 +3,9 @@ import { useIntl } from 'react-intl'
 import classNames from 'classnames'
 
 import { TextInput, TextInputProps } from '@/components/common/TextInput'
+import { useField } from '@/hooks/useField'
 
 import './index.scss'
-import { useField } from '@/hooks/useField'
 
 
 type Props = {
@@ -34,6 +34,13 @@ export function AmountInput({
     })
 
     const onChange = (value: string) => {
+        if (
+            props.value
+            && props.value.indexOf('.') > -1
+            && value.charAt(value.length - 1) === '.'
+        ) {
+            return
+        }
         let val = value.replace(/[,]/g, '.')
         val = val.replace(/[.]+/g, '.')
         val = val.replace(/(?!- )[^0-9.]/g, '')
