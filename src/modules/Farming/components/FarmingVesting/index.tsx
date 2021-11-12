@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { Tooltip } from '@/components/common/Tooltip'
-import { formatDate } from '@/utils'
+import { formatDateUTC } from '@/utils'
 
 type Props = {
     vestingRatio?: number;
@@ -25,7 +25,7 @@ export function FarmingVesting({
         id: 'FARMING_VESTING_NULL',
     })
     const vestingTimeFormatted = vestingTime && vestingTime > 0
-        ? formatDate(vestingTime)
+        ? formatDateUTC(vestingTime)
         : undefined
 
     return (

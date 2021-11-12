@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { formatDate, formattedAmount } from '@/utils'
+import { formatDateUTC, formattedAmount } from '@/utils'
 
 import './index.scss'
 
@@ -69,15 +69,15 @@ export function FarmingSpeedTableInner({
                             ))}
                         </div>
                         <div className="list__cell list__cell--right">
-                            {roundStartTimes[index] ? formatDate(roundStartTimes[index]) : '—'}
+                            {roundStartTimes[index] ? formatDateUTC(roundStartTimes[index]) : '—'}
                         </div>
                         <div className="list__cell list__cell--right">
                             {endTime > 0 && !roundStartTimes[index + 1] ? (
-                                formatDate(endTime)
+                                formatDateUTC(endTime)
                             ) : (
                                 <>
                                     {roundStartTimes[index + 1]
-                                        ? formatDate(roundStartTimes[index + 1])
+                                        ? formatDateUTC(roundStartTimes[index + 1])
                                         : '—'}
                                 </>
                             )}
