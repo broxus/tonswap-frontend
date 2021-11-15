@@ -35,7 +35,12 @@ export function AmountInput({
 
     const onChange = (value: string) => {
         let val = value.replace(/[,]/g, '.')
-        if (props.value && props.value.indexOf('.') > -1 && val.charAt(val.length - 1) === '.') {
+        if (
+            props.value
+            && props.value.indexOf('.') > -1
+            && val.length > props.value.length
+            && val.charAt(val.length - 1) === '.'
+        ) {
             return
         }
         val = val.replace(/[.]+/g, '.')
