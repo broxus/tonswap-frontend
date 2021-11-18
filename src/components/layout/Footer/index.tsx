@@ -35,7 +35,7 @@ export function Footer(): JSX.Element {
                 )}
             </Observer>
             <a
-                href="https://github.com/broxus/tonswap-frontend"
+                href="https://github.com/broxus/ton-dex"
                 className="btn btn--xl btn--empty footer-tool"
                 target="_blank"
                 rel="noopener noreferrer"
