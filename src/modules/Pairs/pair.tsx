@@ -35,10 +35,10 @@ function PairInner(): JSX.Element {
 
     const priceLeftToRight = React.useMemo(
         () => {
-            const price = (baseToken !== undefined && counterToken !== undefined)
+            const price = (baseToken?.decimals !== undefined && counterToken?.decimals !== undefined)
                 ? getDefaultPerPrice(
-                    new BigNumber(store.pair?.rightLocked || 0).shiftedBy(-counterToken?.decimals),
-                    new BigNumber(store.pair?.leftLocked || 0).shiftedBy(-baseToken?.decimals),
+                    new BigNumber(store.pair?.rightLocked || 0).shiftedBy(-counterToken.decimals),
+                    new BigNumber(store.pair?.leftLocked || 0).shiftedBy(-baseToken.decimals),
                     counterToken?.decimals,
                 ) : new BigNumber(0)
 
@@ -49,10 +49,10 @@ function PairInner(): JSX.Element {
 
     const priceRightToLeft = React.useMemo(
         () => {
-            const price = (baseToken !== undefined && counterToken !== undefined)
+            const price = (baseToken?.decimals !== undefined && counterToken?.decimals !== undefined)
                 ? getDefaultPerPrice(
-                    new BigNumber(store.pair?.leftLocked || 0).shiftedBy(-baseToken?.decimals),
-                    new BigNumber(store.pair?.rightLocked || 0).shiftedBy(-counterToken?.decimals),
+                    new BigNumber(store.pair?.leftLocked || 0).shiftedBy(-baseToken.decimals),
+                    new BigNumber(store.pair?.rightLocked || 0).shiftedBy(-counterToken.decimals),
                     baseToken?.decimals,
                 ) : new BigNumber(0)
 
