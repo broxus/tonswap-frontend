@@ -15,7 +15,7 @@ export function Pools(): JSX.Element {
     return (
         <div className="container container--large">
             <section className="section">
-                <div className="section__header">
+                <div className="section__header section__header_wrap">
                     <SectionTitle>
                         {intl.formatMessage({ id: 'POOLS_LIST_TITLE' })}
                     </SectionTitle>

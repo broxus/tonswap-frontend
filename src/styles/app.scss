@@ -74,6 +74,11 @@
                 text-decoration: none;
             }
         }
+
+        &_wrap {
+            flex-wrap: wrap;
+            row-gap: 1em;
+        }
     }
 
     &__header-actions {
