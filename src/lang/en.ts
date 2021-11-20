@@ -122,7 +122,8 @@ export default {
 
     POOLS_LIST_CONNECT_WALLET_TITLE: 'Your liquidity positions will appear here.',
     POOLS_LIST_TITLE: 'Pools Overview',
-    POOLS_LIST_HEADER_BUTTON: 'New position',
+    POOLS_LIST_HEADER_NEW: 'New position',
+    POOLS_LIST_HEADER_REMOVE: 'Remove Liquidity',
     POOLS_LIST_FAV_TITLE: 'Favorite pools',
     POOLS_LIST_FILTER_PLACEHOLDER: 'Searching…',
     POOLS_LIST_TABLE_PAIR: 'Pair',

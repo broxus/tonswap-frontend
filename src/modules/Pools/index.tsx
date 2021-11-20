@@ -20,9 +20,15 @@ export function Pools(): JSX.Element {
                         {intl.formatMessage({ id: 'POOLS_LIST_TITLE' })}
                     </SectionTitle>
 
-                    <Link to="/pool" className="btn btn-primary">
-                        {intl.formatMessage({ id: 'POOLS_LIST_HEADER_BUTTON' })}
-                    </Link>
+                    <div className="section__header-actions">
+                        <Link to="/pools/burn-liquidity" className="btn btn-secondary">
+                            {intl.formatMessage({ id: 'POOLS_LIST_HEADER_REMOVE' })}
+                        </Link>
+
+                        <Link to="/pool" className="btn btn-primary">
+                            {intl.formatMessage({ id: 'POOLS_LIST_HEADER_NEW' })}
+                        </Link>
+                    </div>
                 </div>
                 <WalletConnector
                     message={intl.formatMessage({ id: 'POOLS_LIST_CONNECT_WALLET_TITLE' })}
