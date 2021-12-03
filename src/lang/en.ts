@@ -146,6 +146,8 @@ export default {
     POOLS_LIST_EMPTY_TABLE_META: 'You can add favorite pools in {link} section',
     POOLS_LIST_EMPTY_TABLE_META_LINK_TEXT: 'Pairs',
     POOLS_LIST_TOKEN_BALANCE: '{value} {symbol}',
+    POOLS_LIST_USER_BALANCE: 'Your balance',
+    POOLS_LIST_LOCKED_FARM: 'Locked in farming pools',
     POOLS_FARMINGS_TITLE: 'Farming pools',
 
     POOLS_LIST_ITEM_NOT_FOUND: 'Pool not found',
@@ -628,4 +630,5 @@ export default {
     TRANSACTIONS_LIST_EVENT_WITHDRAW: 'Removes',
     TRANSACTIONS_LIST_NO_TRANSACTIONS: 'No transactions',
     TRANSACTIONS_LIST_NULL: 'N/A',
+    TRANSACTIONS_LIST_TITLE: 'Transactions',
 }
