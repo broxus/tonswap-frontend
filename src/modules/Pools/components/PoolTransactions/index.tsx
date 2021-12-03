@@ -64,7 +64,11 @@ export function PoolTransactions({
     return (
         <>
             <div className="pools-sub-header">
-                <SectionTitle size="small">Transactions</SectionTitle>
+                <SectionTitle size="small">
+                    {intl.formatMessage({
+                        id: 'TRANSACTIONS_LIST_TITLE',
+                    })}
+                </SectionTitle>
 
                 <Tabs
                     items={[{
