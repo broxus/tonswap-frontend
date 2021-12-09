@@ -491,7 +491,11 @@ export class FarmingDataStore {
         }
 
         const reduceReward = (acc: BigNumber, item: string, index: number): BigNumber => {
-            const { decimals } = rewardTokens[index] as TokenCache
+            const token = rewardTokens[index] as TokenCache
+            if (token === undefined) {
+                return acc
+            }
+            const { decimals } = token
             const currency = poolData.rewardCurrencies[index]
             const current = new BigNumber(item).shiftedBy(-decimals).multipliedBy(currency.price)
             return acc.plus(current)
