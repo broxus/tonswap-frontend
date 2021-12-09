@@ -1605,7 +1605,7 @@ export class PoolStore {
             return false
         }
 
-        const leftAmount = new BigNumber(this.leftAmount || 0).shiftedBy(this.leftToken.decimals || DEFAULT_DECIMALS)
+        const leftAmount = new BigNumber(this.leftAmount || 0).shiftedBy(this.leftToken.decimals ?? DEFAULT_DECIMALS)
         return leftAmount.lte(this.dexLeftBalance || 0)
     }
 
@@ -1622,7 +1622,7 @@ export class PoolStore {
             return false
         }
 
-        const rightAmount = new BigNumber(this.rightAmount || 0).shiftedBy(this.rightToken.decimals || DEFAULT_DECIMALS)
+        const rightAmount = new BigNumber(this.rightAmount || 0).shiftedBy(this.rightToken.decimals ?? DEFAULT_DECIMALS)
         return rightAmount.lte(this.dexRightBalance || 0)
     }
 

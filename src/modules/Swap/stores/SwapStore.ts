@@ -1868,9 +1868,9 @@ export class SwapStore {
 
             if (pair.roots?.left !== undefined && pair.roots?.right !== undefined) {
                 const leftToken = this.tokensCache.get(meta.baseAddress)
-                pair.decimals!.left = leftToken?.decimals || DEFAULT_DECIMALS
+                pair.decimals!.left = leftToken?.decimals ?? DEFAULT_DECIMALS
                 const rightToken = this.tokensCache.get(meta.counterAddress)
-                pair.decimals!.right = rightToken?.decimals || DEFAULT_DECIMALS
+                pair.decimals!.right = rightToken?.decimals ?? DEFAULT_DECIMALS
             }
 
             return pair
@@ -2203,7 +2203,7 @@ export class SwapStore {
      * @returns {boolean}
      */
     public get leftTokenDecimals(): number {
-        return this.leftToken?.decimals || DEFAULT_DECIMALS
+        return this.leftToken?.decimals ?? DEFAULT_DECIMALS
     }
 
     /**
@@ -2211,7 +2211,7 @@ export class SwapStore {
      * @returns {boolean}
      */
     public get rightTokenDecimals(): number {
-        return this.rightToken?.decimals || DEFAULT_DECIMALS
+        return this.rightToken?.decimals ?? DEFAULT_DECIMALS
     }
 
     /**
