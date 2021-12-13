@@ -41,7 +41,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
             buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_ENTER_ALL_DATA' })
             break
 
-        case !isAddressValid(managingToken.newOwnerAddress):
+        case !isAddressValid(managingToken.newOwnerAddress, true):
             buttonProps.disabled = true
             buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MESSAGE_ENTER_VALID_ADDRESS' })
             break
@@ -59,7 +59,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     return (
         <button
             type="button"
-            className="btn btn-tertiary btn-lg form-submit btn-block"
+            className="btn btn-primary btn-lg form-submit btn-block"
             aria-disabled={buttonProps.disabled}
             {...buttonProps}
         >

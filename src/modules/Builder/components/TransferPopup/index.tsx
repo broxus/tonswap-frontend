@@ -52,14 +52,14 @@ function Popup({ onDismiss }: Props): JSX.Element {
                         label={intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_TRANSFER_LABEL_NEW_OWNER' })}
                         type="string"
                         isValid={
-                            isAddressValid(managingToken.newOwnerAddress)
+                            isAddressValid(managingToken.newOwnerAddress, true)
                         }
                         value={managingToken.newOwnerAddress}
                         onChange={transferForm.onChangeData('newOwnerAddress')}
                     />
                 </div>
                 <div className="popup-actions">
-                    <button className="btn btn-primary btn-lg form-submit btn-block" onClick={onDismiss} type="button">
+                    <button className="btn btn-tertiary btn-lg form-submit btn-block" onClick={onDismiss} type="button">
                         {intl.formatMessage({
                             id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_CANCEL',
                         })}
