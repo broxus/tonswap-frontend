@@ -1564,6 +1564,13 @@ export class PoolStore {
     }
 
     public get isSupplyReady(): boolean {
+        console.log(
+            this.isLeftAmountValid,
+            this.isRightAmountValid,
+            this.isDexLeftBalanceValid,
+            this.isDexRightBalanceValid,
+        )
+
         return this.isAutoExchangeEnabled
             ? (
                 (
@@ -1648,11 +1655,11 @@ export class PoolStore {
      */
 
     public get isLeftAmountValid(): boolean {
-        return isGoodBignumber(new BigNumber(this.leftAmount || 0))
+        return isGoodBignumber(new BigNumber(this.leftAmount || 0), false)
     }
 
     public get isRightAmountValid(): boolean {
-        return isGoodBignumber(new BigNumber(this.rightAmount || 0))
+        return isGoodBignumber(new BigNumber(this.rightAmount || 0), false)
     }
 
     public get leftAmount(): PoolStoreData['leftAmount'] {
