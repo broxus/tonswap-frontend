@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 
+import { Icon } from '@/components/common/Icon'
 import { TvlChange } from '@/components/common/TvlChange'
 import { TokenIcons } from '@/components/common/TokenIcons'
 import { FarmingPair } from '@/modules/Farming/components/FarmingPair'
@@ -35,6 +36,7 @@ export type FarmingTableItemProps = {
     isPublic?: boolean;
     balanceWarning?: boolean;
     link?: string;
+    rewardsLoading?: boolean;
 }
 
 export function FarmingTableItem({
@@ -54,6 +56,7 @@ export function FarmingTableItem({
     isPublic,
     balanceWarning,
     link,
+    rewardsLoading,
 }: FarmingTableItemProps): JSX.Element {
     const Tag = (link ? Link : 'div') as React.ElementType
     const intl = useIntl()
@@ -126,16 +129,24 @@ export function FarmingTableItem({
             >
                 {shareFormatted}
             </div>
-            <div
-                className="list__cell list__cell--left list__cell--right"
-                dangerouslySetInnerHTML={{ __html: vestedRewards.join('<br />') }}
-                title={vestedRewards.join('&#013;')}
-            />
-            <div
-                className="list__cell list__cell--left list__cell--right"
-                dangerouslySetInnerHTML={{ __html: entitledRewards.join('<br />') }}
-                title={entitledRewards.join('&#013;')}
-            />
+            <div className="list__cell list__cell--left list__cell--right">
+                {rewardsLoading ? (
+                    <Icon icon="loader" ratio={0.6} className="spin farming-table__loading" />
+                ) : (
+                    vestedRewards.map(item => (
+                        <div>{item}</div>
+                    ))
+                )}
+            </div>
+            <div className="list__cell list__cell--left list__cell--right">
+                {rewardsLoading ? (
+                    <Icon icon="loader" ratio={0.6} className="spin farming-table__loading" />
+                ) : (
+                    entitledRewards.map(item => (
+                        <div>{item}</div>
+                    ))
+                )}
+            </div>
         </Tag>
     )
 }
