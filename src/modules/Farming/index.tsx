@@ -70,16 +70,12 @@ function FarmingsInner(): JSX.Element {
                         data={favoriteFarmingListStore.data}
                         vestedRewards={favoriteFarmingListStore.rewards.map(item => item.vested)}
                         entitledRewards={favoriteFarmingListStore.rewards.map(item => item.entitled)}
+                        rewardsLoading={favoriteFarmingListStore.rewards.map(item => item.loading)}
                         queryParamPrefix="fav"
                     />
                 )}
 
-                <div
-                    // FIXME: Remove minHeight and div when site footer will exists, and filter popup will not jump
-                    style={{
-                        minHeight: '661px',
-                    }}
-                >
+                <div>
                     <FarmingList
                         key="all"
                         lowBalanceEnabled
@@ -97,6 +93,7 @@ function FarmingsInner(): JSX.Element {
                         data={farmingListStore.data}
                         vestedRewards={farmingListStore.rewards.map(item => item.vested)}
                         entitledRewards={farmingListStore.rewards.map(item => item.entitled)}
+                        rewardsLoading={farmingListStore.rewards.map(item => item.loading)}
                     />
                 </div>
             </section>
