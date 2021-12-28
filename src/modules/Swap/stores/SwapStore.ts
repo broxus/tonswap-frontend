@@ -2398,7 +2398,8 @@ export class SwapStore {
      * @returns {TokenCache | undefined}
      */
     public get leftToken(): TokenCache | undefined {
-        return this.data.leftToken !== undefined ? this.tokensCache.get(this.data.leftToken) : undefined
+        // Note: should use only accepted tokens
+        return this.tokensCache.tokens.find(({ root }) => root === this.data.leftToken)
     }
 
     /**
@@ -2430,7 +2431,8 @@ export class SwapStore {
      * @returns {TokenCache | undefined}
      */
     public get rightToken(): TokenCache | undefined {
-        return this.data.rightToken !== undefined ? this.tokensCache.get(this.data.rightToken) : undefined
+        // Note: should use only accepted tokens
+        return this.tokensCache.tokens.find(({ root }) => root === this.data.rightToken)
     }
 
     /**

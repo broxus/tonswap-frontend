@@ -6,7 +6,6 @@ import { useIntl } from 'react-intl'
 
 import { PairResponse } from '@/modules/Pairs/types'
 import { FarmingPoolsItemResponse, RewardTokenRootInfo } from '@/modules/Farming/types'
-import { useTokensList } from '@/stores/TokensListService'
 import { useDexAccount } from '@/stores/DexAccountService'
 import { useWallet } from '@/stores/WalletService'
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
@@ -14,10 +13,16 @@ import { useApi } from '@/modules/Pools/hooks/useApi'
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
 import { FarmingTableProps } from '@/modules/Farming/components/FarmingTable'
 import {
-    error, formattedAmount, getPrice, shareAmount,
+    error,
+    formattedAmount,
+    getPrice,
+    shareAmount,
 } from '@/utils'
 import {
-    Farm, Pool, PoolData, UserPendingReward,
+    Farm,
+    Pool,
+    PoolData,
+    UserPendingReward,
 } from '@/misc'
 import { appRoutes } from '@/routes'
 
@@ -62,7 +67,6 @@ export function usePoolContent(): UsePoolContent {
     const api = useApi()
     const params = useParams<{ address: string }>()
     const wallet = useWallet()
-    const tokensList = useTokensList()
     const dexAccount = useDexAccount()
     const dexBalances = useDexBalances()
     const tokensCache = useTokensCache()
@@ -185,16 +189,16 @@ export function usePoolContent(): UsePoolContent {
             leftToken: {
                 address: info.left_address as string,
                 name: info.left_currency as string,
-                uri: tokensList.getUri(info.left_address as string),
+                icon: tokensCache.get(info.left_address)?.icon,
             },
             rightToken: {
                 address: info.right_address as string,
                 name: info.right_currency as string,
-                uri: tokensList.getUri(info.right_address as string),
+                icon: tokensCache.get(info.right_address)?.icon,
             },
             rewardsIcons: info.reward_token_root_info.map(rewardToken => ({
                 address: rewardToken.reward_root_address,
-                uri: tokensList.getUri(rewardToken.reward_root_address),
+                icon: tokensCache.get(rewardToken.reward_root_address)?.icon,
             })),
             vestedRewards: reward.map(({ vested, symbol }) => (
                 intl.formatMessage({
@@ -325,8 +329,8 @@ export function usePoolContent(): UsePoolContent {
                 api.pair({ address: pairAddress.toString() }),
             ])
             await Promise.all([
-                tokensCache.fetchIfNotExist(poolData.left.address),
-                tokensCache.fetchIfNotExist(poolData.right.address),
+                tokensCache.syncCustomToken(poolData.left.address),
+                tokensCache.syncCustomToken(poolData.right.address),
             ])
             const farmData = await getFarmData(
                 new Address(poolData.lp.address),

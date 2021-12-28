@@ -154,9 +154,13 @@ export function Stats(): JSX.Element {
                                 <Chart
                                     key="pricesGraph"
                                     data={store.pricesGraphData}
+                                    load={store.loadPricesGraph}
+                                    loading={store.isPricesGraphLoading}
+                                    noDataMessage={intl.formatMessage({
+                                        id: 'CHART_NO_DATA',
+                                    })}
                                     timeframe={store.timeframe}
                                     type="Candlestick"
-                                    load={store.loadPricesGraph}
                                 />
                             )}
 
@@ -164,9 +168,13 @@ export function Stats(): JSX.Element {
                                 <Chart
                                     key="tvlGraph"
                                     data={store.tvlGraphData}
+                                    load={store.loadTvlGraph}
+                                    loading={store.isTvlGraphLoading}
+                                    noDataMessage={intl.formatMessage({
+                                        id: 'CHART_NO_DATA',
+                                    })}
                                     timeframe={store.timeframe}
                                     type="Area"
-                                    load={store.loadTvlGraph}
                                 />
                             )}
 
@@ -174,9 +182,13 @@ export function Stats(): JSX.Element {
                                 <Chart
                                     key="volumeGraph"
                                     data={store.volumeGraphData}
+                                    load={store.loadVolumeGraph}
+                                    loading={store.isVolumeGraphLoading}
+                                    noDataMessage={intl.formatMessage({
+                                        id: 'CHART_NO_DATA',
+                                    })}
                                     timeframe={store.timeframe}
                                     type="Histogram"
-                                    load={store.loadVolumeGraph}
                                 />
                             )}
                         </div>

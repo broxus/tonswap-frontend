@@ -2,13 +2,13 @@ import * as React from 'react'
 import { Observer } from 'mobx-react-lite'
 
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { usePool } from '@/modules/Pool/stores/PoolStore'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 
 import './index.scss'
 
 
 export function PoolPairIcons(): JSX.Element | null {
-    const pool = usePool()
+    const pool = usePoolStore()
 
     if (pool.leftToken?.root === pool.rightToken?.root) {
         return null

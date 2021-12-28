@@ -55,7 +55,7 @@ export function FarmingSpeedTableInner({
                                     <div className="farming-speed__token" key={token.root}>
                                         <TokenIcon
                                             size="xsmall"
-                                            uri={token.icon}
+                                            icon={token.icon}
                                             address={token.root}
                                         />
                                         {intl.formatMessage({

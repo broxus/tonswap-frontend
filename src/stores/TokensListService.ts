@@ -1,6 +1,5 @@
 import { makeAutoObservable, runInAction } from 'mobx'
 
-import { DexConstants } from '@/misc'
 import { error } from '@/utils'
 
 
@@ -57,9 +56,8 @@ export class TokensListService {
         isFetching: false,
     }
 
-    constructor(uri: string) {
+    constructor() {
         makeAutoObservable(this)
-        this.fetch(uri)
     }
 
     /**
@@ -94,6 +92,11 @@ export class TokensListService {
         })
     }
 
+    /**
+     * @deprecated - use token.icon from TokenCache instead
+     * @param {string} address
+     * @returns {string | undefined}
+     */
     public getUri(address: string): string | undefined {
         return this.data.tokens.find(
             token => token.address === address,
@@ -124,7 +127,7 @@ export class TokensListService {
 }
 
 
-const TokensList = new TokensListService(DexConstants.TokenListURI)
+const TokensList = new TokensListService()
 
 export function useTokensList(): TokensListService {
     return TokensList

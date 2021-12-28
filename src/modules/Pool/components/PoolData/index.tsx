@@ -2,13 +2,13 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { usePool } from '@/modules/Pool/stores/PoolStore'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { formattedAmount } from '@/utils'
 
 
 function Data(): JSX.Element {
     const intl = useIntl()
-    const pool = usePool()
+    const pool = usePoolStore()
 
     return (
         <div className="form-rows">

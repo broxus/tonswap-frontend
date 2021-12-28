@@ -116,7 +116,7 @@ function ConfirmationPopup(): JSX.Element {
                                     address={swap.leftToken?.root}
                                     name={swap.leftToken?.symbol}
                                     size="small"
-                                    uri={swap.leftToken?.icon}
+                                    icon={swap.leftToken?.icon}
                                 />
                             </span>
                             <span className="form-drop__name">
@@ -147,7 +147,7 @@ function ConfirmationPopup(): JSX.Element {
                                     address={swap.rightToken?.root}
                                     name={swap.rightToken?.symbol}
                                     size="small"
-                                    uri={swap.rightToken?.icon}
+                                    icon={swap.rightToken?.icon}
                                 />
                             </span>
                             <span className="form-drop__name">

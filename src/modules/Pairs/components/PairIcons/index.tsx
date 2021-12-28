@@ -16,12 +16,12 @@ export function PairIcons({ leftToken, rightToken, small }: Props): JSX.Element 
             leftToken={{
                 address: leftToken?.root,
                 name: leftToken?.name,
-                uri: leftToken?.icon,
+                icon: leftToken?.icon,
             }}
             rightToken={{
                 address: rightToken?.root,
                 name: rightToken?.name,
-                uri: rightToken?.icon,
+                icon: rightToken?.icon,
             }}
         />
     )

@@ -3,14 +3,14 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
-import { usePool } from '@/modules/Pool/stores/PoolStore'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { useDexAccount } from '@/stores/DexAccountService'
 
 
 function RootsInfo(): JSX.Element {
     const intl = useIntl()
     const dex = useDexAccount()
-    const pool = usePool()
+    const pool = usePoolStore()
 
     return (
         <div className="list-bill">

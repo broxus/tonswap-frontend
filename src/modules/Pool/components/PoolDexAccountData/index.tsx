@@ -3,13 +3,13 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { usePool } from '@/modules/Pool/stores/PoolStore'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { formattedAmount } from '@/utils'
 
 
 function DexAccountData(): JSX.Element | null {
     const intl = useIntl()
-    const pool = usePool()
+    const pool = usePoolStore()
 
     if (!pool.isDexAccountDataAvailable) {
         return null

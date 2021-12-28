@@ -22,21 +22,26 @@ export function BurnLiquidityInner(): JSX.Element {
     const { leftTokenRoot, rightTokenRoot } = useParams<Params>()
 
     const changeLeftToken = (value: string) => {
+        removeLiquidityStore.setLeftToken(value)
         history.push(appRoutes.poolRemoveLiquidity.makeUrl({
             leftTokenRoot: value,
-            rightTokenRoot,
+            rightTokenRoot: rightTokenRoot || removeLiquidityStore.rightToken?.root,
         }))
     }
 
     const changeRightToken = (value: string) => {
+        removeLiquidityStore.setRightToken(value)
+        if (leftTokenRoot === undefined) {
+            return
+        }
         history.push(appRoutes.poolRemoveLiquidity.makeUrl({
             leftTokenRoot,
             rightTokenRoot: value,
         }))
     }
 
-    const connectWallet = () => {
-        wallet.connect()
+    const connectWallet = async () => {
+        await wallet.connect()
     }
 
     React.useEffect(() => {
@@ -45,7 +50,9 @@ export function BurnLiquidityInner(): JSX.Element {
 
     React.useEffect(() => {
         if (wallet.address && leftTokenRoot && rightTokenRoot) {
-            removeLiquidityStore.getData(leftTokenRoot, rightTokenRoot)
+            (async () => {
+                await removeLiquidityStore.getData(leftTokenRoot, rightTokenRoot)
+            })()
         }
     }, [wallet.address, leftTokenRoot, rightTokenRoot])
 
@@ -61,8 +68,8 @@ export function BurnLiquidityInner(): JSX.Element {
                     currentRightAmount={removeLiquidityStore.currentRightAmount}
                     resultLeftAmount={removeLiquidityStore.resultLeftAmount}
                     resultRightAmount={removeLiquidityStore.resultRightAmount}
-                    leftTokenAddress={leftTokenRoot}
-                    rightTokenAddress={rightTokenRoot}
+                    leftTokenAddress={removeLiquidityStore.leftToken?.root}
+                    rightTokenAddress={removeLiquidityStore.rightToken?.root}
                     amount={removeLiquidityStore.amount}
                     amountIsValid={removeLiquidityStore.amountIsValid}
                     amountIsPositiveNum={removeLiquidityStore.amountIsPositiveNum}

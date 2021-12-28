@@ -2,12 +2,12 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { usePool } from '@/modules/Pool/stores/PoolStore'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 
 
 function ShareData(): JSX.Element {
     const intl = useIntl()
-    const pool = usePool()
+    const pool = usePoolStore()
 
     return (
         <>

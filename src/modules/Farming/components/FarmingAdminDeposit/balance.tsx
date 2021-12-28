@@ -28,7 +28,7 @@ function FarmingAdminDepositBalanceInner({
         <div className="farming-admin-deposit-balance">
             <TokenIcon
                 size="xsmall"
-                uri={token?.icon}
+                icon={token?.icon}
                 address={token?.root}
             />
 

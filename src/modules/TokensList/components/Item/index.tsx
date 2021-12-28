@@ -53,7 +53,7 @@ export const Item = observer(({ disabled, token, onSelect }: Props) => {
                             address={token.root}
                             name={token.symbol}
                             size="small"
-                            uri={token.icon}
+                            icon={token.icon}
                         />
                     </div>
                     <div className="popup-item__main">

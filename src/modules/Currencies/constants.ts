@@ -21,9 +21,9 @@ export const DEFAULT_CURRENCIES_STORE_STATE: CurrenciesStoreState = {
 export const DEFAULT_CURRENCY_STORE_DATA: CurrencyStoreData = {
     currency: undefined,
     graphData: {
-        prices: [],
-        tvl: [],
-        volume: [],
+        prices: null,
+        tvl: null,
+        volume: null,
     },
     pairsData: {
         count: 0,

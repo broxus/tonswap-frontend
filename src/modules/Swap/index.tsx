@@ -20,7 +20,7 @@ import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { SwapDirection } from '@/modules/Swap/types'
 import { TokensList } from '@/modules/TokensList'
 import { TokenImportPopup } from '@/modules/TokensList/components'
-
+import { useTokensCache } from '@/stores/TokensCacheService'
 
 import './index.scss'
 
@@ -29,6 +29,7 @@ export function Swap(): JSX.Element {
     const intl = useIntl()
     const swap = useSwapStore()
     const form = useSwapForm()
+    const tokensCache = useTokensCache()
 
     return (
         <div className="container container--small">
@@ -158,14 +159,15 @@ export function Swap(): JSX.Element {
                 />
             )}
 
-            {(form.isImporting && form.tokenToImport !== undefined) && (
-                <TokenImportPopup
-                    key="tokenImport"
-                    token={form.tokenToImport}
-                    onDismiss={form.onDismissImporting}
-                    onImport={form.onDismissImporting}
-                />
-            )}
+            <Observer>
+                {() => (
+                    <>
+                        {tokensCache.isImporting && (
+                            <TokenImportPopup key="tokenImport" />
+                        )}
+                    </>
+                )}
+            </Observer>
         </div>
     )
 }

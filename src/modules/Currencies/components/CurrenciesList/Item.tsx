@@ -34,7 +34,7 @@ export function Item({ currency, idx }: Props): JSX.Element {
                             className="currencies-list__token-icon"
                             name={token?.symbol}
                             size="small"
-                            uri={token?.icon}
+                            icon={token?.icon}
                         />
                     </div>
                     <div>

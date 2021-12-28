@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { usePool } from '@/modules/Pool/stores/PoolStore'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { formattedAmount } from '@/utils'
@@ -16,7 +16,7 @@ type Props = {
 
 function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
     const intl = useIntl()
-    const pool = usePool()
+    const pool = usePoolStore()
 
     return pool.transaction ? ReactDOM.createPortal(
         <div className="popup">

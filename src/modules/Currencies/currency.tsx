@@ -48,11 +48,11 @@ function CurrencyInner(): JSX.Element {
                     <div>
                         <div className="currency-page__token">
                             <TokenIcon
-                                address={token?.root}
+                                address={token?.root || store.currency?.address}
                                 className="currency-page__token-icon"
                                 name={token?.symbol}
                                 size="small"
-                                uri={token?.icon}
+                                icon={token?.icon}
                             />
                             <div className="currency-page__token-name">
                                 {token?.name || store.currency?.currency}

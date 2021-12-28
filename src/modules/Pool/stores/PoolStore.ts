@@ -1478,7 +1478,7 @@ export class PoolStore {
             }
         }
         catch (e) {
-            error('Pool share sync error', e)
+            error('PoolStoreSingleton share sync error', e)
         }
     }
 
@@ -1667,7 +1667,8 @@ export class PoolStore {
     }
 
     public get leftToken(): TokenCache | undefined {
-        return this.data.leftToken !== undefined ? this.tokensCache.get(this.data.leftToken) : undefined
+        // Note: should use only accepted tokens
+        return this.tokensCache.tokens.find(({ root }) => root === this.data.leftToken)
     }
 
     public get rightAmount(): PoolStoreData['rightAmount'] {
@@ -1675,7 +1676,8 @@ export class PoolStore {
     }
 
     public get rightToken(): TokenCache | undefined {
-        return this.data.rightToken !== undefined ? this.tokensCache.get(this.data.rightToken) : undefined
+        // Note: should use only accepted tokens
+        return this.tokensCache.tokens.find(({ root }) => root === this.data.rightToken)
     }
 
     /*
@@ -1845,13 +1847,13 @@ export class PoolStore {
 }
 
 
-const Pool = new PoolStore(
+const PoolStoreSingleton = new PoolStore(
     useWallet(),
     useTokensCache(),
     useDexAccount(),
     useFavoritePairs(),
 )
 
-export function usePool(): PoolStore {
-    return Pool
+export function usePoolStore(): PoolStore {
+    return PoolStoreSingleton
 }

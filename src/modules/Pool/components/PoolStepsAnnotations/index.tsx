@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { usePool } from '@/modules/Pool/stores/PoolStore'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { AddLiquidityStep } from '@/modules/Pool/types'
 
 import './index.scss'
@@ -11,7 +11,7 @@ import './index.scss'
 
 function StepsAnnotations(): JSX.Element | null {
     const intl = useIntl()
-    const pool = usePool()
+    const pool = usePoolStore()
 
     switch (pool.step) {
         case AddLiquidityStep.INIT:

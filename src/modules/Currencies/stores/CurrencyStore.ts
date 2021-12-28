@@ -191,14 +191,13 @@ export class CurrencyStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-
             const result = await this.api.currencyPrices({
                 address: this.address,
             }, {
                 body: JSON.stringify(body),
             })
-
-            this.changeGraphData('prices', result.concat(this.graphData.prices))
+            const data = result.concat(this.graphData.prices ?? [])
+            this.changeGraphData('prices', data.length ? data : null)
         }
         catch (e) {}
         finally {
@@ -237,14 +236,13 @@ export class CurrencyStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-
             const result = await this.api.currencyVolume({
                 address: this.address,
             }, {
                 body: JSON.stringify(body),
             })
-
-            this.changeGraphData('volume', result.concat(this.graphData.volume))
+            const data = result.concat(this.graphData.volume ?? [])
+            this.changeGraphData('volume', data.length ? data : null)
         }
         catch (e) {}
         finally {
@@ -283,14 +281,13 @@ export class CurrencyStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-
             const result = await this.api.currencyTvl({
                 address: this.address,
             }, {
                 body: JSON.stringify(body),
             })
-
-            this.changeGraphData('tvl', result.concat(this.graphData.tvl))
+            const data = result.concat(this.graphData.tvl ?? [])
+            this.changeGraphData('tvl', data.length ? data : null)
         }
         catch (e) {}
         finally {
@@ -322,8 +319,8 @@ export class CurrencyStore {
     /**
      *
      */
-    public get pricesGraphData(): CandlestickGraphShape[] {
-        return this.graphData.prices.map<CandlestickGraphShape>(item => ({
+    public get pricesGraphData(): CandlestickGraphShape[] | null {
+        return this.graphData.prices == null ? [] : this.graphData.prices.map<CandlestickGraphShape>(item => ({
             close: parseFloat(item.close),
             high: parseFloat(item.high),
             low: parseFloat(item.low),

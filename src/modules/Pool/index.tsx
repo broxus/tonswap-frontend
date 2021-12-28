@@ -17,10 +17,11 @@ import {
     PoolSubmitButton,
 } from '@/modules/Pool/components'
 import { usePoolForm } from '@/modules/Pool/hooks/usePoolForm'
-import { usePool } from '@/modules/Pool/stores/PoolStore'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { AddLiquidityStep } from '@/modules/Pool/types'
 import { TokensList } from '@/modules/TokensList'
 import { TokenImportPopup } from '@/modules/TokensList/components'
+import { useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet } from '@/stores/WalletService'
 
 import './index.scss'
@@ -28,9 +29,10 @@ import './index.scss'
 
 export function Pool(): JSX.Element {
     const intl = useIntl()
-    const pool = usePool()
+    const pool = usePoolStore()
     const form = usePoolForm()
     const wallet = useWallet()
+    const tokensCache = useTokensCache()
 
     return (
         <div className="container container--small">
@@ -178,15 +180,15 @@ export function Pool(): JSX.Element {
                 />
             )}
 
-
-            {(form.isImporting && form.tokenToImport !== undefined) && (
-                <TokenImportPopup
-                    key="tokenImport"
-                    token={form.tokenToImport}
-                    onDismiss={form.onDismissImporting}
-                    onImport={form.onDismissImporting}
-                />
-            )}
+            <Observer>
+                {() => (
+                    <>
+                        {tokensCache.isImporting && (
+                            <TokenImportPopup key="tokenImport" />
+                        )}
+                    </>
+                )}
+            </Observer>
         </div>
     )
 }
