@@ -11,15 +11,15 @@ export default {
     NAV_LINK_TEXT_BUILDER: 'Builder',
 
     WALLET_CONNECTING_POPUP_TITLE: 'Connect to a wallet',
-    WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME: 'Crystal Wallet',
+    WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME: 'EVER Wallet',
     WALLET_CONNECTING_POPUP_LEAD_IN_PROCESS: 'Initializing...',
     WALLET_UPDATING_POPUP_LEAD_IS_OUTDATED: 'Extension version is outdated',
     WALLET_UPDATING_POPUP_NOTE: '<p>Your wallet version is too old. Please update extension at <a href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a> or local, through chrome://extensions/.</p><p>Reload this page after installing the update.</p>',
-    WALLET_UPDATING_LINK_TEXT: 'Update Crystal Wallet',
-    WALLET_INSTALLATION_LINK_TEXT: 'Install Crystal Wallet',
-    WALLET_INSTALLATION_NOTE: '<p>At the moment, only Crystal Wallet supports TON Swap.</p><p>If you haven’t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/category/extensions" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
+    WALLET_UPDATING_LINK_TEXT: 'Update EVER Wallet',
+    WALLET_INSTALLATION_LINK_TEXT: 'Install EVER Wallet',
+    WALLET_INSTALLATION_NOTE: '<p>At the moment, only EVER Wallet supports TON Swap.</p><p>If you haven’t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/category/extensions" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
 
-    WALLET_BALANCE_HINT: '{balance} TON',
+    WALLET_BALANCE_HINT: '{balance} EVER',
     WALLET_BTN_TEXT_CONNECT: 'Connect to a wallet',
 
     FOOTER_NAV_HEADER_PRODUCT: 'Product',
@@ -27,7 +27,7 @@ export default {
     FOOTER_NAV_TON_BRIDGE_LINK_TEXT: 'TON Bridge',
     FOOTER_NAV_TON_SCAN_LINK_TEXT: 'TON Scan',
     FOOTER_NAV_WTON_LINK_TEXT: 'WTON',
-    FOOTER_NAV_CRYSTAL_WALLET_LINK_TEXT: 'Crystal Wallet',
+    FOOTER_NAV_CRYSTAL_WALLET_LINK_TEXT: 'EVER Wallet',
     FOOTER_GITHUB_LINK_TEXT: 'Source code on GitHub',
     FOOTER_TERMS_OF_USE_LINK_TEXT: 'Terms of use',
     FOOTER_PRIVACY_POLICY_LINK_TEXT: 'Privacy policy',
@@ -307,7 +307,7 @@ export default {
     FARMING_CREATE_POOL_PARAMS_REWARD_TOKEN_FARM_SPEED_VALUE: '{value} {symbol}/sec',
     FARMING_CREATE_POOL_PARAMS_REWARD_TOKEN_FARM_DEPOSIT: 'Deposit #{index}',
     FARMING_CREATE_POOL_PARAMS_REWARD_TOKEN_FARM_DEPOSIT_VALUE: '{value} {symbol}',
-    FARMING_CREATE_POOL_VALID_STATE_CREATION_NOTE: 'Farm pool creation cost is 7 TON. Gas does not return.',
+    FARMING_CREATE_POOL_VALID_STATE_CREATION_NOTE: 'Farm pool creation cost is 7 EVER. Gas does not return.',
     FARMING_CREATE_POOL_VALID_STATE_DEPOSIT_NOTE: 'You need to deposit full amount of {tokensDeposits} to pool address before it becomes active.',
     FARMING_CREATE_BTN_TEXT_SUBMIT: 'Create pool',
 
