@@ -13,8 +13,12 @@ import { usePagination } from '@/hooks/usePagination'
 import { useApi } from '@/modules/Pools/hooks/useApi'
 import { ItemProps } from '@/modules/Pools/components/PoolsContent/item'
 import {
-    concatSymbols, debounce, error,
-    formattedAmount, lastOfCalls, shareAmount,
+    concatSymbols,
+    debounce,
+    error,
+    formattedAmount,
+    lastOfCalls,
+    shareAmount,
 } from '@/utils'
 import { Pool, PoolData } from '@/misc'
 import { appRoutes } from '@/routes'
@@ -53,65 +57,60 @@ export function usePoolsContent(): UsePoolsContent {
     const endIndex = startIndex + PAGE_LENGTH
 
     const items = React.useMemo(() => (
-        (data
-            .map(({
-                address, lp, left, right,
-            }) => {
-                const leftToken = tokensCache.get(left.address)
-                const rightToken = tokensCache.get(right.address)
+        (data.map(({
+            address,
+            lp,
+            left,
+            right,
+        }) => {
+            const leftToken = tokensCache.get(left.address)
+            const rightToken = tokensCache.get(right.address)
 
-                if (!leftToken || !rightToken) {
-                    return undefined
-                }
+            if (!leftToken || !rightToken) {
+                return undefined
+            }
 
-                const lpTokens = new BigNumber(lp.inWallet)
-                    .plus(lockedLp[lp.address] || '0')
-                    .toFixed()
+            const lpTokens = new BigNumber(lp.inWallet)
+                .plus(lockedLp[lp.address] || '0')
+                .toFixed()
 
-                return {
-                    lpTokens: formattedAmount(lpTokens, lp.decimals),
-                    leftToken: intl.formatMessage({
-                        id: 'POOLS_LIST_TOKEN_BALANCE',
-                    }, {
-                        value: shareAmount(
-                            lpTokens,
-                            left.inPool,
-                            lp.inPool,
-                            leftToken.decimals,
-                        ),
-                        symbol: leftToken.symbol,
-                    }),
-                    rightToken: intl.formatMessage({
-                        id: 'POOLS_LIST_TOKEN_BALANCE',
-                    }, {
-                        value: shareAmount(
-                            lpTokens,
-                            right.inPool,
-                            lp.inPool,
-                            rightToken.decimals,
-                        ),
-                        symbol: rightToken.symbol,
-                    }),
-                    link: appRoutes.poolItem.makeUrl({ address }),
-                    pair: {
-                        pairLabel: concatSymbols(
-                            tokensCache.get(left.address)?.symbol,
-                            tokensCache.get(right.address)?.symbol,
-                        ),
-                        pairIcons: {
-                            leftToken: {
-                                address: left.address,
-                                uri: tokensList.getUri(left.address),
-                            },
-                            rightToken: {
-                                address: right.address,
-                                uri: tokensList.getUri(right.address),
-                            },
-                        },
+            return {
+                lpTokens: formattedAmount(lpTokens, lp.decimals),
+                leftToken: intl.formatMessage({
+                    id: 'POOLS_LIST_TOKEN_BALANCE',
+                }, {
+                    value: shareAmount(
+                        lpTokens,
+                        left.inPool,
+                        lp.inPool,
+                        leftToken.decimals,
+                    ),
+                    symbol: leftToken.symbol,
+                }),
+                rightToken: intl.formatMessage({
+                    id: 'POOLS_LIST_TOKEN_BALANCE',
+                }, {
+                    value: shareAmount(
+                        lpTokens,
+                        right.inPool,
+                        lp.inPool,
+                        rightToken.decimals,
+                    ),
+                    symbol: rightToken.symbol,
+                }),
+                link: appRoutes.poolItem.makeUrl({ address }),
+                pair: {
+                    pairLabel: concatSymbols(
+                        leftToken?.symbol,
+                        rightToken?.symbol,
+                    ),
+                    pairIcons: {
+                        leftToken,
+                        rightToken,
                     },
-                }
-            })
-            .filter(item => item !== undefined) as ItemProps[])
+                },
+            }
+        }).filter(item => item !== undefined) as ItemProps[])
     ), [data, tokensList])
 
     const getFarmingPools = async (
@@ -141,7 +140,7 @@ export function usePoolsContent(): UsePoolsContent {
 
     const getLockedLpInFarming = async (userAddress: string) => {
         const farmingPools = await getFarmingPools(userAddress)
-        const byRootToken = farmingPools.reduce((acc, item) => {
+        return farmingPools.reduce((acc, item) => {
             acc[item.token_root_address] = acc[item.token_root_address]
                 ? new BigNumber(acc[item.token_root_address])
                     .plus(new BigNumber(item.user_token_balance)
@@ -152,8 +151,6 @@ export function usePoolsContent(): UsePoolsContent {
                     .toFixed()
             return acc
         }, {} as LockedLp)
-
-        return byRootToken
     }
 
     const fetchData = React.useCallback(
@@ -167,8 +164,8 @@ export function usePoolsContent(): UsePoolsContent {
             ])
             await Promise.all(
                 result[0].map(pool => Promise.all([
-                    tokensCache.fetchIfNotExist(pool.left.address),
-                    tokensCache.fetchIfNotExist(pool.right.address),
+                    tokensCache.syncCustomToken(pool.left.address),
+                    tokensCache.syncCustomToken(pool.right.address),
                 ])),
             )
             return result
@@ -212,7 +209,9 @@ export function usePoolsContent(): UsePoolsContent {
     )
 
     React.useEffect(() => {
-        getData()
+        (async () => {
+            await getData()
+        })()
     }, [
         query,
         dexBalances,

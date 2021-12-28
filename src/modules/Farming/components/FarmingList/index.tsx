@@ -54,23 +54,23 @@ export function FarmingListInner({
 
             return {
                 leftToken: item.left_address && item.right_address ? {
-                    address: item.left_address,
-                    uri: tokensCache.get(item.left_address)?.icon,
+                    root: item.left_address,
+                    icon: tokensCache.get(item.left_address)?.icon,
                     name: item.left_currency,
                 } : {
-                    address: item.token_root_address,
-                    uri: tokensCache.get(item.token_root_address)?.icon,
+                    root: item.token_root_address,
+                    icon: tokensCache.get(item.token_root_address)?.icon,
                     name: item.token_root_currency,
                 },
                 rightToken: item.right_address ? {
-                    address: item.right_address,
-                    uri: tokensCache.get(item.right_address)?.icon,
+                    root: item.right_address,
+                    icon: tokensCache.get(item.right_address)?.icon,
                     name: item.right_currency,
                 } : undefined,
                 rewardsIcons: item.reward_token_root_info.map(rewardInfo => ({
-                    address: rewardInfo.reward_root_address,
+                    root: rewardInfo.reward_root_address,
                     name: rewardInfo.reward_currency,
-                    uri: tokensCache.get(rewardInfo.reward_root_address)?.icon,
+                    icon: tokensCache.get(rewardInfo.reward_root_address)?.icon,
                 })),
                 apr: item.left_address && item.right_address
                     ? item.apr

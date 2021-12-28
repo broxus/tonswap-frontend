@@ -75,9 +75,9 @@ export type PairsResponse = {
 }
 
 export type PairStoreGraphData = {
-    ohlcv: OhlcvGraphModel[];
-    tvl: TvlGraphModel[];
-    volume: VolumeGraphModel[];
+    ohlcv: OhlcvGraphModel[] | null;
+    tvl: TvlGraphModel[] | null;
+    volume: VolumeGraphModel[] | null;
 }
 
 export type PairStoreData = {

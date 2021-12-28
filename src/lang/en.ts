@@ -39,6 +39,8 @@ export default {
 
     COPY_CLIPBOARD_SUCCESS: 'Copied',
 
+    CHART_NO_DATA: 'No data available at the moment',
+
     SWAP_HEADER_TITLE: 'Swap tokens',
     SWAP_SETTINGS_DROP_TITLE: 'Transaction Settings',
     SWAP_SETTINGS_DROP_NOTE: 'Slippage tolerance',

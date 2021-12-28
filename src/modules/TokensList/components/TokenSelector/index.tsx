@@ -58,7 +58,7 @@ export function TokenSelector({
 
     React.useEffect(() => {
         if (root) {
-            tokensCache.fetchIfNotExist(root)
+            tokensCache.syncCustomToken(root)
         }
     }, [root])
 
@@ -80,7 +80,7 @@ export function TokenSelector({
                         <TokenIcon
                             size="small"
                             address={token.root}
-                            uri={token.icon}
+                            icon={token.icon}
                         />
                     )}
                     <span className="token-selector__symbol">

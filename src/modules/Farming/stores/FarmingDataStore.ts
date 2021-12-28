@@ -265,20 +265,20 @@ export class FarmingDataStore {
     public syncTokens(): void {
         if (this.rewardTokensAddress) {
             this.rewardTokensAddress.forEach(address => {
-                this.tokensCache.fetchIfNotExist(address)
+                this.tokensCache.syncCustomToken(address)
             })
         }
 
         if (this.leftTokenAddress) {
-            this.tokensCache.fetchIfNotExist(this.leftTokenAddress)
+            this.tokensCache.syncCustomToken(this.leftTokenAddress)
         }
 
         if (this.rightTokenAddress) {
-            this.tokensCache.fetchIfNotExist(this.rightTokenAddress)
+            this.tokensCache.syncCustomToken(this.rightTokenAddress)
         }
 
         if ((!this.leftTokenAddress || !this.rightTokenAddress) && this.lpTokenAddress) {
-            this.tokensCache.fetchIfNotExist(this.lpTokenAddress)
+            this.tokensCache.syncCustomToken(this.lpTokenAddress)
         }
     }
 

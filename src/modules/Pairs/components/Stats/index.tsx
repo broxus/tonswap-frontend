@@ -8,29 +8,22 @@ import { TvlChange } from '@/components/common/TvlChange'
 import { Chart } from '@/modules/Chart'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { PairStoreState } from '@/modules/Pairs/types'
-import { useTokensCache } from '@/stores/TokensCacheService'
+import { TokenCache } from '@/stores/TokensCacheService'
 import { formattedBalance, getChangesDirection } from '@/utils'
 
 import './index.scss'
 
 
+type Props = {
+    baseToken?: TokenCache;
+    counterToken?: TokenCache;
+}
+
+
 /* eslint-disable jsx-a11y/anchor-is-valid */
-export function Stats(): JSX.Element {
+export function Stats({ baseToken, counterToken }: Props): JSX.Element {
     const intl = useIntl()
-    const tokensCache = useTokensCache()
     const store = usePairStore()
-
-    const baseToken = React.useMemo(() => (
-        store.pair?.meta.baseAddress
-            ? tokensCache.get(store.pair.meta.baseAddress)
-            : undefined
-    ), [store.pair?.meta.baseAddress, tokensCache.tokens])
-
-    const counterToken = React.useMemo(() => (
-        store.pair?.meta.counterAddress
-            ? tokensCache.get(store.pair.meta.counterAddress)
-            : undefined
-    ), [store.pair?.meta.counterAddress, tokensCache.tokens])
 
     const leftLocked = React.useMemo(
         () => formattedBalance(
@@ -70,11 +63,11 @@ export function Stats(): JSX.Element {
                             <div>
                                 <div className="pair-stats__token">
                                     <TokenIcon
-                                        address={baseToken?.root}
+                                        address={baseToken?.root || store.pair?.meta.baseAddress}
                                         className="pair-stats__token-icon"
-                                        name={baseToken?.symbol}
+                                        name={baseToken?.symbol || store.pair?.meta.base}
                                         size="small"
-                                        uri={baseToken?.icon}
+                                        icon={baseToken?.icon}
                                     />
                                     <div className="pair-stats__token-name">
                                         {baseToken?.symbol || store.pair?.meta.base}
@@ -87,11 +80,11 @@ export function Stats(): JSX.Element {
                             <div>
                                 <div className="pair-stats__token">
                                     <TokenIcon
-                                        address={counterToken?.root}
+                                        address={counterToken?.root || store.pair?.meta.counterAddress}
                                         className="pair-stats__token-icon"
-                                        name={counterToken?.symbol}
+                                        name={counterToken?.symbol || store.pair?.meta.counter}
                                         size="small"
-                                        uri={counterToken?.icon}
+                                        icon={counterToken?.icon}
                                     />
                                     <div className="pair-stats__token-name">
                                         {counterToken?.symbol || store.pair?.meta.counter}
@@ -177,9 +170,9 @@ export function Stats(): JSX.Element {
                                         })}
                                     >
                                         <a onClick={toggleGraph('ohlcv')}>
-                                            {baseToken?.symbol}
+                                            {baseToken?.symbol || store.pair?.meta.base}
                                             /
-                                            {counterToken?.symbol}
+                                            {counterToken?.symbol || store.pair?.meta.counter}
                                         </a>
                                     </li>
                                     <li
@@ -188,9 +181,9 @@ export function Stats(): JSX.Element {
                                         })}
                                     >
                                         <a onClick={toggleGraph('ohlcv-inverse')}>
-                                            {counterToken?.symbol}
+                                            {counterToken?.symbol || store.pair?.meta.counter}
                                             /
-                                            {baseToken?.symbol}
+                                            {baseToken?.symbol || store.pair?.meta.base}
                                         </a>
                                     </li>
                                     <li
@@ -228,9 +221,13 @@ export function Stats(): JSX.Element {
                                 <Chart
                                     key="volumeGraph"
                                     data={store.volumeGraphData}
+                                    load={store.loadVolumeGraph}
+                                    loading={store.isVolumeGraphLoading}
+                                    noDataMessage={intl.formatMessage({
+                                        id: 'CHART_NO_DATA',
+                                    })}
                                     timeframe={store.timeframe}
                                     type="Histogram"
-                                    load={store.loadVolumeGraph}
                                 />
                             )}
 
@@ -238,9 +235,13 @@ export function Stats(): JSX.Element {
                                 <Chart
                                     key="tvlGraph"
                                     data={store.tvlGraphData}
+                                    load={store.loadTvlGraph}
+                                    loading={store.isTvlGraphLoading}
+                                    noDataMessage={intl.formatMessage({
+                                        id: 'CHART_NO_DATA',
+                                    })}
                                     timeframe={store.timeframe}
                                     type="Area"
-                                    load={store.loadTvlGraph}
                                 />
                             )}
 
@@ -248,9 +249,13 @@ export function Stats(): JSX.Element {
                                 <Chart
                                     key="ohlcvGraph"
                                     data={store.ohlcvGraphData}
+                                    load={store.loadOhlcvGraph}
+                                    loading={store.isOhlcvGraphLoading}
+                                    noDataMessage={intl.formatMessage({
+                                        id: 'CHART_NO_DATA',
+                                    })}
                                     timeframe={store.timeframe}
                                     type="Candlestick"
-                                    load={store.loadOhlcvGraph}
                                 />
                             )}
 
@@ -258,6 +263,11 @@ export function Stats(): JSX.Element {
                                 <Chart
                                     key="ohlcvInverseGraph"
                                     data={store.ohlcvGraphInverseData}
+                                    load={store.loadOhlcvGraph}
+                                    loading={store.isOhlcvGraphLoading}
+                                    noDataMessage={intl.formatMessage({
+                                        id: 'CHART_NO_DATA',
+                                    })}
                                     options={{
                                         localization: {
                                             priceFormatter: (value: number) => (1 / value).toFixed(2),
@@ -268,7 +278,6 @@ export function Stats(): JSX.Element {
                                     }}
                                     timeframe={store.timeframe}
                                     type="Candlestick"
-                                    load={store.loadOhlcvGraph}
                                 />
                             )}
                         </div>

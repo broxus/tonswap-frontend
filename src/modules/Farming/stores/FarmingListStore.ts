@@ -209,22 +209,50 @@ export class FarmingListStore {
             this.state.loading = false
         })
 
-        this.syncTokens()
+        await this.syncTokens()
     }
 
-    public syncTokens(): void {
+    public async syncTokens(): Promise<void> {
+        const tokensForSync: string[] = []
+
         this.state.data.forEach(item => {
             if (item.left_address && item.right_address) {
-                this.tokensCache.fetchIfNotExist(item.left_address)
-                this.tokensCache.fetchIfNotExist(item.right_address)
+                if (!this.tokensCache.has(item.left_address) && !tokensForSync.includes(item.left_address)) {
+                    tokensForSync.push(item.left_address)
+                }
+
+                if (!this.tokensCache.has(item.right_address) && !tokensForSync.includes(item.right_address)) {
+                    tokensForSync.push(item.right_address)
+                }
             }
-            else {
-                this.tokensCache.fetchIfNotExist(item.token_root_address)
+            else if (
+                !this.tokensCache.has(item.token_root_address)
+                && !tokensForSync.includes(item.token_root_address)
+            ) {
+                tokensForSync.push(item.token_root_address)
             }
             item.reward_token_root_info.forEach(reward => {
-                this.tokensCache.fetchIfNotExist(reward.reward_root_address)
+                if (
+                    !this.tokensCache.has(reward.reward_root_address)
+                    && !tokensForSync.includes(reward.reward_root_address)
+                ) {
+                    tokensForSync.push(reward.reward_root_address)
+                }
             })
         })
+
+        try {
+            if (tokensForSync.length > 0) {
+                await Promise.all(
+                    tokensForSync.map(
+                        root => this.tokensCache.syncCustomToken(root),
+                    ),
+                )
+            }
+        }
+        catch (e) {
+            error(e)
+        }
     }
 
     public nextPage(): void {

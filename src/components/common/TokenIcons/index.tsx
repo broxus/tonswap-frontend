@@ -24,7 +24,7 @@ export function TokenIcons({
     return (
         <div className="token-icons">
             {visibleIcons.map(item => (
-                <div className="token-icons__item" key={item.address || item.uri}>
+                <div className="token-icons__item" key={item.address || item.icon}>
                     <TokenIcon {...item} size={size} />
                 </div>
             ))}

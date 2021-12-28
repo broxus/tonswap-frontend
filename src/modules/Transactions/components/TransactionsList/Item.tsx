@@ -20,12 +20,12 @@ export function Item({ transaction }: Props): JSX.Element {
     const tokensCache = useTokensCache()
 
     const leftToken = React.useMemo(
-        () => tokensCache.tokens.find(({ root }) => root === transaction.leftAddress),
+        () => tokensCache.get(transaction.leftAddress),
         [transaction.leftAddress],
     )
 
     const rightToken = React.useMemo(
-        () => tokensCache.tokens.find(({ root }) => root === transaction.rightAddress),
+        () => tokensCache.get(transaction.rightAddress),
         [transaction.rightAddress],
     )
 

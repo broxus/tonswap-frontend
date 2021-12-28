@@ -32,7 +32,7 @@ function TokenInner({
             <TokenIcon
                 size={size}
                 address={token.root}
-                uri={token.icon}
+                icon={token.icon}
             />
             {token.symbol}
         </div>

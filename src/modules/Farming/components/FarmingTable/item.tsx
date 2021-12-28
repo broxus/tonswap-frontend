@@ -6,23 +6,20 @@ import { Icon } from '@/components/common/Icon'
 import { TvlChange } from '@/components/common/TvlChange'
 import { TokenIcons } from '@/components/common/TokenIcons'
 import { FarmingPair } from '@/modules/Farming/components/FarmingPair'
+import { TokenCache } from '@/stores/TokensCacheService'
 import {
-    concatSymbols, formattedAmount, getChangesDirection,
+    concatSymbols,
+    formattedAmount,
+    getChangesDirection,
     parseCurrencyBillions,
 } from '@/utils'
 
 import './index.scss'
 
-type Token = {
-    address: string;
-    name?: string;
-    uri?: string;
-}
-
 export type FarmingTableItemProps = {
-    leftToken: Token;
-    rightToken?: Token;
-    rewardsIcons: Token[];
+    leftToken: Partial<TokenCache>;
+    rightToken?: Partial<TokenCache>;
+    rewardsIcons: Partial<TokenCache>[];
     tvl: string | null;
     tvlChange: string | null;
     apr: string | null;

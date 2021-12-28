@@ -5,7 +5,12 @@ import { makeAutoObservable, runInAction } from 'mobx'
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import {
-    CustomToken, Dex, PairBalances, PairTokenRoots, Pool, TokenWallet,
+    CustomToken,
+    Dex,
+    PairBalances,
+    PairTokenRoots,
+    Pool,
+    TokenWallet,
 } from '@/misc'
 import { error, shareAmount } from '@/utils'
 
@@ -94,8 +99,10 @@ export class RemoveLiquidityStore {
                 Dex.pairTokenRoots(pairAddress),
             ])
 
-            this.tokensCache.fetchIfNotExist(leftTokenAddress)
-            this.tokensCache.fetchIfNotExist(rightTokenAddress)
+            await Promise.all([
+                this.tokensCache.syncCustomToken(leftTokenAddress),
+                this.tokensCache.syncCustomToken(rightTokenAddress),
+            ])
 
             runInAction(() => {
                 this.state.data = {
@@ -265,12 +272,34 @@ export class RemoveLiquidityStore {
         return this.tokensCache.get(this.state.data.leftTokenAddress)
     }
 
+    public setLeftToken(root?: string): void {
+        if (root === undefined) {
+            return
+        }
+
+        this.state.data = {
+            ...(this.state.data as Data),
+            leftTokenAddress: root,
+        }
+    }
+
     public get rightToken(): TokenCache | undefined {
         if (!this.state.data) {
             return undefined
         }
 
         return this.tokensCache.get(this.state.data.rightTokenAddress)
+    }
+
+    public setRightToken(root?: string): void {
+        if (root === undefined) {
+            return
+        }
+
+        this.state.data = {
+            ...(this.state.data as Data),
+            rightTokenAddress: root,
+        }
     }
 
     public get isInverted(): boolean | undefined {
@@ -293,7 +322,7 @@ export class RemoveLiquidityStore {
     }
 
     public get pairAmountLp(): string | undefined {
-        return this.state.data?.pairBalances.lp
+        return this.state.data?.pairBalances?.lp
     }
 
     public get amountShifted(): string | undefined {

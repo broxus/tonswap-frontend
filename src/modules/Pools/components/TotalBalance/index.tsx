@@ -7,7 +7,7 @@ import { TokenIcon } from '@/components/common/TokenIcon'
 import { appRoutes } from '@/routes'
 
 type Token = {
-    uri?: string;
+    icon?: string;
     amount: string;
     address: string;
 }
@@ -62,7 +62,7 @@ export function TotalBalance({
                             <div className="balance-section__content">
                                 {apportionment.map(token => (
                                     <div className="balance__token" key={token.address}>
-                                        <TokenIcon address={token.address} size="xsmall" uri={token.uri} />
+                                        <TokenIcon address={token.address} size="xsmall" icon={token.icon} />
                                         {token.amount}
                                     </div>
                                 ))}
@@ -77,7 +77,7 @@ export function TotalBalance({
                                 <div className="balance-section__content">
                                     {commission.map(token => (
                                         <div className="balance__token" key={token.address}>
-                                            <TokenIcon address={token.address} size="xsmall" uri={token.uri} />
+                                            <TokenIcon address={token.address} size="xsmall" icon={token.icon} />
                                             {token.amount}
                                         </div>
                                     ))}

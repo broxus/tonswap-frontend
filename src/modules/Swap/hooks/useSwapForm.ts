@@ -1,29 +1,26 @@
-import * as React from 'react'
 import { reaction } from 'mobx'
+import * as React from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { isAddressValid, TokenWallet } from '@/misc'
+import { isAddressValid } from '@/misc'
 import { DEFAULT_LEFT_TOKEN_ROOT, DEFAULT_RIGHT_TOKEN_ROOT } from '@/modules/Swap/constants'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
 import { SwapDirection, SwapStoreData } from '@/modules/Swap/types'
-import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
-import { debounce, error } from '@/utils'
+import { useTokensCache } from '@/stores/TokensCacheService'
+import { debounce, debug, error } from '@/utils'
 
 
 type TokenSide = keyof Pick<SwapStoreData, 'leftToken' | 'rightToken'>
 
 type SwapFormShape = {
-    isImporting: boolean;
     isTokenListShown: boolean;
     tokenSide: TokenSide | null;
-    tokenToImport: TokenCache | undefined;
     hideTokensList: () => void;
     showTokensList: (side: TokenSide) => () => void;
     toggleTokensDirection: () => void;
     onChangeLeftAmount: (value: SwapStoreData['leftAmount']) => void;
     onChangeRightAmount: (value: SwapStoreData['rightAmount']) => void;
     onKeyPress: () => void;
-    onDismissImporting: () => void;
     onSelectToken: (root: string) => void;
     onDismissTransactionReceipt: () => void;
 }
@@ -40,10 +37,6 @@ export function useSwapForm(): SwapFormShape {
     }>()
     const history = useHistory()
     const tokensCache = useTokensCache()
-
-    const [isImporting, setImportingTo] = React.useState(false)
-
-    const [tokenToImport, setTokenToImport] = React.useState<TokenCache>()
 
     const [isTokenListShown, setTokenListVisible] = React.useState(false)
 
@@ -63,24 +56,6 @@ export function useSwapForm(): SwapFormShape {
         setTokenListVisible(true)
     }
 
-    const checkForDefaults = () => {
-        if (
-            leftTokenRoot === undefined
-            && swap.leftToken === undefined
-            && tokensCache.has(DEFAULT_LEFT_TOKEN_ROOT)
-        ) {
-            swap.changeData('leftToken', DEFAULT_LEFT_TOKEN_ROOT)
-        }
-
-        if (
-            rightTokenRoot === undefined
-            && swap.rightToken === undefined
-            && tokensCache.has(DEFAULT_RIGHT_TOKEN_ROOT)
-        ) {
-            swap.changeData('rightToken', DEFAULT_RIGHT_TOKEN_ROOT)
-        }
-    }
-
     const toggleTokensDirection = async () => {
         if (swap.isLoading || swap.isSwapping) {
             return
@@ -93,6 +68,46 @@ export function useSwapForm(): SwapFormShape {
         }
         else if (swap.leftToken?.root !== undefined && swap.rightToken?.root === undefined) {
             history.replace(`/swap/${swap.leftToken?.root}`)
+        }
+    }
+
+    const updateTokens = (leftRoot: string, rightRoot: string) => {
+        if (!isAddressValid(leftRoot) && !isAddressValid(leftRoot)) {
+            swap.changeData('leftToken', DEFAULT_LEFT_TOKEN_ROOT)
+            swap.changeData('rightToken', DEFAULT_RIGHT_TOKEN_ROOT)
+            return
+        }
+
+        swap.changeData('leftToken', leftRoot)
+        swap.changeData('rightToken', rightRoot)
+
+        if (tokensCache.tokens.length > 0) {
+            const isLeftRootValid = isAddressValid(leftRoot)
+            const isRightRootValid = isAddressValid(rightRoot)
+            const leftInCache = swap.leftToken !== undefined
+            const rightInCache = swap.rightToken !== undefined;
+
+            (async () => {
+                try {
+                    if (isLeftRootValid && !leftInCache) {
+                        debug('Try to fetch left token')
+                        await tokensCache.addToImportQueue(leftRoot)
+                    }
+                }
+                catch (e) {
+                    error(e)
+                }
+
+                try {
+                    if (isRightRootValid && !rightInCache) {
+                        debug('Try to fetch right token')
+                        await tokensCache.addToImportQueue(rightRoot)
+                    }
+                }
+                catch (e) {
+                    error(e)
+                }
+            })()
         }
     }
 
@@ -138,11 +153,7 @@ export function useSwapForm(): SwapFormShape {
         onKeyPress()
     }
 
-    const onDismissImporting = () => {
-        setImportingTo(false)
-    }
-
-    const onSelectToken: SwapFormShape['onSelectToken'] = async root => {
+    const onSelectToken: SwapFormShape['onSelectToken'] = root => {
         let pathname = '/swap'
         if (tokenSide === 'leftToken' && swap.rightToken?.root !== undefined) {
             let rightRoot = swap.rightToken.root
@@ -181,69 +192,16 @@ export function useSwapForm(): SwapFormShape {
     }
 
     React.useEffect(() => {
-        // Initial update tokens state by the given uri params and after list of the tokens loaded
-        const tokensListDisposer = reaction(() => tokensCache.tokens, () => {
-            // noinspection DuplicatedCode
-            if (
-                leftTokenRoot !== undefined
-                && !tokensCache.has(leftTokenRoot)
-                && isAddressValid(leftTokenRoot)
-            ) {
-                (async () => {
-                    try {
-                        const token = await TokenWallet.getTokenData(leftTokenRoot)
-                        setImportingTo(true)
-                        if (token !== undefined) {
-                            setTokenToImport(token)
-                        }
-                        swap.changeData('leftToken', leftTokenRoot)
-                    }
-                    catch (e) {}
-                })()
-                return
-            }
-
-            if (
-                rightTokenRoot !== undefined
-                && !tokensCache.has(rightTokenRoot)
-                && isAddressValid(rightTokenRoot)
-            ) {
-                (async () => {
-                    try {
-                        const token = await TokenWallet.getTokenData(rightTokenRoot)
-                        setImportingTo(true)
-                        if (token !== undefined) {
-                            setTokenToImport(token)
-                        }
-                        swap.changeData('rightToken', rightTokenRoot)
-                    }
-                    catch (e) {}
-                })()
-                return
-            }
-
-            if (
-                (swap.leftToken === undefined || swap.leftToken.root !== leftTokenRoot)
-                && tokensCache.has(leftTokenRoot)
-            ) {
-                swap.changeData('leftToken', leftTokenRoot)
-            }
-
-            if (
-                (swap.rightToken === undefined || swap.rightToken.root !== rightTokenRoot)
-                && tokensCache.has(rightTokenRoot)
-            ) {
-                swap.changeData('rightToken', rightTokenRoot)
-            }
-
-            checkForDefaults()
-        })
-
-        checkForDefaults();
-
         (async () => {
             await swap.init()
         })()
+
+        const tokensListDisposer = reaction(
+            () => [tokensCache.tokens, tokensCache.customTokens],
+            () => {
+                updateTokens(leftTokenRoot, rightTokenRoot)
+            },
+        )
 
         return () => {
             swap.dispose().catch(reason => error(reason))
@@ -252,27 +210,18 @@ export function useSwapForm(): SwapFormShape {
     }, [])
 
     // Update tokens state after change the uri params
-    // React.useEffect(() => {
-    //     if (leftTokenRoot !== undefined && tokensCache.has(leftTokenRoot)) {
-    //         swap.changeData('leftToken', leftTokenRoot)
-    //     }
-    //
-    //     if (rightTokenRoot !== undefined && tokensCache.has(rightTokenRoot)) {
-    //         swap.changeData('rightToken', rightTokenRoot)
-    //     }
-    // }, [leftTokenRoot, rightTokenRoot])
+    React.useEffect(() => {
+        updateTokens(leftTokenRoot, rightTokenRoot)
+    }, [leftTokenRoot, rightTokenRoot])
 
     return {
-        isImporting,
         isTokenListShown,
         tokenSide,
-        tokenToImport,
         hideTokensList,
         showTokensList,
         toggleTokensDirection,
         onChangeLeftAmount,
         onChangeRightAmount,
-        onDismissImporting,
         onKeyPress,
         onSelectToken,
         onDismissTransactionReceipt,

@@ -61,8 +61,8 @@ export class PairStore {
     }
 
     /**
-     *
-     * @param {keyof PairStoreData} key
+     * @template {extends keyof PairStoreData} K
+     * @param {K} key
      * @param {PairStoreData[K]} value
      */
     public changeData<K extends keyof PairStoreData>(key: K, value: PairStoreData[K]): void {
@@ -71,7 +71,8 @@ export class PairStore {
 
     /**
      *
-     * @param {keyof PairStoreState} key
+     * @template {extends keyof PairStoreData} K
+     * @param {K} key
      * @param {PairStoreState[K]} value
      */
     public changeState<K extends keyof PairStoreState>(key: K, value: PairStoreState[K]): void {
@@ -87,7 +88,8 @@ export class PairStore {
 
     /**
      *
-     * @param {keyof PairStoreGraphData} key
+     * @template {extends keyof PairStoreGraphData} K
+     * @param {K} key
      * @param {PairStoreGraphData[K]} value
      * @protected
      */
@@ -189,7 +191,8 @@ export class PairStore {
             }, {
                 body: JSON.stringify(body),
             })
-            this.changeGraphData('ohlcv', result.concat(this.graphData.ohlcv))
+            const data = result.concat(this.graphData.ohlcv ?? [])
+            this.changeGraphData('ohlcv', data.length ? data : null)
         }
         catch (e) {}
         finally {
@@ -228,14 +231,13 @@ export class PairStore {
                     keepLocalTime: false,
                 }).toMillis(),
             }
-
             const result = await this.api.pairTvl({
                 address: this.address,
             }, {
                 body: JSON.stringify(body),
             })
-
-            this.changeGraphData('tvl', result.concat(this.graphData.tvl))
+            const data = result.concat(this.graphData.tvl ?? [])
+            this.changeGraphData('tvl', data.length ? data : null)
         }
         catch (e) {}
         finally {
@@ -279,7 +281,8 @@ export class PairStore {
             }, {
                 body: JSON.stringify(body),
             })
-            this.changeGraphData('volume', result.concat(this.graphData.volume))
+            const data = result.concat(this.graphData.volume ?? [])
+            this.changeGraphData('volume', data.length ? data : null)
         }
         catch (e) {}
         finally {

@@ -1,3 +1,4 @@
+import classNames from 'classnames'
 import * as React from 'react'
 import {
     AutoscaleInfo,
@@ -9,6 +10,7 @@ import {
     SeriesType,
 } from 'lightweight-charts'
 
+import { ContentLoader } from '@/components/common/ContentLoader'
 import {
     areaOptions,
     areaStyles,
@@ -24,13 +26,17 @@ import {
 } from '@/modules/Chart/types'
 import { debounce } from '@/utils'
 
+import './index.scss'
+
 
 type Props = {
-    data: CommonGraphShape[] | CandlestickGraphShape[];
+    data: CommonGraphShape[] | CandlestickGraphShape[] | null;
     options?: DeepPartial<ChartOptions>;
     timeframe: Timeframe;
     type: SeriesType;
     load: (from?: number, to?: number) => Promise<void>;
+    loading?: boolean;
+    noDataMessage?: React.ReactNode;
 }
 
 
@@ -40,6 +46,8 @@ export function Chart({
     timeframe,
     type,
     load,
+    loading,
+    noDataMessage,
 }: Props): JSX.Element {
     const chartRef = React.useRef<HTMLDivElement | null>(null)
     const chart = React.useRef<IChartApi>()
@@ -121,7 +129,7 @@ export function Chart({
     }, [chartRef.current])
 
     React.useEffect(() => {
-        if (data.length === 0) {
+        if (data?.length === 0) {
             (async () => {
                 await load?.()
                 chart.current?.timeScale().resetTimeScale()
@@ -131,43 +139,61 @@ export function Chart({
     }, [data])
 
     React.useEffect(() => {
-        if (chart.current !== undefined) {
-            if (listener.current !== undefined) {
-                chart.current?.timeScale().unsubscribeVisibleTimeRangeChange(listener.current)
-                listener.current = undefined
-            }
-            let seriesMaxValue: number | undefined
-            series?.setData(data)
-            data.forEach(d => {
-                const { value } = d as CommonGraphShape
-                if (value !== undefined) {
-                    if (seriesMaxValue !== undefined) {
-                        if (seriesMaxValue < value) {
-                            seriesMaxValue = value
-                        }
-                    }
-                    else {
+        if (chart.current === undefined || data == null) {
+            return
+        }
+        if (listener.current !== undefined) {
+            chart.current?.timeScale().unsubscribeVisibleTimeRangeChange(listener.current)
+            listener.current = undefined
+        }
+        let seriesMaxValue: number | undefined
+        series?.setData(data)
+        data?.forEach(d => {
+            const { value } = d as CommonGraphShape
+            if (value !== undefined) {
+                if (seriesMaxValue !== undefined) {
+                    if (seriesMaxValue < value) {
                         seriesMaxValue = value
                     }
                 }
-            })
-            series?.applyOptions({
-                autoscaleInfoProvider: (
-                    original: () => AutoscaleInfo | null,
-                ): AutoscaleInfo | null => {
-                    const res = original()
-                    if (res !== null && seriesMaxValue !== undefined) {
-                        if (res.priceRange.maxValue < seriesMaxValue) {
-                            res.priceRange.maxValue = seriesMaxValue
-                        }
+                else {
+                    seriesMaxValue = value
+                }
+            }
+        })
+        series?.applyOptions({
+            autoscaleInfoProvider: (
+                original: () => AutoscaleInfo | null,
+            ): AutoscaleInfo | null => {
+                const res = original()
+                if (res !== null && seriesMaxValue !== undefined) {
+                    if (res.priceRange.maxValue < seriesMaxValue) {
+                        res.priceRange.maxValue = seriesMaxValue
                     }
-                    return res
-                },
-            })
-            listener.current = handler
-            chart.current?.timeScale().subscribeVisibleTimeRangeChange(listener.current)
-        }
+                }
+                return res
+            },
+        })
+        listener.current = handler
+        chart.current?.timeScale().subscribeVisibleTimeRangeChange(listener.current)
     }, [data, series, timeframe, handler])
 
-    return <div ref={chartRef} className="chart" />
+    return (
+        <div
+            ref={chartRef}
+            className={classNames('chart', {
+                'chart--no-data': data?.length === 0,
+                'chart--loading': data?.length === 0 && loading,
+            })}
+        >
+            {(data?.length === 0 && loading) && (
+                <ContentLoader />
+            )}
+            {(noDataMessage !== undefined && data?.length === 0 && !loading) && (
+                <div className="chart__no-data-message">
+                    {noDataMessage}
+                </div>
+            )}
+        </div>
+    )
 }

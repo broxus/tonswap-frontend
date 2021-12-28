@@ -19,9 +19,9 @@ export const DEFAULT_PAIRS_STORE_STATE: PairsStoreState = {
 
 export const DEFAULT_PAIR_STORE_DATA: PairStoreData = {
     graphData: {
-        ohlcv: [],
-        tvl: [],
-        volume: [],
+        ohlcv: null,
+        tvl: null,
+        volume: null,
     },
     pair: undefined,
     transactionsData: {

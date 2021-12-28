@@ -55,9 +55,9 @@ export type CurrenciesResponse = {
 }
 
 export type CurrencyStoreGraphData = {
-    prices: OhlcvGraphModel[];
-    tvl: TvlGraphModel[];
-    volume: VolumeGraphModel[];
+    prices: OhlcvGraphModel[] | null;
+    tvl: TvlGraphModel[] | null;
+    volume: VolumeGraphModel[] | null;
 }
 
 export type CurrencyStoreData = {

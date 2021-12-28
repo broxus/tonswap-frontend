@@ -83,7 +83,7 @@ function FarmingBaseInfoInner({
                                 <div className="farming-panel__token">
                                     <TokenIcon
                                         size="xsmall"
-                                        uri={leftToken.icon}
+                                        icon={leftToken.icon}
                                         address={leftToken.root}
                                     />
 
@@ -97,7 +97,7 @@ function FarmingBaseInfoInner({
                                 <div className="farming-panel__token">
                                     <TokenIcon
                                         size="xsmall"
-                                        uri={rightToken.icon}
+                                        icon={rightToken.icon}
                                         address={rightToken.root}
                                     />
                                     {intl.formatMessage({
@@ -140,7 +140,7 @@ function FarmingBaseInfoInner({
                             <div className="farming-panel__token" key={token.root}>
                                 <TokenIcon
                                     size="xsmall"
-                                    uri={token.icon}
+                                    icon={token.icon}
                                     address={token.root}
                                 />
                                 {intl.formatMessage({
@@ -167,7 +167,7 @@ function FarmingBaseInfoInner({
                             <div className="farming-panel__token" key={token.root}>
                                 <TokenIcon
                                     size="xsmall"
-                                    uri={token.icon}
+                                    icon={token.icon}
                                     address={token.root}
                                 />
                                 {intl.formatMessage({

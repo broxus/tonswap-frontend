@@ -114,13 +114,13 @@ function RemoveLiquidityFormInner({
 
     React.useEffect(() => {
         if (leftTokenAddress) {
-            tokensCache.fetchIfNotExist(leftTokenAddress)
+            tokensCache.syncCustomToken(leftTokenAddress)
         }
     }, [leftTokenAddress])
 
     React.useEffect(() => {
         if (rightTokenAddress) {
-            tokensCache.fetchIfNotExist(rightTokenAddress)
+            tokensCache.syncCustomToken(rightTokenAddress)
         }
     }, [rightTokenAddress])
 

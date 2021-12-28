@@ -1,6 +1,21 @@
 .chart {
     display: flex;
     flex-grow: 1;
-    flex-wrap: wrap;
     height: 100%;
+
+    &--loading,
+    &--no-data {
+        align-items: center;
+        justify-content: center;
+        > *:not(.chart__no-data-message, .content-loader) {
+            display: none;
+        }
+    }
+    &__no-data-message {
+        opacity: 0.64;
+    }
+
+    .content-loader {
+        min-height: 100%;
+    }
 }

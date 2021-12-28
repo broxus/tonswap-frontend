@@ -52,7 +52,7 @@ function FarmingAdminWithdrawInner({
                                 <div className="farming-panel__token" key={token.root}>
                                     <TokenIcon
                                         size="xsmall"
-                                        uri={token.icon}
+                                        icon={token.icon}
                                         address={token.root}
                                     />
                                     {intl.formatMessage({

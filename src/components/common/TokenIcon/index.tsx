@@ -8,28 +8,28 @@ import './index.scss'
 
 export type TokenIconProps = {
     address?: string;
-    name?: string;
     className?: string;
+    icon?: string;
+    name?: string;
     size?: 'small' | 'xsmall' | 'medium';
-    uri?: string;
 }
 
 
 export function TokenIcon({
     address,
     className,
+    icon,
     name,
     size = 'medium',
-    uri,
 }: TokenIconProps): JSX.Element | null {
-    if (uri !== undefined) {
+    if (icon !== undefined) {
         return (
             <img
                 alt={name}
                 className={classNames('token-icon', {
                     [`token-icon_size_${size}`]: Boolean(size),
                 }, className)}
-                src={uri}
+                src={icon}
             />
         )
     }
