@@ -75,27 +75,29 @@ export function usePoolsContent(): UsePoolsContent {
                 .toFixed()
 
             return {
-                lpTokens: formattedAmount(lpTokens, lp.decimals),
+                lpTokens: formattedAmount(lpTokens, lp.decimals, {
+                    target: 'token',
+                }),
                 leftToken: intl.formatMessage({
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
-                    value: shareAmount(
+                    value: formattedAmount(shareAmount(
                         lpTokens,
                         left.inPool,
                         lp.inPool,
                         leftToken.decimals,
-                    ),
+                    ), undefined, { target: 'token' }),
                     symbol: leftToken.symbol,
                 }),
                 rightToken: intl.formatMessage({
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
-                    value: shareAmount(
+                    value: formattedAmount(shareAmount(
                         lpTokens,
                         right.inPool,
                         lp.inPool,
                         rightToken.decimals,
-                    ),
+                    ), undefined, { target: 'token' }),
                     symbol: rightToken.symbol,
                 }),
                 link: appRoutes.poolItem.makeUrl({ address }),
@@ -162,11 +164,17 @@ export function usePoolsContent(): UsePoolsContent {
                 Pool.pools(addresses, new Address(userAddress)),
                 getLockedLpInFarming(userAddress),
             ])
+            const addressesToSync: string[] = result[0].reduce((acc: string[], pool) => {
+                if (!acc.includes(pool.left.address)) {
+                    acc.push(pool.left.address)
+                }
+                if (!acc.includes(pool.right.address)) {
+                    acc.push(pool.right.address)
+                }
+                return acc
+            }, [])
             await Promise.all(
-                result[0].map(pool => Promise.all([
-                    tokensCache.syncCustomToken(pool.left.address),
-                    tokensCache.syncCustomToken(pool.right.address),
-                ])),
+                addressesToSync.map(address => tokensCache.syncCustomToken(address)),
             )
             return result
         }),

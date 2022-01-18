@@ -1,4 +1,4 @@
-.changes-direction {
+.rate-change {
     color: #ffffff;
     display: inline-block;
     font-size: 14px;
@@ -17,7 +17,7 @@
         position: absolute;
     }
 }
-.changes-direction-up {
+.rate-change-up {
     color: #4ab44a;
     opacity: 1;
     &::before {
@@ -25,7 +25,7 @@
         top: 2px;
     }
 }
-.changes-direction-down {
+.rate-change-down {
     color: #eb4361;
     opacity: 1;
     &::before {

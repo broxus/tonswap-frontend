@@ -9,5 +9,5 @@ export function formattedBalance(
     dexAccountBalance?: BigNumber.Value,
 ): string {
     const balance = new BigNumber(value || 0).plus(dexAccountBalance || 0).toFixed()
-    return formattedAmount(balance, decimals)
+    return formattedAmount(balance, decimals, { preserve: true })
 }

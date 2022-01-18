@@ -7,7 +7,7 @@ import BigNumber from 'bignumber.js'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { PoolDetails } from '@/modules/Farming/components/PoolDetails'
 import { FarmPool } from '@/modules/Farming/types'
-import { formattedAmount } from '@/utils'
+import { formattedAmount, parseCurrencyBillions } from '@/utils'
 
 
 type Props = {
@@ -68,7 +68,7 @@ export function Item({ pool }: Props): JSX.Element {
                         </div>
                         <div className="list__cell-inner-leader-value">
                             $
-                            {formattedAmount(pool.TVL, 0) || 0}
+                            {parseCurrencyBillions(pool.TVL, 2)}
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@ export function Item({ pool }: Props): JSX.Element {
                             })}
                         </div>
                         <div className="list__cell-inner-leader-value">
-                            {formattedAmount(pool.APY, 0) || 0}
+                            {formattedAmount(pool.APY)}
                             %
                         </div>
                     </div>

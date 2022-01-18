@@ -3,14 +3,12 @@ import { Link } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { TvlChange } from '@/components/common/TvlChange'
+import { RateChange } from '@/components/common/RateChange'
 import { TokenIcons } from '@/components/common/TokenIcons'
 import { FarmingPair } from '@/modules/Farming/components/FarmingPair'
 import { TokenCache } from '@/stores/TokensCacheService'
 import {
     concatSymbols,
-    formattedAmount,
-    getChangesDirection,
     parseCurrencyBillions,
 } from '@/utils'
 
@@ -34,6 +32,7 @@ export type FarmingTableItemProps = {
     balanceWarning?: boolean;
     link?: string;
     rewardsLoading?: boolean;
+    poolAddress: string;
 }
 
 export function FarmingTableItem({
@@ -63,12 +62,12 @@ export function FarmingTableItem({
     const shareFormatted = intl.formatMessage({
         id: 'FARMING_TABLE_SHARE_VALUE',
     }, {
-        value: formattedAmount(share, 0),
+        value: share,
     })
     const aprFormatted = apr ? intl.formatMessage({
         id: 'FARMING_TABLE_APR_VALUE',
     }, {
-        value: formattedAmount(apr, 0),
+        value: apr,
     }) : undefined
     const tvlFormatted = tvl ? parseCurrencyBillions(tvl) : undefined
 
@@ -100,10 +99,7 @@ export function FarmingTableItem({
             </div>
             <div className="list__cell list__cell--left list__cell--right">
                 {tvlChange === null ? nullMessage : (
-                    <TvlChange
-                        changesDirection={getChangesDirection(tvlChange)}
-                        priceChange={tvlChange}
-                    />
+                    <RateChange value={tvlChange} />
                 )}
             </div>
             <div
@@ -114,10 +110,7 @@ export function FarmingTableItem({
             </div>
             <div className="list__cell list__cell--left list__cell--right">
                 {aprChange === null ? nullMessage : (
-                    <TvlChange
-                        changesDirection={getChangesDirection(aprChange)}
-                        priceChange={aprChange}
-                    />
+                    <RateChange value={aprChange} />
                 )}
             </div>
             <div

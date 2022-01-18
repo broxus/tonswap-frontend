@@ -11,6 +11,10 @@
         width: 0;
     }
 
+    > * {
+        min-width: fit-content;
+    }
+
     &__header,
     &__row {
         align-items: center;

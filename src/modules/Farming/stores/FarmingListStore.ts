@@ -147,34 +147,36 @@ export class FarmingListStore {
             return
         }
 
-        pools.forEach(async (pool, index) => {
-            runInAction(() => {
-                this.state.rewards[index] = {
-                    loading: true,
-                    entitled: undefined,
-                    vested: undefined,
+        pools.forEach((pool, index) => {
+            (async () => {
+                runInAction(() => {
+                    this.state.rewards[index] = {
+                        loading: true,
+                        entitled: undefined,
+                        vested: undefined,
+                    }
+                })
+
+                try {
+                    const reward = await this.fetchReward(pool)
+
+                    runInAction(() => {
+                        this.state.rewards[index] = {
+                            loading: false,
+                            entitled: reward.entitled,
+                            vested: reward.vested,
+                        }
+                    })
                 }
-            })
-
-            try {
-                const reward = await this.fetchReward(pool)
-
-                runInAction(() => {
-                    this.state.rewards[index] = {
-                        loading: false,
-                        entitled: reward.entitled,
-                        vested: reward.vested,
-                    }
-                })
-            }
-            catch (e) {
-                error(e)
-                runInAction(() => {
-                    this.state.rewards[index] = {
-                        loading: false,
-                    }
-                })
-            }
+                catch (e) {
+                    error(e)
+                    runInAction(() => {
+                        this.state.rewards[index] = {
+                            loading: false,
+                        }
+                    })
+                }
+            })()
         })
     }
 

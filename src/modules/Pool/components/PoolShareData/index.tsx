@@ -3,6 +3,7 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
+import { formattedAmount } from '@/utils'
 
 
 function ShareData(): JSX.Element {
@@ -66,7 +67,10 @@ function ShareData(): JSX.Element {
                             })}
                         </div>
                         <div>
-                            {pool.newLeftPrice}
+                            {formattedAmount(pool.newLeftPrice, undefined, {
+                                preserve: true,
+                                roundIfThousand: false,
+                            })}
                         </div>
                     </div>
                 )}
@@ -82,7 +86,10 @@ function ShareData(): JSX.Element {
                             })}
                         </div>
                         <div>
-                            {pool.newRightPrice}
+                            {formattedAmount(pool.newRightPrice, undefined, {
+                                preserve: true,
+                                roundIfThousand: false,
+                            })}
                         </div>
                     </div>
                 )}

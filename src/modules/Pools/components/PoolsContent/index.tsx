@@ -10,7 +10,7 @@ import { PanelLoader } from '@/components/common/PanelLoader'
 
 import { Item } from './item'
 
-import './style.scss'
+import './index.scss'
 
 
 export const PoolsContent = observer((): JSX.Element => {

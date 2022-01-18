@@ -58,7 +58,7 @@ function FarmingAdminWithdrawInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(tokensAmounts[index], token.decimals),
+                                        amount: formattedAmount(tokensAmounts[index], token.decimals, { target: 'token' }),
                                         symbol: token.symbol,
                                     })}
                                 </div>

@@ -120,7 +120,10 @@ function FarmingUserInfoInner({
                                             pairBalanceLeft,
                                             pairBalanceLp,
                                             leftToken.decimals,
-                                        ), 0),
+                                        ), undefined, {
+                                            target: 'token',
+                                            roundIfThousand: true,
+                                        }),
                                         symbol: leftToken.symbol,
                                     })}
                                 </div>
@@ -138,7 +141,10 @@ function FarmingUserInfoInner({
                                             pairBalanceRight,
                                             pairBalanceLp,
                                             rightToken.decimals,
-                                        ), 0),
+                                        ), undefined, {
+                                            target: 'token',
+                                            roundIfThousand: true,
+                                        }),
                                         symbol: rightToken.symbol,
                                     })}
                                 </div>
@@ -155,7 +161,10 @@ function FarmingUserInfoInner({
                                     symbol: lpTokenSymbol,
                                 })}
                             </div>
-                            {formattedAmount(userLpFarmingAmount, lpTokenDecimals)}
+                            {formattedAmount(userLpFarmingAmount, lpTokenDecimals, {
+                                target: 'token',
+                                roundIfThousand: true,
+                            })}
                         </div>
                     )}
 
@@ -169,7 +178,7 @@ function FarmingUserInfoInner({
                             {intl.formatMessage({
                                 id: 'FARMING_USER_INFO_SHARE_VALUE',
                             }, {
-                                value: formattedAmount(userShare, 0),
+                                value: userShare,
                             })}
                         </div>
                     )}
@@ -219,7 +228,10 @@ function FarmingUserInfoInner({
                                             : intl.formatMessage({
                                                 id: 'FARMING_TOKEN',
                                             }, {
-                                                amount: formattedAmount(userHistoryLeftAmount, 0),
+                                                amount: formattedAmount(userHistoryLeftAmount, undefined, {
+                                                    target: 'token',
+                                                    roundIfThousand: true,
+                                                }),
                                                 symbol: leftToken.symbol,
                                             })
                                     }
@@ -236,7 +248,10 @@ function FarmingUserInfoInner({
                                             : intl.formatMessage({
                                                 id: 'FARMING_TOKEN',
                                             }, {
-                                                amount: formattedAmount(userHistoryRightAmount, 0),
+                                                amount: formattedAmount(userHistoryRightAmount, undefined, {
+                                                    target: 'token',
+                                                    roundIfThousand: true,
+                                                }),
                                                 symbol: rightToken.symbol,
                                             })
                                     }
@@ -294,7 +309,10 @@ function FarmingUserInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(unclaimedAmounts[index], token.decimals),
+                                        amount: formattedAmount(unclaimedAmounts[index], token.decimals, {
+                                            target: 'token',
+                                            roundIfThousand: true,
+                                        }),
                                         symbol: token.symbol,
                                     })}
                                 </div>
@@ -320,7 +338,10 @@ function FarmingUserInfoInner({
                                         {intl.formatMessage({
                                             id: 'FARMING_TOKEN',
                                         }, {
-                                            amount: formattedAmount(debtAmounts[index], token.decimals),
+                                            amount: formattedAmount(debtAmounts[index], token.decimals, {
+                                                target: 'token',
+                                                roundIfThousand: true,
+                                            }),
                                             symbol: token.symbol,
                                         })}
                                     </div>
@@ -346,7 +367,10 @@ function FarmingUserInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(entitledAmounts[index], token.decimals),
+                                        amount: formattedAmount(entitledAmounts[index], token.decimals, {
+                                            target: 'token',
+                                            roundIfThousand: true,
+                                        }),
                                         symbol: token.symbol,
                                     })}
                                 </div>

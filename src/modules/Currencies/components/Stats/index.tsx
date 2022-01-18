@@ -3,11 +3,10 @@ import classNames from 'classnames'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { TvlChange } from '@/components/common/TvlChange'
+import { RateChange } from '@/components/common/RateChange'
 import { Chart } from '@/modules/Chart'
 import { useCurrencyStore } from '@/modules/Currencies/providers/CurrencyStoreProvider'
 import { CurrencyStoreState } from '@/modules/Currencies/types'
-import { getChangesDirection } from '@/utils'
 
 import './index.scss'
 
@@ -38,10 +37,7 @@ export function Stats(): JSX.Element {
                         <strong>{store.formattedTvl}</strong>
                     </div>
                     {store.currency?.tvlChange !== undefined && (
-                        <TvlChange
-                            changesDirection={getChangesDirection(store.currency.tvlChange)}
-                            priceChange={store.currency.tvlChange}
-                        />
+                        <RateChange value={store.currency.tvlChange} />
                     )}
                 </div>
                 <div className="currency-stats__sidebar-item">
@@ -54,10 +50,7 @@ export function Stats(): JSX.Element {
                         <strong>{store.formattedVolume24h}</strong>
                     </div>
                     {store.currency?.volumeChange24h !== undefined && (
-                        <TvlChange
-                            changesDirection={getChangesDirection(store.currency.volumeChange24h)}
-                            priceChange={store.currency.volumeChange24h}
-                        />
+                        <RateChange value={store.currency.volumeChange24h} />
                     )}
                 </div>
                 <div className="currency-stats__sidebar-item">

@@ -77,14 +77,14 @@ function RemoveLiquidityFormInner({
     })
 
     const userHasLiquidity = React.useMemo(
-        () => userLpTotalAmount && new BigNumber(userLpTotalAmount).isGreaterThan(0),
+        () => userLpTotalAmount && new BigNumber(userLpTotalAmount).gt(0),
         [userLpTotalAmount],
     )
 
     const amountInputIsInvalid = amount.length > 0 && (!amountIsLessOrEqualBalance || !amountIsPositiveNum)
 
     const totalAmountFormatted = userLpTotalAmount && lpDecimals !== undefined
-        ? formattedAmount(userLpTotalAmount, lpDecimals)
+        ? formattedAmount(userLpTotalAmount, lpDecimals, { preserve: true, roundIfThousand: false })
         : '0'
 
     const amountInputHint = amount.length > 0 && amountIsPositiveNum && !amountIsLessOrEqualBalance
@@ -247,7 +247,7 @@ function RemoveLiquidityFormInner({
                                     size="xsmall"
                                 />
                                 <div className="remove-liquidity-form__value">
-                                    {new BigNumber(receiveLeft || '0').isZero() ? '0.00' : formattedAmount(receiveLeft, 0)}
+                                    {formattedAmount(receiveLeft, 0, { preserve: true })}
                                 </div>
                             </div>
 
@@ -257,7 +257,7 @@ function RemoveLiquidityFormInner({
                                     size="xsmall"
                                 />
                                 <div className="remove-liquidity-form__value">
-                                    {new BigNumber(receiveRight || '0').isZero() ? '0.00' : formattedAmount(receiveRight, 0)}
+                                    {formattedAmount(receiveRight, 0, { preserve: true })}
                                 </div>
                             </div>
                         </div>
@@ -277,7 +277,6 @@ function RemoveLiquidityFormInner({
                                 id: 'REMOVE_LIQUIDITY_FORM_POSITION',
                             })}
                         </div>
-
 
                         <div className="remove-liquidity-form-stats">
                             <div className="remove-liquidity-form-stats__head">
@@ -319,12 +318,16 @@ function RemoveLiquidityFormInner({
                                     {leftToken.symbol}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {currentLeftAmount && formattedAmount(currentLeftAmount, 0)}
+                                    {currentLeftAmount && formattedAmount(currentLeftAmount, undefined, {
+                                        preserve: true,
+                                    })}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
                                     {
                                         resultLeftAmount && amountIsValid
-                                            ? formattedAmount(resultLeftAmount, 0)
+                                            ? formattedAmount(resultLeftAmount, undefined, {
+                                                preserve: true,
+                                            })
                                             : nullMessage
                                     }
                                 </span>
@@ -334,18 +337,21 @@ function RemoveLiquidityFormInner({
                                     {rightToken.symbol}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {currentRightAmount && formattedAmount(currentRightAmount, 0)}
+                                    {currentRightAmount && formattedAmount(currentRightAmount, undefined, {
+                                        preserve: true,
+                                    })}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
                                     {
                                         resultRightAmount && amountIsValid
-                                            ? formattedAmount(resultRightAmount, 0)
+                                            ? formattedAmount(resultRightAmount, undefined, {
+                                                preserve: true,
+                                            })
                                             : nullMessage
                                     }
                                 </span>
                             </div>
                         </div>
-
                     </div>
                 )
             }

@@ -3,13 +3,13 @@
         font-size: 18px;
         font-weight: 700;
         line-height: 24px;
-        margin: 0 0 16px;
+        margin: 0 0 24px;
     }
 
     &__token {
-        display: flex;
-        column-gap: 7px;
         align-items: center;
+        column-gap: 7px;
+        display: flex;
 
         & + & {
             margin-top: 4px;
@@ -17,21 +17,21 @@
     }
 
     &-amount {
-        display: flex;
         column-gap: 12px;
+        display: flex;
         font-size: 24px;
-        line-height: 28px;
         font-weight: 700;
+        line-height: 28px;
         word-break: break-all;
     }
 
     &-section {
         &__title {
-            margin: 0 0 4px;
+            color: rgba(255, 255, 255, 0.48);
             font-size: 12px;
             font-weight: 400;
             line-height: 16px;
-            color: rgba(255,255,255,0.48)
+            margin: 0 0 4px
         }
 
         &__content {
@@ -47,9 +47,9 @@
     }
 
     &-cols {
+        column-gap: 24px;
         display: flex;
         flex-direction: row;
-        column-gap: 24px;
     }
 
     &-buttons {
@@ -58,8 +58,8 @@
         row-gap: 8px;
 
         &_inline {
-            flex-direction: row;
             column-gap: 8px;
+            flex-direction: row;
         }
     }
 }

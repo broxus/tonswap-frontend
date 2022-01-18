@@ -25,9 +25,10 @@ function Data(): JSX.Element {
                 </div>
                 <div>
                     {formattedAmount(
-                        pool.pairBalances?.left || '0',
+                        pool.pairBalances?.left,
                         pool.leftToken?.decimals,
-                    ) || '0'}
+                        { target: 'token' },
+                    )}
                 </div>
             </div>
             <div className="form-row">
@@ -36,9 +37,10 @@ function Data(): JSX.Element {
                 </div>
                 <div>
                     {formattedAmount(
-                        pool.pairBalances?.right || '0',
+                        pool.pairBalances?.right,
                         pool.rightToken?.decimals,
-                    ) || '0'}
+                        { target: 'token' },
+                    )}
                 </div>
             </div>
             <div className="form-row">
@@ -64,7 +66,10 @@ function Data(): JSX.Element {
                     })}
                 </div>
                 <div>
-                    {pool.leftPrice}
+                    {formattedAmount(pool.leftPrice, undefined, {
+                        preserve: true,
+                        roundIfThousand: false,
+                    })}
                 </div>
             </div>
             <div className="form-row">
@@ -77,7 +82,10 @@ function Data(): JSX.Element {
                     })}
                 </div>
                 <div>
-                    {pool.rightPrice}
+                    {formattedAmount(pool.rightPrice, undefined, {
+                        preserve: true,
+                        roundIfThousand: false,
+                    })}
                 </div>
             </div>
             <div className="form-row">

@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Settings } from 'luxon'
 import { IntlProvider } from 'react-intl'
 import {
     Redirect,
@@ -35,6 +36,10 @@ import './App.scss'
 
 
 export function App(): JSX.Element {
+    React.useEffect(() => {
+        Settings.defaultLocale = 'en'
+    }, [])
+
     return (
         <IntlProvider
             key="intl"

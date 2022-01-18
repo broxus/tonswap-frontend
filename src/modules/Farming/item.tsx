@@ -157,32 +157,28 @@ export function FarmingInner(): JSX.Element {
                                 }
 
                                 {
-                                    farmingData.isAdmin === false
-                                    && farmingData.isActive === false
+                                    !farmingData.isAdmin && !farmingData.isActive
                                     && (
                                         <FarmingMessageFarmEnded />
                                     )
                                 }
 
                                 {
-                                    farmingData.isAdmin === false
-                                    && farmingData.rewardBalanceIsLow === true
+                                    !farmingData.isAdmin && farmingData.rewardBalanceIsLow === true
                                     && (
                                         <FarmingMessageLowBalance />
                                     )
                                 }
 
                                 {
-                                    farmingData.isAdmin === true
-                                    && farmingData.rewardBalanceIsLow === true
+                                    farmingData.isAdmin && farmingData.rewardBalanceIsLow === true
                                     && (
                                         <FarmingMessageAdminLowBalance />
                                     )
                                 }
 
                                 {
-                                    farmingData.isAdmin === true
-                                    && farmingData.rewardBalanceIsZero === true
+                                    farmingData.isAdmin && farmingData.rewardBalanceIsZero === true
                                     && (
                                         <FarmingMessageAdminZeroBalance />
                                     )
@@ -223,7 +219,7 @@ export function FarmingInner(): JSX.Element {
                                     </>
                                 )}
 
-                                {farmingData.isAdmin === true && (
+                                {farmingData.isAdmin && (
                                     <>
                                         <div className="farming-title" id="pool-management">
                                             <SectionTitle size="small">
@@ -350,7 +346,7 @@ export function FarmingInner(): JSX.Element {
                                                     })}
                                                 </SectionTitle>
 
-                                                {farmingData.isAdmin === true && (
+                                                {farmingData.isAdmin && (
                                                     <button
                                                         type="button"
                                                         className="btn btn-md btn-square btn-icon"

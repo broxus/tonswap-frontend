@@ -1564,13 +1564,6 @@ export class PoolStore {
     }
 
     public get isSupplyReady(): boolean {
-        console.log(
-            this.isLeftAmountValid,
-            this.isRightAmountValid,
-            this.isDexLeftBalanceValid,
-            this.isDexRightBalanceValid,
-        )
-
         return this.isAutoExchangeEnabled
             ? (
                 (

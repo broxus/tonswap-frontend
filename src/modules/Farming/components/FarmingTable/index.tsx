@@ -74,9 +74,11 @@ export function FarmingTable({
                             </div>
                         ) : (
                             <PanelLoader loading={loading && items.length > 0}>
-                                {items.map((item, index) => (
-                                    /* eslint-disable react/no-array-index-key */
-                                    <FarmingTableItem key={index} {...item} />
+                                {items.map(item => (
+                                    <FarmingTableItem
+                                        key={item.poolAddress}
+                                        {...item}
+                                    />
                                 ))}
                             </PanelLoader>
                         )}

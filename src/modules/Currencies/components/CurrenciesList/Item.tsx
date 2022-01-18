@@ -2,10 +2,10 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 
 import { TokenIcon } from '@/components/common/TokenIcon'
-import { TvlChange } from '@/components/common/TvlChange'
+import { RateChange } from '@/components/common/RateChange'
 import { CurrencyInfo } from '@/modules/Currencies/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { getChangesDirection, parseCurrencyBillions } from '@/utils'
+import { parseCurrencyBillions } from '@/utils'
 
 
 type Props = {
@@ -18,7 +18,6 @@ export function Item({ currency, idx }: Props): JSX.Element {
     const tokensCache = useTokensCache()
 
     const token = React.useMemo(() => tokensCache.get(currency.address), [currency.address])
-
     const price = React.useMemo(() => parseCurrencyBillions(currency.price), [currency.price])
     const volume24h = React.useMemo(() => parseCurrencyBillions(currency.volume24h), [currency.volume24h])
     const tvl = React.useMemo(() => parseCurrencyBillions(currency.tvl), [currency.tvl])
@@ -51,10 +50,7 @@ export function Item({ currency, idx }: Props): JSX.Element {
                 {price}
             </div>
             <div className="list__cell list__cell--right hide-824">
-                <TvlChange
-                    changesDirection={getChangesDirection(currency.priceChange)}
-                    priceChange={currency.priceChange}
-                />
+                <RateChange value={currency.priceChange} />
             </div>
             <div className="list__cell list__cell--right">
                 {volume24h}

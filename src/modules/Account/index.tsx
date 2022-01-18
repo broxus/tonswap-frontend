@@ -50,8 +50,11 @@ export function Account(): JSX.Element | null {
                                         }, {
                                             balance: formattedAmount(
                                                 wallet.balance,
-                                                9,
-                                            ) || 0,
+                                                9, {
+                                                    preserve: true,
+                                                    roundIfThousand: false,
+                                                },
+                                            ),
                                             currency: 'TON',
                                         })}
                                     </div>

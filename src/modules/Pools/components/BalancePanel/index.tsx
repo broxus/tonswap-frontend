@@ -32,7 +32,11 @@ export function BalancePanel({
                         <h5 className="balance-section__title">
                             {intl.formatMessage({ id: 'POOLS_LIST_AMOUNT' }, { name: symbol })}
                         </h5>
-                        <div className="balance-section__content">{balance}</div>
+                        <div className="balance-section__content">
+                            <div className="balance-amount">
+                                {balance}
+                            </div>
+                        </div>
                     </div>
 
                     <div className="balance-section">
