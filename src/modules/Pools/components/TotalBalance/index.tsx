@@ -106,14 +106,14 @@ export function TotalBalance({
                     <div className="balance-buttons balance-buttons_inline">
                         {walletLpAmount && new BigNumber(walletLpAmount).isGreaterThan(0) && (
                             <Link
-                                className="btn btn--empty btn-s btn-with-icon"
+                                className="btn btn--empty btn-with-icon"
                                 to={appRoutes.poolRemoveLiquidity.makeUrl({ leftTokenRoot, rightTokenRoot })}
                             >
                                 {intl.formatMessage({ id: 'POOLS_LIST_BURN_BUTTON' })}
                             </Link>
                         )}
                         <Link
-                            className="btn btn-primary btn-s"
+                            className="btn btn-primary"
                             to={appRoutes.poolCreate.makeUrl({ leftTokenRoot, rightTokenRoot })}
                         >
                             {intl.formatMessage({ id: 'POOLS_LIST_ADD_BUTTON' })}

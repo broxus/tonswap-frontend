@@ -48,7 +48,7 @@ export function FarmingWithdrawInner({
     const rewards = rewardTokens
         .map((token, index) => (
             token && {
-                amount: formattedAmount(rewardAmounts[index], token.decimals),
+                amount: formattedAmount(rewardAmounts[index], token.decimals, { preserve: true }),
                 symbol: token.symbol,
             }
         ))
@@ -60,7 +60,7 @@ export function FarmingWithdrawInner({
     )
 
     const balance = React.useMemo(
-        () => formattedAmount(farmingAmount, tokenDecimals),
+        () => formattedAmount(farmingAmount, tokenDecimals, { preserve: true }),
         [farmingAmount, tokenDecimals],
     )
 

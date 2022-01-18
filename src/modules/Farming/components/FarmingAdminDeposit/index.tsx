@@ -69,7 +69,7 @@ function FarmingAdminDepositInner({
                             <FarmingAdminDepositBalance
                                 tokenRoot={token.root}
                                 symbol={token.symbol}
-                                amount={formattedAmount(formData[index].poolBalance, token.decimals)}
+                                amount={formattedAmount(formData[index].poolBalance, token.decimals, { target: 'token' })}
                             />
 
                             <FarmingAdminDepositInput

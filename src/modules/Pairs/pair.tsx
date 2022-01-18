@@ -14,7 +14,6 @@ import { PairTransactions } from '@/modules/Pairs/components/PairTransactions'
 import { Stats } from '@/modules/Pairs/components/Stats'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { TogglePoolButton } from '@/modules/Pools/components/TogglePoolButton'
-import { PairStoreData } from '@/modules/Pairs/types'
 import { getDefaultPerPrice } from '@/modules/Swap/utils'
 import { TokenImportPopup } from '@/modules/TokensList/components'
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
@@ -23,7 +22,12 @@ import { concatSymbols, formattedAmount, isGoodBignumber } from '@/utils'
 import './pair.scss'
 
 
-function getPrice(pair?: PairStoreData['pair'], baseToken?: TokenCache, counterToken?: TokenCache): string {
+function getPrice(
+    baseToken?: TokenCache,
+    counterToken?: TokenCache,
+    leftLocked?: string | number,
+    rightLocked?: string | number,
+): string {
     const price = (
         baseToken !== undefined
         && counterToken !== undefined
@@ -31,8 +35,8 @@ function getPrice(pair?: PairStoreData['pair'], baseToken?: TokenCache, counterT
         && counterToken?.decimals !== undefined
     )
         ? getDefaultPerPrice(
-            new BigNumber(pair?.rightLocked || 0).shiftedBy(-counterToken.decimals),
-            new BigNumber(pair?.leftLocked || 0).shiftedBy(-baseToken.decimals),
+            new BigNumber(rightLocked || 0).shiftedBy(-counterToken.decimals),
+            new BigNumber(leftLocked || 0).shiftedBy(-baseToken.decimals),
             counterToken?.decimals,
         ) : new BigNumber(0)
 
@@ -53,12 +57,12 @@ function PairInner(): JSX.Element {
     ))
 
     const priceLeftToRight = React.useMemo(
-        () => getPrice(store.pair, baseToken, counterToken),
+        () => getPrice(baseToken, counterToken, store.pair?.leftLocked, store.pair?.rightLocked),
         [baseToken, counterToken, store.pair],
     )
 
     const priceRightToLeft = React.useMemo(
-        () => getPrice(store.pair, counterToken, baseToken),
+        () => getPrice(counterToken, baseToken, store.pair?.rightLocked, store.pair?.leftLocked),
         [baseToken, counterToken, store.pair],
     )
 
@@ -139,7 +143,11 @@ function PairInner(): JSX.Element {
                                         label={intl.formatMessage({
                                             id: 'PAIR_TOKEN_PRICE',
                                         }, {
-                                            amount: formattedAmount(priceLeftToRight, counterToken.decimals) || 0,
+                                            amount: formattedAmount(
+                                                priceLeftToRight,
+                                                counterToken.decimals,
+                                                { preserve: true },
+                                            ),
                                             symbolLeft: baseToken.symbol,
                                             symbolRight: counterToken.symbol,
                                         })}
@@ -155,7 +163,11 @@ function PairInner(): JSX.Element {
                                         label={intl.formatMessage({
                                             id: 'PAIR_TOKEN_PRICE',
                                         }, {
-                                            amount: formattedAmount(priceRightToLeft, baseToken.decimals) || 0,
+                                            amount: formattedAmount(
+                                                priceRightToLeft,
+                                                baseToken.decimals,
+                                                { preserve: true },
+                                            ),
                                             symbolLeft: counterToken.symbol,
                                             symbolRight: baseToken.symbol,
                                         })}

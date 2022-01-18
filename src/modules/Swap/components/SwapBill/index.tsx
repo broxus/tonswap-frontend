@@ -104,7 +104,10 @@ export function SwapBill({
                             __html: intl.formatMessage({
                                 id: 'SWAP_BILL_RESULT_MINIMUM_RECEIVE',
                             }, {
-                                value: formattedAmount(minExpectedAmount, rightToken.decimals) || 0,
+                                value: formattedAmount(minExpectedAmount, rightToken.decimals, {
+                                    preserve: true,
+                                    roundIfThousand: true,
+                                }),
                                 symbol: rightToken.symbol || '',
                             }, {
                                 ignoreTag: true,
@@ -159,7 +162,7 @@ export function SwapBill({
                             __html: intl.formatMessage({
                                 id: 'SWAP_BILL_RESULT_FEE',
                             }, {
-                                value: formattedAmount(fee, leftToken.decimals) || 0,
+                                value: formattedAmount(fee, leftToken.decimals, { preserve: true }),
                                 symbol: leftToken.symbol || '',
                             }, {
                                 ignoreTag: true,

@@ -104,50 +104,54 @@ export function usePoolContent(): UsePoolContent {
     ), [pair, pool])
 
     const lockedLp = React.useMemo(() => (
-        pool && farm
-            .reduce((acc, item) => (
-                acc
-                    .plus(item.info.user_token_balance)
-                    .shiftedBy(item.info.token_root_scale)
-            ), new BigNumber(0))
-            .toFixed()
+        pool && farm.reduce((acc, item) => (
+            acc.plus(item.info.user_token_balance).shiftedBy(item.info.token_root_scale)
+        ), new BigNumber(0)).toFixed()
     ), [pool, farm])
 
     const lockedLeft = React.useMemo(() => (
-        pool && lockedLp && shareAmount(
+        pool && lockedLp && formattedAmount(shareAmount(
             lockedLp,
             pool.left.inPool,
             pool.lp.inPool,
-            Number(tokensCache.get(pool.left.address)?.decimals),
-        )
-    ), [pool, lockedLp])
+            leftToken?.decimals ?? 0,
+        ), undefined, {
+            target: 'token',
+        })
+    ), [pool, lockedLp, leftToken])
 
     const lockedRight = React.useMemo(() => (
-        pool && lockedLp && shareAmount(
+        pool && lockedLp && formattedAmount(shareAmount(
             lockedLp,
             pool.right.inPool,
             pool.lp.inPool,
-            Number(tokensCache.get(pool.right.address)?.decimals),
-        )
-    ), [pool, lockedLp])
+            rightToken?.decimals ?? 0,
+        ), undefined, {
+            target: 'token',
+        })
+    ), [pool, lockedLp, rightToken])
 
     const walletLeft = React.useMemo(() => (
-        pool && leftToken && shareAmount(
+        pool && leftToken && formattedAmount(shareAmount(
             pool.lp.inWallet,
             pool.left.inPool,
             pool.lp.inPool,
             leftToken.decimals,
-        )
-    ), [pool])
+        ), undefined, {
+            target: 'token',
+        })
+    ), [pool, leftToken])
 
     const walletRight = React.useMemo(() => (
-        pool && rightToken && shareAmount(
+        pool && rightToken && formattedAmount(shareAmount(
             pool.lp.inWallet,
             pool.right.inPool,
             pool.lp.inPool,
             rightToken.decimals,
-        )
-    ), [pool])
+        ), undefined, {
+            target: 'token',
+        })
+    ), [pool, rightToken])
 
     const totalLp = React.useMemo(() => (
         pool && lockedLp && new BigNumber(lockedLp)
@@ -181,9 +185,9 @@ export function usePoolContent(): UsePoolContent {
         farm.map(({ info, balance: { reward }}) => ({
             tvl: info.tvl,
             tvlChange: info.tvl_change,
-            apr: info.apr,
+            apr: formattedAmount(info.apr, undefined, { preserve: true }),
             aprChange: info.apr_change,
-            share: info.share,
+            share: formattedAmount(info.share, undefined, { preserve: true }),
             startTime: info.farm_start_time,
             endTime: info.farm_end_time,
             leftToken: {
@@ -205,7 +209,9 @@ export function usePoolContent(): UsePoolContent {
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
                     symbol,
-                    value: vested,
+                    value: formattedAmount(vested, undefined, {
+                        target: 'token',
+                    }),
                 })
             )),
             entitledRewards: reward.map(({ entitled, symbol }) => (
@@ -213,9 +219,12 @@ export function usePoolContent(): UsePoolContent {
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
                     symbol,
-                    value: entitled,
+                    value: formattedAmount(entitled, undefined, {
+                        target: 'token',
+                    }),
                 })
             )),
+            poolAddress: info.pool_address,
             link: appRoutes.farmingItem.makeUrl({
                 address: info.pool_address,
             }),

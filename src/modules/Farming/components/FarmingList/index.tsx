@@ -73,7 +73,7 @@ export function FarmingListInner({
                     icon: tokensCache.get(rewardInfo.reward_root_address)?.icon,
                 })),
                 apr: item.left_address && item.right_address
-                    ? item.apr
+                    ? formattedAmount(item.apr, undefined, { preserve: true })
                     : null,
                 aprChange: item.left_address && item.right_address
                     ? item.apr_change
@@ -83,7 +83,7 @@ export function FarmingListInner({
                 }, {
                     symbol: rewardInfo.reward_currency,
                     value: itemVestedRewards
-                        ? formattedAmount(itemVestedRewards[idx], rewardInfo.reward_scale)
+                        ? formattedAmount(itemVestedRewards[idx], rewardInfo.reward_scale, { target: 'token' })
                         : '0',
                 })),
                 entitledRewards: item.reward_token_root_info.map((rewardInfo, idx) => intl.formatMessage({
@@ -91,10 +91,10 @@ export function FarmingListInner({
                 }, {
                     symbol: rewardInfo.reward_currency,
                     value: itemEntitledRewards
-                        ? formattedAmount(itemEntitledRewards[idx], rewardInfo.reward_scale)
+                        ? formattedAmount(itemEntitledRewards[idx], rewardInfo.reward_scale, { target: 'token' })
                         : '0',
                 })),
-                share: item.share,
+                share: formattedAmount(item.share, undefined, { preserve: true }),
                 tvl: item.left_address && item.right_address
                     ? item.tvl
                     : null,
@@ -103,6 +103,7 @@ export function FarmingListInner({
                     : null,
                 startTime: item.farm_start_time,
                 endTime: item.farm_end_time,
+                poolAddress: item.pool_address,
                 link: appRoutes.farmingItem.makeUrl({
                     address: item.pool_address,
                 }),

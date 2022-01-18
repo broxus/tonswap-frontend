@@ -35,7 +35,7 @@ export function FarmingDepositInner({
     )
 
     const balance = React.useMemo(
-        () => formattedAmount(walletAmount, tokenDecimals),
+        () => formattedAmount(walletAmount, tokenDecimals, { preserve: true }),
         [walletAmount, tokenDecimals],
     )
 

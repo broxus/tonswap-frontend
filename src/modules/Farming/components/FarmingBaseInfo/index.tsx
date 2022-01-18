@@ -67,7 +67,14 @@ function FarmingBaseInfoInner({
                                 symbol: lpTokenSymbol,
                             })}
                         </div>
-                        {formattedAmount(lpTokenBalance, 0)}
+                        {formattedAmount(
+                            lpTokenBalance,
+                            0,
+                            {
+                                target: 'token',
+                                roundIfThousand: true,
+                            },
+                        )}
                     </div>
 
                     {
@@ -90,7 +97,14 @@ function FarmingBaseInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(leftTokenBalance, 0),
+                                        amount: formattedAmount(
+                                            leftTokenBalance,
+                                            leftToken.decimals,
+                                            {
+                                                target: 'token',
+                                                roundIfThousand: true,
+                                            },
+                                        ),
                                         symbol: leftToken.symbol,
                                     })}
                                 </div>
@@ -103,7 +117,14 @@ function FarmingBaseInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(rightTokenBalance, 0),
+                                        amount: formattedAmount(
+                                            rightTokenBalance,
+                                            rightToken.decimals,
+                                            {
+                                                target: 'token',
+                                                roundIfThousand: true,
+                                            },
+                                        ),
                                         symbol: rightToken.symbol,
                                     })}
                                 </div>
@@ -123,7 +144,9 @@ function FarmingBaseInfoInner({
                     {apr === null ? nullMessage : intl.formatMessage({
                         id: 'FARMING_BASE_INFO_APR_VALUE',
                     }, {
-                        value: formattedAmount(apr, 0),
+                        value: formattedAmount(apr, undefined, {
+                            roundIfThousand: true,
+                        }),
                     })}
                 </div>
             )}
@@ -146,7 +169,14 @@ function FarmingBaseInfoInner({
                                 {intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(rewardTokensAmount[index], token.decimals),
+                                    amount: formattedAmount(
+                                        rewardTokensAmount[index],
+                                        token.decimals,
+                                        {
+                                            target: 'token',
+                                            roundIfThousand: true,
+                                        },
+                                    ),
                                     symbol: token.symbol,
                                 })}
                             </div>
@@ -173,7 +203,10 @@ function FarmingBaseInfoInner({
                                 {intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(rpsAmount[index], 0),
+                                    amount: formattedAmount(rpsAmount[index], token.decimals, {
+                                        target: 'token',
+                                        roundIfThousand: true,
+                                    }),
                                     symbol: token.symbol,
                                 })}
                             </div>

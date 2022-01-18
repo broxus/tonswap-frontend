@@ -46,8 +46,6 @@ export function Currencies(): JSX.Element {
         }
     }, [])
 
-    console.log(store)
-
     return (
         <div className="container container--large">
             <section className="section">

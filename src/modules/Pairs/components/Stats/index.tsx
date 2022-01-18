@@ -4,12 +4,12 @@ import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { TokenIcon } from '@/components/common/TokenIcon'
-import { TvlChange } from '@/components/common/TvlChange'
+import { RateChange } from '@/components/common/RateChange'
 import { Chart } from '@/modules/Chart'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { PairStoreState } from '@/modules/Pairs/types'
 import { TokenCache } from '@/stores/TokensCacheService'
-import { formattedBalance, getChangesDirection } from '@/utils'
+import { formattedAmount } from '@/utils'
 
 import './index.scss'
 
@@ -26,17 +26,19 @@ export function Stats({ baseToken, counterToken }: Props): JSX.Element {
     const store = usePairStore()
 
     const leftLocked = React.useMemo(
-        () => formattedBalance(
-            store.pair?.leftLocked || '0',
-            baseToken?.decimals || 0,
+        () => formattedAmount(
+            store.pair?.leftLocked ?? 0,
+            baseToken?.decimals,
+            { target: 'token' },
         ),
         [baseToken, store.pair?.leftLocked],
     )
 
     const rightLocked = React.useMemo(
-        () => formattedBalance(
-            store.pair?.rightLocked || '0',
-            counterToken?.decimals || 0,
+        () => formattedAmount(
+            store.pair?.rightLocked ?? 0,
+            counterToken?.decimals,
+            { target: 'token' },
         ),
         [counterToken, store.pair?.rightLocked],
     )
@@ -107,10 +109,7 @@ export function Stats({ baseToken, counterToken }: Props): JSX.Element {
                         <strong>{store.formattedTvl}</strong>
                     </div>
                     {store.pair?.tvlChange !== undefined && (
-                        <TvlChange
-                            changesDirection={getChangesDirection(store.pair.tvlChange)}
-                            priceChange={store.pair.tvlChange}
-                        />
+                        <RateChange value={store.pair.tvlChange} />
                     )}
                 </div>
                 <div className="pair-stats__sidebar-item">
@@ -123,10 +122,7 @@ export function Stats({ baseToken, counterToken }: Props): JSX.Element {
                         <strong>{store.formattedVolume24h}</strong>
                     </div>
                     {store.pair?.volumeChange24h !== undefined && (
-                        <TvlChange
-                            changesDirection={getChangesDirection(store.pair.volumeChange24h)}
-                            priceChange={store.pair.volumeChange24h}
-                        />
+                        <RateChange value={store.pair.volumeChange24h} />
                     )}
                 </div>
                 <div className="pair-stats__sidebar-item">

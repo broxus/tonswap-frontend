@@ -7,13 +7,13 @@ import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { Breadcrumb } from '@/components/common/Breadcrumb'
-import { TvlChange } from '@/components/common/TvlChange'
+import { RateChange } from '@/components/common/RateChange'
 import { CurrencyPairs } from '@/modules/Currencies/components/CurrencyPairs'
 import { CurrencyTransactions } from '@/modules/Currencies/components/CurrencyTransactions'
 import { Stats } from '@/modules/Currencies/components/Stats'
 import { useCurrencyStore } from '@/modules/Currencies/providers/CurrencyStoreProvider'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { getChangesDirection, sliceAddress } from '@/utils'
+import { sliceAddress } from '@/utils'
 
 import './currency.scss'
 
@@ -66,10 +66,7 @@ function CurrencyInner(): JSX.Element {
                                 {store.formattedPrice}
                             </div>
                             {store.currency?.priceChange !== undefined && (
-                                <TvlChange
-                                    changesDirection={getChangesDirection(store.currency.priceChange)}
-                                    priceChange={store.currency.priceChange}
-                                />
+                                <RateChange value={store.currency.priceChange} />
                             )}
                         </div>
                     </div>

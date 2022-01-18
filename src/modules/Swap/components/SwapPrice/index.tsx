@@ -96,8 +96,10 @@ function Price(): JSX.Element | null {
                             }, {
                                 value: swap.priceLeftToRight !== undefined
                                     ? formattedAmount(
-                                        swap.priceLeftToRight || '0',
-                                        swap.leftToken.decimals,
+                                        swap.priceLeftToRight || 0,
+                                        swap.leftToken.decimals, {
+                                            preserve: true,
+                                        },
                                     )
                                     : '--',
                                 leftSymbol: swap.leftToken.symbol,
@@ -116,8 +118,10 @@ function Price(): JSX.Element | null {
                             }, {
                                 value: swap.priceRightToLeft !== undefined
                                     ? formattedAmount(
-                                        swap.priceRightToLeft || '0',
-                                        swap.rightToken.decimals,
+                                        swap.priceRightToLeft || 0,
+                                        swap.rightToken.decimals, {
+                                            preserve: true,
+                                        },
                                     )
                                     : '--',
                                 leftSymbol: swap.rightToken.symbol,

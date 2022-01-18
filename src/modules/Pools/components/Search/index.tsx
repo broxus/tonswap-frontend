@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 import { SectionTitle } from '@/components/common/SectionTitle'
 import { FilterField } from '@/components/common/FilterField'
 
-import './style.scss'
+import './index.scss'
 
 type Props = {
     onSearch: (value: string) => void;

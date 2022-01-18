@@ -210,7 +210,7 @@ export default {
     POOL_DATA_LABEL_SHARE_PERCENT: 'Share',
     POOL_DATA_RESULT_SHARE_PERCENT: '{value}%',
     POOL_DATA_LABEL_SHARE_CHANGE_PERCENT: 'Share change',
-    POOL_DATA_RESULT_SHARE_CHANGE_PERCENT: '+ {value}%',
+    POOL_DATA_RESULT_SHARE_CHANGE_PERCENT: '{value, plural, =0 {0} other {+ #}}%',
     POOL_DATA_LABEL_NEW_LEFT_PRICE: '{leftSymbol} per {rightSymbol}',
     POOL_DATA_LABEL_NEW_RIGHT_PRICE: '{rightSymbol} per {leftSymbol}',
     POOL_SUPPLY_RECEIPT_POPUP_TITLE: 'Supply receipt',

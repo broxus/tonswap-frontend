@@ -4,7 +4,7 @@ import classNames from 'classnames'
 
 import { TokenIcon, TokenIconProps } from '@/components/common/TokenIcon'
 
-import './style.scss'
+import './index.scss'
 
 type Props = {
     tokenIcon: TokenIconProps

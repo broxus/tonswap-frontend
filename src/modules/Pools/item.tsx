@@ -6,7 +6,7 @@ import { PoolContent } from '@/modules/Pools/components/PoolContent'
 import { WalletConnector } from '@/modules/WalletConnector'
 import { AccountConnector } from '@/modules/AccountConnector'
 
-import './style.scss'
+import './index.scss'
 
 export const PoolsItem = observer((): JSX.Element => {
     const intl = useIntl()
