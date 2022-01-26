@@ -91,6 +91,18 @@ export class FarmingDataStore {
             )
             : undefined
 
+        // FIXME: Hotfix, need to refactoring using objects instead of arrays for rewards data
+        if (poolDetails) {
+            const cache = apiResponse.reward_token_root_info
+                .reduce<any>((acc, item) => ({
+                    ...acc,
+                    [item.reward_root_address]: item,
+                }), {})
+
+            apiResponse.reward_token_root_info = poolDetails.rewardTokenRoot
+                .map(root => cache[root.toString()])
+        }
+
         const rewardCurrencies = await Promise.all(
             apiResponse.reward_token_root_info
                 .map(reward => this.api.currency({
