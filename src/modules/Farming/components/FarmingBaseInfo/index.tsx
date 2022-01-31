@@ -69,7 +69,7 @@ function FarmingBaseInfoInner({
                         </div>
                         {formattedAmount(
                             lpTokenBalance,
-                            0,
+                            undefined,
                             {
                                 target: 'token',
                                 roundIfThousand: true,
@@ -99,7 +99,7 @@ function FarmingBaseInfoInner({
                                     }, {
                                         amount: formattedAmount(
                                             leftTokenBalance,
-                                            leftToken.decimals,
+                                            undefined,
                                             {
                                                 target: 'token',
                                                 roundIfThousand: true,
@@ -119,7 +119,7 @@ function FarmingBaseInfoInner({
                                     }, {
                                         amount: formattedAmount(
                                             rightTokenBalance,
-                                            rightToken.decimals,
+                                            undefined,
                                             {
                                                 target: 'token',
                                                 roundIfThousand: true,
@@ -203,7 +203,7 @@ function FarmingBaseInfoInner({
                                 {intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(rpsAmount[index], token.decimals, {
+                                    amount: formattedAmount(rpsAmount[index], undefined, {
                                         target: 'token',
                                         roundIfThousand: true,
                                     }),

@@ -173,7 +173,9 @@ function DexAccountData(): JSX.Element | null {
                             id: 'POOL_DEX_DATA_RESULT_CURRENT_SHARE_LEFT',
                         }, {
                             symbol: pool.leftToken?.symbol,
-                            value: pool.currentShareLeft,
+                            value: formattedAmount(pool.currentShareLeft, pool.leftToken?.decimals, {
+                                target: 'token',
+                            }),
                         })}
                     </div>
                 </div>
@@ -187,7 +189,9 @@ function DexAccountData(): JSX.Element | null {
                             id: 'POOL_DEX_DATA_RESULT_CURRENT_SHARE_RIGHT',
                         }, {
                             symbol: pool.rightToken?.symbol,
-                            value: pool.currentShareRight,
+                            value: formattedAmount(pool.currentShareRight, pool.rightToken?.decimals, {
+                                target: 'token',
+                            }),
                         })}
                     </div>
                 </div>

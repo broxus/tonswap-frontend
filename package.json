@@ -9,7 +9,8 @@
     "scripts": {
         "start": "npx webpack serve --mode development --config webpack.config.ts",
         "build": "npx webpack --mode production --config webpack.config.ts",
-        "lint": "npx eslint src --ext js,jsx,ts,tsx"
+        "lint": "npx eslint src --ext js,jsx,ts,tsx",
+        "lint:fix": "npx eslint src --ext js,jsx,ts,tsx --fix"
     },
     "dependencies": {
         "@broxus/await-semaphore": "^0.1.4",

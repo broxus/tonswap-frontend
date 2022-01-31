@@ -102,6 +102,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {formattedAmount(
                                         pool.transaction.successData.newLeft,
                                         pool.transaction.successData.leftDecimals,
+                                        { target: 'token' },
                                     )}
                                 </div>
                             </div>
@@ -113,6 +114,7 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {formattedAmount(
                                         pool.transaction.successData.newRight,
                                         pool.transaction.successData.rightDecimals,
+                                        { target: 'token' },
                                     )}
                                 </div>
                             </div>
