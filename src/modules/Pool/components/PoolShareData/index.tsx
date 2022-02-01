@@ -10,6 +10,8 @@ function ShareData(): JSX.Element {
     const intl = useIntl()
     const pool = usePoolStore()
 
+    console.log(pool)
+
     return (
         <>
             <hr className="divider" />

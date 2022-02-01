@@ -65,6 +65,10 @@ export function formattedAmount(
     let dp
 
     switch (true) {
+        case fractionalPartNumber.lte(0.001):
+            dp = decimals ?? fractionalPartNumber.decimalPlaces()
+            break
+
         case target === 'token' && integerNumber.lt(1):
             dp = 8
             break
@@ -89,7 +93,7 @@ export function formattedAmount(
             dp = 2
     }
 
-    fractionalPartNumber = fractionalPartNumber.dp(dp, BigNumber.ROUND_HALF_DOWN)
+    fractionalPartNumber = fractionalPartNumber.dp(dp, BigNumber.ROUND_DOWN)
 
     digits.push(
         fractionalPartNumber.toFixed().split('.')[1]

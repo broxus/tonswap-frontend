@@ -97,11 +97,12 @@ function Transaction(): JSX.Element | null {
                         id: 'SWAP_TRANSACTION_RECEIPT_LEAD_RECEIVED_AMOUNT',
                     }, {
                         value: formattedAmount(
-                            swap.transaction.amount || '0',
+                            swap.transaction.amount,
                             swap.transaction.isCrossExchangeCanceled
                                 ? swap.transaction.spentDecimals
                                 : swap.transaction.receivedDecimals,
-                        ) || '0',
+                            { preserve: true },
+                        ),
                         symbol:
                             swap.transaction.isCrossExchangeCanceled
                                 ? swap.transaction.spentSymbol

@@ -45,7 +45,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                         {formattedAmount(
                             pool.tokenBalance,
                             pool.tokenDecimals,
-                        ) || 0}
+                        )}
                     </div>
                 </div>
                 {pool.rewardTokenSymbol.map((symbol, idx) => (
@@ -62,7 +62,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 {formattedAmount(
                                     pool.farmSpeed[idx],
                                     pool.rewardTokenDecimals[idx],
-                                ) || 0}
+                                )}
                             </div>
                         </div>
                         <div className="farming-pool-details-table__row">
@@ -77,7 +77,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 {formattedAmount(
                                     pool.rewardTokenBalance[idx],
                                     pool.rewardTokenDecimals[idx],
-                                ) || 0}
+                                )}
                             </div>
                         </div>
                     </React.Fragment>
@@ -207,7 +207,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 {formattedAmount(
                                     pool.userBalance,
                                     pool.tokenDecimals,
-                                ) || 0}
+                                )}
                             </div>
                         </div>
                         {pool.rewardTokenSymbol.map((symbol, idx) => (
@@ -224,7 +224,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                         {formattedAmount(
                                             pool.userReward?._vested[idx],
                                             pool.rewardTokenDecimals[idx],
-                                        ) || 0}
+                                        )}
                                     </div>
                                 </div>
                                 <div className="farming-pool-details-table__row">
@@ -239,7 +239,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                         {formattedAmount(
                                             pool.userReward?._pool_debt[idx],
                                             pool.rewardTokenDecimals[idx],
-                                        ) || 0}
+                                        )}
                                     </div>
                                 </div>
                                 <div className="farming-pool-details-table__row">
@@ -254,7 +254,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                         {formattedAmount(
                                             pool.userReward?._entitled[idx],
                                             pool.rewardTokenDecimals[idx],
-                                        ) || 0}
+                                        )}
                                     </div>
                                 </div>
                             </div>

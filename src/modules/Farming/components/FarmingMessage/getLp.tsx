@@ -55,7 +55,7 @@ export function FarmingMessageGetLp({
                     {intl.formatMessage({
                         id: 'FARMING_MESSAGE_GET_LP_TITLE',
                     }, {
-                        apr: formattedAmount(apr, 0),
+                        apr: formattedAmount(apr),
                     })}
                 </h3>
                 <p>

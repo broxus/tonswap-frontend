@@ -22,18 +22,12 @@ export const Item = observer(({ disabled, token, onSelect }: Props) => {
         subscriberPrefix: 'list',
     })
 
-    const [isImporting, setImportingTo] = React.useState(false)
-
     const onClick = () => {
         onSelect?.(token.root)
     }
 
-    const onImporting = () => {
-        setImportingTo(true)
-    }
-
-    const onDismissImporting = () => {
-        setImportingTo(false)
+    const onImporting = async () => {
+        await tokensCache.addToImportQueue(token.root)
     }
 
     const isStored = tokensCache.has(token.root)
@@ -83,12 +77,8 @@ export const Item = observer(({ disabled, token, onSelect }: Props) => {
                     </div>
                 )}
             </div>
-            {isImporting && (
-                <TokenImportPopup
-                    token={token}
-                    onDismiss={onDismissImporting}
-                    onImport={onSelect}
-                />
+            {tokensCache.isImporting && (
+                <TokenImportPopup />
             )}
         </>
     )

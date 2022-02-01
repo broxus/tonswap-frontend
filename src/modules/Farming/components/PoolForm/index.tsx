@@ -62,7 +62,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                 balance: formattedAmount(
                                     farmingPool.userWalletBalance,
                                     pool.tokenDecimals,
-                                ) || 0,
+                                ),
                                 symbol: pool.tokenSymbol,
                             })}
                         </p>
@@ -188,7 +188,7 @@ export function PoolForm({ pool }: Props): JSX.Element {
                                                     amount: formattedAmount(
                                                         adminWalletBalance,
                                                         pool.rewardTokenDecimals[idx],
-                                                    ) || 0,
+                                                    ),
                                                     symbol,
                                                 })}
                                             </p>

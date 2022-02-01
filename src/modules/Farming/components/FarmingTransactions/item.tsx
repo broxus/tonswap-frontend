@@ -59,7 +59,7 @@ export function FarmingTransactionsItem({
                             {intl.formatMessage({
                                 id: 'FARMING_TOKEN',
                             }, {
-                                amount: formattedAmount(transaction.tokenExec, 0),
+                                amount: formattedAmount(transaction.tokenExec),
                                 symbol: transaction.tokenCurrency,
                             })}
                         </span>
@@ -73,14 +73,14 @@ export function FarmingTransactionsItem({
                                 {intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(transaction.leftExec, 0),
+                                    amount: formattedAmount(transaction.leftExec),
                                     symbol: leftTokenSymbol,
                                 })}
                                 <br />
                                 {intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(transaction.rightExec, 0),
+                                    amount: formattedAmount(transaction.rightExec),
                                     symbol: rightTokenSymbol,
                                 })}
                             </Tooltip>
@@ -95,7 +95,7 @@ export function FarmingTransactionsItem({
                                 ? intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(transaction.leftExec, 0),
+                                    amount: formattedAmount(transaction.leftExec),
                                     symbol: leftTokenSymbol,
                                 })
                                 : nullMessage
@@ -107,7 +107,7 @@ export function FarmingTransactionsItem({
                                 ? intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(transaction.rightExec, 0),
+                                    amount: formattedAmount(transaction.rightExec),
                                     symbol: rightTokenSymbol,
                                 })
                                 : nullMessage
@@ -119,7 +119,7 @@ export function FarmingTransactionsItem({
                             && intl.formatMessage({
                                 id: 'FARMING_TOKEN',
                             }, {
-                                amount: formattedAmount(transaction.tokenExec, 0),
+                                amount: formattedAmount(transaction.tokenExec),
                                 symbol: transaction.tokenCurrency,
                             })
                         }

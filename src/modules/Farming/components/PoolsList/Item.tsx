@@ -100,7 +100,7 @@ export function Item({ pool }: Props): JSX.Element {
                                             {formattedAmount(
                                                 new BigNumber(reward).plus(pool.userReward?._pool_debt[idx] || '0').toFixed(),
                                                 pool.rewardTokenDecimals[idx],
-                                            ) || 0}
+                                            )}
                                             {' '}
                                             {pool.rewardTokenSymbol[idx]}
                                         </div>
@@ -118,7 +118,7 @@ export function Item({ pool }: Props): JSX.Element {
                             })}
                         </div>
                         <div className="list__cell-inner-leader-value">
-                            {formattedAmount(pool.userShare, 4) || 0}
+                            {formattedAmount(pool.userShare, 4)}
                             %
                         </div>
                     </div>

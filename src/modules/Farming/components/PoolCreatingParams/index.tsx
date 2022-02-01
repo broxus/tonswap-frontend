@@ -106,7 +106,6 @@ function CreatingParams(): JSX.Element {
                                         <div>
                                             {formattedAmount(
                                                 new BigNumber(token.farmSpeed || 0).times(86400).times(30).toFixed(),
-                                                0,
                                             )}
                                         </div>
                                     </div>

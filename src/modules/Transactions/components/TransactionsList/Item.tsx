@@ -39,12 +39,16 @@ export function Item({ transaction }: Props): JSX.Element {
     const totalValue = React.useMemo(() => parseCurrencyBillions(transaction.tv), [transaction.tv])
 
     const leftValue = React.useMemo(
-        () => `${formattedAmount(transaction.leftValue, leftToken?.decimals, false, true)} ${leftToken?.symbol}`,
+        () => `${formattedAmount(transaction.leftValue, leftToken?.decimals, {
+            preserve: true,
+        })} ${leftToken?.symbol}`,
         [leftToken, transaction.leftValue],
     )
 
     const rightValue = React.useMemo(
-        () => `${formattedAmount(transaction.rightValue, rightToken?.decimals, false, true)} ${rightToken?.symbol}`,
+        () => `${formattedAmount(transaction.rightValue, rightToken?.decimals, {
+            preserve: true,
+        })} ${rightToken?.symbol}`,
         [rightToken, transaction.rightValue],
     )
 
