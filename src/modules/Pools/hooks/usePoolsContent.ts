@@ -15,8 +15,7 @@ import { ItemProps } from '@/modules/Pools/components/PoolsContent/item'
 import {
     concatSymbols,
     debounce,
-    error,
-    formattedAmount,
+    error, formattedTokenAmount,
     lastOfCalls,
     shareAmount,
 } from '@/utils'
@@ -75,29 +74,27 @@ export function usePoolsContent(): UsePoolsContent {
                 .toFixed()
 
             return {
-                lpTokens: formattedAmount(lpTokens, lp.decimals, {
-                    target: 'token',
-                }),
+                lpTokens: formattedTokenAmount(lpTokens, lp.decimals),
                 leftToken: intl.formatMessage({
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
-                    value: formattedAmount(shareAmount(
+                    value: formattedTokenAmount(shareAmount(
                         lpTokens,
                         left.inPool,
                         lp.inPool,
                         leftToken.decimals,
-                    ), undefined, { target: 'token' }),
+                    )),
                     symbol: leftToken.symbol,
                 }),
                 rightToken: intl.formatMessage({
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
-                    value: formattedAmount(shareAmount(
+                    value: formattedTokenAmount(shareAmount(
                         lpTokens,
                         right.inPool,
                         lp.inPool,
                         rightToken.decimals,
-                    ), undefined, { target: 'token' }),
+                    )),
                     symbol: rightToken.symbol,
                 }),
                 link: appRoutes.poolItem.makeUrl({ address }),

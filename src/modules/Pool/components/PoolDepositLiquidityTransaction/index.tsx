@@ -6,7 +6,7 @@ import { useIntl } from 'react-intl'
 import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { formattedAmount } from '@/utils'
+import { formattedTokenAmount } from '@/utils'
 
 
 type Props = {
@@ -48,9 +48,10 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     __html: intl.formatMessage({
                                         id: 'POOL_SUPPLY_RECEIPT_LEAD_SUCCESSFUL_AMOUNT',
                                     }, {
-                                        value: formattedAmount(
-                                            pool.transaction.successData.share || '0',
+                                        value: formattedTokenAmount(
+                                            pool.transaction.successData.share,
                                             pool.transaction.successData.lpDecimals,
+                                            { preserve: true },
                                         ),
                                     }, {
                                         ignoreTag: true,
@@ -99,10 +100,9 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {pool.transaction.successData.leftSymbol}
                                 </div>
                                 <div>
-                                    {formattedAmount(
+                                    {formattedTokenAmount(
                                         pool.transaction.successData.newLeft,
                                         pool.transaction.successData.leftDecimals,
-                                        { target: 'token' },
                                     )}
                                 </div>
                             </div>
@@ -111,10 +111,9 @@ function DepositLiquidityTransaction({ onDismiss }: Props): JSX.Element | null {
                                     {pool.transaction.successData.rightSymbol}
                                 </div>
                                 <div>
-                                    {formattedAmount(
+                                    {formattedTokenAmount(
                                         pool.transaction.successData.newRight,
                                         pool.transaction.successData.rightDecimals,
-                                        { target: 'token' },
                                     )}
                                 </div>
                             </div>

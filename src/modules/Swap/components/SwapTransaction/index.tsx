@@ -8,7 +8,7 @@ import { Icon } from '@/components/common/Icon'
 import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 import { UserAvatar } from '@/components/common/UserAvatar'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
-import { formattedAmount } from '@/utils'
+import { formattedTokenAmount } from '@/utils'
 
 
 function Transaction(): JSX.Element | null {
@@ -96,7 +96,7 @@ function Transaction(): JSX.Element | null {
                     __html: intl.formatMessage({
                         id: 'SWAP_TRANSACTION_RECEIPT_LEAD_RECEIVED_AMOUNT',
                     }, {
-                        value: formattedAmount(
+                        value: formattedTokenAmount(
                             swap.transaction.amount,
                             swap.transaction.isCrossExchangeCanceled
                                 ? swap.transaction.spentDecimals

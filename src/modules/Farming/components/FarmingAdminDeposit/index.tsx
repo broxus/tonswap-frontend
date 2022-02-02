@@ -6,7 +6,7 @@ import { Warning } from '@/components/common/Warning'
 import { FarmingAdminDepositBalance } from '@/modules/Farming/components/FarmingAdminDeposit/balance'
 import { FarmingAdminDepositInput } from '@/modules/Farming/components/FarmingAdminDeposit/input'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { formattedAmount } from '@/utils'
+import { formattedTokenAmount } from '@/utils'
 
 import './index.scss'
 
@@ -69,9 +69,7 @@ function FarmingAdminDepositInner({
                             <FarmingAdminDepositBalance
                                 tokenRoot={token.root}
                                 symbol={token.symbol}
-                                amount={formattedAmount(formData[index].poolBalance, token.decimals, {
-                                    target: 'token',
-                                })}
+                                amount={formattedTokenAmount(formData[index].poolBalance, token.decimals)}
                             />
 
                             <FarmingAdminDepositInput

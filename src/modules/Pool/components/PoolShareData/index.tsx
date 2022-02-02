@@ -1,103 +1,97 @@
 import * as React from 'react'
-import { observer } from 'mobx-react-lite'
+import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
-import { formattedAmount } from '@/utils'
+import { formattedTokenAmount } from '@/utils'
 
 
-function ShareData(): JSX.Element {
+export function PoolShareData(): JSX.Element {
     const intl = useIntl()
     const pool = usePoolStore()
 
-    console.log(pool)
-
     return (
-        <>
-            <hr className="divider" />
-            <div className="form-rows">
-                <div className="form-row">
-                    <div>
-                        {intl.formatMessage({
-                            id: 'POOL_DATA_SUBTITLE_AFTER_SUPPLY',
-                        })}
-                    </div>
-                </div>
+        <Observer>
+            {() => (
+                <>
+                    <hr className="divider" />
+                    <div className="form-rows">
+                        <div className="form-row">
+                            <div>
+                                {intl.formatMessage({
+                                    id: 'POOL_DATA_SUBTITLE_AFTER_SUPPLY',
+                                })}
+                            </div>
+                        </div>
 
-                {pool.sharePercent && (
-                    <div key="sharePercent" className="form-row">
-                        <div>
-                            {intl.formatMessage({
-                                id: 'POOL_DATA_LABEL_SHARE_PERCENT',
-                            })}
-                        </div>
-                        <div>
-                            {intl.formatMessage({
-                                id: 'POOL_DATA_RESULT_SHARE_PERCENT',
-                            }, {
-                                value: pool.sharePercent,
-                            })}
-                        </div>
-                    </div>
-                )}
+                        {pool.sharePercent && (
+                            <div key="sharePercent" className="form-row">
+                                <div>
+                                    {intl.formatMessage({
+                                        id: 'POOL_DATA_LABEL_SHARE_PERCENT',
+                                    })}
+                                </div>
+                                <div title={pool.sharePercent}>
+                                    {intl.formatMessage({
+                                        id: 'POOL_DATA_RESULT_SHARE_PERCENT',
+                                    }, {
+                                        value: pool.sharePercent,
+                                    })}
+                                </div>
+                            </div>
+                        )}
 
-                {pool.shareChangePercent && (
-                    <div key="shareChangePercent" className="form-row">
-                        <div>
-                            {intl.formatMessage({
-                                id: 'POOL_DATA_LABEL_SHARE_CHANGE_PERCENT',
-                            })}
-                        </div>
-                        <div>
-                            {intl.formatMessage({
-                                id: 'POOL_DATA_RESULT_SHARE_CHANGE_PERCENT',
-                            }, {
-                                value: pool.shareChangePercent,
-                            })}
-                        </div>
-                    </div>
-                )}
+                        {pool.shareChangePercent && (
+                            <div key="shareChangePercent" className="form-row">
+                                <div>
+                                    {intl.formatMessage({
+                                        id: 'POOL_DATA_LABEL_SHARE_CHANGE_PERCENT',
+                                    })}
+                                </div>
+                                <div title={pool.shareChangePercent}>
+                                    {intl.formatMessage({
+                                        id: 'POOL_DATA_RESULT_SHARE_CHANGE_PERCENT',
+                                    }, {
+                                        value: pool.shareChangePercent,
+                                    })}
+                                </div>
+                            </div>
+                        )}
 
-                {pool.newLeftPrice && (
-                    <div key="newLeftPrice" className="form-row">
-                        <div>
-                            {intl.formatMessage({
-                                id: 'POOL_DATA_LABEL_NEW_LEFT_PRICE',
-                            }, {
-                                leftSymbol: pool.leftToken?.symbol,
-                                rightSymbol: pool.rightToken?.symbol,
-                            })}
-                        </div>
-                        <div>
-                            {formattedAmount(pool.newLeftPrice, undefined, {
-                                preserve: true,
-                                roundIfThousand: false,
-                            })}
-                        </div>
-                    </div>
-                )}
+                        {pool.newLeftPrice && (
+                            <div key="newLeftPrice" className="form-row">
+                                <div>
+                                    {intl.formatMessage({
+                                        id: 'POOL_DATA_LABEL_NEW_LEFT_PRICE',
+                                    }, {
+                                        leftSymbol: pool.leftToken?.symbol,
+                                        rightSymbol: pool.rightToken?.symbol,
+                                    })}
+                                </div>
+                                <div>
+                                    {formattedTokenAmount(pool.newLeftPrice)}
+                                </div>
+                            </div>
+                        )}
 
-                {pool.newRightPrice && (
-                    <div key="newRightPrice" className="form-row">
-                        <div>
-                            {intl.formatMessage({
-                                id: 'POOL_DATA_LABEL_NEW_RIGHT_PRICE',
-                            }, {
-                                leftSymbol: pool.leftToken?.symbol,
-                                rightSymbol: pool.rightToken?.symbol,
-                            })}
-                        </div>
-                        <div>
-                            {formattedAmount(pool.newRightPrice, undefined, {
-                                preserve: true,
-                                roundIfThousand: false,
-                            })}
-                        </div>
+                        {pool.newRightPrice && (
+                            <div key="newRightPrice" className="form-row">
+                                <div>
+                                    {intl.formatMessage({
+                                        id: 'POOL_DATA_LABEL_NEW_RIGHT_PRICE',
+                                    }, {
+                                        leftSymbol: pool.leftToken?.symbol,
+                                        rightSymbol: pool.rightToken?.symbol,
+                                    })}
+                                </div>
+                                <div>
+                                    {formattedTokenAmount(pool.newRightPrice)}
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
-        </>
+                </>
+            )}
+        </Observer>
     )
 }
-
-export const PoolShareData = observer(ShareData)

@@ -6,7 +6,7 @@ import { Tooltip } from '@/components/common/Tooltip'
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Transaction } from '@/modules/Farming/types'
 import { INTL_TRANSACTION_TYPE_ID_BY_KIND } from '@/modules/Farming/constants'
-import { formattedAmount, parseCurrencyBillions } from '@/utils'
+import { formattedTokenAmount, parseCurrencyBillions } from '@/utils'
 
 import './index.scss'
 
@@ -59,7 +59,7 @@ export function FarmingTransactionsItem({
                             {intl.formatMessage({
                                 id: 'FARMING_TOKEN',
                             }, {
-                                amount: formattedAmount(transaction.tokenExec),
+                                amount: formattedTokenAmount(transaction.tokenExec),
                                 symbol: transaction.tokenCurrency,
                             })}
                         </span>
@@ -73,14 +73,14 @@ export function FarmingTransactionsItem({
                                 {intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(transaction.leftExec),
+                                    amount: formattedTokenAmount(transaction.leftExec),
                                     symbol: leftTokenSymbol,
                                 })}
                                 <br />
                                 {intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(transaction.rightExec),
+                                    amount: formattedTokenAmount(transaction.rightExec),
                                     symbol: rightTokenSymbol,
                                 })}
                             </Tooltip>
@@ -95,7 +95,7 @@ export function FarmingTransactionsItem({
                                 ? intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(transaction.leftExec),
+                                    amount: formattedTokenAmount(transaction.leftExec),
                                     symbol: leftTokenSymbol,
                                 })
                                 : nullMessage
@@ -107,7 +107,7 @@ export function FarmingTransactionsItem({
                                 ? intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(transaction.rightExec),
+                                    amount: formattedTokenAmount(transaction.rightExec),
                                     symbol: rightTokenSymbol,
                                 })
                                 : nullMessage
@@ -119,7 +119,7 @@ export function FarmingTransactionsItem({
                             && intl.formatMessage({
                                 id: 'FARMING_TOKEN',
                             }, {
-                                amount: formattedAmount(transaction.tokenExec),
+                                amount: formattedTokenAmount(transaction.tokenExec),
                                 symbol: transaction.tokenCurrency,
                             })
                         }

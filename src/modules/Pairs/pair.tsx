@@ -17,7 +17,7 @@ import { TogglePoolButton } from '@/modules/Pools/components/TogglePoolButton'
 import { getDefaultPerPrice } from '@/modules/Swap/utils'
 import { TokenImportPopup } from '@/modules/TokensList/components'
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
-import { concatSymbols, formattedAmount, isGoodBignumber } from '@/utils'
+import { concatSymbols, formattedTokenAmount, isGoodBignumber } from '@/utils'
 
 import './pair.scss'
 
@@ -143,10 +143,9 @@ function PairInner(): JSX.Element {
                                         label={intl.formatMessage({
                                             id: 'PAIR_TOKEN_PRICE',
                                         }, {
-                                            amount: formattedAmount(
+                                            amount: formattedTokenAmount(
                                                 priceLeftToRight,
                                                 counterToken.decimals,
-                                                { preserve: true },
                                             ),
                                             symbolLeft: baseToken.symbol,
                                             symbolRight: counterToken.symbol,
@@ -163,10 +162,9 @@ function PairInner(): JSX.Element {
                                         label={intl.formatMessage({
                                             id: 'PAIR_TOKEN_PRICE',
                                         }, {
-                                            amount: formattedAmount(
+                                            amount: formattedTokenAmount(
                                                 priceRightToLeft,
                                                 baseToken.decimals,
-                                                { preserve: true },
                                             ),
                                             symbolLeft: counterToken.symbol,
                                             symbolRight: baseToken.symbol,

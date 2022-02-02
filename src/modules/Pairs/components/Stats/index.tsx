@@ -9,7 +9,7 @@ import { Chart } from '@/modules/Chart'
 import { usePairStore } from '@/modules/Pairs/providers/PairStoreProvider'
 import { PairStoreState } from '@/modules/Pairs/types'
 import { TokenCache } from '@/stores/TokensCacheService'
-import { formattedAmount } from '@/utils'
+import { formattedTokenAmount } from '@/utils'
 
 import './index.scss'
 
@@ -26,19 +26,17 @@ export function Stats({ baseToken, counterToken }: Props): JSX.Element {
     const store = usePairStore()
 
     const leftLocked = React.useMemo(
-        () => formattedAmount(
+        () => formattedTokenAmount(
             store.pair?.leftLocked ?? 0,
             baseToken?.decimals,
-            { target: 'token' },
         ),
         [baseToken, store.pair?.leftLocked],
     )
 
     const rightLocked = React.useMemo(
-        () => formattedAmount(
+        () => formattedTokenAmount(
             store.pair?.rightLocked ?? 0,
             counterToken?.decimals,
-            { target: 'token' },
         ),
         [counterToken, store.pair?.rightLocked],
     )

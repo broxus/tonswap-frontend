@@ -19,7 +19,7 @@ export default {
     WALLET_INSTALLATION_LINK_TEXT: 'Install EVER Wallet',
     WALLET_INSTALLATION_NOTE: '<p>At the moment, only EVER Wallet supports TON Swap.</p><p>If you haven’t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/category/extensions" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
 
-    WALLET_BALANCE_HINT: '{balance} EVER',
+    WALLET_BALANCE_HINT: '{balance} {currency}',
     WALLET_BTN_TEXT_CONNECT: 'Connect to a wallet',
 
     FOOTER_NAV_HEADER_PRODUCT: 'Product',

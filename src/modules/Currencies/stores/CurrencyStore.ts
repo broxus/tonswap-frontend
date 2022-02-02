@@ -135,13 +135,6 @@ export class CurrencyStore {
     /**
      *
      */
-    public get formattedPrice(): string {
-        return parseCurrencyBillions(this.currency?.price)
-    }
-
-    /**
-     *
-     */
     public get formattedVolume24h(): string {
         return parseCurrencyBillions(this.currency?.volume24h)
     }

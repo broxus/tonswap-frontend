@@ -10,7 +10,10 @@ import { FarmingStatus } from '@/modules/Farming/components/FarmingStatus'
 import { FarmingToggleButton } from '@/modules/Farming/components/FarmingToggleButton'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import {
-    concatSymbols, formatDate, formattedAmount, isExists,
+    concatSymbols,
+    formatDate,
+    formattedAmount,
+    isExists,
 } from '@/utils'
 
 import './index.scss'
@@ -87,7 +90,7 @@ export function FarmingHeadInner({
                                 {intl.formatMessage({
                                     id: 'FARMING_ITEM_APR',
                                 }, {
-                                    value: formattedAmount(apr, 0),
+                                    value: formattedAmount(apr),
                                 })}
                             </div>
                         )}

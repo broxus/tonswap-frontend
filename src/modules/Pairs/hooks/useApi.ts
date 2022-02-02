@@ -1,5 +1,5 @@
 import { apiRoutes } from '@/routes'
-import { createHandler } from '@/utils/create-handler'
+import { createHandler } from '@/utils'
 import { PairResponse, PairsResponse } from '@/modules/Pairs/types'
 import { OhlcvGraphModel, TvlGraphModel, VolumeGraphModel } from '@/modules/Chart/types'
 import { TransactionsInfoResponse } from '@/modules/Transactions/types'

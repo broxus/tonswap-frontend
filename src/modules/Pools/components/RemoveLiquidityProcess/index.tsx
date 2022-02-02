@@ -34,7 +34,10 @@ export function RemoveLiquidityProcess({
                     {intl.formatMessage({
                         id: 'REMOVE_LIQUIDITY_PROCESS_TEXT',
                     }, {
-                        amount: formattedAmount(amount, undefined, { preserve: true, roundIfThousand: false }),
+                        amount: formattedAmount(amount, undefined, {
+                            preserve: true,
+                            roundOn: false,
+                        }),
                         symbol,
                     })}
                 </div>

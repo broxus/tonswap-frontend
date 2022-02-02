@@ -10,7 +10,7 @@ import { AmountInput } from '@/components/common/AmountInput'
 import { TokenSelector } from '@/modules/TokensList/components/TokenSelector'
 import { Token } from '@/modules/TokensList/components/Token'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { formattedAmount } from '@/utils'
+import { formattedTokenAmount } from '@/utils'
 
 import './index.scss'
 
@@ -84,7 +84,7 @@ function RemoveLiquidityFormInner({
     const amountInputIsInvalid = amount.length > 0 && (!amountIsLessOrEqualBalance || !amountIsPositiveNum)
 
     const totalAmountFormatted = userLpTotalAmount && lpDecimals !== undefined
-        ? formattedAmount(userLpTotalAmount, lpDecimals, { preserve: true, roundIfThousand: false })
+        ? formattedTokenAmount(userLpTotalAmount, lpDecimals, { preserve: true, roundOn: false })
         : '0'
 
     const amountInputHint = amount.length > 0 && amountIsPositiveNum && !amountIsLessOrEqualBalance
@@ -247,7 +247,7 @@ function RemoveLiquidityFormInner({
                                     size="xsmall"
                                 />
                                 <div className="remove-liquidity-form__value">
-                                    {formattedAmount(receiveLeft, 0, { preserve: true })}
+                                    {formattedTokenAmount(receiveLeft)}
                                 </div>
                             </div>
 
@@ -257,7 +257,7 @@ function RemoveLiquidityFormInner({
                                     size="xsmall"
                                 />
                                 <div className="remove-liquidity-form__value">
-                                    {formattedAmount(receiveRight, 0, { preserve: true })}
+                                    {formattedTokenAmount(receiveRight)}
                                 </div>
                             </div>
                         </div>
@@ -318,16 +318,12 @@ function RemoveLiquidityFormInner({
                                     {leftToken.symbol}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {currentLeftAmount && formattedAmount(currentLeftAmount, undefined, {
-                                        preserve: true,
-                                    })}
+                                    {currentLeftAmount && formattedTokenAmount(currentLeftAmount)}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
                                     {
                                         resultLeftAmount && amountIsValid
-                                            ? formattedAmount(resultLeftAmount, undefined, {
-                                                preserve: true,
-                                            })
+                                            ? formattedTokenAmount(resultLeftAmount)
                                             : nullMessage
                                     }
                                 </span>
@@ -337,14 +333,12 @@ function RemoveLiquidityFormInner({
                                     {rightToken.symbol}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
-                                    {currentRightAmount && formattedAmount(currentRightAmount, undefined, {
-                                        preserve: true,
-                                    })}
+                                    {currentRightAmount && formattedTokenAmount(currentRightAmount)}
                                 </span>
                                 <span className="remove-liquidity-form-stats__value">
                                     {
                                         resultRightAmount && amountIsValid
-                                            ? formattedAmount(resultRightAmount, undefined, {
+                                            ? formattedTokenAmount(resultRightAmount, undefined, {
                                                 preserve: true,
                                             })
                                             : nullMessage

@@ -6,8 +6,7 @@ import { observer } from 'mobx-react-lite'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import {
-    formatDateUTC,
-    formattedAmount,
+    formatDateUTC, formattedTokenAmount,
     parseCurrencyBillions,
     shareAmount,
 } from '@/utils'
@@ -115,15 +114,12 @@ function FarmingUserInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(shareAmount(
+                                        amount: formattedTokenAmount(shareAmount(
                                             userLpFarmingAmount,
                                             pairBalanceLeft,
                                             pairBalanceLp,
                                             leftToken.decimals,
-                                        ), undefined, {
-                                            target: 'token',
-                                            roundIfThousand: true,
-                                        }),
+                                        )),
                                         symbol: leftToken.symbol,
                                     })}
                                 </div>
@@ -136,15 +132,12 @@ function FarmingUserInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(shareAmount(
+                                        amount: formattedTokenAmount(shareAmount(
                                             userLpFarmingAmount,
                                             pairBalanceRight,
                                             pairBalanceLp,
                                             rightToken.decimals,
-                                        ), undefined, {
-                                            target: 'token',
-                                            roundIfThousand: true,
-                                        }),
+                                        )),
                                         symbol: rightToken.symbol,
                                     })}
                                 </div>
@@ -161,10 +154,7 @@ function FarmingUserInfoInner({
                                     symbol: lpTokenSymbol,
                                 })}
                             </div>
-                            {formattedAmount(userLpFarmingAmount, lpTokenDecimals, {
-                                target: 'token',
-                                roundIfThousand: true,
-                            })}
+                            {formattedTokenAmount(userLpFarmingAmount, lpTokenDecimals)}
                         </div>
                     )}
 
@@ -228,10 +218,7 @@ function FarmingUserInfoInner({
                                             : intl.formatMessage({
                                                 id: 'FARMING_TOKEN',
                                             }, {
-                                                amount: formattedAmount(userHistoryLeftAmount, undefined, {
-                                                    target: 'token',
-                                                    roundIfThousand: true,
-                                                }),
+                                                amount: formattedTokenAmount(userHistoryLeftAmount),
                                                 symbol: leftToken.symbol,
                                             })
                                     }
@@ -248,10 +235,7 @@ function FarmingUserInfoInner({
                                             : intl.formatMessage({
                                                 id: 'FARMING_TOKEN',
                                             }, {
-                                                amount: formattedAmount(userHistoryRightAmount, undefined, {
-                                                    target: 'token',
-                                                    roundIfThousand: true,
-                                                }),
+                                                amount: formattedTokenAmount(userHistoryRightAmount),
                                                 symbol: rightToken.symbol,
                                             })
                                     }
@@ -309,10 +293,7 @@ function FarmingUserInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(unclaimedAmounts[index], token.decimals, {
-                                            target: 'token',
-                                            roundIfThousand: true,
-                                        }),
+                                        amount: formattedTokenAmount(unclaimedAmounts[index], token.decimals),
                                         symbol: token.symbol,
                                     })}
                                 </div>
@@ -338,10 +319,7 @@ function FarmingUserInfoInner({
                                         {intl.formatMessage({
                                             id: 'FARMING_TOKEN',
                                         }, {
-                                            amount: formattedAmount(debtAmounts[index], token.decimals, {
-                                                target: 'token',
-                                                roundIfThousand: true,
-                                            }),
+                                            amount: formattedTokenAmount(debtAmounts[index], token.decimals),
                                             symbol: token.symbol,
                                         })}
                                     </div>
@@ -367,10 +345,7 @@ function FarmingUserInfoInner({
                                     {intl.formatMessage({
                                         id: 'FARMING_TOKEN',
                                     }, {
-                                        amount: formattedAmount(entitledAmounts[index], token.decimals, {
-                                            target: 'token',
-                                            roundIfThousand: true,
-                                        }),
+                                        amount: formattedTokenAmount(entitledAmounts[index], token.decimals),
                                         symbol: token.symbol,
                                     })}
                                 </div>

@@ -2,7 +2,7 @@ import { FARMING_POOL_API_URL } from '@/constants'
 import { FarmingPoolsResponse } from '@/modules/Farming/types'
 import { PairResponse } from '@/modules/Pairs/types'
 import { apiRoutes, farmingApiRoutes } from '@/routes'
-import { createHandler } from '@/utils/create-handler'
+import { createHandler } from '@/utils'
 import { TransactionsInfoResponse } from '@/modules/Transactions/types'
 
 const poolsApi = {

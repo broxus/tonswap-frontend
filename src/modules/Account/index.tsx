@@ -52,10 +52,9 @@ export function Account(): JSX.Element | null {
                                                 wallet.balance,
                                                 9, {
                                                     preserve: true,
-                                                    roundIfThousand: false,
                                                 },
                                             ),
-                                            currency: 'TON',
+                                            currency: 'EVER',
                                         })}
                                     </div>
                                 )}

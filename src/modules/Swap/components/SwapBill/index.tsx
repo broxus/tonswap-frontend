@@ -3,7 +3,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { TokenCache } from '@/stores/TokensCacheService'
-import { formattedAmount } from '@/utils'
+import { formattedTokenAmount } from '@/utils'
 
 type Props = {
     fee?: string;
@@ -104,9 +104,8 @@ export function SwapBill({
                             __html: intl.formatMessage({
                                 id: 'SWAP_BILL_RESULT_MINIMUM_RECEIVE',
                             }, {
-                                value: formattedAmount(minExpectedAmount, rightToken.decimals, {
+                                value: formattedTokenAmount(minExpectedAmount, rightToken.decimals, {
                                     preserve: true,
-                                    roundIfThousand: true,
                                 }),
                                 symbol: rightToken.symbol || '',
                             }, {
@@ -162,7 +161,7 @@ export function SwapBill({
                             __html: intl.formatMessage({
                                 id: 'SWAP_BILL_RESULT_FEE',
                             }, {
-                                value: formattedAmount(fee, leftToken.decimals, { preserve: true }),
+                                value: formattedTokenAmount(fee, leftToken.decimals, { preserve: true }),
                                 symbol: leftToken.symbol || '',
                             }, {
                                 ignoreTag: true,

@@ -13,8 +13,7 @@ import { useApi } from '@/modules/Pools/hooks/useApi'
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'
 import { FarmingTableProps } from '@/modules/Farming/components/FarmingTable'
 import {
-    error,
-    formattedAmount,
+    error, formattedAmount, formattedTokenAmount,
     getPrice,
     shareAmount,
 } from '@/utils'
@@ -110,47 +109,39 @@ export function usePoolContent(): UsePoolContent {
     ), [pool, farm])
 
     const lockedLeft = React.useMemo(() => (
-        pool && lockedLp && formattedAmount(shareAmount(
+        pool && lockedLp && formattedTokenAmount(shareAmount(
             lockedLp,
             pool.left.inPool,
             pool.lp.inPool,
             leftToken?.decimals ?? 0,
-        ), undefined, {
-            target: 'token',
-        })
+        ))
     ), [pool, lockedLp, leftToken])
 
     const lockedRight = React.useMemo(() => (
-        pool && lockedLp && formattedAmount(shareAmount(
+        pool && lockedLp && formattedTokenAmount(shareAmount(
             lockedLp,
             pool.right.inPool,
             pool.lp.inPool,
             rightToken?.decimals ?? 0,
-        ), undefined, {
-            target: 'token',
-        })
+        ))
     ), [pool, lockedLp, rightToken])
 
     const walletLeft = React.useMemo(() => (
-        pool && leftToken && formattedAmount(shareAmount(
+        pool && leftToken && formattedTokenAmount(shareAmount(
             pool.lp.inWallet,
             pool.left.inPool,
             pool.lp.inPool,
             leftToken.decimals,
-        ), undefined, {
-            target: 'token',
-        })
+        ))
     ), [pool, leftToken])
 
     const walletRight = React.useMemo(() => (
-        pool && rightToken && formattedAmount(shareAmount(
+        pool && rightToken && formattedTokenAmount(shareAmount(
             pool.lp.inWallet,
             pool.right.inPool,
             pool.lp.inPool,
             rightToken.decimals,
-        ), undefined, {
-            target: 'token',
-        })
+        ))
     ), [pool, rightToken])
 
     const totalLp = React.useMemo(() => (
@@ -209,9 +200,7 @@ export function usePoolContent(): UsePoolContent {
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
                     symbol,
-                    value: formattedAmount(vested, undefined, {
-                        target: 'token',
-                    }),
+                    value: formattedTokenAmount(vested),
                 })
             )),
             entitledRewards: reward.map(({ entitled, symbol }) => (
@@ -219,9 +208,7 @@ export function usePoolContent(): UsePoolContent {
                     id: 'POOLS_LIST_TOKEN_BALANCE',
                 }, {
                     symbol,
-                    value: formattedAmount(entitled, undefined, {
-                        target: 'token',
-                    }),
+                    value: formattedTokenAmount(entitled),
                 })
             )),
             poolAddress: info.pool_address,
@@ -285,8 +272,8 @@ export function usePoolContent(): UsePoolContent {
             const totalVested = new BigNumber(vested).plus(poolDebt)
 
             return {
-                vested: formattedAmount(totalVested.toFixed(), reward_scale),
-                entitled: formattedAmount(entitled, reward_scale),
+                vested: formattedTokenAmount(totalVested.toFixed(), reward_scale),
+                entitled: formattedTokenAmount(entitled, reward_scale),
                 symbol: reward_currency,
             }
         })

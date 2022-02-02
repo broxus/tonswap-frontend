@@ -685,8 +685,6 @@ export class PoolStore {
             error('Transaction LP Wallet balance error', e)
         }
 
-        const leftDecimals = this.leftToken.decimals
-        const rightDecimals = this.rightToken.decimals
         const leftSymbol = this.leftToken.symbol
         const rightSymbol = this.rightToken.symbol
         const {
@@ -751,6 +749,10 @@ export class PoolStore {
         }
 
         const isInverted = this.pairRoots.left.toString() !== this.leftToken.root
+
+        const leftDecimals = isInverted ? this.leftToken.decimals : this.rightToken.decimals
+        const rightDecimals = isInverted ? this.rightToken.decimals : this.leftToken.decimals
+
         const leftDeposit = isInverted ? rightBN.toFixed() : leftBN.toFixed()
         const rightDeposit = isInverted ? leftBN.toFixed() : rightBN.toFixed()
 
@@ -1151,11 +1153,7 @@ export class PoolStore {
             new BigNumber(price || 0).multipliedBy(amount).decimalPlaces(decimals, BigNumber.ROUND_UP)
         )
 
-        if (
-            key === 'leftAmount'
-            && this.isLeftAmountValid
-            && this.rightToken
-        ) {
+        if (key === 'leftAmount' && this.isLeftAmountValid && this.rightToken) {
             const right = getAmount(this.rightPrice || '0', this.leftAmount, this.rightToken?.decimals)
 
             if (isGoodBignumber(right)) {
@@ -1165,11 +1163,7 @@ export class PoolStore {
                 this.data.rightAmount = ''
             }
         }
-        else if (
-            key === 'rightAmount'
-            && this.isRightAmountValid
-            && this.leftToken
-        ) {
+        else if (key === 'rightAmount' && this.isRightAmountValid && this.leftToken) {
             const left = getAmount(this.leftPrice || '0', this.rightAmount, this.leftToken.decimals)
 
             if (isGoodBignumber(left)) {
@@ -1557,10 +1551,10 @@ export class PoolStore {
     }
 
     public get isSupplyComputeReady(): boolean {
-        if (!this.isAutoExchangeEnabled) {
-            return this.isLeftAmountValid && this.isRightAmountValid
+        if (this.isAutoExchangeEnabled) {
+            return this.isLeftAmountValid || this.isRightAmountValid
         }
-        return this.isLeftAmountValid || this.isRightAmountValid
+        return this.isLeftAmountValid && this.isRightAmountValid
     }
 
     public get isSupplyReady(): boolean {
@@ -1568,12 +1562,10 @@ export class PoolStore {
             ? (
                 (
                     this.isLeftAmountValid
-                    && this.rightAmount.length === 0
                     && this.isDexLeftBalanceValid
                 )
                 || (
                     this.isRightAmountValid
-                    && this.leftAmount.length === 0
                     && this.isDexRightBalanceValid
                 )
                 || (
@@ -1596,34 +1588,34 @@ export class PoolStore {
      * ----------------------------------------------------------------------------------
      */
 
-    public get dexLeftBalance(): string {
-        return this.leftToken !== undefined ? (this.dex.balances?.get(this.leftToken?.root) || '0') : '0'
+    public get dexLeftBalance(): string | undefined {
+        return this.leftToken && this.dex.balances?.get(this.leftToken?.root)
     }
 
     public get isDexLeftBalanceValid(): boolean {
-        if (!this.leftToken) {
+        if (!this.leftToken || this.dexLeftBalance === undefined) {
             return false
         }
 
         const leftAmount = new BigNumber(this.leftAmount || 0).shiftedBy(this.leftToken.decimals ?? DEFAULT_DECIMALS)
-        return leftAmount.lte(this.dexLeftBalance || 0)
+        return leftAmount.lte(this.dexLeftBalance)
     }
 
     public get isLeftTokenWithdrawAvailable(): boolean {
         return this.dexLeftBalance !== undefined && this.dexLeftBalance !== '0'
     }
 
-    public get dexRightBalance(): string {
-        return this.rightToken !== undefined ? (this.dex.balances?.get(this.rightToken?.root) || '0') : '0'
+    public get dexRightBalance(): string | undefined {
+        return this.rightToken && this.dex.balances?.get(this.rightToken?.root)
     }
 
     public get isDexRightBalanceValid(): boolean {
-        if (!this.rightToken) {
+        if (!this.rightToken || this.dexRightBalance === undefined) {
             return false
         }
 
         const rightAmount = new BigNumber(this.rightAmount || 0).shiftedBy(this.rightToken.decimals ?? DEFAULT_DECIMALS)
-        return rightAmount.lte(this.dexRightBalance || 0)
+        return rightAmount.lte(this.dexRightBalance)
     }
 
     public get isRightTokenWithdrawAvailable(): boolean {
@@ -1648,11 +1640,11 @@ export class PoolStore {
      */
 
     public get isLeftAmountValid(): boolean {
-        return isGoodBignumber(new BigNumber(this.leftAmount || 0), false)
+        return isGoodBignumber(new BigNumber(this.leftAmount))
     }
 
     public get isRightAmountValid(): boolean {
-        return isGoodBignumber(new BigNumber(this.rightAmount || 0), false)
+        return isGoodBignumber(new BigNumber(this.rightAmount))
     }
 
     public get leftAmount(): PoolStoreData['leftAmount'] {

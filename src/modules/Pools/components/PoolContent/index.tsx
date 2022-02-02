@@ -14,7 +14,7 @@ import { PoolTransactions } from '@/modules/Pools/components/PoolTransactions'
 import { PoolFarmings } from '@/modules/Pools/components/PoolContent/farmings'
 import { TogglePoolButton } from '@/modules/Pools/components/TogglePoolButton'
 import { usePoolContent } from '@/modules/Pools/hooks/usePoolContent'
-import { concatSymbols, formattedAmount } from '@/utils'
+import { concatSymbols, formattedTokenAmount } from '@/utils'
 import { appRoutes } from '@/routes'
 
 
@@ -99,10 +99,9 @@ export function PoolContent(): JSX.Element {
                                         label={intl.formatMessage({
                                             id: 'PAIR_TOKEN_PRICE',
                                         }, {
-                                            amount: formattedAmount(
+                                            amount: formattedTokenAmount(
                                                 priceLeftToRight,
                                                 rightToken?.decimals,
-                                                { preserve: true, roundIfThousand: false },
                                             ),
                                             symbolLeft: leftToken?.symbol,
                                             symbolRight: rightToken?.symbol,
@@ -120,10 +119,9 @@ export function PoolContent(): JSX.Element {
                                         label={intl.formatMessage({
                                             id: 'PAIR_TOKEN_PRICE',
                                         }, {
-                                            amount: formattedAmount(
+                                            amount: formattedTokenAmount(
                                                 priceRightToLeft,
                                                 leftToken?.decimals,
-                                                { preserve: true, roundIfThousand: false },
                                             ),
                                             symbolLeft: rightToken?.symbol,
                                             symbolRight: leftToken?.symbol,
@@ -162,9 +160,7 @@ export function PoolContent(): JSX.Element {
                                 <TotalBalance
                                     share={totalShare}
                                     name={pool.lp.symbol}
-                                    balance={formattedAmount(totalLp, pool.lp.decimals, {
-                                        target: 'token',
-                                    })}
+                                    balance={formattedTokenAmount(totalLp, pool.lp.decimals)}
                                     apportionment={[{
                                         address: leftToken?.root || pool.left.address,
                                         amount: intl.formatMessage({
@@ -192,9 +188,7 @@ export function PoolContent(): JSX.Element {
                                 <BalancePanel
                                     title={intl.formatMessage({ id: 'POOLS_LIST_WALLET_BALANCE' })}
                                     symbol={pool.lp.symbol}
-                                    balance={formattedAmount(pool.lp.inWallet, pool.lp.decimals, {
-                                        target: 'token',
-                                    })}
+                                    balance={formattedTokenAmount(pool.lp.inWallet, pool.lp.decimals)}
                                     tokens={[{
                                         address: leftToken?.root || pool.left.address,
                                         amount: intl.formatMessage({
@@ -221,9 +215,7 @@ export function PoolContent(): JSX.Element {
                                         id: 'POOLS_LIST_LOCKED_FARM',
                                     })}
                                     symbol={pool.lp.symbol}
-                                    balance={formattedAmount(lockedLp, pool.lp.decimals, {
-                                        target: 'token',
-                                    })}
+                                    balance={formattedTokenAmount(lockedLp, pool.lp.decimals)}
                                     tokens={[{
                                         address: leftToken?.root || pool.left.address,
                                         amount: intl.formatMessage({

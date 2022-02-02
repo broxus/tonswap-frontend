@@ -6,7 +6,7 @@ import {
 } from '@/modules/Farming/types'
 import { CurrencyInfo } from '@/modules/Currencies/types'
 import { apiRoutes, farmingApiRoutes } from '@/routes'
-import { createHandler } from '@/utils/create-handler'
+import { createHandler } from '@/utils'
 
 const farmingApi = {
     farmingPools: createHandler(

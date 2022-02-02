@@ -1,5 +1,5 @@
 import { apiRoutes } from '@/routes'
-import { createHandler } from '@/utils/create-handler'
+import { createHandler } from '@/utils'
 import { PairsResponse } from '@/modules/Pairs/types'
 
 const api = {

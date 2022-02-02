@@ -7,7 +7,7 @@ import { TransactionExplorerLink } from '@/components/common/TransactionExplorer
 import { TransactionInfo } from '@/modules/Transactions/types'
 import { EVENTS_MESSAGES } from '@/modules/Transactions/constants'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { formattedAmount, parseCurrencyBillions } from '@/utils'
+import { formattedTokenAmount, parseCurrencyBillions } from '@/utils'
 
 
 type Props = {
@@ -39,16 +39,12 @@ export function Item({ transaction }: Props): JSX.Element {
     const totalValue = React.useMemo(() => parseCurrencyBillions(transaction.tv), [transaction.tv])
 
     const leftValue = React.useMemo(
-        () => `${formattedAmount(transaction.leftValue, leftToken?.decimals, {
-            preserve: true,
-        })} ${leftToken?.symbol}`,
+        () => `${formattedTokenAmount(transaction.leftValue, leftToken?.decimals)} ${leftToken?.symbol}`,
         [leftToken, transaction.leftValue],
     )
 
     const rightValue = React.useMemo(
-        () => `${formattedAmount(transaction.rightValue, rightToken?.decimals, {
-            preserve: true,
-        })} ${rightToken?.symbol}`,
+        () => `${formattedTokenAmount(transaction.rightValue, rightToken?.decimals)} ${rightToken?.symbol}`,
         [rightToken, transaction.rightValue],
     )
 
