@@ -121,7 +121,7 @@ export function Create(): JSX.Element {
                                             id: 'FARMING_CREATE_FIELD_FARM_START_LABEL',
                                         })}
                                         isValid={creatingPool.farmStart.isValid}
-                                        placeholder="YYYY/MM/DD HH:MM"
+                                        placeholder="YYYY.MM.DD HH:MM"
                                         readOnly={creatingPool.isCreating}
                                         value={creatingPool.farmStart.value || ''}
                                         onChange={onChangeDate('farmStart')}

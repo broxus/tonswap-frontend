@@ -124,7 +124,7 @@ export function FarmingTableItem({
                     <Icon icon="loader" ratio={0.6} className="spin farming-table__loading" />
                 ) : (
                     vestedRewards.map(item => (
-                        <div>{item}</div>
+                        <div key={item}>{item}</div>
                     ))
                 )}
             </div>
@@ -133,7 +133,7 @@ export function FarmingTableItem({
                     <Icon icon="loader" ratio={0.6} className="spin farming-table__loading" />
                 ) : (
                     entitledRewards.map(item => (
-                        <div>{item}</div>
+                        <div key={item}>{item}</div>
                     ))
                 )}
             </div>
