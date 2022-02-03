@@ -12,6 +12,7 @@ export type TextInputProps = {
     size?: 'small' | 'medium';
     onBlur?: React.FocusEventHandler<HTMLInputElement>;
     onChange?: (value: string) => void;
+    onChangeInput?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 export function TextInput({
@@ -22,8 +23,15 @@ export function TextInput({
     inputMode,
     size,
     onChange,
+    onChangeInput,
     onBlur,
 }: TextInputProps): JSX.Element {
+
+    const _onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        onChange?.(e.currentTarget.value)
+        onChangeInput?.(e)
+    }
+
     return (
         <input
             type="text"
@@ -35,7 +43,7 @@ export function TextInput({
             placeholder={placeholder}
             inputMode={inputMode}
             value={value}
-            onChange={e => onChange && onChange(e.currentTarget.value)}
+            onChange={_onChange}
             onBlur={onBlur}
             disabled={disabled}
         />

@@ -31,7 +31,7 @@ export function parseDate(value: string | undefined): Date | undefined {
     if (!value) {
         return undefined
     }
-    const parsedDate = DateTime.fromFormat(value, 'yyyy/MM/dd HH:mm')
+    const parsedDate = DateTime.fromFormat(value, 'yyyy.MM.dd HH:mm')
     if (parsedDate.isValid) {
         return parsedDate.toJSDate()
     }
