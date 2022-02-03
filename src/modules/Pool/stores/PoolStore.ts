@@ -75,7 +75,28 @@ export class PoolStore {
      * @type {DepositLiquidityReceipt | undefined}
      * @protected
      */
-    protected depositLiquidityReceipt: DepositLiquidityReceipt | undefined = undefined
+    protected depositLiquidityReceipt: DepositLiquidityReceipt | undefined = {
+        success: true,
+        successData: {
+            leftDecimals: 9,
+            leftDeposit: '555555',
+            currentSharePercent: '0.00049367',
+            hash: '',
+            lpDecimals: 8,
+            rightDeposit: '',
+            leftSymbol: 'WTON',
+            lpRoot: '',
+            newLeft: '456565757567',
+            newLeftPrice: '45465757657657767657',
+            rightDecimals: 8,
+            newRight: '',
+            newRightPrice: '',
+            rightSymbol: 'USDC',
+            share: '',
+            sharePercent: '',
+            shareChangePercent: '',
+        },
+    }
 
     constructor(
         protected readonly wallet: WalletService,
@@ -750,8 +771,8 @@ export class PoolStore {
 
         const isInverted = this.pairRoots.left.toString() !== this.leftToken.root
 
-        const leftDecimals = isInverted ? this.leftToken.decimals : this.rightToken.decimals
-        const rightDecimals = isInverted ? this.rightToken.decimals : this.leftToken.decimals
+        const leftDecimals = this.leftToken.decimals
+        const rightDecimals = this.rightToken.decimals
 
         const leftDeposit = isInverted ? rightBN.toFixed() : leftBN.toFixed()
         const rightDeposit = isInverted ? leftBN.toFixed() : rightBN.toFixed()
@@ -795,6 +816,8 @@ export class PoolStore {
                 },
                 errorData: undefined,
             }
+
+            console.log(this.depositLiquidityReceipt)
 
             this.data.leftAmount = ''
             this.data.rightAmount = ''

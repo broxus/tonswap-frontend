@@ -61,7 +61,9 @@ export function FarmingSpeedTableInner({
                                         {intl.formatMessage({
                                             id: 'FARMING_TOKEN',
                                         }, {
-                                            amount: formattedAmount(rps[idx]),
+                                            amount: formattedAmount(rps[idx], undefined, {
+                                                preserve: true,
+                                            }),
                                             symbol: token.symbol,
                                         })}
                                     </div>

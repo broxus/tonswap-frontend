@@ -176,7 +176,9 @@ function FarmingBaseInfoInner({
                                 {intl.formatMessage({
                                     id: 'FARMING_TOKEN',
                                 }, {
-                                    amount: formattedAmount(rpsAmount[index]),
+                                    amount: formattedAmount(rpsAmount[index], undefined, {
+                                        preserve: true,
+                                    }),
                                     symbol: token.symbol,
                                 })}
                             </div>
