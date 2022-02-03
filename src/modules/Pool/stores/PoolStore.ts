@@ -75,28 +75,7 @@ export class PoolStore {
      * @type {DepositLiquidityReceipt | undefined}
      * @protected
      */
-    protected depositLiquidityReceipt: DepositLiquidityReceipt | undefined = {
-        success: true,
-        successData: {
-            leftDecimals: 9,
-            leftDeposit: '555555',
-            currentSharePercent: '0.00049367',
-            hash: '',
-            lpDecimals: 8,
-            rightDeposit: '',
-            leftSymbol: 'WTON',
-            lpRoot: '',
-            newLeft: '456565757567',
-            newLeftPrice: '45465757657657767657',
-            rightDecimals: 8,
-            newRight: '',
-            newRightPrice: '',
-            rightSymbol: 'USDC',
-            share: '',
-            sharePercent: '',
-            shareChangePercent: '',
-        },
-    }
+    protected depositLiquidityReceipt: DepositLiquidityReceipt | undefined = undefined
 
     constructor(
         protected readonly wallet: WalletService,
