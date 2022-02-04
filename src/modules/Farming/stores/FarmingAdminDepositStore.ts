@@ -37,17 +37,15 @@ export class FarmingAdminDepositStore {
     }
 
     public async deposit(index: number): Promise<void> {
-        const { loadings, amounts } = this.state
-
-        if (loadings[index] === true) {
-            throw new Error('Deposit action is currently loading')
-        }
-
-        runInAction(() => {
-            loadings[index] = true
-        })
+        const { amounts } = this.state
 
         try {
+            if (this.state.loadings[index] === true) {
+                throw new Error('Deposit action is currently loading')
+            }
+
+            this.setLoading(index, true)
+
             await this.farmingDataStore.syncData()
 
             if (!this.wallet.address) {
@@ -119,10 +117,20 @@ export class FarmingAdminDepositStore {
             error(e)
         }
         finally {
-            runInAction(() => {
-                loadings[index] = false
-            })
+            this.setLoading(index, false)
         }
+    }
+
+    protected setLoading(index: number, loading: boolean): void {
+        const loadings = [...this.state.loadings]
+        loadings[index] = loading
+        this.state.loadings = loadings
+    }
+
+    public setAmount(index: number, value: string): void {
+        const amounts = [...this.state.amounts]
+        amounts[index] = value
+        this.state.amounts = amounts
     }
 
     public get amounts(): string[] {
@@ -151,12 +159,6 @@ export class FarmingAdminDepositStore {
                 return amountBN.isLessThanOrEqualTo(userRewardTokensBalance[index])
                     && amountBN.isGreaterThan(0)
             })
-    }
-
-    public setAmount(index: number, value: string): void {
-        const amounts = [...this.state.amounts]
-        amounts[index] = value
-        this.state.amounts = amounts
     }
 
     public get enoughTokensBalance(): boolean {

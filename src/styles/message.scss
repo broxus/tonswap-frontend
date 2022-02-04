@@ -16,14 +16,6 @@
             margin-bottom: 0;
         }
     }
-
-    a {
-        text-decoration: underline;
-        &:hover,
-        &:focus {
-            text-decoration: none;
-        }
-    }
 }
 
 .message_faded {
