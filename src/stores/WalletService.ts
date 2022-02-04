@@ -181,6 +181,10 @@ export class WalletService {
             this.state.isConnecting = true
         })
 
+        if (!hasProvider) {
+            return
+        }
+
         try {
             await connectToWallet()
             runInAction(() => {

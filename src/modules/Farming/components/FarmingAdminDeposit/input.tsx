@@ -38,7 +38,7 @@ export function FarmingAdminDepositInput({
     )
 
     const balanceFormatted = React.useMemo(
-        () => formattedAmount(balance, decimals, { target: 'token' }),
+        () => formattedAmount(balance, decimals, { preserve: true }),
         [balance, decimals],
     )
 
