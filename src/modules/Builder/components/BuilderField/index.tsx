@@ -63,7 +63,7 @@ function Field({
                         pattern={props.pattern}
                         placeholder={props.placeholder}
                         readOnly={props.readOnly}
-                        type={type}
+                        type="text"
                         value={props.value}
                         onChange={type === 'number' ? numberField.onChange : onChangeTextInput}
                         onBlur={type === 'number' ? numberField.onBlur : undefined}
