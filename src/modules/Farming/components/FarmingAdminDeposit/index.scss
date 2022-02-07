@@ -1,13 +1,13 @@
 .farming-admin-deposit-balance {
-    display: flex;
     align-items: center;
     column-gap: 6px;
+    display: flex;
     font-size: 14px;
     line-height: 20px;
     margin: 0 0 8px;
 
     b {
+        color: #eb4361;
         font-weight: normal;
-        color: #EB4361;
     }
 }

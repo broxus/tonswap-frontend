@@ -3,12 +3,12 @@
 .text-input {
     @include input-reset;
 
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #ffffff;
+    cursor: text;
+    font-size: 14px;
     height: 36px;
     padding: 0 12px;
-    font-size: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #fff;
-    cursor: text;
 
     &::placeholder {
         color: rgba(255, 255, 255, 0.56);
@@ -23,7 +23,7 @@
     }
 
     &_invalid {
-        border-color: #EB4361;
+        border-color: #eb4361;
     }
 
     &_size {

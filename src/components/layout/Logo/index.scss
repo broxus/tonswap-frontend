@@ -1,15 +1,15 @@
 .logo {
     display: block;
-    width: 135px;
     margin-right: 40px;
+    width: 135px;
 
     &__mob {
         display: none;
     }
 
     @media only screen and (max-width: 767px) {
-        width: 28px;
         margin-right: 0;
+        width: 28px;
 
         &__mob {
             display: block;

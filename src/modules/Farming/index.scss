@@ -34,23 +34,23 @@
 }
 
 .farming-title {
+    align-items: center;
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin: 40px 0 16px 0;
 
     .icon {
         svg {
-            fill: #fff;
+            fill: #ffffff;
         }
     }
 }
 
 .farming-list {
     &-header {
+        align-items: center;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        align-items: center;
         margin: 36px 0 16px;
     }
 }
@@ -59,8 +59,8 @@
 .farming-details,
 .farming-balance {
     display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 16px;
+    grid-template-columns: 1fr 1fr;
 
     @media only screen and (max-width: 767px) {
         grid-template-columns: 1fr;
@@ -68,10 +68,10 @@
 }
 
 .farming-balance-panel {
-    font-size: 14px;
-    line-height: 20px;
     flex-grow: 1;
+    font-size: 14px;
     height: 100%;
+    line-height: 20px;
     padding: 24px;
 
     &_deposit {
@@ -83,10 +83,10 @@
     }
 
     &__title {
-        margin: 0 0 16px;
         font-size: 18px;
-        line-height: 24px;
         font-weight: bold;
+        line-height: 24px;
+        margin: 0 0 16px;
     }
 
     &__text {
@@ -95,17 +95,17 @@
 
     &__tabs {
         display: flex;
-        margin: 0 0 17px;
         gap: 12px;
+        margin: 0 0 17px;
 
         li {
-            padding: 0 0 7px 0;
-            cursor: pointer;
             border-bottom: 1px solid transparent;
+            cursor: pointer;
             opacity: 0.57;
+            padding: 0 0 7px 0;
 
             &.active {
-                border-block-color: #fff;
+                border-block-color: #ffffff;
                 opacity: 1;
             }
         }
@@ -113,8 +113,8 @@
 }
 
 .farming-panel {
-    padding: 24px;
     background: rgba(255, 255, 255, 0.08);
+    padding: 24px;
 
     &:last-child {
         flex-grow: 1;
@@ -125,41 +125,41 @@
     }
 
     &__title {
-        margin: 0 0 4px;
-        line-height: 24px;
         font-size: 18px;
         font-weight: bold;
+        line-height: 24px;
+        margin: 0 0 4px;
 
         &_small {
-            margin: 0 0 8px;
             font-size: 14px;
             font-weight: normal;
+            margin: 0 0 8px;
         }
     }
 
     &__text {
+        color: rgba(255, 255, 255, 0.56);
         font-size: 14px;
         line-height: 20px;
-        color: rgba(255, 255, 255, 0.56);
     }
 
     &__label {
-        font-size: 12px;
-        line-height: 16px;
-        letter-spacing: 0.6px;
         color: rgba(255, 255, 255, 0.48);
+        font-size: 12px;
+        letter-spacing: 0.6px;
+        line-height: 16px;
         margin: 0 0 4px;
     }
 
     &__value {
         font-size: 20px;
-        line-height: 24px;
         letter-spacing: 0.15px;
+        line-height: 24px;
     }
 
     &__token {
-        display: flex;
         align-items: center;
+        display: flex;
         gap: 6px;
         margin: 0 0 8px;
         word-break: break-word;
@@ -177,15 +177,15 @@
 }
 
 .farming-map {
-    margin: 16px 0 0;
     font-size: 14px;
     line-height: 20px;
+    margin: 16px 0 0;
 
     &__item {
-        display: flex;
-        justify-content: space-between;
         align-items: baseline;
         column-gap: 12px;
+        display: flex;
+        justify-content: space-between;
         margin: 0 0 12px;
 
         &:last-child {
@@ -198,11 +198,11 @@
     }
 
     &__value {
-        display: flex;
         align-items: center;
+        display: flex;
+        gap: 8px;
         justify-self: flex-end;
         text-align: right;
-        gap: 8px;
     }
 
     &__info {
@@ -210,16 +210,16 @@
         margin: 0 0 0 5px;
 
         .icon {
-            vertical-align: text-bottom;
             cursor: pointer;
+            vertical-align: text-bottom;
         }
     }
 }
 
 .farming-stats {
     display: grid;
-    grid-template-columns: 284px 1fr;
     gap: 16px;
+    grid-template-columns: 284px 1fr;
 
     @media only screen and (max-width: 767px) {
         display: flex;

@@ -1,39 +1,39 @@
 .farming-config {
     &.popup__wrap {
+        box-shadow: 0 8px 16px rgba(43, 51, 56, 0.08);
         max-width: 360px;
-        box-shadow: 0px 8px 16px rgba(43, 51, 56, 0.08);
 
         @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-            background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(120px);
+            background: rgba(255, 255, 255, 0.08);
         }
     }
 
     &__title {
-        margin: 0 0 20px;
         font-size: 20px;
-        line-height: 24px;
-        letter-spacing: 0.15px;
         font-weight: bold;
+        letter-spacing: 0.15px;
+        line-height: 24px;
+        margin: 0 0 20px;
     }
 
     &__tabs {
-        display: flex;
         align-items: center;
-        font-size: 14px;
-        line-height: 20px;
-        letter-spacing: 0.6px;
         color: rgba(255, 255, 255, 0.56);
+        display: flex;
+        font-size: 14px;
+        letter-spacing: 0.6px;
+        line-height: 20px;
 
         li {
-            margin: 0 0 20px;
-            padding: 8px 12px;
             border-bottom: 1px solid transparent;
             cursor: pointer;
+            margin: 0 0 20px;
+            padding: 8px 12px;
 
             &.active {
-                color: #fff;
-                border-bottom-color: #fff;
+                border-bottom-color: #ffffff;
+                color: #ffffff;
             }
         }
     }
@@ -44,30 +44,30 @@
 
     &__label {
         font-size: 14px;
-        line-height: 20px;
         letter-spacing: 0.6px;
+        line-height: 20px;
         margin: 0 0 4px;
     }
 
     &__cols {
         display: flex;
-        grid-auto-flow: column;
-        grid-auto-columns: 1fr;
         gap: 10px;
+        grid-auto-columns: 1fr;
+        grid-auto-flow: column;
     }
 
     &__action {
-        margin: 40px 0 0;
-        display: flex;
         align-items: center;
-        justify-content: flex-end;
+        display: flex;
         gap: 10px;
+        justify-content: flex-end;
+        margin: 40px 0 0;
     }
 
     &__warning {
-        margin: 0 0 20px;
         font-size: 14px;
-        line-height: 20px;
         letter-spacing: 0.5px;
+        line-height: 20px;
+        margin: 0 0 20px;
     }
 }

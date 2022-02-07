@@ -1,18 +1,18 @@
 .tooltip {
-    position: fixed;
-    z-index: 100;
-    padding: 12px;
-    margin-top: 8px;
+    background: #313551;
     border-radius: 2px;
     font-size: 12px;
-    line-height: 16px;
     letter-spacing: 0.6px;
-    background: #313551;
+    line-height: 16px;
+    margin-top: 8px;
+    padding: 12px;
+    position: fixed;
+    z-index: 100;
 
     @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-        background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
         -webkit-backdrop-filter: blur(64px);
         backdrop-filter: blur(64px);
+        background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
     }
 
     &_align_top-left {
@@ -43,11 +43,11 @@
     }
 
     h4 {
-        margin-bottom: 4px;
-        line-height: 16px;
         font-size: 12px;
         font-weight: 700;
         letter-spacing: 0.75px;
+        line-height: 16px;
+        margin-bottom: 4px;
 
         &:last-child {
             margin-bottom: 0;

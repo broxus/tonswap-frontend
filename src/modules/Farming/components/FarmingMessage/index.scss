@@ -1,20 +1,20 @@
 @import '~@/styles/_mix';
 
 .farming-message {
-    position: relative;
+    background: #c5e4f3;
+    color: #000000;
     display: flex;
-    justify-content: space-between;
+    font-size: 14px;
     gap: 24px;
+    justify-content: space-between;
+    line-height: 20px;
     margin: 24px 0 0;
     padding: 24px;
-    font-size: 14px;
-    line-height: 20px;
-    background: #C5E4F3;
-    color: #000;
+    position: relative;
 
     &_danger {
-        background: #EB4361;
-        color: #fff;
+        background: #eb4361;
+        color: #ffffff;
     }
 
     @media only screen and (max-width: 767px) {
@@ -23,10 +23,10 @@
     }
 
     h3 {
-        margin: 0 0 4px;
         font-size: 18px;
-        line-height: 24px;
         font-weight: bold;
+        line-height: 24px;
+        margin: 0 0 4px;
 
         &:last-child {
             margin-bottom: 0;
@@ -42,9 +42,9 @@
     }
 
     &__actions {
-        display: flex;
         align-items: center;
         column-gap: 12px;
+        display: flex;
 
         @media only screen and (max-width: 767px) {
             justify-content: flex-end;
@@ -54,15 +54,15 @@
     &__close {
         @include btn-reset;
 
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 40px;
-        height: 40px;
-        display: flex;
         align-items: center;
-        justify-content: center;
-        cursor: pointer;
         color: #293166;
+        cursor: pointer;
+        display: flex;
+        height: 40px;
+        justify-content: center;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 40px;
     }
 }

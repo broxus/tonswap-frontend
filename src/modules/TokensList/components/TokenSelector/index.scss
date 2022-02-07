@@ -3,39 +3,39 @@
 .token-selector {
     @include btn-reset;
 
-    display: flex;
     align-items: center;
-    justify-content: space-between;
-    column-gap: 13px;
-    padding: 0 12px;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    cursor: pointer;
     color: rgba(255, 255, 255, 0.56);
+    column-gap: 13px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 12px;
 
     svg {
-        fill: #fff;
+        fill: #ffffff;
     }
 
     &_size {
         &_small {
-            height: 36px;
             font-size: 14px;
+            height: 36px;
         }
 
         &_medium {
-            height: 44px;
             font-size: 16px;
+            height: 44px;
         }
     }
 
     &_dirty {
         border-color: rgba(255, 255, 255, 0.24);
-        color: #fff;
+        color: #ffffff;
     }
 
     &__value {
-        display: flex;
         align-items: center;
+        display: flex;
         gap: 8px;
         overflow: hidden;
     }

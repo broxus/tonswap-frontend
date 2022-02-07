@@ -1,9 +1,9 @@
 .pair-tokens {
     &-icons {
-        position: relative;
-        z-index: 2;
-        white-space: nowrap;
         flex-shrink: 0;
+        position: relative;
+        white-space: nowrap;
+        z-index: 2;
 
         img {
             display: inline-block;

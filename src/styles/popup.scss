@@ -42,12 +42,12 @@
     }
 
     &_scrollable {
-        position: static;
+        align-items: center;
         display: flex;
         justify-content: center;
-        align-items: center;
         min-height: 100vh;
         padding: 0;
+        position: static;
 
         @media only screen and (min-width: 768px) {
             align-items: flex-start;

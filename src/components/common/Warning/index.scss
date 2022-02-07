@@ -1,14 +1,14 @@
 .warning {
-    padding: 12px;
     border-left: 4px solid transparent;
-    color: #fff;
+    color: #ffffff;
+    padding: 12px;
 
     &__title {
-        margin: 0 0 4px;
         font-size: 12px;
         font-weight: bold;
-        line-height: 16px;
         letter-spacing: 0.75px;
+        line-height: 16px;
+        margin: 0 0 4px;
 
         &:last-child {
             margin-bottom: 0;
@@ -16,10 +16,10 @@
     }
 
     &__text {
-        margin: 0;
         font-size: 12px;
-        line-height: 16px;
         letter-spacing: 0.6px;
+        line-height: 16px;
+        margin: 0;
 
         p {
             margin: 0 0 0.5em;
@@ -32,13 +32,13 @@
 
     &_theme {
         &_danger {
-            border-left-color: #EB4361;
             background: rgba(235, 67, 97, 0.48);
+            border-left-color: #eb4361;
         }
 
         &_warning {
-            border-left-color: #E6AC00;
             background: rgba(230, 172, 0, 0.48);
+            border-left-color: #e6ac00;
         }
     }
 }

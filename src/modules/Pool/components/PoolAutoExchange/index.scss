@@ -1,21 +1,21 @@
 .pool-auto-exchange {
-    margin: 16px 0;
     background: rgba(255, 255, 255, 0.1);
+    margin: 16px 0;
     padding: 10px;
 
-    &:last-child { margin-bottom: 0;}
+    &:last-child { margin-bottom: 0; }
 
     &__title {
-        margin-bottom: 10px;
-        font-weight: bold;
         font-size: 14px;
-        line-height: 20px;
+        font-weight: bold;
         letter-spacing: 0.75px;
+        line-height: 20px;
+        margin-bottom: 10px;
     }
 
     &__wrap {
-        display: flex;
         align-items: flex-start;
+        display: flex;
         justify-content: space-between;
     }
 
@@ -45,6 +45,6 @@
 .pool-auto-exchange-txt {
     flex-grow: 1;
     font-size: 12px;
-    line-height: 16px;
     letter-spacing: 0.4px;
+    line-height: 16px;
 }
