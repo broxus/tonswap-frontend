@@ -12,22 +12,22 @@
     }
 
     &_slim {
-        min-height: auto;
         height: auto;
+        min-height: auto;
     }
 
     &_size {
         &_s {
             svg {
-                width: 16px;
                 height: 16px;
+                width: 16px;
             }
         }
 
         &_l {
             svg {
-                width: 46px;
                 height: 46px;
+                width: 46px;
             }
         }
     }

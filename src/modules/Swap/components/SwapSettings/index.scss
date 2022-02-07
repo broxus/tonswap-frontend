@@ -6,59 +6,60 @@
 
     button.swap-settings__btn {
         @include btn-reset;
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        opacity: .5;
 
-        svg { fill: #fff; }
+        align-items: center;
+        border-radius: 50%;
+        display: flex;
+        height: 36px;
+        justify-content: center;
+        opacity: 0.5;
+        width: 36px;
+
+        svg { fill: #ffffff; }
 
         &:hover,
         &.active {
+            background: rgba(255, 255, 255, 0.16);
             opacity: 1;
-            background: rgba(255, 255, 255, .16);
         }
     }
 
     &__drop {
+        background-color: #2d324d;
+        box-shadow: 0 8px 16px rgba(43, 51, 56, 0.08);
+        padding: 20px;
         position: absolute;
         right: 0;
         top: 43px;
         width: 240px;
-        background-color: #2d324d;
-        box-shadow: 0 8px 16px rgba(43, 51, 56, .08);
-        padding: 20px;
     }
 
     &__title {
-        margin-bottom: 12px;
-        font-weight: bold;
         font-size: 16px;
+        font-weight: bold;
+        letter-spacing: 0.25px;
         line-height: 20px;
-        letter-spacing: .25px;
+        margin-bottom: 12px;
     }
 
     &__info {
-        margin-bottom: 8px;
         font-size: 0;
+        margin-bottom: 8px;
 
         &-txt {
-            font-size: 14px;
-            line-height: 20px;
-            letter-spacing: .75px;
-            margin-right: 8px;
             display: inline-block;
+            font-size: 14px;
+            letter-spacing: 0.75px;
+            line-height: 20px;
+            margin-right: 8px;
             vertical-align: middle;
         }
 
         &-icn {
             display: inline-block;
+            opacity: 0.5;
             vertical-align: middle;
             width: 20px;
-            opacity: .5;
 
             &:hover {
                 opacity: 1;
@@ -70,55 +71,56 @@
         position: relative;
 
         &-txt {
-            position: absolute;
-            z-index: 2;
-            top: 50%;
-            left: 12px;
-            transform: translateY(-50%);
             font-size: 14px;
+            left: 12px;
+            letter-spacing: 0.75px;
             line-height: 20px;
-            letter-spacing: .75px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
         }
     }
 
     &__input {
         @include input-reset;
-        padding: 0 12px 0 33px;
-        height: 36px;
-        border: 1px solid rgba(255, 255, 255, .16);
-        color: #fff;
+
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        color: #ffffff;
         font-size: 14px;
-        line-height: 20px;
+        height: 36px;
         letter-spacing: 0.75px;
+        line-height: 20px;
+        padding: 0 12px 0 33px;
     }
 
     &__bar {
-        display: flex;
         align-items: stretch;
-        justify-content: flex-start;
+        display: flex;
         flex-wrap: wrap;
+        justify-content: flex-start;
         width: calc(100% + 8px);
     }
 
     &__radio {
+        display: inline-block;
         font-size: 0;
         margin: 8px 8px 0 0;
-        display: inline-block;
 
         &-txt {
-            display: block;
-            cursor: pointer;
-            padding: 4px 8px;
-            background-color: rgba(255, 255, 255, .08);
+            background-color: rgba(255, 255, 255, 0.08);
             border-radius: 2px;
-            transition: color .25s, background-color .25s;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            display: block;
             font-size: 12px;
+            letter-spacing: 0.4px;
             line-height: 16px;
-            letter-spacing: .4px;
-            color: rgba(255, 255, 255, .5);
+            padding: 4px 8px;
+            transition: color 0.25s, background-color 0.25s;
 
             &:hover {
-                background-color: #fff;
+                background-color: #ffffff;
                 color: #293166;
             }
         }
@@ -127,7 +129,7 @@
             display: none;
 
             &:checked + .swap-settings__radio-txt {
-                background-color: #fff;
+                background-color: #ffffff;
                 color: #293166;
             }
         }
@@ -135,8 +137,8 @@
 
     @media only screen and (max-width: 767px) {
         &__btn {
-            width: 32px;
             height: 32px;
+            width: 32px;
         }
 
         &__drop {

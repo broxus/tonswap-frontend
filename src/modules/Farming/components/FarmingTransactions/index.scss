@@ -1,13 +1,14 @@
 .farming-transactions {
     .tabs {
-        row-gap: 20px;
         flex-wrap: wrap;
         justify-content: flex-start;
+        row-gap: 20px;
     }
 
     &__list {
         &.list {
             min-height: auto;
+
             --list-grid-template: minmax(100px, 120px) minmax(100px, 200px) minmax(300px, 50%) minmax(100px, 200px) minmax(100px, 200px);
 
             &.action {
@@ -17,26 +18,26 @@
     }
 
     &__head {
-        margin: 0 0 24px;
         display: flex;
         justify-content: space-between;
+        margin: 0 0 24px;
 
         @media only screen and (max-width: 767px) {
-            flex-direction: column-reverse;
             align-items: flex-start;
+            flex-direction: column-reverse;
             gap: 20px;
         }
     }
 
     &__message {
-        display: flex;
         align-items: center;
+        color: #ffffff;
+        display: flex;
+        font-size: 14px;
         justify-content: center;
+        letter-spacing: 0.5px;
+        line-height: 20px;
         min-height: 57px;
         padding: 32px 0 0;
-        font-size: 14px;
-        line-height: 20px;
-        letter-spacing: 0.5px;
-        color: #FFF;
     }
 }

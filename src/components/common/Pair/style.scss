@@ -1,9 +1,9 @@
 .pair {
-    display: flex;
     align-items: center;
     column-gap: 10px;
-    text-transform: uppercase;
+    display: flex;
     overflow: hidden;
+    text-transform: uppercase;
 
     &__label {
         overflow: hidden;

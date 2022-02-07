@@ -10,14 +10,14 @@
     }
 
     &__more {
-        display: flex;
         align-items: center;
+        background: #4d4e63;
+        border-radius: 50%;
+        cursor: default;
+        display: flex;
+        font-size: 12px;
+        height: 24px;
         justify-content: center;
         width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        background: #4D4E63;
-        font-size: 12px;
-        cursor: default;
     }
 }

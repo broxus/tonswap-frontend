@@ -2,6 +2,7 @@ import * as React from 'react'
 import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 
+import { useField } from '@/hooks/useField'
 
 type Props = {
     className?: string;
@@ -28,11 +29,20 @@ function Field({
 }: Props): JSX.Element {
     const isDirty = React.useRef<boolean>(false)
 
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
+    const onChangeTextInput: React.ChangeEventHandler<HTMLInputElement> = event => {
         const { value } = event.target
         props.onChange?.(value)
         isDirty.current = true
     }
+
+    const numberField = useField({
+        value: props.value,
+        onChange: (value: string) => {
+            props.onChange?.(value)
+            isDirty.current = true
+        },
+    })
+
 
     return (
         <label className="form-label" htmlFor={props.id}>
@@ -55,7 +65,8 @@ function Field({
                         readOnly={props.readOnly}
                         type={type}
                         value={props.value}
-                        onChange={onChange}
+                        onChange={type === 'number' ? numberField.onChange : onChangeTextInput}
+                        onBlur={type === 'number' ? numberField.onBlur : undefined}
                     />
                 </div>
             </fieldset>

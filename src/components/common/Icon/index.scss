@@ -1,14 +1,14 @@
 .icon {
-    margin: 0;
+    background-color: transparent;
     border: none;
     border-radius: 0;
-    overflow: visible;
-    font: inherit;
     color: inherit;
-    text-transform: none;
-    padding: 0;
-    background-color: transparent;
     display: inline-block;
-    fill: currentcolor;
+    fill: currentColor;
+    font: inherit;
     line-height: 0;
+    margin: 0;
+    overflow: visible;
+    padding: 0;
+    text-transform: none;
 }

@@ -30,17 +30,17 @@
     bottom: 0;
     column-gap: 20px;
     display: flex;
+    left: 0;
     padding: 12px 20px;
     position: fixed;
     right: 0;
-    left: 0;
 
     @media only screen and (min-width: 768px) {
         background: none;
         bottom: unset;
+        left: unset;
         position: absolute;
         right: 0;
         top: 0;
-        left: unset;
     }
 }
