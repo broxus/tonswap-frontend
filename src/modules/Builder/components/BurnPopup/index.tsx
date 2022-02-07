@@ -12,6 +12,7 @@ import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 import { BurnAddressField } from '@/modules/Builder/components/BurnAddressField'
 import { BurnDetails } from '@/modules/Builder/components/BurnDetails'
 import { isAddressValid } from '@/misc'
+import { usePage } from '@/hooks/usePage'
 
 type Props = {
     onDismiss: () => void;
@@ -24,9 +25,20 @@ function Popup({ onDismiss }: Props): JSX.Element {
     const intl = useIntl()
     const managingToken = useManageTokenStore(rootToken)
     const burnForm = useBurnForm()
+    const page = usePage()
+
+    React.useEffect(() => {
+        page.block()
+        burnForm.onChangeData('amountToBurn')('')
+        burnForm.onChangeData('callbackPayload')('')
+
+        return () => {
+            page.unblock()
+        }
+    }, [])
 
     return ReactDOM.createPortal(
-        <div className="popup">
+        <div className="popup popup_scrollable">
             <div className="popup-overlay" />
             <div className="popup__wrap">
                 <button

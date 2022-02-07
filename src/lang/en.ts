@@ -576,7 +576,7 @@ export default {
     BUILDER_MANAGE_TOKEN_MINT_NAME: 'Mint',
     BUILDER_MANAGE_TOKEN_MINT_DESCRIPTION: 'Issue additional tokens to a specific address',
     BUILDER_MANAGE_TOKEN_BURN_NAME: 'Burn',
-    BUILDER_MANAGE_TOKEN_BURN_DESCRIPTION: 'Destroy tokens at a specific address',
+    BUILDER_MANAGE_TOKEN_BURN_DESCRIPTION: 'Burn tokens at a specific address',
     BUILDER_MANAGE_TOKEN_MINT_BTN_TEXT: 'Mint',
     BUILDER_MANAGE_TOKEN_DANGER_ZONE_TITLE: 'Danger zone',
     BUILDER_MANAGE_TOKEN_TRANSFER_OWNERSHIP_NAME: 'Transfer ownership',

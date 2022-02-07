@@ -11,6 +11,7 @@ import { useMintForm } from '@/modules/Builder/hooks/useMintForm'
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 import { MintAddressField } from '@/modules/Builder/components/MintAddressField'
 import { MintDetails } from '@/modules/Builder/components/MintDetails'
+import { usePage } from '@/hooks/usePage'
 
 type Props = {
     onDismiss: () => void;
@@ -22,9 +23,19 @@ function Popup({ onDismiss }: Props): JSX.Element {
     const { rootToken } = useParams<{ rootToken: string }>()
     const managingToken = useManageTokenStore(rootToken)
     const mintForm = useMintForm()
+    const page = usePage()
+
+    React.useEffect(() => {
+        page.block()
+        mintForm.onChangeData('amountToMint')('')
+
+        return () => {
+            page.unblock()
+        }
+    }, [])
 
     return ReactDOM.createPortal(
-        <div className="popup">
+        <div className="popup popup_scrollable">
             <div className="popup-overlay" />
             <div className="popup__wrap">
                 <button

@@ -163,7 +163,7 @@ export function Token(): JSX.Element {
                                                     </div>
                                                     <div className="card-block__action__description">
                                                         {intl.formatMessage({
-                                                            id: 'BUILDER_MANAGE_TOKEN_MINT_DESCRIPTION',
+                                                            id: 'BUILDER_MANAGE_TOKEN_BURN_DESCRIPTION',
                                                         })}
                                                     </div>
                                                 </div>

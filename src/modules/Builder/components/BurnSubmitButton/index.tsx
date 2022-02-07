@@ -64,7 +64,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     return (
         <button
             type="button"
-            className="btn btn--grey btn-lg form-submit btn-block"
+            className="btn btn-primary btn--grey btn-lg form-submit btn-block"
             aria-disabled={buttonProps.disabled}
             {...buttonProps}
         >
