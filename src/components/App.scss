@@ -31,7 +31,9 @@
     column-gap: 20px;
     display: flex;
     padding: 12px 20px;
-    position: sticky;
+    position: fixed;
+    right: 0;
+    left: 0;
 
     @media only screen and (min-width: 768px) {
         background: none;
@@ -39,5 +41,6 @@
         position: absolute;
         right: 0;
         top: 0;
+        left: unset;
     }
 }

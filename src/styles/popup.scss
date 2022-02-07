@@ -40,6 +40,31 @@
             transform: none;
         }
     }
+
+    &_scrollable {
+        position: static;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 0;
+
+        @media only screen and (min-width: 768px) {
+            align-items: flex-start;
+            padding: 128px 0 60px 0;
+        }
+
+        .popup-overlay {
+            position: fixed;
+        }
+
+        .popup__wrap {
+            left: auto;
+            position: static;
+            transform: none;
+            width: 100%;
+        }
+    }
 }
 
 .popup-overlay {
