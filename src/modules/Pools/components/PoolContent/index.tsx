@@ -166,7 +166,7 @@ export function PoolContent(): JSX.Element {
                                         amount: intl.formatMessage({
                                             id: 'POOLS_LIST_TOKEN_BALANCE',
                                         }, {
-                                            value: totalLeft,
+                                            value: formattedTokenAmount(totalLeft),
                                             symbol: leftToken?.symbol,
                                         }),
                                         icon: leftToken?.icon,
@@ -175,7 +175,7 @@ export function PoolContent(): JSX.Element {
                                         amount: intl.formatMessage({
                                             id: 'POOLS_LIST_TOKEN_BALANCE',
                                         }, {
-                                            value: totalRight,
+                                            value: formattedTokenAmount(totalRight),
                                             symbol: rightToken?.symbol,
                                         }),
                                         icon: rightToken?.icon,
@@ -194,7 +194,7 @@ export function PoolContent(): JSX.Element {
                                         amount: intl.formatMessage({
                                             id: 'POOLS_LIST_TOKEN_BALANCE',
                                         }, {
-                                            value: walletLeft,
+                                            value: formattedTokenAmount(walletLeft),
                                             symbol: leftToken?.symbol,
                                         }),
                                         icon: leftToken?.icon,
@@ -203,7 +203,7 @@ export function PoolContent(): JSX.Element {
                                         amount: intl.formatMessage({
                                             id: 'POOLS_LIST_TOKEN_BALANCE',
                                         }, {
-                                            value: walletRight,
+                                            value: formattedTokenAmount(walletRight),
                                             symbol: rightToken?.symbol,
                                         }),
                                         icon: rightToken?.icon,
@@ -221,7 +221,7 @@ export function PoolContent(): JSX.Element {
                                         amount: intl.formatMessage({
                                             id: 'POOLS_LIST_TOKEN_BALANCE',
                                         }, {
-                                            value: lockedLeft,
+                                            value: formattedTokenAmount(lockedLeft),
                                             symbol: leftToken?.symbol,
                                         }),
                                         icon: leftToken?.icon,
@@ -230,7 +230,7 @@ export function PoolContent(): JSX.Element {
                                         amount: intl.formatMessage({
                                             id: 'POOLS_LIST_TOKEN_BALANCE',
                                         }, {
-                                            value: lockedRight,
+                                            value: formattedTokenAmount(lockedRight),
                                             symbol: rightToken?.symbol,
                                         }),
                                         icon: rightToken?.icon,

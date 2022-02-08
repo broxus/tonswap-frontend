@@ -109,39 +109,39 @@ export function usePoolContent(): UsePoolContent {
     ), [pool, farm])
 
     const lockedLeft = React.useMemo(() => (
-        pool && lockedLp && formattedTokenAmount(shareAmount(
+        pool && lockedLp && shareAmount(
             lockedLp,
             pool.left.inPool,
             pool.lp.inPool,
             leftToken?.decimals ?? 0,
-        ))
+        )
     ), [pool, lockedLp, leftToken])
 
     const lockedRight = React.useMemo(() => (
-        pool && lockedLp && formattedTokenAmount(shareAmount(
+        pool && lockedLp && shareAmount(
             lockedLp,
             pool.right.inPool,
             pool.lp.inPool,
             rightToken?.decimals ?? 0,
-        ))
+        )
     ), [pool, lockedLp, rightToken])
 
     const walletLeft = React.useMemo(() => (
-        pool && leftToken && formattedTokenAmount(shareAmount(
+        pool && leftToken && shareAmount(
             pool.lp.inWallet,
             pool.left.inPool,
             pool.lp.inPool,
             leftToken.decimals,
-        ))
+        )
     ), [pool, leftToken])
 
     const walletRight = React.useMemo(() => (
-        pool && rightToken && formattedTokenAmount(shareAmount(
+        pool && rightToken && shareAmount(
             pool.lp.inWallet,
             pool.right.inPool,
             pool.lp.inPool,
             rightToken.decimals,
-        ))
+        )
     ), [pool, rightToken])
 
     const totalLp = React.useMemo(() => (

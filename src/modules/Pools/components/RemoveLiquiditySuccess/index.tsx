@@ -5,7 +5,7 @@ import { observer } from 'mobx-react-lite'
 
 import { Icon } from '@/components/common/Icon'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { formattedAmount } from '@/utils'
+import { formattedTokenAmount } from '@/utils'
 
 import './index.scss'
 
@@ -70,7 +70,9 @@ function RemoveLiquiditySuccessInner({
                             {intl.formatMessage({
                                 id: 'REMOVE_LIQUIDITY_SUCCESS_MINUS',
                             }, {
-                                value: formattedAmount(lpAmount, 0),
+                                value: formattedTokenAmount(lpAmount, undefined, {
+                                    preserve: true,
+                                }),
                             })}
                         </div>
                     </React.Fragment>
@@ -89,7 +91,9 @@ function RemoveLiquiditySuccessInner({
                             {intl.formatMessage({
                                 id: 'REMOVE_LIQUIDITY_SUCCESS_PLUS',
                             }, {
-                                value: formattedAmount(leftAmount, 0),
+                                value: formattedTokenAmount(leftAmount, undefined, {
+                                    preserve: true,
+                                }),
                             })}
                         </div>
                     </React.Fragment>
@@ -108,7 +112,9 @@ function RemoveLiquiditySuccessInner({
                             {intl.formatMessage({
                                 id: 'REMOVE_LIQUIDITY_SUCCESS_PLUS',
                             }, {
-                                value: formattedAmount(rightAmount, 0),
+                                value: formattedTokenAmount(rightAmount, undefined, {
+                                    preserve: true,
+                                }),
                             })}
                         </div>
                     </React.Fragment>
