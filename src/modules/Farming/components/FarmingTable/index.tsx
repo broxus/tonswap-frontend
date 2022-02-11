@@ -43,13 +43,7 @@ export function FarmingTable({
                         {intl.formatMessage({ id: 'FARMING_TABLE_TVL' })}
                     </div>
                     <div className="list__cell list__cell--right">
-                        {intl.formatMessage({ id: 'FARMING_TABLE_TVL_CHANGE' })}
-                    </div>
-                    <div className="list__cell list__cell--right">
                         {intl.formatMessage({ id: 'FARMING_TABLE_APR' })}
-                    </div>
-                    <div className="list__cell list__cell--right">
-                        {intl.formatMessage({ id: 'FARMING_TABLE_APR_CHANGE' })}
                     </div>
                     <div className="list__cell list__cell--right">
                         {intl.formatMessage({ id: 'FARMING_TABLE_SHARE' })}

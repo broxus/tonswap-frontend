@@ -9,6 +9,8 @@ import './index.scss'
 
 type RateChangeProps = {
     value: string;
+    size?: 'sm';
+    className?: string;
 }
 
 function getDirection(value: BigNumber.Value): number {
@@ -23,13 +25,18 @@ function getDirection(value: BigNumber.Value): number {
 }
 
 
-export function RateChange({ value }: RateChangeProps): JSX.Element {
+export function RateChange({
+    value,
+    size,
+    className,
+}: RateChangeProps): JSX.Element {
     const dir = getDirection(value)
     return (
         <div
-            className={classNames('rate-change', {
+            className={classNames('rate-change', className, {
                 'rate-change-up': dir > 0,
                 'rate-change-down': dir < 0,
+                [`rate-change-${size}`]: size !== undefined,
             })}
         >
             {formattedAmount(value, undefined, { preserve: true })}

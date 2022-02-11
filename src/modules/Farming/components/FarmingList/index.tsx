@@ -68,6 +68,7 @@ export function FarmingListInner({
                     name: item.right_currency,
                 } : undefined,
                 rewardsIcons: item.reward_token_root_info.map(rewardInfo => ({
+                    address: rewardInfo.reward_root_address,
                     root: rewardInfo.reward_root_address,
                     name: rewardInfo.reward_currency,
                     icon: tokensCache.get(rewardInfo.reward_root_address)?.icon,

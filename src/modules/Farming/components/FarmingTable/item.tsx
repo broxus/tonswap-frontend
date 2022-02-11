@@ -95,22 +95,26 @@ export function FarmingTableItem({
                 className="list__cell list__cell--left list__cell--right"
                 title={tvlFormatted}
             >
-                {tvl === null ? nullMessage : tvlFormatted}
-            </div>
-            <div className="list__cell list__cell--left list__cell--right">
-                {tvlChange === null ? nullMessage : (
-                    <RateChange value={tvlChange} />
+                <div>{tvl === null ? nullMessage : tvlFormatted}</div>
+                {tvlChange && (
+                    <RateChange
+                        size="sm"
+                        value={tvlChange}
+                        className="farming-table__rate-change"
+                    />
                 )}
             </div>
             <div
                 className="list__cell list__cell--left list__cell--right"
                 title={aprFormatted}
             >
-                {apr === null ? nullMessage : aprFormatted}
-            </div>
-            <div className="list__cell list__cell--left list__cell--right">
-                {aprChange === null ? nullMessage : (
-                    <RateChange value={aprChange} />
+                <div>{apr === null ? nullMessage : aprFormatted}</div>
+                {aprChange && (
+                    <RateChange
+                        size="sm"
+                        value={aprChange}
+                        className="farming-table__rate-change"
+                    />
                 )}
             </div>
             <div
