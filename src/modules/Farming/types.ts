@@ -1,4 +1,4 @@
-import { FullContractState, TransactionId } from 'ton-inpage-provider'
+import { FullContractState, TransactionId } from 'everscale-inpage-provider'
 
 import { UserPendingReward } from '@/misc'
 

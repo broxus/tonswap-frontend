@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { useParams } from 'react-router-dom'
-import { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 import BigNumber from 'bignumber.js'
 import { useIntl } from 'react-intl'
 

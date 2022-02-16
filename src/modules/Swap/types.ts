@@ -4,7 +4,7 @@ import {
     DecodedAbiFunctionInputs,
     FullContractState,
     Transaction,
-} from 'ton-inpage-provider'
+} from 'everscale-inpage-provider'
 
 import { DexAbi } from '@/misc'
 import { TokenCache } from '@/stores/TokensCacheService'

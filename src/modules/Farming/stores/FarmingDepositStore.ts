@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js'
-import { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 import { makeAutoObservable, runInAction } from 'mobx'
 
 import { FarmingDataStore, useFarmingDataStore } from '@/modules/Farming/stores/FarmingDataStore'

@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
-import { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 import { makeAutoObservable, runInAction, toJS } from 'mobx'
 
 import { FarmingDataStore, useFarmingDataStore } from '@/modules/Farming/stores/FarmingDataStore'

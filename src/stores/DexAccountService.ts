@@ -4,7 +4,7 @@ import {
     reaction,
     runInAction,
 } from 'mobx'
-import { Address, TransactionId } from 'ton-inpage-provider'
+import { Address, TransactionId } from 'everscale-inpage-provider'
 
 import { Dex, getDexAccount } from '@/misc'
 import { useWallet, WalletService } from '@/stores/WalletService'
@@ -15,7 +15,6 @@ export type Balances = Map<string, string>
 export type DexAccountData = {
     address?: string;
     balances?: Balances;
-    nonce?: string;
     wallets?: Map<string, Address>;
 }
 
@@ -132,7 +131,6 @@ export class DexAccountService {
     }
 
     public async sync(): Promise<void> {
-        await this.syncNonce()
         await this.syncBalances()
         await this.syncWallets()
         this.runBalancesUpdater()
@@ -151,23 +149,6 @@ export class DexAccountService {
 
         runInAction(() => {
             this.data.balances = balances
-        })
-    }
-
-    /**
-     * Sync DEX account nonce
-     * @protected
-     * @returns {Promise<void>}
-     */
-    public async syncNonce(): Promise<void> {
-        if (!this.address) {
-            return
-        }
-
-        const nonce = await Dex.accountNonce(new Address(this.address))
-
-        runInAction(() => {
-            this.data.nonce = (parseInt(nonce, 10) + 1).toString()
         })
     }
 
@@ -191,10 +172,11 @@ export class DexAccountService {
      * Withdraw token by the given root address and amount
      * @param {string} root
      * @param {string} amount
+     * @param {string} callId
      * @returns {Promise<void>}
      */
-    public async withdrawToken(root: string, amount: string): Promise<void> {
-        if (!this.wallet.address || !this.address || !root || !amount) {
+    public async withdrawToken(root: string, amount: string, callId: string): Promise<void> {
+        if (!this.wallet.address || !this.address || !root || !amount || !callId) {
             return
         }
 
@@ -203,6 +185,7 @@ export class DexAccountService {
             new Address(root),
             new Address(this.wallet.address),
             amount,
+            callId,
         )
     }
 
@@ -233,13 +216,6 @@ export class DexAccountService {
      */
     public get balances(): DexAccountData['balances'] {
         return this.data.balances
-    }
-
-    /**
-     * Returns nonce value
-     */
-    public get nonce(): DexAccountData['nonce'] {
-        return this.data.nonce
     }
 
     /**

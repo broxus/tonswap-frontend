@@ -22,6 +22,11 @@ export default {
     WALLET_BALANCE_HINT: '{balance} {currency}',
     WALLET_BTN_TEXT_CONNECT: 'Connect to a wallet',
 
+    TOKENS_UPGRADE_POPUP_TITLE: 'Upgrade tokens',
+    TOKENS_UPGRADE_POPUP_NOTE: 'We found some outdated tokens in your wallet. Please, upgrade this tokens to continue.',
+    TOKENS_UPGRADE_UPGRADE_BTN_TEXT: 'Upgrade',
+    TOKENS_UPGRADE_UPGRADING_BTN_TEXT: 'Upgrading',
+
     FOOTER_NAV_HEADER_PRODUCT: 'Product',
     FOOTER_NAV_HEADER_DEFI_PRODUCTS: 'DeFi Products',
     FOOTER_NAV_TON_BRIDGE_LINK_TEXT: 'TON Bridge',

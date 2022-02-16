@@ -121,7 +121,7 @@ export function Token(): JSX.Element {
                                                     id: 'BUILDER_MANAGE_TOKEN_LABEL_TOTAL_SUPPLY',
                                                 })}
                                                 readOnly
-                                                value={managingToken.token?.total_supply}
+                                                value={managingToken.token?.totalSupply}
                                             />
                                         </div>
                                     </div>

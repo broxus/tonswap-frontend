@@ -1,4 +1,4 @@
-import { FullContractState } from 'ton-inpage-provider'
+import { FullContractState } from 'everscale-inpage-provider'
 
 import {
     CreateFarmPoolStoreData,

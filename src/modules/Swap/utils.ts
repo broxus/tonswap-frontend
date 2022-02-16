@@ -6,7 +6,7 @@ import {
     DecodedAbiFunctionOutputs,
     FullContractState,
     Transaction,
-} from 'ton-inpage-provider'
+} from 'everscale-inpage-provider'
 
 import { DexAbi } from '@/misc'
 import { SwapPair, SwapRouteResult, SwapRouteStep } from '@/modules/Swap/types'
@@ -47,7 +47,7 @@ export async function getExpectedExchange(
     pairContractState?: FullContractState,
 ): Promise<DecodedAbiFunctionOutputs<typeof DexAbi.Pair, 'expectedExchange'>> {
     return pairContract.methods.expectedExchange({
-        _answer_id: 0,
+        answerId: 0,
         amount,
         spent_token_root: spentTokenAddress,
     }).call({
@@ -62,7 +62,7 @@ export async function getExpectedSpendAmount(
     pairContractState?: FullContractState,
 ): Promise<DecodedAbiFunctionOutputs<typeof DexAbi.Pair, 'expectedSpendAmount'>> {
     return pairContract.methods.expectedSpendAmount({
-        _answer_id: 0,
+        answerId: 0,
         receive_amount: receiveAmount,
         receive_token_root: receiveTokenRoot,
     }).call({
