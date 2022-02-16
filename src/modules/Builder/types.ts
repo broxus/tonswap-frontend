@@ -2,14 +2,14 @@ import {
     DecodedAbiFunctionInputs,
     FullContractState,
     Transaction,
-} from 'ton-inpage-provider'
+} from 'everscale-inpage-provider'
 
 
-import { CustomToken, TokenAbi } from '@/misc'
+import { Token, TokenAbi } from '@/misc'
 
 export type BuilderStoreData = {
     filter: string;
-    tokens: CustomToken[];
+    tokens: Token[];
     tokensCache: Map<string, FullContractState>;
 }
 
@@ -36,7 +36,7 @@ export type CreateTokenTransactionResult = {
 }
 
 export type ManageTokenStoreData = {
-    token?: CustomToken;
+    token?: Token;
     tokenCache?: FullContractState;
     targetAddress: string;
     targetWalletBalance: string;
@@ -56,10 +56,6 @@ export type ManageTokenStoreState = {
 }
 
 export type CreateTokenSuccessResult = {
-    input: DecodedAbiFunctionInputs<typeof TokenAbi.TokenRootDeployCallbacks, 'notifyTokenRootDeployed'>;
+    input: DecodedAbiFunctionInputs<typeof TokenAbi.TokenRootDeployCallbacks, 'onTokenRootDeployed'>;
     transaction: Transaction;
-}
-
-export type CreateTokenFailureResult = {
-    input?: DecodedAbiFunctionInputs<typeof TokenAbi.TokenRootDeployCallbacks, 'notifyTokenRootNotDeployed'>;
 }

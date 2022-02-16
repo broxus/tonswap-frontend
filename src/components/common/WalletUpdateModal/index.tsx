@@ -1,44 +1,10 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
-import { observer } from 'mobx-react-lite'
-import ton from 'ton-inpage-provider'
 import { useIntl } from 'react-intl'
 
-import { DexConstants } from '@/misc'
-import { useWallet } from '@/stores/WalletService'
 
-
-function UpdateModal(): JSX.Element | null {
+export function WalletUpdateModal(): JSX.Element {
     const intl = useIntl()
-    const wallet = useWallet()
-
-    const [isOutdated, setOutdatedTo] = React.useState(false)
-
-    React.useEffect(() => {
-        if (wallet.address == null) {
-            setOutdatedTo(false)
-            return
-        }
-
-        (async () => {
-            const currentProviderState = await ton.getProviderState()
-            const [currentMajorVersion, currentMinorVersion, currentPatchVersion] = currentProviderState.version.split('.')
-            const [minMajorVersion, minMinorVersion, minPatchVersion] = DexConstants.MinWalletVersion.split('.')
-            setOutdatedTo(
-                currentMajorVersion < minMajorVersion
-                || (currentMajorVersion <= minMajorVersion && currentMinorVersion < minMinorVersion)
-                || (
-                    currentMajorVersion <= minMajorVersion
-                    && currentMinorVersion <= minMinorVersion
-                    && currentPatchVersion < minPatchVersion
-                ),
-            )
-        })()
-    }, [wallet.address])
-
-    if (!isOutdated) {
-        return null
-    }
 
     return ReactDOM.createPortal(
         <div className="popup">
@@ -80,5 +46,3 @@ function UpdateModal(): JSX.Element | null {
         document.body,
     )
 }
-
-export const WalletUpdateModal = observer(UpdateModal)

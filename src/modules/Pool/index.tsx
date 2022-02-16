@@ -44,9 +44,15 @@ export function Pool(): JSX.Element {
                                 id: 'POOL_HEADER_TITLE',
                             })}
                         </h2>
-                        {pool.pair && (
-                            <PoolPairIcons key="pair-icons" />
-                        )}
+                        <Observer>
+                            {() => (
+                                <>
+                                    {pool.pair && (
+                                        <PoolPairIcons key="pair-icons" />
+                                    )}
+                                </>
+                            )}
+                        </Observer>
                     </header>
 
                     <div className="form">

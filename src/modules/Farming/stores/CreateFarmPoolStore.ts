@@ -6,7 +6,7 @@ import {
     makeAutoObservable,
     reaction,
 } from 'mobx'
-import { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 
 import { Farm } from '@/misc'
 import {

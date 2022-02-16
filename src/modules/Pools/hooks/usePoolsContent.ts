@@ -1,6 +1,6 @@
 import * as React from 'react'
 import BigNumber from 'bignumber.js'
-import { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 import { useIntl } from 'react-intl'
 
 import { useDexBalances } from '@/modules/Pools/hooks/useDexBalances'

@@ -1,11 +1,14 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import {
-    action, IReactionDisposer, makeAutoObservable, reaction,
+    action,
+    IReactionDisposer,
+    makeAutoObservable,
+    reaction,
 } from 'mobx'
-import ton, { Address, Contract } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 import BigNumber from 'bignumber.js'
 
-import { CustomToken, TokenAbi, TokenWallet } from '@/misc'
+import { useRpcClient } from '@/hooks/useRpcClient'
+import { Token, TokenAbi, TokenWallet } from '@/misc'
 import {
     DEFAULT_MANAGE_TOKEN_STORE_DATA,
     DEFAULT_MANAGE_TOKEN_STORE_STATE,
@@ -13,6 +16,10 @@ import {
 import { ManageTokenStoreData, ManageTokenStoreState } from '@/modules/Builder/types'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { error } from '@/utils'
+
+
+const rpc = useRpcClient()
+
 
 export class ManageTokenStore {
 
@@ -50,43 +57,17 @@ export class ManageTokenStore {
         this.changeState('isLoading', true)
         this.changeData('targetAddress', this.wallet.address ? this.wallet.address : '')
 
-        await this.loadTokenData().then(token => this.changeData('token', token))
-        await this.loadTargetWalletBalance()
-
-        this.changeState('isLoading', false)
-    }
-
-    protected async loadTokenData(): Promise<CustomToken | undefined> {
-        let state = this.data.tokenCache
-        const address = new Address(this.state.tokenRoot)
-        const token = new Contract(TokenAbi.Root, address)
-
-        if (!state) {
-            state = (await ton.getFullContractState({ address })).state
-
-            if (state) {
-                this.changeData('tokenCache', state)
-            }
-            else {
-                return undefined
-            }
+        try {
+            const token = await TokenWallet.getTokenFullDetails(this.state.tokenRoot)
+            this.changeData('token', token)
+            await this.loadTargetWalletBalance()
         }
+        catch (e) {
 
-        if (state.isDeployed) {
-            const { value0 } = await token.methods
-                .getDetails({ _answer_id: 0 })
-                .call({ cachedState: state })
-
-            return {
-                ...value0,
-                name: atob(value0.name),
-                symbol: atob(value0.symbol),
-                total_supply: new BigNumber(value0.total_supply).shiftedBy(-value0.decimals).toFixed(),
-                root: this.state.tokenRoot,
-            } as unknown as CustomToken
         }
-
-        return undefined
+        finally {
+            this.changeState('isLoading', false)
+        }
     }
 
     public async mint(): Promise<void> {
@@ -103,13 +84,16 @@ export class ManageTokenStore {
         this.changeState('isMinting', true)
 
         try {
-            await new Contract(TokenAbi.Root, new Address(this.state.tokenRoot)).methods.deployWallet({
-                tokens: new BigNumber(this.data.amountToMint)
-                    .shiftedBy(Number(this.data.token.decimals)).toFixed(),
-                deploy_grams: '100000000',
-                wallet_public_key_: 0,
-                owner_address_: new Address(this.data.targetAddress),
-                gas_back_address: new Address(this.data.targetAddress),
+            await rpc.createContract(TokenAbi.Root, new Address(this.state.tokenRoot)).methods.mint({
+                deployWalletValue: '100000000',
+                recipient: new Address(this.data.targetAddress),
+                remainingGasTo: new Address(this.wallet.address),
+                amount: new BigNumber(this.data.amountToMint)
+                    .shiftedBy(+this.data.token!.decimals)
+                    .dp(0, BigNumber.ROUND_DOWN)
+                    .toFixed(),
+                notify: false,
+                payload: '',
             }).send({
                 from: new Address(this.wallet.address),
                 amount: '600000000',
@@ -124,10 +108,10 @@ export class ManageTokenStore {
                 if (this.data.targetWalletBalance !== currentTargetWalletBalance) {
                     this.changeData('token', {
                         ...this.data.token!,
-                        total_supply: new BigNumber(this.data.token!.total_supply)
+                        totalSupply: this.data.token?.totalSupply ? new BigNumber(this.data.token.totalSupply)
                             .plus(this.data.amountToMint)
                             .decimalPlaces(+this.data.token!.decimals, BigNumber.ROUND_DOWN)
-                            .toFixed(),
+                            .toFixed() : undefined,
                     })
 
                     this.changeState('isMinting', false)
@@ -154,7 +138,7 @@ export class ManageTokenStore {
 
         this.changeState('isBurning', true)
 
-        const result = await ton.packIntoCell({
+        const result = await rpc.packIntoCell({
             structure: [
                 { name: 'data', type: 'bytes' } as const,
             ] as const,
@@ -164,13 +148,13 @@ export class ManageTokenStore {
         })
 
         try {
-            await new Contract(TokenAbi.Root, new Address(this.state.tokenRoot)).methods.proxyBurn({
-                tokens: new BigNumber(this.data.amountToBurn)
+            await rpc.createContract(TokenAbi.Root, new Address(this.state.tokenRoot)).methods.burnTokens({
+                amount: new BigNumber(this.data.amountToBurn)
                     .shiftedBy(Number(this.data.token.decimals)).toFixed(),
-                sender_address: new Address(this.data.targetAddress),
-                send_gas_to: new Address(this.data.targetAddress),
-                callback_address: new Address(this.data.callbackAddress),
-                callback_payload: result.boc,
+                walletOwner: new Address(this.data.targetAddress),
+                remainingGasTo: new Address(this.data.targetAddress),
+                callbackTo: new Address(this.data.callbackAddress),
+                payload: result.boc,
             }).send({
                 from: new Address(this.wallet.address),
                 amount: '500000000',
@@ -185,10 +169,10 @@ export class ManageTokenStore {
                 if (this.data.targetWalletBalance !== currentTargetWalletBalance) {
                     this.changeData('token', {
                         ...this.data.token!,
-                        total_supply: new BigNumber(this.data.token!.total_supply)
+                        totalSupply: this.data.token?.totalSupply ? new BigNumber(this.data.token.totalSupply)
                             .minus(this.data.amountToBurn)
                             .decimalPlaces(+this.data.token!.decimals, BigNumber.ROUND_DOWN)
-                            .toFixed(),
+                            .toFixed() : undefined,
                     })
 
                     this.changeState('isBurning', false)
@@ -215,9 +199,10 @@ export class ManageTokenStore {
         this.changeState('isTransfer', true)
 
         try {
-            await new Contract(TokenAbi.Root, new Address(this.state.tokenRoot)).methods.transferOwner({
-                root_public_key_: 0,
-                root_owner_address_: new Address(this.data.newOwnerAddress),
+            await rpc.createContract(TokenAbi.Root, new Address(this.state.tokenRoot)).methods.transferOwnership({
+                newOwner: new Address(this.data.newOwnerAddress),
+                remainingGasTo: new Address(this.wallet.address),
+                callbacks: [],
             }).send({
                 from: new Address(this.wallet.address),
                 amount: '5000000000',
@@ -267,7 +252,7 @@ export class ManageTokenStore {
         this.state = DEFAULT_MANAGE_TOKEN_STORE_STATE
     }
 
-    public get token(): CustomToken | undefined {
+    public get token(): Token | undefined {
         return this.data.token
     }
 

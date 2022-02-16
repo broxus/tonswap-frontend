@@ -5,15 +5,15 @@ import {
     reaction,
 } from 'mobx'
 import * as E from 'fp-ts/Either'
-import ton, { Address, Contract, Subscriber } from 'ton-inpage-provider'
+import { Address, AddressLiteral, Subscriber } from 'everscale-inpage-provider'
 
+import { useRpcClient } from '@/hooks/useRpcClient'
 import { DexConstants, TokenAbi } from '@/misc'
 import {
     DEFAULT_CREATE_TOKEN_STORE_DATA,
     DEFAULT_CREATE_TOKEN_STORE_STATE,
 } from '@/modules/Builder/constants'
 import {
-    CreateTokenFailureResult,
     CreateTokenStoreData,
     CreateTokenStoreState,
     CreateTokenSuccessResult,
@@ -21,6 +21,10 @@ import {
 } from '@/modules/Builder/types'
 import { saveTokenToLocalStorage } from '@/modules/Builder/utils'
 import { useWallet, WalletService } from '@/stores/WalletService'
+import { error } from '@/utils'
+
+
+const rpc = useRpcClient()
 
 
 export class CreateTokenStore {
@@ -62,11 +66,15 @@ export class CreateTokenStore {
             CreateTokenStore,
             | 'handleWalletAccountChange'
             | 'handleTransactionResult'
+            | 'handleCreateTokenSuccess'
+            | 'handleCreateTokenFailure'
         >(this, {
             changeData: action.bound,
             createToken: action.bound,
             handleWalletAccountChange: action.bound,
             handleTransactionResult: action.bound,
+            handleCreateTokenSuccess: action.bound,
+            handleCreateTokenFailure: action.bound,
         })
     }
 
@@ -96,7 +104,7 @@ export class CreateTokenStore {
             this.transactionSubscriber = undefined
         }
 
-        this.transactionSubscriber = new Subscriber(ton)
+        this.transactionSubscriber = rpc.createSubscriber()
 
         this.#walletAccountDisposer = reaction(() => this.wallet.address, this.handleWalletAccountChange)
     }
@@ -160,10 +168,9 @@ export class CreateTokenStore {
 
     /**
      * Failure transaction callback handler
-     * @param _
      * @protected
      */
-    protected handleCreateTokenFailure(_?: CreateTokenFailureResult): void {
+    protected handleCreateTokenFailure(): void {
         this.transactionResult = {
             success: false,
         }
@@ -190,33 +197,39 @@ export class CreateTokenStore {
             return
         }
 
-        const processingId = (
-            Math.floor(
-                Math.random() * (100000 - 1),
-            ) + 1
-        ).toString()
+        // eslint-disable-next-line no-bitwise
+        const callId = ((Math.random() * 100000) | 0).toString()
 
         this.changeState('isCreating', true)
 
         try {
-            await new Contract(TokenAbi.Factory, DexConstants.TokenFactoryAddress).methods.Token({
-                answer_id: processingId,
-                root_public_key: 0,
-                root_owner_address: new Address(this.wallet.address),
-                name: btoa(this.name),
-                symbol: btoa(this.symbol),
-                decimals: this.decimals,
+            await rpc.createContract(
+                TokenAbi.Factory,
+                DexConstants.TokenFactoryAddress,
+            ).methods.createToken({
+                callId,
+                name: this.name.trim(),
+                symbol: this.symbol.trim(),
+                decimals: this.decimals.trim(),
+                initialSupplyTo: new AddressLiteral('0:0000000000000000000000000000000000000000000000000000000000000000'),
+                initialSupply: 0,
+                deployWalletValue: '0',
+                mintDisabled: false,
+                burnByRootDisabled: false,
+                burnPaused: false,
+                remainingGasTo: new Address(this.wallet.address),
             }).send({
                 from: new Address(this.wallet.address),
                 amount: '5000000000',
                 bounce: true,
             })
         }
-        catch (reason) {
+        catch (e) {
+            error('Create token error', e)
             this.changeState('isCreating', false)
         }
 
-        const owner = new Contract(TokenAbi.TokenRootDeployCallbacks, new Address(this.wallet.address))
+        const owner = rpc.createContract(TokenAbi.TokenRootDeployCallbacks, new Address(this.wallet.address))
 
         let stream = this.transactionSubscriber?.transactions(
             new Address(this.wallet.address),
@@ -233,20 +246,15 @@ export class CreateTokenStore {
         const resultHandler = stream?.flatMap(a => a.transactions).filterMap(async transaction => {
             const result = await owner.decodeTransaction({
                 transaction,
-                methods: [
-                    'notifyTokenRootDeployed',
-                    'notifyTokenRootNotDeployed',
-                ],
+                methods: ['onTokenRootDeployed'],
             })
 
             if (result !== undefined) {
-                if (result.method === 'notifyTokenRootNotDeployed' && result.input.answer_id.toString() === processingId) {
-                    return E.left({ input: result.input })
-                }
-
-                if (result.method === 'notifyTokenRootDeployed' && result.input.answer_id.toString() === processingId) {
+                if (result.method === 'onTokenRootDeployed' && result.input.callId.toString() === callId) {
                     return E.right({ input: result.input, transaction })
                 }
+
+                return E.left({ input: result.input })
             }
 
             return undefined
@@ -254,8 +262,8 @@ export class CreateTokenStore {
 
         if (resultHandler !== undefined) {
             E.match(
-                (r: CreateTokenFailureResult) => this.handleCreateTokenFailure(r),
-                (r: CreateTokenSuccessResult) => this.handleCreateTokenSuccess(r),
+                this.handleCreateTokenFailure,
+                this.handleCreateTokenSuccess,
             )(await resultHandler)
         }
     }

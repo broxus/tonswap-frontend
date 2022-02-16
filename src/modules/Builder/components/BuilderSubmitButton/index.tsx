@@ -18,7 +18,6 @@ function SubmitButton(): JSX.Element {
     let buttonText = intl.formatMessage({ id: 'BUILDER_CREATE_BTN_TEXT_SUBMIT' })
     const showSpinner = creatingToken.isCreating
 
-
     switch (true) {
         case !wallet.account:
             buttonProps.disabled = wallet.isConnecting

@@ -33,18 +33,18 @@ function Details(): JSX.Element {
     )
 
     const currentSupply = React.useMemo(
-        () => new BigNumber(managingToken.token!.total_supply)
+        () => new BigNumber(managingToken.token?.totalSupply ?? 0)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
-        , [managingToken.token!.total_supply],
+        , [managingToken.token!.totalSupply],
     )
 
     const afterSupply = React.useMemo(
-        () => new BigNumber(managingToken.token!.total_supply)
+        () => new BigNumber(managingToken.token?.totalSupply ?? 0)
             .plus(managingToken.amountToMint)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
-        , [managingToken.token!.total_supply, managingToken.amountToMint],
+        , [managingToken.token!.totalSupply, managingToken.amountToMint],
     )
 
     const getBalanceMessage = (): string => {

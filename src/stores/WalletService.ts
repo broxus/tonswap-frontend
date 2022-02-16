@@ -4,22 +4,31 @@ import {
     reaction,
     runInAction,
 } from 'mobx'
-import ton, {
+import {
     Contract,
     ContractState,
     FullContractState,
-    hasTonProvider,
+    hasEverscaleProvider,
     Permissions,
     Subscription,
     Transaction,
-} from 'ton-inpage-provider'
+} from 'everscale-inpage-provider'
 
+import { useRpcClient } from '@/hooks/useRpcClient'
 import { connectToWallet } from '@/misc/helpers'
 import { debug, error } from '@/utils'
-import { DexAbi } from '@/misc'
+import { DexAbi, DexConstants } from '@/misc'
 
 
 export type Account = Permissions['accountInteraction']
+
+export type WalletData = {
+    account?: Account;
+    balance: string;
+    contract?: ContractState | FullContractState;
+    transaction?: Transaction;
+    version?: string;
+}
 
 export type WalletState = {
     hasProvider: boolean;
@@ -27,14 +36,6 @@ export type WalletState = {
     isInitialized: boolean;
     isInitializing: boolean;
 }
-
-export type WalletData = {
-    account?: Account;
-    balance: string;
-    contract?: ContractState | FullContractState;
-    transaction?: Transaction;
-}
-
 
 const DEFAULT_WALLET_DATA: WalletData = {
     account: undefined,
@@ -49,6 +50,8 @@ const DEFAULT_WALLET_STATE: WalletState = {
     isInitialized: false,
     isInitializing: false,
 }
+
+const rpc = useRpcClient()
 
 
 export class WalletService {
@@ -116,7 +119,7 @@ export class WalletService {
             this.state.isInitializing = true
         })
 
-        const hasProvider = await hasTonProvider()
+        const hasProvider = await hasEverscaleProvider()
 
         if (!hasProvider) {
             runInAction(() => {
@@ -130,7 +133,7 @@ export class WalletService {
             this.state.hasProvider = hasProvider
         })
 
-        await ton.ensureInitialized()
+        await rpc.ensureInitialized()
 
         runInAction(() => {
             this.state.isInitializing = false
@@ -138,14 +141,14 @@ export class WalletService {
             this.state.isConnecting = true
         })
 
-        const permissionsSubscriber = await ton.subscribe('permissionsChanged')
+        const permissionsSubscriber = await rpc.subscribe('permissionsChanged')
         permissionsSubscriber.on('data', event => {
             runInAction(() => {
                 this.data.account = event.permissions.accountInteraction
             })
         })
 
-        const currentProviderState = await ton.getProviderState()
+        const currentProviderState = await rpc.getProviderState()
 
         if (currentProviderState.permissions.accountInteraction === undefined) {
             runInAction(() => {
@@ -155,6 +158,7 @@ export class WalletService {
         }
 
         runInAction(() => {
+            this.data.version = currentProviderState.version
             this.state.isConnecting = true
         })
 
@@ -174,7 +178,7 @@ export class WalletService {
             return
         }
 
-        const hasProvider = await hasTonProvider()
+        const hasProvider = await hasEverscaleProvider()
 
         runInAction(() => {
             this.state.hasProvider = hasProvider
@@ -211,7 +215,7 @@ export class WalletService {
         this.state.isConnecting = true
 
         try {
-            await ton.disconnect()
+            await rpc.disconnect()
             this.reset()
         }
         catch (e) {
@@ -264,7 +268,7 @@ export class WalletService {
         }
 
         try {
-            const { state } = await ton.getFullContractState({
+            const { state } = await rpc.getFullContractState({
                 address: account.address,
             })
 
@@ -277,7 +281,7 @@ export class WalletService {
         }
 
         try {
-            this.#contractSubscriber = await ton.subscribe(
+            this.#contractSubscriber = await rpc.subscribe(
                 'contractStateChanged',
                 { address: account.address },
             )
@@ -333,9 +337,13 @@ export class WalletService {
         return this.data.contract
     }
 
+    /**
+     * Returns computed DEX Callbacks ABI Contract for current by current wallet address.
+     * @returns {Contract<typeof DexAbi.Callbacks> | undefined}
+     */
     public get walletContractCallbacks(): Contract<typeof DexAbi.Callbacks> | undefined {
         return this.account?.address !== undefined
-            ? new Contract(DexAbi.Callbacks, this.account?.address)
+            ? rpc.createContract(DexAbi.Callbacks, this.account?.address)
             : undefined
     }
 
@@ -378,6 +386,31 @@ export class WalletService {
 
     public get isConnected(): boolean {
         return Boolean(this.address)
+    }
+
+    /**
+     * Returns `true` if installed wallet has outdated version
+     */
+    public get isOutdated(): boolean {
+        if (this.data.version === undefined) {
+            return false
+        }
+
+        const [
+            currentMajorVersion = '0',
+            currentMinorVersion = '0',
+            currentPatchVersion = '0',
+        ] = this.data.version.split('.')
+        const [minMajorVersion, minMinorVersion, minPatchVersion] = DexConstants.MinWalletVersion.split('.')
+        return (
+            currentMajorVersion < minMajorVersion
+            || (currentMajorVersion <= minMajorVersion && currentMinorVersion < minMinorVersion)
+            || (
+                currentMajorVersion <= minMajorVersion
+                && currentMinorVersion <= minMinorVersion
+                && currentPatchVersion < minPatchVersion
+            )
+        )
     }
 
     /**

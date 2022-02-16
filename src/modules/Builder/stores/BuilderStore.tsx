@@ -4,9 +4,8 @@ import {
     makeAutoObservable,
     reaction,
 } from 'mobx'
-import ton, { Address, Contract } from 'ton-inpage-provider'
 
-import { CustomToken, isAddressValid, TokenAbi } from '@/misc'
+import { isAddressValid, Token, TokenWallet } from '@/misc'
 import {
     BuilderStoreData,
     BuilderStoreState,
@@ -83,9 +82,9 @@ export class BuilderStore {
                 return
             }
 
-            const token = await this.loadTokenData(this.data.filter)
+            const token = await TokenWallet.getTokenFullDetails(this.data.filter)
 
-            if (token && token.root_owner_address.toString() === this.wallet.address) {
+            if (token && token.rootOwnerAddress?.toString() === this.wallet.address) {
                 if (
                     !getTokenFromLocalStorage().some(
                         (tokenFromLS: string) => tokenFromLS === this.data.filter,
@@ -97,8 +96,8 @@ export class BuilderStore {
                 this.changeData('tokens', [
                     {
                         ...token,
-                        name: atob(token.name),
-                        symbol: atob(token.symbol),
+                        name: token.name,
+                        symbol: token.symbol,
                     },
                 ])
             }
@@ -130,28 +129,28 @@ export class BuilderStore {
      * Loads tokens data from localStorage
      * @protected
      */
-    protected async loadTokensData(): Promise<CustomToken[]> {
+    protected async loadTokensData(): Promise<Token[]> {
         const tokenRoots: string[] = getTokenFromLocalStorage().filter(
             (token: string) => isAddressValid(token),
         )
 
         this.changeState('isLoading', true)
 
-        let tokens: CustomToken[] = []
+        let tokens: Token[] = []
 
         try {
-            const result = await Promise.all(tokenRoots.map(tokenRoot => this.loadTokenData(tokenRoot)))
+            const result = await Promise.all(tokenRoots.map(tokenRoot => TokenWallet.getTokenFullDetails(tokenRoot)))
             tokens = (result.filter((token, idx) => {
                 const _token = { ...token, root: tokenRoots[idx] }
                 return (
                     Object.keys({ ..._token }).length > 1
                     && _token?.root !== undefined
-                    && _token.root_owner_address?.toString() === this.wallet.address
+                    && _token.rootOwnerAddress?.toString() === this.wallet.address
                 )
-            }) as CustomToken[]).map(token => ({
+            }) as Token[]).map(token => ({
                 ...token,
-                name: atob(token.name),
-                symbol: atob(token.symbol),
+                name: token.name,
+                symbol: token.symbol,
             }))
         }
         catch (e) {}
@@ -160,37 +159,6 @@ export class BuilderStore {
         }
 
         return tokens
-    }
-
-    /**
-     * Loads token data by address
-     * @protected
-     */
-    protected async loadTokenData(root: string): Promise<CustomToken | undefined> {
-        let state = this.data.tokensCache.get(root.toString())
-        const address = new Address(root)
-        const token = new Contract(TokenAbi.Root, address)
-
-        if (!state) {
-            state = (await ton.getFullContractState({ address })).state
-
-            if (state) {
-                this.data.tokensCache.set(root, state)
-            }
-            else {
-                return undefined
-            }
-        }
-
-        if (state.isDeployed) {
-            const { value0 } = await token.methods
-                .getDetails({ _answer_id: 0 })
-                .call({ cachedState: state })
-
-            return { ...value0, root } as unknown as CustomToken
-        }
-
-        return undefined
     }
 
     /**
@@ -217,7 +185,7 @@ export class BuilderStore {
         this.state = DEFAULT_BUILDER_STORE_STATE
     }
 
-    public get tokens(): CustomToken[] {
+    public get tokens(): Token[] {
         return this.data.tokens
     }
 

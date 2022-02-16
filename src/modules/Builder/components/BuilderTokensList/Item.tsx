@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
 
-import { CustomToken } from '@/misc'
+import { Token } from '@/misc'
 import { formattedAmount, sliceAddress } from '@/utils'
 
 
 type Props = {
-    token: CustomToken;
+    token: Token;
 }
 
 export function Item({ token }: Props): JSX.Element {
@@ -22,7 +22,7 @@ export function Item({ token }: Props): JSX.Element {
                 {token.decimals}
             </div>
             <div className="list__cell list__cell--center">
-                {formattedAmount(token.total_supply, token.decimals)}
+                {formattedAmount(token.totalSupply, token.decimals)}
             </div>
             <div className="list__cell list__cell--center">
                 {sliceAddress(token.root)}

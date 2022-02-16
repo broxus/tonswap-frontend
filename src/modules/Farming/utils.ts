@@ -1,11 +1,18 @@
 import BigNumber from 'bignumber.js'
 import { DateTime } from 'luxon'
-import ton, { Address, Contract } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 
+import { useRpcClient } from '@/hooks/useRpcClient'
 import {
-    Farm, FarmAbi, TokenWallet, UserPendingReward,
+    Farm,
+    FarmAbi,
+    TokenWallet,
+    UserPendingReward,
 } from '@/misc'
 import { error } from '@/utils'
+
+
+const rpc = useRpcClient()
 
 
 export async function loadUniWTON(): Promise<BigNumber> {
@@ -76,13 +83,13 @@ export async function resolveToken(
 ): Promise<{symbol: string, decimals: number} | undefined> {
     try {
         const rootAddress = new Address(address || '')
-        const { state } = await ton.getFullContractState({ address: rootAddress })
+        const { state } = await rpc.getFullContractState({ address: rootAddress })
 
         if (state === undefined) { return undefined }
         if (!state.isDeployed) { return undefined }
 
-        const symbol = await TokenWallet.symbol(rootAddress, state)
-        const decimals = parseInt(await TokenWallet.decimal(rootAddress, state), 10)
+        const symbol = await TokenWallet.getSymbol(rootAddress, state)
+        const decimals = await TokenWallet.getDecimals(rootAddress, state)
 
         return { symbol, decimals }
     }
@@ -141,17 +148,17 @@ export async function depositToken(
         root: new Address(rootAddress),
         owner: new Address(poolAddress),
     })
-    const poolWalletState = (await ton.getFullContractState({ address: poolWallet })).state
+    const poolWalletState = (await rpc.getFullContractState({ address: poolWallet })).state
     if (poolWalletState === undefined || !poolWalletState.isDeployed) {
         return undefined
     }
-    const poolContract = new Contract(FarmAbi.Pool, new Address(poolAddress))
+    const poolContract = rpc.createContract(FarmAbi.Pool, new Address(poolAddress))
     let resolve: () => void | undefined
     const promise = new Promise<void>(r => {
         resolve = () => r()
     })
     const subscription = (
-        await ton.subscribe('transactionsFound', {
+        await rpc.subscribe('transactionsFound', {
             address: new Address(poolAddress),
         })
     ).on('data', txs => {
@@ -228,12 +235,12 @@ export async function executeAction(
     action: () => Promise<any>,
     handler: 'Claim' | 'Withdraw' | 'Deposit',
 ): Promise<string> {
-    const poolContract = new Contract(FarmAbi.Pool, new Address(poolAddress))
+    const poolContract = rpc.createContract(FarmAbi.Pool, new Address(poolAddress))
     let resolve: () => void | undefined
     const promise = new Promise<void>(r => {
         resolve = () => r()
     })
-    const subscription = (await ton.subscribe('transactionsFound', {
+    const subscription = (await rpc.subscribe('transactionsFound', {
         address: new Address(poolAddress),
     })).on('data', txs => {
         txs.transactions.forEach(tx => {

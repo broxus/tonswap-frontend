@@ -1,4 +1,4 @@
-import { DecodedAbiFunctionInputs, Transaction } from 'ton-inpage-provider'
+import { DecodedAbiFunctionInputs, Transaction } from 'everscale-inpage-provider'
 
 import { DexAbi, PairBalances, PairTokenRoots } from '@/misc'
 

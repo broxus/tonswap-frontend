@@ -1,12 +1,13 @@
 import BigNumber from 'bignumber.js'
-import ton, { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 import { makeAutoObservable, runInAction, toJS } from 'mobx'
 
+import { useRpcClient } from '@/hooks/useRpcClient'
+import { TokenWallet } from '@/misc'
 import { FarmingDataStore, useFarmingDataStore } from '@/modules/Farming/stores/FarmingDataStore'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { error } from '@/utils'
-import { TokenWallet } from '@/misc'
 
 type State = {
     amounts: string[];
@@ -17,6 +18,10 @@ const defaultState: State = Object.freeze({
     amounts: [],
     loadings: [],
 })
+
+
+const rpc = useRpcClient()
+
 
 export class FarmingAdminDepositStore {
 
@@ -40,7 +45,7 @@ export class FarmingAdminDepositStore {
         const { amounts } = this.state
 
         try {
-            if (this.state.loadings[index] === true) {
+            if (this.state.loadings[index]) {
                 throw new Error('Deposit action is currently loading')
             }
 
@@ -74,7 +79,7 @@ export class FarmingAdminDepositStore {
                 root: new Address(token.root),
                 owner: new Address(this.farmingDataStore.poolAddress),
             })
-            const poolWalletState = (await ton.getFullContractState({
+            const poolWalletState = (await rpc.getFullContractState({
                 address: poolWalletAddress,
             })).state
 

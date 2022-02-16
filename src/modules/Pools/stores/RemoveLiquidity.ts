@@ -1,21 +1,21 @@
 import BigNumber from 'bignumber.js'
-import { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 import { makeAutoObservable, runInAction } from 'mobx'
 
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import {
-    CustomToken,
     Dex,
     PairBalances,
     PairTokenRoots,
     Pool,
+    Token,
     TokenWallet,
 } from '@/misc'
 import { error, shareAmount } from '@/utils'
 
 type Data = {
-    lpToken?: CustomToken;
+    lpToken?: Token;
     userLpTotalAmount: string;
     pairBalances: PairBalances;
     pairTokens: PairTokenRoots;
@@ -94,7 +94,7 @@ export class RemoveLiquidityStore {
                 pairTokens,
             ] = await Promise.all([
                 TokenWallet.balanceByWalletAddress(userLpWalletAddress),
-                TokenWallet.getTokenData(pairLpRoot.toString()),
+                TokenWallet.getTokenFullDetails(pairLpRoot.toString()),
                 Dex.pairBalances(pairAddress),
                 Dex.pairTokenRoots(pairAddress),
             ])

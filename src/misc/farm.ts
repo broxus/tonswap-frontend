@@ -1,16 +1,21 @@
 import {
     Address,
-    Contract, DecodedAbiFunctionOutputs,
+    DecodedAbiFunctionOutputs,
     FullContractState,
     TransactionId,
-} from 'ton-inpage-provider'
+} from 'everscale-inpage-provider'
 
+import { useRpcClient } from '@/hooks/useRpcClient'
 import { FarmAbi } from '@/misc/abi'
 import { DexConstants } from '@/misc/dex-constants'
 
 export type PoolDetails = DecodedAbiFunctionOutputs<typeof FarmAbi.Pool, 'getDetails'>['value0'];
 export type UserPendingReward = DecodedAbiFunctionOutputs<typeof FarmAbi.User, 'pendingReward'>;
 export type PoolCalculateRewardData = DecodedAbiFunctionOutputs<typeof FarmAbi.Pool, 'calculateRewardData'>;
+
+
+const rpc = useRpcClient()
+
 
 export class Farm {
 
@@ -23,7 +28,7 @@ export class Farm {
         vestingPeriod: string, // int seconds, 86400 - day, 180 * 86400 - half of the year
         vestingRatio: string, // int percent, 1000 - 100%, 0 - 0%, 505 - 50.5 %
     ): Promise<TransactionId> {
-        const fabricContract = new Contract(FarmAbi.Fabric, DexConstants.FarmFabricAddress)
+        const fabricContract = rpc.createContract(FarmAbi.Fabric, DexConstants.FarmFabricAddress)
         const { id } = await fabricContract.methods.deployFarmPool({
             tokenRoot,
             rewardTokenRoot,
@@ -41,7 +46,7 @@ export class Farm {
     }
 
     public static async poolGetDetails(poolAddress: Address, state?: FullContractState): Promise<PoolDetails> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         return (await poolContract.methods.getDetails({
             answerId: 0,
         }).call({
@@ -54,7 +59,7 @@ export class Farm {
         owner: Address,
         state?: FullContractState,
     ): Promise<string> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         return (await poolContract.methods.encodeDepositPayload({
             nonce: 0,
             deposit_owner: owner,
@@ -67,7 +72,7 @@ export class Farm {
         poolAddress: Address,
         owner: Address,
     ): Promise<TransactionId> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.claimReward({
             nonce: 0,
             send_gas_to: owner,
@@ -84,7 +89,7 @@ export class Farm {
         poolAddress: Address,
         owner: Address,
     ): Promise<TransactionId> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.withdraw({
             amount,
             nonce: 0,
@@ -101,7 +106,7 @@ export class Farm {
         poolAddress: Address,
         owner: Address,
     ): Promise<TransactionId> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.withdrawAll({
             nonce: 0,
             send_gas_to: owner,
@@ -117,7 +122,7 @@ export class Farm {
         poolAddress: Address,
         owner: Address,
     ): Promise<TransactionId> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.withdrawUnclaimed({
             nonce: 0,
             to: owner,
@@ -134,7 +139,7 @@ export class Farm {
         poolAddress: Address,
         owner: Address,
     ): Promise<TransactionId> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.withdrawUnclaimedAll({
             nonce: 0,
             to: owner,
@@ -153,7 +158,7 @@ export class Farm {
         startTime: string,
         rewardPerSecond: string[],
     ): Promise<TransactionId> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.addRewardRound({
             reward_round: {
                 startTime,
@@ -173,7 +178,7 @@ export class Farm {
         owner: Address,
         endTime: string,
     ): Promise<TransactionId> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { id } = await poolContract.methods.setEndTime({
             farm_end_time: endTime,
             send_gas_to: owner,
@@ -189,7 +194,7 @@ export class Farm {
         poolAddress: Address,
         state?: FullContractState,
     ): Promise<PoolCalculateRewardData> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         return poolContract.methods.calculateRewardData({}).call({ cachedState: state })
     }
 
@@ -200,7 +205,7 @@ export class Farm {
         farmEndTime: string,
         state?: FullContractState,
     ): Promise<UserPendingReward> {
-        const userData = new Contract(FarmAbi.User, userDataAddress)
+        const userData = rpc.createContract(FarmAbi.User, userDataAddress)
         return userData.methods.pendingReward({
             _accTonPerShare: accTonPerShare,
             poolLastRewardTime,
@@ -215,7 +220,7 @@ export class Farm {
         owner: Address,
         state?: FullContractState,
     ): Promise<Address> {
-        const poolContract = new Contract(FarmAbi.Pool, poolAddress)
+        const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { value0: address } = await poolContract.methods.getUserDataAddress({
             _user: owner,
         }).call({
@@ -228,7 +233,7 @@ export class Farm {
         userDataAddress: Address,
         state?: FullContractState,
     ): Promise<{ amount: string, rewardDebt: string[] }> {
-        const userContract = new Contract(FarmAbi.User, userDataAddress)
+        const userContract = rpc.createContract(FarmAbi.User, userDataAddress)
         const { value0: { amount, rewardDebt }} = await userContract.methods.getDetails({
             answerId: 0,
         }).call({

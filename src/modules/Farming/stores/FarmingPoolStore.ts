@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js'
 import { action, makeAutoObservable } from 'mobx'
-import ton, { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 
+import { useRpcClient } from '@/hooks/useRpcClient'
 import { Farm, TokenWallet, UserPendingReward } from '@/misc'
 import {
     DEFAULT_FARMING_POOL_STORE_DATA,
@@ -16,6 +17,9 @@ import {
 import { depositToken, executeAction, parseDate } from '@/modules/Farming/utils'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { error } from '@/utils'
+
+
+const rpc = useRpcClient()
 
 
 export class FarmingPoolStore {
@@ -257,7 +261,7 @@ export class FarmingPoolStore {
             root: new Address(this.pool.rewardTokenRoot[idx]),
             owner: new Address(this.pool.address),
         })
-        const poolWalletState = (await ton.getFullContractState({ address: poolWallet })).state
+        const poolWalletState = (await rpc.getFullContractState({ address: poolWallet })).state
 
         if (poolWalletState === undefined || !poolWalletState.isDeployed) {
             this.changeState('isAdminDepositing', false)
@@ -410,7 +414,7 @@ export class FarmingPoolStore {
     protected async syncPool(): Promise<void> {
         const poolAddress = new Address(this.pool.address)
         const userDataAddress = new Address(this.pool.userDataAddress)
-        const poolState = await ton.getFullContractState({ address: poolAddress })
+        const poolState = await rpc.getFullContractState({ address: poolAddress })
         const poolDetails = await Farm.poolGetDetails(poolAddress, poolState.state)
         const poolBalance = poolDetails.tokenBalance
         const poolRewardBalance = poolDetails.rewardTokenBalance

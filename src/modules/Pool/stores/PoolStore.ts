@@ -8,13 +8,9 @@ import {
     reaction,
     runInAction,
 } from 'mobx'
-import ton, {
-    Address,
-    Contract,
-    Subscriber,
-} from 'ton-inpage-provider'
+import { Address, Subscriber } from 'everscale-inpage-provider'
 
-import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
+import { useRpcClient } from '@/hooks/useRpcClient'
 import {
     checkPair,
     Dex,
@@ -23,6 +19,7 @@ import {
     PairTokenRoots,
     TokenWallet,
 } from '@/misc'
+import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
 import {
     DEFAULT_POOL_DATA,
     DEFAULT_POOL_STORE_DATA,
@@ -43,8 +40,14 @@ import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensC
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { FavoritePairs, useFavoritePairs } from '@/stores/FavoritePairs'
 import {
-    concatSymbols, debounce, error, isGoodBignumber,
+    concatSymbols,
+    debounce,
+    error,
+    isGoodBignumber,
 } from '@/utils'
+
+
+const rpc = useRpcClient()
 
 
 export class PoolStore {
@@ -125,7 +128,7 @@ export class PoolStore {
     public async init(): Promise<void> {
         await this.unsubscribeTransactionSubscriber()
 
-        this.#transactionSubscriber = new Subscriber(ton)
+        this.#transactionSubscriber = rpc.createSubscriber()
 
         this.#dexLeftBalanceValidationDisposer = reaction(() => this.isDexLeftBalanceValid, value => {
             if (value) {
@@ -374,14 +377,10 @@ export class PoolStore {
         this.cleanDepositLiquidityResult()
         this.changeState('isDepositingLiquidity', true)
 
-        try {
-            await this.dex.syncNonce()
-        }
-        catch (e) {
-            error('Nonce sync error', e)
-        }
+        const owner = rpc.createContract(DexAbi.Callbacks, new Address(this.wallet.address))
 
-        const owner = new Contract(DexAbi.Callbacks, new Address(this.wallet.address))
+        // eslint-disable-next-line no-bitwise
+        const callId = ((Math.random() * 100000) | 0).toString()
 
         let stream = this.#transactionSubscriber?.transactions(
             new Address(this.wallet.address),
@@ -404,14 +403,14 @@ export class PoolStore {
             if (result !== undefined) {
                 if (
                     result.method === 'dexPairOperationCancelled'
-                    && result.input.id.toString() === this.dex.nonce
+                    && result.input.id.toString() === callId
                 ) {
                     return E.left({ input: result.input })
                 }
 
                 if (
                     result.method === 'dexPairDepositLiquiditySuccess'
-                    && result.input.id.toString() === this.dex.nonce
+                    && result.input.id.toString() === callId
                     && result.input.via_account
                 ) {
                     return E.right({ input: result.input, transaction })
@@ -437,6 +436,7 @@ export class PoolStore {
                     .decimalPlaces(0)
                     .toFixed(),
                 this.isAutoExchangeEnabled,
+                callId,
             )
 
             if (resultHandler !== undefined) {
@@ -476,7 +476,9 @@ export class PoolStore {
         }
 
         try {
-            await this.dex.withdrawToken(root, amount)
+            // eslint-disable-next-line no-bitwise
+            const callId = ((Math.random() * 100000) | 0).toString()
+            await this.dex.withdrawToken(root, amount, callId)
         }
         catch (e) {
             error('Token withdraw error', e)
@@ -517,9 +519,11 @@ export class PoolStore {
                 new Address(this.rightToken?.root),
                 new Address(this.lpRoot),
                 this.lpWalletBalance,
+                new Date().getTime().toString(),
             )
         }
         catch (e) {
+            error('Withdraw Liquidity error', e)
             this.changeState('isWithdrawingLiquidity', false)
             return
         }
@@ -795,8 +799,6 @@ export class PoolStore {
                 },
                 errorData: undefined,
             }
-
-            console.log(this.depositLiquidityReceipt)
 
             this.data.leftAmount = ''
             this.data.rightAmount = ''
@@ -1275,8 +1277,8 @@ export class PoolStore {
 
         if (!this.lpDecimals) {
             try {
-                const decimals = await TokenWallet.decimal(new Address(this.lpRoot))
-                this.changePoolData('lpDecimals', !decimals ? undefined : parseInt(decimals, 10))
+                const decimals = await TokenWallet.getDecimals(new Address(this.lpRoot))
+                this.changePoolData('lpDecimals', !decimals ? undefined : decimals)
             }
             catch (e) {
                 error('LP Wallet decimals error', e)

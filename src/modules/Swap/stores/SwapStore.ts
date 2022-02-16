@@ -7,14 +7,14 @@ import {
     reaction,
     toJS,
 } from 'mobx'
-import ton, {
+import {
     Address,
-    Contract,
     DecodedAbiFunctionInputs,
     Subscriber,
-} from 'ton-inpage-provider'
+} from 'everscale-inpage-provider'
 
 import { CROSS_PAIR_EXCHANGE_WHITE_LIST } from '@/constants'
+import { useRpcClient } from '@/hooks/useRpcClient'
 import { checkPair, DexAbi, TokenWallet } from '@/misc'
 import { CrossPairsRequest, PairsResponse } from '@/modules/Pairs/types'
 import {
@@ -60,6 +60,9 @@ import {
     isGoodBignumber,
     storage,
 } from '@/utils'
+
+
+const rpc = useRpcClient()
 
 
 export class SwapStore {
@@ -148,7 +151,7 @@ export class SwapStore {
 
         await this.unsubscribeTransactionSubscriber()
 
-        this.#transactionSubscriber = new Subscriber(ton)
+        this.#transactionSubscriber = rpc.createSubscriber()
 
         this.#slippageDisposer = reaction(
             () => this.data.slippage,
@@ -315,7 +318,6 @@ export class SwapStore {
 
         const minExpectedAmount = steps.slice().shift()?.minExpectedAmount as string
         const params: DecodedAbiFunctionInputs<typeof DexAbi.Pair, 'buildCrossPairExchangePayload'> = {
-            _answer_id: '0',
             id: processingId,
             expected_amount: minExpectedAmount,
             deploy_wallet_grams: deployGrams,
@@ -703,7 +705,7 @@ export class SwapStore {
                     address !== undefined
                         ? {
                             address,
-                            contract: new Contract(DexAbi.Pair, address),
+                            contract: rpc.createContract(DexAbi.Pair, address),
                         }
                         : undefined,
                 )
@@ -1225,12 +1227,12 @@ export class SwapStore {
             { denominator, numerator },
         ] = await Promise.all([
             this.pair.contract.methods.getTokenRoots({
-                _answer_id: 0,
+                answerId: 0,
             }).call({
                 cachedState: toJS(this.pair.state),
             }),
             this.pair.contract.methods.getFeeParams({
-                _answer_id: 0,
+                answerId: 0,
             }).call({
                 cachedState: toJS(this.pair.state),
             }),
@@ -1285,7 +1287,7 @@ export class SwapStore {
             return
         }
 
-        const { state } = await ton.getFullContractState({
+        const { state } = await rpc.getFullContractState({
             address: this.pair.address,
         })
 
@@ -1351,7 +1353,7 @@ export class SwapStore {
                             }
 
                             if (pair.contract === undefined) {
-                                pair.contract = new Contract(DexAbi.Pair, pair.address)
+                                pair.contract = rpc.createContract(DexAbi.Pair, pair.address)
                             }
 
                             route.pairs.push(pair)
@@ -1550,7 +1552,7 @@ export class SwapStore {
                             }
 
                             if (pair.contract === undefined) {
-                                pair.contract = new Contract(DexAbi.Pair, pair.address)
+                                pair.contract = rpc.createContract(DexAbi.Pair, pair.address)
                             }
 
                             route.pairs.unshift(pair)
@@ -1619,7 +1621,7 @@ export class SwapStore {
                         }
 
                         if (step.pair.contract === undefined) {
-                            step.pair.contract = new Contract(DexAbi.Pair, step.pair.address)
+                            step.pair.contract = rpc.createContract(DexAbi.Pair, step.pair.address)
                         }
 
                         try {
@@ -1851,7 +1853,7 @@ export class SwapStore {
         const crossPairs: SwapPair[] = [...leftPairs, ...rightPairs].map(({ meta }) => {
             const pair: SwapPair = {
                 address: new Address(meta.poolAddress),
-                contract: new Contract(DexAbi.Pair, new Address(meta.poolAddress)),
+                contract: rpc.createContract(DexAbi.Pair, new Address(meta.poolAddress)),
                 decimals: {
                     left: DEFAULT_DECIMALS,
                     right: DEFAULT_DECIMALS,
@@ -1942,14 +1944,14 @@ export class SwapStore {
                         }
 
                         if (pair.contract === undefined) {
-                            pair.contract = new Contract(DexAbi.Pair, pair.address)
+                            pair.contract = rpc.createContract(DexAbi.Pair, pair.address)
                         }
 
                         const {
                             denominator,
                             numerator,
                         } = await pair.contract.methods.getFeeParams({
-                            _answer_id: 0,
+                            answerId: 0,
                         }).call({
                             cachedState: toJS(pair.state),
                         })
@@ -1980,7 +1982,7 @@ export class SwapStore {
                         }
 
                         if (pair.contract === undefined) {
-                            pair.contract = new Contract(DexAbi.Pair, pair.address)
+                            pair.contract = rpc.createContract(DexAbi.Pair, pair.address)
                         }
 
                         const [
@@ -2017,7 +2019,7 @@ export class SwapStore {
             const crossPairs = this.data.crossPairs.slice()
 
             const promises = crossPairs.map(pair => (
-                ton.getFullContractState({
+                rpc.getFullContractState({
                     address: pair.address!,
                 })
             ))

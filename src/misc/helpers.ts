@@ -1,26 +1,30 @@
-import ton, {
+import {
     Address,
-    hasTonProvider,
-} from 'ton-inpage-provider'
+    hasEverscaleProvider,
+} from 'everscale-inpage-provider'
 
+import { useRpcClient } from '@/hooks/useRpcClient'
 import { Dex } from '@/misc/dex'
 import { debug } from '@/utils'
 
 
+const rpc = useRpcClient()
+
+
 export async function connectToWallet(): Promise<void> {
-    const hasProvider = await hasTonProvider()
+    const hasProvider = await hasEverscaleProvider()
 
     if (hasProvider) {
-        await ton.ensureInitialized()
-        await ton.requestPermissions({
-            permissions: ['tonClient', 'accountInteraction'],
+        await rpc.ensureInitialized()
+        await rpc.requestPermissions({
+            permissions: ['basic', 'accountInteraction'],
         })
     }
 }
 
 export async function checkPair(leftRoot: string, rightRoot: string): Promise<Address | undefined> {
     const pairAddress = await Dex.pairAddress(new Address(leftRoot), new Address(rightRoot))
-    const pairState = await ton.getFullContractState({
+    const pairState = await rpc.getFullContractState({
         address: pairAddress,
     })
 
@@ -62,7 +66,7 @@ export async function getDexAccount(wallet: string): Promise<string | undefined>
         return undefined
     }
 
-    const { state } = await ton.getFullContractState({ address })
+    const { state } = await rpc.getFullContractState({ address })
 
     if (!state?.isDeployed) {
         return undefined

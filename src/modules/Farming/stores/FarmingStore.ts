@@ -6,23 +6,28 @@ import {
     reaction,
     runInAction,
 } from 'mobx'
-import ton, {
-    Address,
-    Contract,
-    TransactionId,
-} from 'ton-inpage-provider'
+import { Address, TransactionId } from 'everscale-inpage-provider'
 
+import { useRpcClient } from '@/hooks/useRpcClient'
 import {
     Dex,
     DexConstants,
     Farm,
     FarmAbi,
-    TokenWallet, UserPendingReward,
+    TokenWallet,
+    UserPendingReward,
 } from '@/misc'
-import { DEFAULT_FARMING_STORE_DATA, DEFAULT_FARMING_STORE_STATE, OWNERS_WHITE_LIST } from '@/modules/Farming/constants'
+import {
+    DEFAULT_FARMING_STORE_DATA,
+    DEFAULT_FARMING_STORE_STATE,
+    OWNERS_WHITE_LIST,
+} from '@/modules/Farming/constants'
 import { FarmingStoreData, FarmingStoreState, FarmPool } from '@/modules/Farming/types'
-import { useWallet, WalletService } from '@/stores/WalletService'
 import { filterEmpty, loadUniWTON } from '@/modules/Farming/utils'
+import { useWallet, WalletService } from '@/stores/WalletService'
+
+
+const rpc = useRpcClient()
 
 
 export class FarmingStore {
@@ -146,21 +151,21 @@ export class FarmingStore {
     protected async loadPools(
         beforeTx?: TransactionId,
     ): Promise<{pools: FarmPool[], isEnd: boolean, txId: TransactionId | undefined}> {
-        const txs = await ton.getTransactions({
+        const txs = await rpc.getTransactions({
             continuation: beforeTx,
             address: DexConstants.FarmFabricAddress,
         })
 
-        const dexRootState = (await ton.getFullContractState({
+        const dexRootState = (await rpc.getFullContractState({
             address: DexConstants.DexRootAddress,
         })).state
-        const wtonUsdtPairState = (await ton.getFullContractState({
+        const wtonUsdtPairState = (await rpc.getFullContractState({
             address: DexConstants.WTONUSDTPairAddress,
         })).state
-        const wtonBridgePairState = (await ton.getFullContractState({
+        const wtonBridgePairState = (await rpc.getFullContractState({
             address: DexConstants.WTONBRIDGEPairAddress,
         })).state
-        const wtonDafPairState = (await ton.getFullContractState({
+        const wtonDafPairState = (await rpc.getFullContractState({
             address: DexConstants.WTONDAFPairAddress,
         })).state
 
@@ -239,7 +244,7 @@ export class FarmingStore {
             }
         }
 
-        const fabricContract = new Contract(FarmAbi.Fabric, DexConstants.FarmFabricAddress)
+        const fabricContract = rpc.createContract(FarmAbi.Fabric, DexConstants.FarmFabricAddress)
         const pools = (await Promise.all(
             txs.transactions.map(
                 tx => fabricContract.decodeTransactionEvents({
@@ -250,7 +255,7 @@ export class FarmingStore {
                             return undefined
                         }
 
-                        return ton.getFullContractState({
+                        return rpc.getFullContractState({
                             address: newPool.data.pool,
                         }).then(async poolState => {
                             if (this.wallet.address == null) {
@@ -318,7 +323,7 @@ export class FarmingStore {
                             )
                             let APY: string | undefined,
                                 TVL: string | undefined
-                            const pairState = (await ton.getFullContractState({ address: tokenOwner })).state
+                            const pairState = (await rpc.getFullContractState({ address: tokenOwner })).state
 
                             if (pairState !== undefined && pairState.isDeployed) {
                                 try {
@@ -490,7 +495,7 @@ export class FarmingStore {
     protected async loadTokenData(root: Address): Promise<{decimals: number, symbol: string} | undefined> {
         let state = this.data.tokensCache.get(root.toString())
         if (state === undefined) {
-            state = (await ton.getFullContractState({ address: root })).state
+            state = (await rpc.getFullContractState({ address: root })).state
             if (state !== undefined) {
                 this.data.tokensCache.set(root.toString(), state)
             }
@@ -500,13 +505,13 @@ export class FarmingStore {
         let decimals,
             symbol
         try {
-            decimals = parseInt(await TokenWallet.decimal(address, state), 10)
+            decimals = await TokenWallet.getDecimals(address, state)
         }
         catch (e) {
             decimals = undefined
         }
         try {
-            symbol = await TokenWallet.symbol(address, state)
+            symbol = await TokenWallet.getSymbol(address, state)
         }
         catch (e) {
             symbol = undefined

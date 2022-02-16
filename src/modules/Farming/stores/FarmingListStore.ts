@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { makeAutoObservable, runInAction, toJS } from 'mobx'
-import { Address } from 'ton-inpage-provider'
+import { Address } from 'everscale-inpage-provider'
 
 import { FarmingApi, useApi } from '@/modules/Farming/hooks/useApi'
 import {
