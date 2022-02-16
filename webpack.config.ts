@@ -95,7 +95,7 @@ export default (_: any, options: any): WebpackConfig => {
 
     config.plugins.push(
         new HtmlWebpackPlugin({
-            title: 'TON Swap',
+            title: 'FlatQube',
             favicon: 'public/favicon.svg',
             filename: path.resolve(__dirname, 'dist/index.html'),
             template: 'public/index.html',
@@ -150,7 +150,7 @@ export default (_: any, options: any): WebpackConfig => {
                 use: {
                     loader: 'file-loader',
                     options: {
-                        publicPath: '/',
+                        publicPath: '/assets/',
                         outputPath: 'assets/',
                         esModule: false,
                         name: '[hash:16].[ext]',
@@ -232,7 +232,7 @@ export default (_: any, options: any): WebpackConfig => {
      * -------------------------------------------------------------
      */
 
-    config.stats = 'summary'
+    config.stats = 'errors-warnings'
 
     return config
 }
