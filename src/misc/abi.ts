@@ -12,32 +12,28 @@ export class DexAbi {
                     { name: 'initial_owner', type: 'address' },
                     { name: 'initial_vault', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'installPlatformOnce',
                 inputs: [
                     { name: 'code', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'installOrUpdateAccountCode',
                 inputs: [
                     { name: 'code', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'installOrUpdatePairCode',
                 inputs: [
                     { name: 'code', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getAccountVersion',
@@ -62,8 +58,7 @@ export class DexAbi {
                 inputs: [
                     { name: 'new_vault', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getVault',
@@ -79,8 +74,7 @@ export class DexAbi {
                 inputs: [
                     { name: 'new_active', type: 'bool' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'isActive',
@@ -96,8 +90,7 @@ export class DexAbi {
                 inputs: [
                     { name: 'code', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'requestUpgradeAccount',
@@ -106,8 +99,7 @@ export class DexAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'account_owner', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'forceUpgradeAccount',
@@ -115,8 +107,7 @@ export class DexAbi {
                     { name: 'account_owner', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'upgradePair',
@@ -125,16 +116,14 @@ export class DexAbi {
                     { name: 'right_root', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'resetGas',
                 inputs: [
                     { name: 'receiver', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'resetTargetGas',
@@ -142,8 +131,7 @@ export class DexAbi {
                     { name: 'target', type: 'address' },
                     { name: 'receiver', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getOwner',
@@ -168,15 +156,12 @@ export class DexAbi {
                 inputs: [
                     { name: 'new_owner', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'acceptOwner',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
             {
                 name: 'getExpectedAccountAddress',
@@ -205,8 +190,7 @@ export class DexAbi {
                     { name: 'account_owner', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'deployPair',
@@ -215,8 +199,7 @@ export class DexAbi {
                     { name: 'right_root', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'onPairCreated',
@@ -225,29 +208,25 @@ export class DexAbi {
                     { name: 'right_root', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'platform_code',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'platform_code', type: 'cell' },
                 ],
             },
             {
                 name: 'account_code',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'account_code', type: 'cell' },
                 ],
             },
             {
                 name: 'pair_code',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'pair_code', type: 'cell' },
                 ],
@@ -262,31 +241,26 @@ export class DexAbi {
                 inputs: [
                     { name: 'version', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'PairCodeUpgraded',
                 inputs: [
                     { name: 'version', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'RootCodeUpgraded',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
             {
                 name: 'ActiveUpdated',
                 inputs: [
                     { name: 'new_active', type: 'bool' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'RequestedPairUpgrade',
@@ -294,16 +268,14 @@ export class DexAbi {
                     { name: 'left_root', type: 'address' },
                     { name: 'right_root', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'RequestedForceAccountUpgrade',
                 inputs: [
                     { name: 'account_owner', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'RequestedOwnerTransfer',
@@ -311,8 +283,7 @@ export class DexAbi {
                     { name: 'old_owner', type: 'address' },
                     { name: 'new_owner', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'OwnerTransferAccepted',
@@ -320,8 +291,7 @@ export class DexAbi {
                     { name: 'old_owner', type: 'address' },
                     { name: 'new_owner', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'NewPairCreated',
@@ -329,8 +299,7 @@ export class DexAbi {
                     { name: 'left_root', type: 'address' },
                     { name: 'right_root', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         fields: [
@@ -358,18 +327,15 @@ export class DexAbi {
         functions: [
             {
                 name: 'constructor',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
             {
                 name: 'resetGas',
                 inputs: [
                     { name: 'receiver', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getRoot',
@@ -436,8 +402,7 @@ export class DexAbi {
                     { name: 'numerator', type: 'uint16' },
                     { name: 'denominator', type: 'uint16' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getFeeParams',
@@ -464,7 +429,14 @@ export class DexAbi {
                     { name: 'answerId', type: 'uint32' },
                 ],
                 outputs: [
-                    { components: [{ name: 'lp_supply', type: 'uint128' }, { name: 'left_balance', type: 'uint128' }, { name: 'right_balance', type: 'uint128' }], name: 'value0', type: 'tuple' },
+                    {
+                        components: [{ name: 'lp_supply', type: 'uint128' }, {
+                            name: 'left_balance',
+                            type: 'uint128',
+                        }, { name: 'right_balance', type: 'uint128' }],
+                        name: 'value0',
+                        type: 'tuple',
+                    },
                 ],
             },
             {
@@ -504,7 +476,11 @@ export class DexAbi {
                     { name: 'id', type: 'uint64' },
                     { name: 'deploy_wallet_grams', type: 'uint128' },
                     { name: 'expected_amount', type: 'uint128' },
-                    { components: [{ name: 'amount', type: 'uint128' }, { name: 'root', type: 'address' }], name: 'steps', type: 'tuple[]' },
+                    {
+                        components: [{ name: 'amount', type: 'uint128' }, { name: 'root', type: 'address' }],
+                        name: 'steps',
+                        type: 'tuple[]',
+                    },
                 ],
                 outputs: [
                     { name: 'value0', type: 'cell' },
@@ -520,8 +496,7 @@ export class DexAbi {
                     { name: 'original_gas_to', type: 'address' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'expectedDepositLiquidity',
@@ -532,7 +507,26 @@ export class DexAbi {
                     { name: 'auto_change', type: 'bool' },
                 ],
                 outputs: [
-                    { components: [{ name: 'step_1_left_deposit', type: 'uint128' }, { name: 'step_1_right_deposit', type: 'uint128' }, { name: 'step_1_lp_reward', type: 'uint128' }, { name: 'step_2_left_to_right', type: 'bool' }, { name: 'step_2_right_to_left', type: 'bool' }, { name: 'step_2_spent', type: 'uint128' }, { name: 'step_2_fee', type: 'uint128' }, { name: 'step_2_received', type: 'uint128' }, { name: 'step_3_left_deposit', type: 'uint128' }, { name: 'step_3_right_deposit', type: 'uint128' }, { name: 'step_3_lp_reward', type: 'uint128' }], name: 'value0', type: 'tuple' },
+                    {
+                        components: [{ name: 'step_1_left_deposit', type: 'uint128' }, {
+                            name: 'step_1_right_deposit',
+                            type: 'uint128',
+                        }, { name: 'step_1_lp_reward', type: 'uint128' }, {
+                            name: 'step_2_left_to_right',
+                            type: 'bool',
+                        }, { name: 'step_2_right_to_left', type: 'bool' }, {
+                            name: 'step_2_spent',
+                            type: 'uint128',
+                        }, { name: 'step_2_fee', type: 'uint128' }, {
+                            name: 'step_2_received',
+                            type: 'uint128',
+                        }, { name: 'step_3_left_deposit', type: 'uint128' }, {
+                            name: 'step_3_right_deposit',
+                            type: 'uint128',
+                        }, { name: 'step_3_lp_reward', type: 'uint128' }],
+                        name: 'value0',
+                        type: 'tuple',
+                    },
                 ],
             },
             {
@@ -547,8 +541,7 @@ export class DexAbi {
                     { name: 'value6', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'expectedWithdrawLiquidity',
@@ -571,8 +564,7 @@ export class DexAbi {
                     { name: 'value4', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'expectedExchange',
@@ -610,8 +602,7 @@ export class DexAbi {
                     { name: 'value6', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'crossPairExchange',
@@ -627,8 +618,7 @@ export class DexAbi {
                     { name: 'deploy_wallet_grams', type: 'uint128' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'checkPair',
@@ -636,8 +626,7 @@ export class DexAbi {
                     { name: 'account_owner', type: 'address' },
                     { name: 'value1', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'upgrade',
@@ -646,24 +635,21 @@ export class DexAbi {
                     { name: 'new_version', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'onTokenWallet',
                 inputs: [
                     { name: 'wallet', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'onVaultTokenWallet',
                 inputs: [
                     { name: 'wallet', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'liquidityTokenRootDeployed',
@@ -671,8 +657,7 @@ export class DexAbi {
                     { name: 'lp_root_', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'liquidityTokenRootNotDeployed',
@@ -680,100 +665,87 @@ export class DexAbi {
                     { name: 'value0', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'platform_code',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'platform_code', type: 'cell' },
                 ],
             },
             {
                 name: 'lp_wallet',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'lp_wallet', type: 'address' },
                 ],
             },
             {
                 name: 'left_wallet',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'left_wallet', type: 'address' },
                 ],
             },
             {
                 name: 'right_wallet',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'right_wallet', type: 'address' },
                 ],
             },
             {
                 name: 'vault_left_wallet',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'vault_left_wallet', type: 'address' },
                 ],
             },
             {
                 name: 'vault_right_wallet',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'vault_right_wallet', type: 'address' },
                 ],
             },
             {
                 name: 'lp_root',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'lp_root', type: 'address' },
                 ],
             },
             {
                 name: 'lp_supply',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'lp_supply', type: 'uint128' },
                 ],
             },
             {
                 name: 'left_balance',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'left_balance', type: 'uint128' },
                 ],
             },
             {
                 name: 'right_balance',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'right_balance', type: 'uint128' },
                 ],
             },
         ],
-        data: [
-        ],
+        data: [],
         events: [
             {
                 name: 'PairCodeUpgraded',
                 inputs: [
                     { name: 'version', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'FeesParamsUpdated',
@@ -781,8 +753,7 @@ export class DexAbi {
                     { name: 'numerator', type: 'uint16' },
                     { name: 'denominator', type: 'uint16' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'DepositLiquidity',
@@ -791,8 +762,7 @@ export class DexAbi {
                     { name: 'right', type: 'uint128' },
                     { name: 'lp', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'WithdrawLiquidity',
@@ -801,8 +771,7 @@ export class DexAbi {
                     { name: 'left', type: 'uint128' },
                     { name: 'right', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'ExchangeLeftToRight',
@@ -811,8 +780,7 @@ export class DexAbi {
                     { name: 'fee', type: 'uint128' },
                     { name: 'right', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'ExchangeRightToLeft',
@@ -821,8 +789,7 @@ export class DexAbi {
                     { name: 'fee', type: 'uint128' },
                     { name: 'left', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         fields: [
@@ -857,18 +824,15 @@ export class DexAbi {
         functions: [
             {
                 name: 'constructor',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
             {
                 name: 'resetGas',
                 inputs: [
                     { name: 'receiver', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getRoot',
@@ -919,16 +883,14 @@ export class DexAbi {
             },
             {
                 name: 'getWallets',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'value0', type: 'map(address,address)' },
                 ],
             },
             {
                 name: 'getBalances',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'value0', type: 'map(address,uint128)' },
                 ],
@@ -943,8 +905,7 @@ export class DexAbi {
                     { name: 'original_gas_to', type: 'address' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'withdraw',
@@ -956,8 +917,7 @@ export class DexAbi {
                     { name: 'deploy_wallet_grams', type: 'uint128' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'transfer',
@@ -969,8 +929,7 @@ export class DexAbi {
                     { name: 'willing_to_deploy', type: 'bool' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'internalAccountTransfer',
@@ -982,8 +941,7 @@ export class DexAbi {
                     { name: 'willing_to_deploy', type: 'bool' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'internalPairTransfer',
@@ -994,8 +952,7 @@ export class DexAbi {
                     { name: 'sender_right_root', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'exchange',
@@ -1007,8 +964,7 @@ export class DexAbi {
                     { name: 'expected_amount', type: 'uint128' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'depositLiquidity',
@@ -1022,8 +978,7 @@ export class DexAbi {
                     { name: 'auto_change', type: 'bool' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'withdrawLiquidity',
@@ -1035,8 +990,7 @@ export class DexAbi {
                     { name: 'right_root', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'addPair',
@@ -1044,8 +998,7 @@ export class DexAbi {
                     { name: 'left_root', type: 'address' },
                     { name: 'right_root', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'checkPairCallback',
@@ -1054,32 +1007,28 @@ export class DexAbi {
                     { name: 'right_root', type: 'address' },
                     { name: 'lp_root', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'onTokenWallet',
                 inputs: [
                     { name: 'wallet', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'onVaultTokenWallet',
                 inputs: [
                     { name: 'wallet', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'requestUpgrade',
                 inputs: [
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'upgrade',
@@ -1088,28 +1037,24 @@ export class DexAbi {
                     { name: 'new_version', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'successCallback',
                 inputs: [
                     { name: 'call_id', type: 'uint64' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'platform_code',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'platform_code', type: 'cell' },
                 ],
             },
         ],
-        data: [
-        ],
+        data: [],
         events: [
             {
                 name: 'AddPair',
@@ -1118,8 +1063,7 @@ export class DexAbi {
                     { name: 'right_root', type: 'address' },
                     { name: 'pair', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'WithdrawTokens',
@@ -1128,8 +1072,7 @@ export class DexAbi {
                     { name: 'amount', type: 'uint128' },
                     { name: 'balance', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'TransferTokens',
@@ -1138,8 +1081,7 @@ export class DexAbi {
                     { name: 'amount', type: 'uint128' },
                     { name: 'balance', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'ExchangeTokens',
@@ -1150,8 +1092,7 @@ export class DexAbi {
                     { name: 'expected_amount', type: 'uint128' },
                     { name: 'balance', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'DepositLiquidity',
@@ -1162,8 +1103,7 @@ export class DexAbi {
                     { name: 'right_amount', type: 'uint128' },
                     { name: 'auto_change', type: 'bool' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'WithdrawLiquidity',
@@ -1174,8 +1114,7 @@ export class DexAbi {
                     { name: 'left_root', type: 'address' },
                     { name: 'right_root', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'TokensReceived',
@@ -1185,8 +1124,7 @@ export class DexAbi {
                     { name: 'balance', type: 'uint128' },
                     { name: 'sender_wallet', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'TokensReceivedFromAccount',
@@ -1196,8 +1134,7 @@ export class DexAbi {
                     { name: 'balance', type: 'uint128' },
                     { name: 'sender', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'TokensReceivedFromPair',
@@ -1208,8 +1145,7 @@ export class DexAbi {
                     { name: 'left_root', type: 'address' },
                     { name: 'right_root', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'OperationRollback',
@@ -1219,38 +1155,31 @@ export class DexAbi {
                     { name: 'balance', type: 'uint128' },
                     { name: 'from', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'ExpectedPairNotExist',
                 inputs: [
                     { name: 'pair', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'AccountCodeUpgraded',
                 inputs: [
                     { name: 'version', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'CodeUpgradeRequested',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
             {
                 name: 'GarbageCollected',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
         ],
         fields: [
@@ -1264,9 +1193,24 @@ export class DexAbi {
             { name: 'owner', type: 'address' },
             { name: '_wallets', type: 'map(address,address)' },
             { name: '_balances', type: 'map(address,uint128)' },
-            { components: [{ components: [{ name: 'amount', type: 'uint128' }, { name: 'root', type: 'address' }], name: 'token_operations', type: 'tuple[]' }, { name: 'send_gas_to', type: 'address' }, { name: 'expected_callback_sender', type: 'address' }], name: '_tmp_operations', type: 'map(uint64,tuple)' },
+            {
+                components: [{
+                    components: [{ name: 'amount', type: 'uint128' }, { name: 'root', type: 'address' }],
+                    name: 'token_operations',
+                    type: 'tuple[]',
+                }, { name: 'send_gas_to', type: 'address' }, { name: 'expected_callback_sender', type: 'address' }],
+                name: '_tmp_operations',
+                type: 'map(uint64,tuple)',
+            },
             { name: '_tmp_deploying_wallets', type: 'map(address,address)' },
-            { components: [{ name: 'call_id', type: 'uint64' }, { name: 'recipient_address', type: 'address' }, { name: 'deploy_wallet_grams', type: 'uint128' }], name: '_tmp_withdrawals', type: 'map(address,tuple)' },
+            {
+                components: [{ name: 'call_id', type: 'uint64' }, {
+                    name: 'recipient_address',
+                    type: 'address',
+                }, { name: 'deploy_wallet_grams', type: 'uint128' }],
+                name: '_tmp_withdrawals',
+                type: 'map(address,tuple)',
+            },
         ],
     } as const
 
@@ -1377,8 +1321,7 @@ export class TokenAbi {
                     { name: 'burnPaused', type: 'bool' },
                     { name: 'remainingGasTo', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'supportsInterface',
@@ -1417,8 +1360,7 @@ export class TokenAbi {
                     { name: 'callbackTo', type: 'address' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'disableBurnByRoot',
@@ -1462,10 +1404,13 @@ export class TokenAbi {
                 inputs: [
                     { name: 'newOwner', type: 'address' },
                     { name: 'remainingGasTo', type: 'address' },
-                    { components: [{ name: 'value', type: 'uint128' }, { name: 'payload', type: 'cell' }], name: 'callbacks', type: 'map(address,tuple)' },
+                    {
+                        components: [{ name: 'value', type: 'uint128' }, { name: 'payload', type: 'cell' }],
+                        name: 'callbacks',
+                        type: 'map(address,tuple)',
+                    },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'name',
@@ -1552,8 +1497,7 @@ export class TokenAbi {
                     { name: 'notify', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'acceptBurn',
@@ -1565,16 +1509,14 @@ export class TokenAbi {
                     { name: 'callbackTo', type: 'address' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'sendSurplusGas',
                 inputs: [
                     { name: 'to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         data: [
@@ -1586,8 +1528,7 @@ export class TokenAbi {
             { key: 6, name: 'randomNonce_', type: 'uint256' },
             { key: 7, name: 'deployer_', type: 'address' },
         ],
-        events: [
-        ],
+        events: [],
         fields: [
             { name: '_pubkey', type: 'uint256' },
             { name: '_timestamp', type: 'uint64' },
@@ -1613,10 +1554,8 @@ export class TokenAbi {
         functions: [
             {
                 name: 'constructor',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
             {
                 name: 'supportsInterface',
@@ -1633,8 +1572,7 @@ export class TokenAbi {
                 inputs: [
                     { name: 'remainingGasTo', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'burnByRoot',
@@ -1644,8 +1582,7 @@ export class TokenAbi {
                     { name: 'callbackTo', type: 'address' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'burn',
@@ -1655,8 +1592,7 @@ export class TokenAbi {
                     { name: 'callbackTo', type: 'address' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'balance',
@@ -1704,8 +1640,7 @@ export class TokenAbi {
                     { name: 'notify', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'transferToWallet',
@@ -1716,8 +1651,7 @@ export class TokenAbi {
                     { name: 'notify', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'acceptTransfer',
@@ -1729,8 +1663,7 @@ export class TokenAbi {
                     { name: 'notify', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'acceptMint',
@@ -1741,24 +1674,21 @@ export class TokenAbi {
                     { name: 'notify', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'sendSurplusGas',
                 inputs: [
                     { name: 'to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         data: [
             { key: 1, name: 'root_', type: 'address' },
             { key: 2, name: 'owner_', type: 'address' },
         ],
-        events: [
-        ],
+        events: [],
         fields: [
             { name: '_pubkey', type: 'uint256' },
             { name: '_timestamp', type: 'uint64' },
@@ -1779,8 +1709,7 @@ export class TokenAbi {
                 inputs: [
                     { name: '_owner', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'owner',
@@ -1842,8 +1771,7 @@ export class TokenAbi {
                     { name: 'burnPaused', type: 'bool' },
                     { name: 'remainingGasTo', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'transferOwner',
@@ -1869,32 +1797,28 @@ export class TokenAbi {
                 inputs: [
                     { name: '_rootCode', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'setWalletCode',
                 inputs: [
                     { name: '_walletCode', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'setWalletPlatformCode',
                 inputs: [
                     { name: '_walletPlatformCode', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'upgrade',
                 inputs: [
                     { name: 'code', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         data: [
@@ -1906,8 +1830,7 @@ export class TokenAbi {
                 inputs: [
                     { name: 'tokenRoot', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         fields: [
@@ -1947,7 +1870,7 @@ export class FarmAbi {
 
     static Fabric = {
         'ABI version': 2,
-        version: '2.1',
+        version: '2.2',
         header: ['time', 'expire'],
         functions: [
             {
@@ -1955,82 +1878,162 @@ export class FarmAbi {
                 inputs: [
                     { name: '_owner', type: 'address' },
                 ],
-                outputs: [
+                outputs: [],
+            },
+            {
+                name: 'transferOwnership',
+                inputs: [
+                    { name: 'new_owner', type: 'address' },
+                    { name: 'send_gas_to', type: 'address' },
                 ],
+                outputs: [],
+            },
+            {
+                name: 'installNewFarmPoolCode',
+                inputs: [
+                    { name: 'farm_pool_code', type: 'cell' },
+                    { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [],
+            },
+            {
+                name: 'installNewUserDataCode',
+                inputs: [
+                    { name: 'user_data_code', type: 'cell' },
+                    { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [],
+            },
+            {
+                name: 'upgradePool',
+                inputs: [
+                    { name: 'pool', type: 'address' },
+                    { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [],
+            },
+            {
+                name: 'updatePoolUserDataCode',
+                inputs: [
+                    { name: 'pool', type: 'address' },
+                    { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [],
+            },
+            {
+                name: 'processUpgradePoolRequest',
+                inputs: [
+                    { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [],
+            },
+            {
+                name: 'processUpdatePoolUserDataRequest',
+                inputs: [
+                    { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [],
             },
             {
                 name: 'deployFarmPool',
                 inputs: [
                     { name: 'pool_owner', type: 'address' },
-                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_rounds', type: 'tuple[]' },
+                    {
+                        components: [{ name: 'startTime', type: 'uint32' }, {
+                            name: 'rewardPerSecond',
+                            type: 'uint128[]',
+                        }],
+                        name: 'reward_rounds',
+                        type: 'tuple[]',
+                    },
                     { name: 'tokenRoot', type: 'address' },
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
                     { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'onPoolDeploy',
                 inputs: [
                     { name: 'pool_deploy_nonce', type: 'uint64' },
                     { name: 'pool_owner', type: 'address' },
-                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_rounds', type: 'tuple[]' },
+                    {
+                        components: [{ name: 'startTime', type: 'uint32' }, {
+                            name: 'rewardPerSecond',
+                            type: 'uint128[]',
+                        }],
+                        name: 'reward_rounds',
+                        type: 'tuple[]',
+                    },
                     { name: 'tokenRoot', type: 'address' },
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
                     { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'upgrade',
                 inputs: [
                     { name: 'new_code', type: 'cell' },
                 ],
+                outputs: [],
+            },
+            {
+                name: 'farm_pool_version',
+                inputs: [],
                 outputs: [
+                    { name: 'farm_pool_version', type: 'uint32' },
+                ],
+            },
+            {
+                name: 'user_data_version',
+                inputs: [],
+                outputs: [
+                    { name: 'user_data_version', type: 'uint32' },
                 ],
             },
             {
                 name: 'pools_count',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'pools_count', type: 'uint64' },
                 ],
             },
             {
                 name: 'owner',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'owner', type: 'address' },
                 ],
             },
             {
                 name: 'FarmPoolUserDataCode',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'FarmPoolUserDataCode', type: 'cell' },
                 ],
             },
             {
                 name: 'FarmPoolCode',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'FarmPoolCode', type: 'cell' },
                 ],
             },
             {
-                name: 'nonce',
-                inputs: [
+                name: 'PlatformCode',
+                inputs: [],
+                outputs: [
+                    { name: 'PlatformCode', type: 'cell' },
                 ],
+            },
+            {
+                name: 'nonce',
+                inputs: [],
                 outputs: [
                     { name: 'nonce', type: 'uint128' },
                 ],
@@ -2039,7 +2042,8 @@ export class FarmAbi {
         data: [
             { key: 1, name: 'FarmPoolUserDataCode', type: 'cell' },
             { key: 2, name: 'FarmPoolCode', type: 'cell' },
-            { key: 3, name: 'nonce', type: 'uint128' },
+            { key: 3, name: 'PlatformCode', type: 'cell' },
+            { key: 4, name: 'nonce', type: 'uint128' },
         ],
         events: [
             {
@@ -2047,25 +2051,58 @@ export class FarmAbi {
                 inputs: [
                     { name: 'pool', type: 'address' },
                     { name: 'pool_owner', type: 'address' },
-                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_rounds', type: 'tuple[]' },
+                    {
+                        components: [{ name: 'startTime', type: 'uint32' }, {
+                            name: 'rewardPerSecond',
+                            type: 'uint128[]',
+                        }],
+                        name: 'reward_rounds',
+                        type: 'tuple[]',
+                    },
                     { name: 'tokenRoot', type: 'address' },
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
                     { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
-                outputs: [
+                outputs: [],
+            },
+            {
+                name: 'FarmPoolCodeUpdated',
+                inputs: [
+                    { name: 'prev_version', type: 'uint32' },
+                    { name: 'new_version', type: 'uint32' },
                 ],
+                outputs: [],
+            },
+            {
+                name: 'UserDataCodeUpdated',
+                inputs: [
+                    { name: 'prev_version', type: 'uint32' },
+                    { name: 'new_version', type: 'uint32' },
+                ],
+                outputs: [],
+            },
+            {
+                name: 'NewOwner',
+                inputs: [
+                    { name: 'prev_owner', type: 'address' },
+                    { name: 'new_owner', type: 'address' },
+                ],
+                outputs: [],
             },
         ],
         fields: [
             { name: '_pubkey', type: 'uint256' },
             { name: '_timestamp', type: 'uint64' },
             { name: '_constructorFlag', type: 'bool' },
+            { name: 'farm_pool_version', type: 'uint32' },
+            { name: 'user_data_version', type: 'uint32' },
             { name: 'pools_count', type: 'uint64' },
             { name: 'owner', type: 'address' },
             { name: 'FarmPoolUserDataCode', type: 'cell' },
             { name: 'FarmPoolCode', type: 'cell' },
+            { name: 'PlatformCode', type: 'cell' },
             { name: 'nonce', type: 'uint128' },
         ],
     } as const
@@ -2079,20 +2116,22 @@ export class FarmAbi {
                 name: 'constructor',
                 inputs: [
                     { name: '_owner', type: 'address' },
-                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: '_rewardRounds', type: 'tuple[]' },
+                    {
+                        components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }],
+                        name: '_rewardRounds',
+                        type: 'tuple[]',
+                    },
                     { name: '_tokenRoot', type: 'address' },
                     { name: '_rewardTokenRoot', type: 'address[]' },
                     { name: '_vestingPeriod', type: 'uint32' },
                     { name: '_vestingRatio', type: 'uint32' },
                     { name: '_withdrawAllLockPeriod', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getVersion',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'value0', type: 'uint8' },
                     { name: 'value1', type: 'uint8' },
@@ -2105,7 +2144,36 @@ export class FarmAbi {
                     { name: 'answerId', type: 'uint32' },
                 ],
                 outputs: [
-                    { components: [{ name: 'lastRewardTime', type: 'uint32' }, { name: 'farmEndTime', type: 'uint32' }, { name: 'vestingPeriod', type: 'uint32' }, { name: 'vestingRatio', type: 'uint32' }, { name: 'tokenRoot', type: 'address' }, { name: 'tokenWallet', type: 'address' }, { name: 'tokenBalance', type: 'uint128' }, { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'rewardRounds', type: 'tuple[]' }, { name: 'accTonPerShare', type: 'uint256[]' }, { name: 'rewardTokenRoot', type: 'address[]' }, { name: 'rewardTokenWallet', type: 'address[]' }, { name: 'rewardTokenBalance', type: 'uint128[]' }, { name: 'rewardTokenBalanceCumulative', type: 'uint128[]' }, { name: 'unclaimedReward', type: 'uint128[]' }, { name: 'owner', type: 'address' }, { name: 'fabric', type: 'address' }], name: 'value0', type: 'tuple' },
+                    {
+                        components: [{ name: 'lastRewardTime', type: 'uint32' }, {
+                            name: 'farmEndTime',
+                            type: 'uint32',
+                        }, { name: 'vestingPeriod', type: 'uint32' }, {
+                            name: 'vestingRatio',
+                            type: 'uint32',
+                        }, { name: 'tokenRoot', type: 'address' }, {
+                            name: 'tokenWallet',
+                            type: 'address',
+                        }, { name: 'tokenBalance', type: 'uint128' }, {
+                            components: [{
+                                name: 'startTime',
+                                type: 'uint32',
+                            }, { name: 'rewardPerSecond', type: 'uint128[]' }],
+                            name: 'rewardRounds',
+                            type: 'tuple[]',
+                        }, { name: 'accTonPerShare', type: 'uint256[]' }, {
+                            name: 'rewardTokenRoot',
+                            type: 'address[]',
+                        }, { name: 'rewardTokenWallet', type: 'address[]' }, {
+                            name: 'rewardTokenBalance',
+                            type: 'uint128[]',
+                        }, { name: 'rewardTokenBalanceCumulative', type: 'uint128[]' }, {
+                            name: 'unclaimedReward',
+                            type: 'uint128[]',
+                        }, { name: 'owner', type: 'address' }, { name: 'fabric', type: 'address' }],
+                        name: 'value0',
+                        type: 'tuple',
+                    },
                 ],
             },
             {
@@ -2113,8 +2181,7 @@ export class FarmAbi {
                 inputs: [
                     { name: 'wallet', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'encodeDepositPayload',
@@ -2150,8 +2217,7 @@ export class FarmAbi {
                     { name: 'updated_balance', type: 'uint128' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'finishDeposit',
@@ -2159,8 +2225,7 @@ export class FarmAbi {
                     { name: '_deposit_nonce', type: 'uint64' },
                     { name: '_vested', type: 'uint128[]' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'withdraw',
@@ -2169,8 +2234,7 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'withdrawAll',
@@ -2178,8 +2242,7 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'claimReward',
@@ -2187,8 +2250,7 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'finishWithdraw',
@@ -2199,8 +2261,7 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'withdrawUnclaimed',
@@ -2209,8 +2270,7 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'withdrawUnclaimedAll',
@@ -2219,17 +2279,19 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'addRewardRound',
                 inputs: [
-                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_round', type: 'tuple' },
+                    {
+                        components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }],
+                        name: 'reward_round',
+                        type: 'tuple',
+                    },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'setEndTime',
@@ -2237,16 +2299,14 @@ export class FarmAbi {
                     { name: 'farm_end_time', type: 'uint32' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'safeWithdraw',
                 inputs: [
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'finishSafeWithdraw',
@@ -2255,13 +2315,11 @@ export class FarmAbi {
                     { name: 'amount', type: 'uint128' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'calculateRewardData',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: '_lastRewardTime', type: 'uint32' },
                     { name: '_accTonPerShare', type: 'uint256[]' },
@@ -2292,8 +2350,7 @@ export class FarmAbi {
                     { name: 'reward', type: 'uint128[]' },
                     { name: 'reward_debt', type: 'uint128[]' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'Withdraw',
@@ -2303,8 +2360,7 @@ export class FarmAbi {
                     { name: 'reward', type: 'uint128[]' },
                     { name: 'reward_debt', type: 'uint128[]' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'Claim',
@@ -2313,8 +2369,7 @@ export class FarmAbi {
                     { name: 'reward', type: 'uint128[]' },
                     { name: 'reward_debt', type: 'uint128[]' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'RewardDeposit',
@@ -2322,24 +2377,25 @@ export class FarmAbi {
                     { name: 'token_root', type: 'address' },
                     { name: 'amount', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'RewardRoundAdded',
                 inputs: [
-                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_round', type: 'tuple' },
+                    {
+                        components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }],
+                        name: 'reward_round',
+                        type: 'tuple',
+                    },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'farmEndSet',
                 inputs: [
                     { name: 'time', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         fields: [
@@ -2354,7 +2410,11 @@ export class FarmAbi {
             { name: 'tokenRoot', type: 'address' },
             { name: 'tokenWallet', type: 'address' },
             { name: 'tokenBalance', type: 'uint128' },
-            { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'rewardRounds', type: 'tuple[]' },
+            {
+                components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }],
+                name: 'rewardRounds',
+                type: 'tuple[]',
+            },
             { name: 'accTonPerShare', type: 'uint256[]' },
             { name: 'rewardTokenRoot', type: 'address[]' },
             { name: 'rewardTokenWallet', type: 'address[]' },
@@ -2363,7 +2423,14 @@ export class FarmAbi {
             { name: 'unclaimedReward', type: 'uint128[]' },
             { name: 'owner', type: 'address' },
             { name: 'deposit_nonce', type: 'uint64' },
-            { components: [{ name: 'user', type: 'address' }, { name: 'amount', type: 'uint128' }, { name: 'send_gas_to', type: 'address' }, { name: 'nonce', type: 'uint32' }], name: 'deposits', type: 'map(uint64,tuple)' },
+            {
+                components: [{ name: 'user', type: 'address' }, { name: 'amount', type: 'uint128' }, {
+                    name: 'send_gas_to',
+                    type: 'address',
+                }, { name: 'nonce', type: 'uint32' }],
+                name: 'deposits',
+                type: 'map(uint64,tuple)',
+            },
             { name: 'userDataCode', type: 'cell' },
             { name: 'fabric', type: 'address' },
             { name: 'deploy_nonce', type: 'uint64' },
@@ -2382,8 +2449,7 @@ export class FarmAbi {
                     { name: '_vestingPeriod', type: 'uint32' },
                     { name: '_vestingRatio', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getDetails',
@@ -2391,7 +2457,20 @@ export class FarmAbi {
                     { name: 'answerId', type: 'uint32' },
                 ],
                 outputs: [
-                    { components: [{ name: 'pool_debt', type: 'uint128[]' }, { name: 'entitled', type: 'uint128[]' }, { name: 'vestingTime', type: 'uint32' }, { name: 'amount', type: 'uint128' }, { name: 'rewardDebt', type: 'uint128[]' }, { name: 'farmPool', type: 'address' }, { name: 'user', type: 'address' }], name: 'value0', type: 'tuple' },
+                    {
+                        components: [{ name: 'pool_debt', type: 'uint128[]' }, {
+                            name: 'entitled',
+                            type: 'uint128[]',
+                        }, { name: 'vestingTime', type: 'uint32' }, {
+                            name: 'amount',
+                            type: 'uint128',
+                        }, { name: 'rewardDebt', type: 'uint128[]' }, { name: 'farmPool', type: 'address' }, {
+                            name: 'user',
+                            type: 'address',
+                        }],
+                        name: 'value0',
+                        type: 'tuple',
+                    },
                 ],
             },
             {
@@ -2414,8 +2493,7 @@ export class FarmAbi {
                     { name: '_pool_debt', type: 'uint128[]' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'processDeposit',
@@ -2426,8 +2504,7 @@ export class FarmAbi {
                     { name: 'poolLastRewardTime', type: 'uint32' },
                     { name: 'farmEndTime', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'processWithdraw',
@@ -2439,8 +2516,7 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'processWithdrawAll',
@@ -2451,8 +2527,7 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'processClaimReward',
@@ -2463,24 +2538,21 @@ export class FarmAbi {
                     { name: 'send_gas_to', type: 'address' },
                     { name: 'nonce', type: 'uint32' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'processSafeWithdraw',
                 inputs: [
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         data: [
             { key: 1, name: 'farmPool', type: 'address' },
             { key: 2, name: 'user', type: 'address' },
         ],
-        events: [
-        ],
+        events: [],
         fields: [
             { name: '_pubkey', type: 'uint256' },
             { name: '_timestamp', type: 'uint64' },
@@ -2512,8 +2584,7 @@ export class MigrationTokenAbi {
                     { name: 'root_public_key_', type: 'uint256' },
                     { name: 'root_owner_address_', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'getVersion',
@@ -2580,8 +2651,7 @@ export class MigrationTokenAbi {
                     { name: 'owner_address_', type: 'address' },
                     { name: 'to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'deployWallet',
@@ -2614,8 +2684,7 @@ export class MigrationTokenAbi {
                     { name: 'tokens', type: 'uint128' },
                     { name: 'to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'proxyBurn',
@@ -2626,8 +2695,7 @@ export class MigrationTokenAbi {
                     { name: 'callback_address', type: 'address' },
                     { name: 'callback_payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'tokensBurned',
@@ -2639,24 +2707,21 @@ export class MigrationTokenAbi {
                     { name: 'callback_address', type: 'address' },
                     { name: 'callback_payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'sendSurplusGas',
                 inputs: [
                     { name: 'to', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'setPaused',
                 inputs: [
                     { name: 'value', type: 'bool' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'sendPausedCallbackTo',
@@ -2664,8 +2729,7 @@ export class MigrationTokenAbi {
                     { name: 'callback_id', type: 'uint64' },
                     { name: 'callback_addr', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'transferOwner',
@@ -2673,45 +2737,39 @@ export class MigrationTokenAbi {
                     { name: 'root_public_key_', type: 'uint256' },
                     { name: 'root_owner_address_', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'name',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'name', type: 'bytes' },
                 ],
             },
             {
                 name: 'symbol',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'symbol', type: 'bytes' },
                 ],
             },
             {
                 name: 'decimals',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'decimals', type: 'uint8' },
                 ],
             },
             {
                 name: 'start_gas_balance',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'start_gas_balance', type: 'uint128' },
                 ],
             },
             {
                 name: 'paused',
-                inputs: [
-                ],
+                inputs: [],
                 outputs: [
                     { name: 'paused', type: 'bool' },
                 ],
@@ -2724,8 +2782,7 @@ export class MigrationTokenAbi {
             { key: 4, name: 'decimals', type: 'uint8' },
             { key: 5, name: 'wallet_code', type: 'cell' },
         ],
-        events: [
-        ],
+        events: [],
     } as const
 
     static WalletV4 = {
@@ -2734,10 +2791,8 @@ export class MigrationTokenAbi {
         functions: [
             {
                 name: 'constructor',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
             {
                 name: 'getVersion',
@@ -2790,8 +2845,7 @@ export class MigrationTokenAbi {
                 inputs: [
                     { name: 'tokens', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'allowance',
@@ -2814,15 +2868,12 @@ export class MigrationTokenAbi {
                     { name: 'remaining_tokens', type: 'uint128' },
                     { name: 'tokens', type: 'uint128' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'disapprove',
-                inputs: [
-                ],
-                outputs: [
-                ],
+                inputs: [],
+                outputs: [],
             },
             {
                 name: 'transferToRecipient',
@@ -2836,8 +2887,7 @@ export class MigrationTokenAbi {
                     { name: 'notify_receiver', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'transfer',
@@ -2849,8 +2899,7 @@ export class MigrationTokenAbi {
                     { name: 'notify_receiver', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'transferFrom',
@@ -2863,8 +2912,7 @@ export class MigrationTokenAbi {
                     { name: 'notify_receiver', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'internalTransfer',
@@ -2876,8 +2924,7 @@ export class MigrationTokenAbi {
                     { name: 'notify_receiver', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'internalTransferFrom',
@@ -2888,8 +2935,7 @@ export class MigrationTokenAbi {
                     { name: 'notify_receiver', type: 'bool' },
                     { name: 'payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'burnByOwner',
@@ -2900,8 +2946,7 @@ export class MigrationTokenAbi {
                     { name: 'callback_address', type: 'address' },
                     { name: 'callback_payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'burnByRoot',
@@ -2911,8 +2956,7 @@ export class MigrationTokenAbi {
                     { name: 'callback_address', type: 'address' },
                     { name: 'callback_payload', type: 'cell' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'setReceiveCallback',
@@ -2920,24 +2964,21 @@ export class MigrationTokenAbi {
                     { name: 'receive_callback_', type: 'address' },
                     { name: 'allow_non_notifiable_', type: 'bool' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'setBouncedCallback',
                 inputs: [
                     { name: 'bounced_callback_', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
             {
                 name: 'destroy',
                 inputs: [
                     { name: 'gas_dest', type: 'address' },
                 ],
-                outputs: [
-                ],
+                outputs: [],
             },
         ],
         data: [
@@ -2946,8 +2987,7 @@ export class MigrationTokenAbi {
             { key: 3, name: 'wallet_public_key', type: 'uint256' },
             { key: 4, name: 'owner_address', type: 'address' },
         ],
-        events: [
-        ],
+        events: [],
     } as const
 
 }
