@@ -30,7 +30,7 @@ export class DexConstants {
 
     static TokenFactoryAddress = new AddressLiteral('0:d291ab784f3ce6958fad0e473bcd61891b303cfe7a96e2c7074f20eadd500f44');
 
-    static TokenListURI = 'https://raw.githubusercontent.com/broxus/ton-assets/migration-1/manifest.json';
+    static TokenListURI = 'https://raw.githubusercontent.com/broxus/ton-assets/master/manifest.json';
 
     static MinWalletVersion = '0.2.25';
 
