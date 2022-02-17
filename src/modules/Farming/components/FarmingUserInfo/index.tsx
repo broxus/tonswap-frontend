@@ -6,7 +6,8 @@ import { observer } from 'mobx-react-lite'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import {
-    formatDateUTC, formattedTokenAmount,
+    formatDateUTC, formattedAmount,
+    formattedTokenAmount,
     parseCurrencyBillions,
     shareAmount,
 } from '@/utils'
@@ -270,7 +271,9 @@ function FarmingUserInfoInner({
                                 {
                                     rewardTotalBalance === null
                                         ? nullMessage
-                                        : parseCurrencyBillions(rewardTotalBalance)
+                                        : `$${formattedAmount(rewardTotalBalance, undefined, {
+                                            truncate: 6,
+                                        })}`
                                 }
                             </div>
                         </div>
