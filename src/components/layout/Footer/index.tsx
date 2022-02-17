@@ -117,7 +117,7 @@ export function Footer(): JSX.Element {
                             </div>
                             <ul className="footer-nav__list">
                                 <li>
-                                    <a href="https://tonbridge.io" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://octusbridge.io" target="_blank" rel="noopener noreferrer">
                                         {intl.formatMessage({
                                             id: 'FOOTER_NAV_TON_BRIDGE_LINK_TEXT',
                                         })}
@@ -131,7 +131,7 @@ export function Footer(): JSX.Element {
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="https://wton.io" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://wrappedever.io" target="_blank" rel="noopener noreferrer">
                                         {intl.formatMessage({
                                             id: 'FOOTER_NAV_WTON_LINK_TEXT',
                                         })}
