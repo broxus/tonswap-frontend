@@ -172,6 +172,13 @@ export type FarmingPoolFilter = {
     isLowBalance?: boolean;
 }
 
+export type RewardInfo = {
+    rewardPerSec: string;
+    rewardTokenCurrency: string;
+    rewardTokenRootAddress: string;
+    rewardTokenScale: string;
+};
+
 export type FarmingPoolResponse = {
     apr: string;
     apr_change: string;
@@ -207,12 +214,7 @@ export type FarmingPoolResponse = {
         rounds_info: {
             start_time: number;
             end_time?: number;
-            reward_info: {
-                rewardPerSec: string;
-                rewardTokenCurrency: string;
-                rewardTokenRootAddress: string;
-                rewardTokenScale: string;
-            }[];
+            reward_info: RewardInfo[];
         }[];
     };
     history_info: {

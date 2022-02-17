@@ -3,7 +3,7 @@ import { Address } from 'everscale-inpage-provider'
 import { makeAutoObservable, runInAction, toJS } from 'mobx'
 
 import { FarmingApi, useApi } from '@/modules/Farming/hooks/useApi'
-import { FarmingPoolResponse, Transaction, TransactionsRequest } from '@/modules/Farming/types'
+import { FarmingPoolResponse, RewardInfo, Transaction, TransactionsRequest } from '@/modules/Farming/types'
 import { getUserAmount, getUserPendingReward } from '@/modules/Farming/utils'
 import { CurrencyInfo } from '@/modules/Currencies/types'
 import { useWallet, WalletService } from '@/stores/WalletService'
@@ -622,30 +622,53 @@ export class FarmingDataStore {
     }
 
     public get rpsAmount(): string[] | undefined {
-        if (!this.state.poolData?.apiResponse) {
+        const apiResponse = this.state.poolData?.apiResponse
+
+        if (!apiResponse) {
             return undefined
         }
 
-        const activePeriods = this.state.poolData.apiResponse.pool_info.rounds_info
+        const activePeriods = apiResponse.pool_info.rounds_info
             .filter(({ start_time }) => (
                 start_time * 1000 < new Date().getTime()
             ))
+
         const currentPeriod = activePeriods.length > 0
             ? activePeriods[activePeriods.length - 1]
             : undefined
 
-        return currentPeriod
-            ? currentPeriod.reward_info.map(info => info.rewardPerSec)
-            : []
+        if (currentPeriod) {
+            const rewards = currentPeriod.reward_info
+                .reduce<{[k: string]: RewardInfo}>((acc, item) => ({
+                    ...acc,
+                    [item.rewardTokenRootAddress]: item,
+                }), {})
+
+            return apiResponse.reward_token_root_info
+                .map(item => rewards[item.reward_root_address].rewardPerSec)
+        }
+
+        return []
     }
 
     public get roundRps(): string[][] | undefined {
-        if (!this.state.poolData?.apiResponse) {
+        const apiResponse = this.state.poolData?.apiResponse
+
+        if (!apiResponse) {
             return undefined
         }
 
-        return toJS(this.state.poolData.apiResponse.pool_info.rounds_info)
-            .map(round => round.reward_info.map(info => info.rewardPerSec))
+        return toJS(apiResponse.pool_info.rounds_info)
+            .map(round => {
+                const rewards = round.reward_info
+                    .reduce<{[k: string]: RewardInfo}>((acc, item) => ({
+                        ...acc,
+                        [item.rewardTokenRootAddress]: item,
+                    }), {})
+
+                return apiResponse.reward_token_root_info
+                    .map(item => rewards[item.reward_root_address].rewardPerSec)
+            })
     }
 
     public get roundStartTimes(): number[] | undefined {
