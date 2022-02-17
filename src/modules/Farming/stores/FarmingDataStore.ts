@@ -3,7 +3,9 @@ import { Address } from 'everscale-inpage-provider'
 import { makeAutoObservable, runInAction, toJS } from 'mobx'
 
 import { FarmingApi, useApi } from '@/modules/Farming/hooks/useApi'
-import { FarmingPoolResponse, RewardInfo, Transaction, TransactionsRequest } from '@/modules/Farming/types'
+import {
+    FarmingPoolResponse, RewardInfo, Transaction, TransactionsRequest,
+} from '@/modules/Farming/types'
 import { getUserAmount, getUserPendingReward } from '@/modules/Farming/utils'
 import { CurrencyInfo } from '@/modules/Currencies/types'
 import { useWallet, WalletService } from '@/stores/WalletService'

@@ -86,7 +86,7 @@ export function FarmingTableItem({
             </div>
             <div className="list__cell list__cell--left">
                 <TokenIcons
-                    limit={1}
+                    limit={2}
                     icons={rewardsIcons}
                     title={intl.formatMessage({ id: 'FARMING_TABLE_REWARDS_TITLE' })}
                 />
