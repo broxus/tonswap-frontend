@@ -43,7 +43,6 @@ export function Create(): JSX.Element {
             isRewardTotalValid: (
                 !rewardTotalAmount.isNaN()
                 && rewardTotalAmount.isPositive()
-                && !rewardTotalAmount.isZero()
                 && rewardTotalAmount.isFinite()
             ),
         })
