@@ -32,6 +32,6 @@ export class DexConstants {
 
     static TokenListURI = 'https://raw.githubusercontent.com/broxus/ton-assets/master/manifest.json';
 
-    static MinWalletVersion = '0.2.25';
+    static MinWalletVersion = '0.2.26';
 
 }
