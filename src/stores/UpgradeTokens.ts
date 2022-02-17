@@ -180,15 +180,15 @@ export class UpgradeTokens {
                 from: this.tonWallet.account.address,
             })
             this.state.upgradedTokens.set(token.rootV4, true)
+            runInAction(() => {
+                this.data.tokens = this.tokens.filter(t => t.rootV4 !== token.rootV4)
+            })
         }
         catch (e) {
             error('Token upgrade error', e)
         }
         finally {
             this.state.upgradingTokens.set(token.rootV4, false)
-            runInAction(() => {
-                this.data.tokens = this.tokens.filter(t => t.rootV4 !== token.rootV4)
-            })
         }
     }
 
