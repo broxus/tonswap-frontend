@@ -294,7 +294,7 @@ export class FarmingStore {
                                 userDataDeployed = true
                                 userReward = await Farm.userPendingReward(
                                     userDataAddress,
-                                    poolRewardData._accTonPerShare,
+                                    poolRewardData._accRewardPerShare,
                                     poolRewardData._lastRewardTime,
                                     poolDetails.farmEndTime || '0',
                                 )

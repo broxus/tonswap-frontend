@@ -207,7 +207,7 @@ export class Farm {
     ): Promise<UserPendingReward> {
         const userData = rpc.createContract(FarmAbi.User, userDataAddress)
         return userData.methods.pendingReward({
-            _accTonPerShare: accTonPerShare,
+            _accRewardPerShare: accTonPerShare,
             poolLastRewardTime,
             farmEndTime,
         }).call({
@@ -222,7 +222,8 @@ export class Farm {
     ): Promise<Address> {
         const poolContract = rpc.createContract(FarmAbi.Pool, poolAddress)
         const { value0: address } = await poolContract.methods.getUserDataAddress({
-            _user: owner,
+            answerId: 0,
+            user: owner,
         }).call({
             cachedState: state,
         })

@@ -310,7 +310,7 @@ export async function getUserPendingReward(
     try {
         return await Farm.userPendingReward(
             userDataAddress,
-            poolRewardData._accTonPerShare,
+            poolRewardData._accRewardPerShare,
             poolRewardData._lastRewardTime,
             farmEndSeconds,
         )

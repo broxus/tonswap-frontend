@@ -120,7 +120,7 @@ export class FarmingListStore {
             )
             const reward = await Farm.userPendingReward(
                 userDataAddress,
-                poolRewardData._accTonPerShare,
+                poolRewardData._accRewardPerShare,
                 poolRewardData._lastRewardTime,
                 `${pool.farm_end_time ? pool.farm_end_time / 1000 : 0}`,
             )
