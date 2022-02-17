@@ -175,7 +175,7 @@ export class FarmingRoundConfigStore {
 
         const invalidAmountIndex = this.reward
             .findIndex(amount => (
-                !amount || amount.isNaN() || amount.isNegative()
+                !amount || amount.isNaN() || amount.lt(0)
             ))
 
         return invalidAmountIndex === -1
