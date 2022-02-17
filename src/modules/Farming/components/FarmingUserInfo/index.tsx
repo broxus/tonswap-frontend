@@ -272,7 +272,7 @@ function FarmingUserInfoInner({
                                     rewardTotalBalance === null
                                         ? nullMessage
                                         : `$${formattedAmount(rewardTotalBalance, undefined, {
-                                            truncate: 6,
+                                            truncate: 2,
                                         })}`
                                 }
                             </div>
