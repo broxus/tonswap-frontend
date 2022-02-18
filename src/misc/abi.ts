@@ -1878,7 +1878,8 @@ export class FarmAbi {
                 inputs: [
                     { name: '_owner', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'transferOwnership',
@@ -1886,7 +1887,8 @@ export class FarmAbi {
                     { name: 'new_owner', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'installNewFarmPoolCode',
@@ -1894,7 +1896,8 @@ export class FarmAbi {
                     { name: 'farm_pool_code', type: 'cell' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'installNewUserDataCode',
@@ -1902,138 +1905,159 @@ export class FarmAbi {
                     { name: 'user_data_code', type: 'cell' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
-                name: 'upgradePool',
+                name: 'upgradePools',
                 inputs: [
-                    { name: 'pool', type: 'address' },
+                    { name: 'pools', type: 'address[]' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
-                name: 'updatePoolUserDataCode',
+                name: 'updatePoolsUserDataCode',
                 inputs: [
-                    { name: 'pool', type: 'address' },
+                    { name: 'pools', type: 'address[]' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
+            },
+            {
+                name: 'forceUpdateUserData',
+                inputs: [
+                    { name: 'pool', type: 'address' },
+                    { name: 'user', type: 'address' },
+                    { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [
+                ],
             },
             {
                 name: 'processUpgradePoolRequest',
                 inputs: [
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'processUpdatePoolUserDataRequest',
                 inputs: [
                     { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'deployFarmPool',
                 inputs: [
                     { name: 'pool_owner', type: 'address' },
-                    {
-                        components: [{ name: 'startTime', type: 'uint32' }, {
-                            name: 'rewardPerSecond',
-                            type: 'uint128[]',
-                        }],
-                        name: 'reward_rounds',
-                        type: 'tuple[]',
-                    },
+                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_rounds', type: 'tuple[]' },
                     { name: 'tokenRoot', type: 'address' },
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
                     { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'onPoolDeploy',
                 inputs: [
                     { name: 'pool_deploy_nonce', type: 'uint64' },
                     { name: 'pool_owner', type: 'address' },
-                    {
-                        components: [{ name: 'startTime', type: 'uint32' }, {
-                            name: 'rewardPerSecond',
-                            type: 'uint128[]',
-                        }],
-                        name: 'reward_rounds',
-                        type: 'tuple[]',
-                    },
+                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_rounds', type: 'tuple[]' },
                     { name: 'tokenRoot', type: 'address' },
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
                     { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'upgrade',
                 inputs: [
                     { name: 'new_code', type: 'cell' },
+                    { name: 'send_gas_to', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
+            },
+            {
+                name: 'fabric_version',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'fabric_version', type: 'uint32' },
+                ],
             },
             {
                 name: 'farm_pool_version',
-                inputs: [],
+                inputs: [
+                ],
                 outputs: [
                     { name: 'farm_pool_version', type: 'uint32' },
                 ],
             },
             {
                 name: 'user_data_version',
-                inputs: [],
+                inputs: [
+                ],
                 outputs: [
                     { name: 'user_data_version', type: 'uint32' },
                 ],
             },
             {
                 name: 'pools_count',
-                inputs: [],
+                inputs: [
+                ],
                 outputs: [
                     { name: 'pools_count', type: 'uint64' },
                 ],
             },
             {
                 name: 'owner',
-                inputs: [],
+                inputs: [
+                ],
                 outputs: [
                     { name: 'owner', type: 'address' },
                 ],
             },
             {
                 name: 'FarmPoolUserDataCode',
-                inputs: [],
+                inputs: [
+                ],
                 outputs: [
                     { name: 'FarmPoolUserDataCode', type: 'cell' },
                 ],
             },
             {
                 name: 'FarmPoolCode',
-                inputs: [],
+                inputs: [
+                ],
                 outputs: [
                     { name: 'FarmPoolCode', type: 'cell' },
                 ],
             },
             {
                 name: 'PlatformCode',
-                inputs: [],
+                inputs: [
+                ],
                 outputs: [
                     { name: 'PlatformCode', type: 'cell' },
                 ],
             },
             {
                 name: 'nonce',
-                inputs: [],
+                inputs: [
+                ],
                 outputs: [
                     { name: 'nonce', type: 'uint128' },
                 ],
@@ -2051,21 +2075,15 @@ export class FarmAbi {
                 inputs: [
                     { name: 'pool', type: 'address' },
                     { name: 'pool_owner', type: 'address' },
-                    {
-                        components: [{ name: 'startTime', type: 'uint32' }, {
-                            name: 'rewardPerSecond',
-                            type: 'uint128[]',
-                        }],
-                        name: 'reward_rounds',
-                        type: 'tuple[]',
-                    },
+                    { components: [{ name: 'startTime', type: 'uint32' }, { name: 'rewardPerSecond', type: 'uint128[]' }], name: 'reward_rounds', type: 'tuple[]' },
                     { name: 'tokenRoot', type: 'address' },
                     { name: 'rewardTokenRoot', type: 'address[]' },
                     { name: 'vestingPeriod', type: 'uint32' },
                     { name: 'vestingRatio', type: 'uint32' },
                     { name: 'withdrawAllLockPeriod', type: 'uint32' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'FarmPoolCodeUpdated',
@@ -2073,7 +2091,8 @@ export class FarmAbi {
                     { name: 'prev_version', type: 'uint32' },
                     { name: 'new_version', type: 'uint32' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
             {
                 name: 'UserDataCodeUpdated',
@@ -2081,7 +2100,17 @@ export class FarmAbi {
                     { name: 'prev_version', type: 'uint32' },
                     { name: 'new_version', type: 'uint32' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
+            },
+            {
+                name: 'FabricUpdated',
+                inputs: [
+                    { name: 'prev_version', type: 'uint32' },
+                    { name: 'new_version', type: 'uint32' },
+                ],
+                outputs: [
+                ],
             },
             {
                 name: 'NewOwner',
@@ -2089,13 +2118,15 @@ export class FarmAbi {
                     { name: 'prev_owner', type: 'address' },
                     { name: 'new_owner', type: 'address' },
                 ],
-                outputs: [],
+                outputs: [
+                ],
             },
         ],
         fields: [
             { name: '_pubkey', type: 'uint256' },
             { name: '_timestamp', type: 'uint64' },
             { name: '_constructorFlag', type: 'bool' },
+            { name: 'fabric_version', type: 'uint32' },
             { name: 'farm_pool_version', type: 'uint32' },
             { name: 'user_data_version', type: 'uint32' },
             { name: 'pools_count', type: 'uint64' },
@@ -2166,6 +2197,15 @@ export class FarmAbi {
                 inputs: [
                     { name: 'new_code', type: 'cell' },
                     { name: 'new_version', type: 'uint32' },
+                    { name: 'send_gas_to', type: 'address' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'forceUpgradeUserData',
+                inputs: [
+                    { name: 'user', type: 'address' },
                     { name: 'send_gas_to', type: 'address' },
                 ],
                 outputs: [
@@ -2360,6 +2400,8 @@ export class FarmAbi {
             { key: 2, name: 'userDataCode', type: 'cell' },
             { key: 3, name: 'fabric', type: 'address' },
             { key: 4, name: 'deploy_nonce', type: 'uint64' },
+            { key: 5, name: 'user_data_version', type: 'uint32' },
+            { key: 6, name: 'pool_version', type: 'uint32' },
         ],
         events: [
             {
@@ -2428,6 +2470,15 @@ export class FarmAbi {
                 outputs: [
                 ],
             },
+            {
+                name: 'PoolUpdated',
+                inputs: [
+                    { name: 'prev_version', type: 'uint32' },
+                    { name: 'new_version', type: 'uint32' },
+                ],
+                outputs: [
+                ],
+            },
         ],
         fields: [
             { name: '_pubkey', type: 'uint256' },
@@ -2478,7 +2529,7 @@ export class FarmAbi {
                     { name: 'answerId', type: 'uint32' },
                 ],
                 outputs: [
-                    { components: [{ name: 'pool_debt', type: 'uint128[]' }, { name: 'entitled', type: 'uint128[]' }, { name: 'vestingTime', type: 'uint32' }, { name: 'amount', type: 'uint128' }, { name: 'rewardDebt', type: 'uint128[]' }, { name: 'farmPool', type: 'address' }, { name: 'user', type: 'address' }, { name: 'current_version', type: 'uint32' }], name: 'value0', type: 'tuple' },
+                    { components: [{ name: 'pool_debt', type: 'uint128[]' }, { name: 'entitled', type: 'uint128[]' }, { name: 'vestingTime', type: 'uint32[]' }, { name: 'amount', type: 'uint128' }, { name: 'rewardDebt', type: 'uint128[]' }, { name: 'farmPool', type: 'address' }, { name: 'user', type: 'address' }, { name: 'current_version', type: 'uint32' }], name: 'value0', type: 'tuple' },
                 ],
             },
             {
@@ -2492,7 +2543,7 @@ export class FarmAbi {
                     { name: '_entitled', type: 'uint128[]' },
                     { name: '_vested', type: 'uint128[]' },
                     { name: '_pool_debt', type: 'uint128[]' },
-                    { name: '_vesting_time', type: 'uint32' },
+                    { name: '_vesting_time', type: 'uint32[]' },
                 ],
             },
             {
@@ -2600,8 +2651,8 @@ export class FarmAbi {
             { name: 'lastRewardTime', type: 'uint32' },
             { name: 'vestingPeriod', type: 'uint32' },
             { name: 'vestingRatio', type: 'uint32' },
-            { name: 'vestingTime', type: 'uint32' },
             { name: 'amount', type: 'uint128' },
+            { name: 'vestingTime', type: 'uint32[]' },
             { name: 'rewardDebt', type: 'uint128[]' },
             { name: 'entitled', type: 'uint128[]' },
             { name: 'pool_debt', type: 'uint128[]' },
