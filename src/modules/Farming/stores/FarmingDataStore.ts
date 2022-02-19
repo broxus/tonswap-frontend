@@ -668,7 +668,7 @@ export class FarmingDataStore {
         }
 
         return this.rewardTokensBalance
-            .findIndex(amount => new BigNumber(amount).isLessThanOrEqualTo(0)) > -1
+            .every(amount => new BigNumber(amount).lte(0))
     }
 
     public get rewardBalanceIsLow(): boolean | undefined {
