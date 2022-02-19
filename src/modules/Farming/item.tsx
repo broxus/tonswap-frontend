@@ -380,6 +380,7 @@ export function FarmingInner(): JSX.Element {
                                         vestingRatio={farmingData.vestingRatio}
                                         vestingPeriodDays={farmingData.vestingPeriodDays}
                                         vestingTime={farmingData.vestingTime}
+                                        rewardTokensAddress={farmingData.rewardTokensAddress}
                                     />
 
                                     <FarmingAddresses

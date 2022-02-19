@@ -5,6 +5,7 @@ import path from 'path'
 import webpack from 'webpack'
 import { Configuration as DevServerConfiguration } from 'webpack-dev-server'
 
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 type WebpackConfig = webpack.Configuration & { devServer?: DevServerConfiguration }
 
@@ -13,6 +14,7 @@ export default (_: any, options: any): WebpackConfig => {
     const HOST = process.env.HOST ?? 'localhost'
     const PORT = parseInt(process.env.PORT ?? '3000', 10)
     const hmrDisabled = process.env.NO_HMR
+    const showErrors = process.env.ERRORS
 
     const isProduction = options.mode === 'production'
     const isDevelopment = options.mode === 'development'
@@ -91,6 +93,10 @@ export default (_: any, options: any): WebpackConfig => {
 
     if (isDevelopment && !hmrDisabled) {
         config.plugins.push(new webpack.HotModuleReplacementPlugin())
+    }
+
+    if (isDevelopment && showErrors) {
+        config.plugins.push(new ForkTsCheckerWebpackPlugin())
     }
 
     config.plugins.push(

@@ -459,6 +459,7 @@ export default {
     FARMING_VESTING_PERIOD_HINT: 'Vesting period is the time frame in which vesting will take place',
     FARMING_VESTING_VESTING_UNTIL: 'Vesting end date, UTC',
     FARMING_VESTING_VESTING_HINT: 'Vesting end date is the date by which all remuneration will be received',
+    FARMING_VESTING_VESTING_TOKEN_DATE: '{token} — {date}',
     FARMING_VESTING_NULL: '—',
 
     FARMING_CHART_TAB_TVL: 'TVL',

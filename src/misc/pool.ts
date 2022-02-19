@@ -38,11 +38,17 @@ export class Pool {
         poolAddresses: Address[],
         walletAddress: Address,
     ): Promise<PoolData[]> {
-        return Promise.all(
+        const pools = await Promise.all(
             poolAddresses.map(poolAddress => (
                 Pool.pool(poolAddress, walletAddress)
+                    .catch(e => {
+                        console.error(e)
+                        return undefined
+                    })
             )),
         )
+
+        return pools.filter(item => item !== undefined) as PoolData[]
     }
 
     static async pool(

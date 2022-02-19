@@ -554,35 +554,15 @@ export class FarmingDataStore {
         return this.state.poolData?.apiResponse.share
     }
 
-    public get vestingTime(): number {
-        if (!this.state.userData || !this.vestingPeriodDays || !this.userInFarming) {
-            return 0
+    public get vestingTime(): number[] | undefined {
+        const { userData } = this.state
+
+        if (!userData || !userData.userPendingReward) {
+            return undefined
         }
 
-        const vestingPeriodTime = parseInt(this.vestingPeriodDays, 10) * SECONDS_IN_DAY * 1000
-
-        if (this.endTime > 0) {
-            return vestingPeriodTime + this.endTime
-        }
-
-        if (this.userLpFarmingAmount === undefined) {
-            return 0
-        }
-
-        const userLpFarmingAmountIsNotZero = new BigNumber(this.userLpFarmingAmount)
-            .isGreaterThan(0)
-
-        if (userLpFarmingAmountIsNotZero) {
-            return vestingPeriodTime + new Date().getTime()
-        }
-
-        const { userLastWithdrawTransaction } = this.state.userData
-
-        if (!userLastWithdrawTransaction) {
-            return 0
-        }
-
-        return userLastWithdrawTransaction.timestampBlock + vestingPeriodTime
+        return userData.userPendingReward._vesting_time
+            .map(seconds => parseInt(seconds, 10) * 1000)
     }
 
     public get vestingRatio(): number | undefined {

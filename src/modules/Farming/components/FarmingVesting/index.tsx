@@ -5,28 +5,30 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { Tooltip } from '@/components/common/Tooltip'
 import { formatDateUTC } from '@/utils'
+import { useTokensCache } from '@/stores/TokensCacheService'
 
 type Props = {
     vestingRatio?: number;
     vestingPeriodDays?: string;
-    vestingTime?: number;
+    vestingTime?: number[];
+    rewardTokensAddress?: string[];
 }
 
 export function FarmingVesting({
     vestingRatio,
     vestingPeriodDays,
     vestingTime,
+    rewardTokensAddress,
 }: Props): JSX.Element {
     const intl = useIntl()
+    const tokensCache = useTokensCache()
     const ratioRef = React.useRef<HTMLDivElement | null>(null)
     const periodRef = React.useRef<HTMLDivElement | null>(null)
     const untilRef = React.useRef<HTMLDivElement | null>(null)
     const nullMessage = intl.formatMessage({
         id: 'FARMING_VESTING_NULL',
     })
-    const vestingTimeFormatted = vestingTime && vestingTime > 0
-        ? formatDateUTC(vestingTime)
-        : undefined
+    const rewardTokens = (rewardTokensAddress || []).map(root => tokensCache.get(root))
 
     return (
         <div className="farming-panel">
@@ -98,17 +100,39 @@ export function FarmingVesting({
                         {intl.formatMessage({
                             id: 'FARMING_VESTING_VESTING_UNTIL',
                         })}
+
                         <div className="farming-map__info" ref={untilRef}>
                             <Icon icon="infoFill" />
                         </div>
+
                         <Tooltip target={untilRef} alignY="top" width={270}>
                             {intl.formatMessage({
                                 id: 'FARMING_VESTING_VESTING_HINT',
                             })}
                         </Tooltip>
                     </div>
+
                     <div className="farming-map__value">
-                        {vestingTimeFormatted || nullMessage}
+                        {vestingTime ? (
+                            <div>
+                                {[...new Set(vestingTime)].length > 1 ? (
+                                    rewardTokens.map((token, index) => (
+                                        token && (
+                                            <div key={token.root}>
+                                                {intl.formatMessage({
+                                                    id: 'FARMING_VESTING_VESTING_TOKEN_DATE',
+                                                }, {
+                                                    token: token.symbol,
+                                                    date: formatDateUTC(vestingTime[index]),
+                                                })}
+                                            </div>
+                                        )
+                                    ))
+                                ) : (
+                                    formatDateUTC(vestingTime[0])
+                                )}
+                            </div>
+                        ) : nullMessage}
                     </div>
                 </div>
             </div>

@@ -33,7 +33,7 @@ type Props = {
     userHistoryLeftAmount?: string | null;
     userHistoryRightAmount?: string | null;
     userHistoryLastUpdateTime?: number,
-    vestingTime?: number;
+    vestingTime?: number[];
     rewardTotalBalance?: string;
 }
 
@@ -356,14 +356,30 @@ function FarmingUserInfoInner({
                         ))}
                     </div>
 
-                    {vestingTime !== undefined && vestingTime > 0 && (
+                    {vestingTime && (
                         <div>
                             <div className="farming-panel__label">
                                 {intl.formatMessage({
                                     id: 'FARMING_USER_INFO_VESTING_TIME',
                                 })}
                             </div>
-                            {formatDateUTC(vestingTime)}
+
+                            {[...new Set(vestingTime)].length > 1 ? (
+                                rewardTokens.map((token, index) => (
+                                    token && (
+                                        <div className="farming-panel__token" key={token.root}>
+                                            <TokenIcon
+                                                size="xsmall"
+                                                icon={token.icon}
+                                                address={token.root}
+                                            />
+                                            {formatDateUTC(vestingTime[index])}
+                                        </div>
+                                    )
+                                ))
+                            ) : (
+                                formatDateUTC(vestingTime[0])
+                            )}
                         </div>
                     )}
                 </div>

@@ -257,7 +257,7 @@ export function usePoolContent(): UsePoolContent {
         try {
             userReward = await Farm.userPendingReward(
                 userDataAddress,
-                poolRewardData._accTonPerShare,
+                poolRewardData._accRewardPerShare,
                 poolRewardData._lastRewardTime,
                 `${farmEnd ? farmEnd / 1000 : 0}`,
             )

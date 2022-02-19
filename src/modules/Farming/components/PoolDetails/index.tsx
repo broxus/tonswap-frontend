@@ -1,3 +1,5 @@
+// TODO: Legacy need to remove this file and it deps
+
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 import BigNumber from 'bignumber.js'
@@ -259,6 +261,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                 </div>
                             </div>
                         ))}
+                        {/* @ts-ignore */}
                         {pool.userReward?._vesting_time !== '0' && (
                             <>
                                 <div className="farming-pool-details-table__row">
@@ -268,6 +271,7 @@ export function PoolDetails({ pool }: Props): JSX.Element {
                                         })}
                                     </div>
                                     <div>
+                                        {/* @ts-ignore */}
                                         {intl.formatDate(parseInt(pool.userReward?._vesting_time || '0', 10) * 1000, {
                                             day: 'numeric',
                                             month: 'short',
