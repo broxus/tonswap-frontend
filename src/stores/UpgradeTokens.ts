@@ -75,6 +75,10 @@ export class UpgradeTokens {
         }, { fireImmediately: true })
     }
 
+    public cleanup(): void {
+        this.data.tokens = []
+    }
+
     public get tokens(): UpgradeTokensData['tokens'] {
         return this.data.tokens
     }
