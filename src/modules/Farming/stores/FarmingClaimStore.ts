@@ -96,9 +96,7 @@ export class FarmingClaimStore {
         }
 
         return userPendingRewardVested
-            .findIndex(amount => (
-                !new BigNumber(amount).isZero()
-            )) > -1
+            .some(amount => new BigNumber(amount).gt(0))
     }
 
 }

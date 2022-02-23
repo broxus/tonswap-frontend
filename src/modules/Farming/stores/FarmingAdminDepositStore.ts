@@ -174,7 +174,7 @@ export class FarmingAdminDepositStore {
         }
 
         return rewardTokensBalanceCumulative
-            .findIndex(amount => new BigNumber(amount).isZero()) === -1
+            .some(amount => new BigNumber(amount).gt(0))
     }
 
 }
