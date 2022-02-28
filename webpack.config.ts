@@ -13,7 +13,6 @@ type WebpackConfig = webpack.Configuration & { devServer?: DevServerConfiguratio
 export default (_: any, options: any): WebpackConfig => {
     const HOST = process.env.HOST ?? 'localhost'
     const PORT = parseInt(process.env.PORT ?? '3000', 10)
-    const hmrDisabled = process.env.NO_HMR
     const showErrors = process.env.ERRORS
 
     const isProduction = options.mode === 'production'
@@ -90,10 +89,6 @@ export default (_: any, options: any): WebpackConfig => {
      */
 
     config.plugins = []
-
-    if (isDevelopment && !hmrDisabled) {
-        config.plugins.push(new webpack.HotModuleReplacementPlugin())
-    }
 
     if (isDevelopment && showErrors) {
         config.plugins.push(new ForkTsCheckerWebpackPlugin())
@@ -177,7 +172,7 @@ export default (_: any, options: any): WebpackConfig => {
             '@': path.resolve(__dirname, 'src')
         },
 
-        extensions: ['.js', '.jsx', '.ts', '.tsx', '.scss', '.css'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.d.ts', '.scss', '.css'],
 
         modules: [
             path.resolve(__dirname, 'src'),
@@ -205,16 +200,7 @@ export default (_: any, options: any): WebpackConfig => {
         config.devServer = {
             host: HOST,
             port: PORT,
-            contentBase: [
-                path.join(__dirname + '/dist'),
-            ],
-            inline: hmrDisabled ? false : true,
-            hot: hmrDisabled ? false : true,
-            quiet: false,
             historyApiFallback: true,
-            stats: {
-                colors: true,
-            },
         }
     }
 

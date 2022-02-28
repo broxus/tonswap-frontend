@@ -199,6 +199,7 @@ const baseConfig = {
         'react/jsx-no-undef': 'warn',
         'react/jsx-uses-react': 'warn',
         'react/jsx-uses-vars': 'warn',
+        'react/jsx-no-useless-fragment': 'off',
         'react/jsx-wrap-multilines': 'warn',
         'react/no-direct-mutation-state': 'warn',
         'react/no-multi-comp': 'warn',

@@ -13,11 +13,11 @@ import {
     Subscriber,
 } from 'everscale-inpage-provider'
 
-import { CROSS_PAIR_EXCHANGE_WHITE_LIST } from '@/constants'
 import { useRpcClient } from '@/hooks/useRpcClient'
 import { checkPair, DexAbi, TokenWallet } from '@/misc'
 import { CrossPairsRequest, PairsResponse } from '@/modules/Pairs/types'
 import {
+    CROSS_PAIR_EXCHANGE_WHITE_LIST,
     DEFAULT_DECIMALS,
     DEFAULT_SWAP_BILL,
     DEFAULT_SWAP_STORE_DATA,
@@ -473,7 +473,9 @@ export class SwapStore {
             this.changeState('isEnoughLiquidity', false)
             debug(
                 '#recalculate reset when no pair',
-                toJS(this.data), toJS(this.state), toJS(this.data.bill),
+                toJS(this.data),
+                toJS(this.state),
+                toJS(this.data.bill),
             )
             return
         }
@@ -690,7 +692,9 @@ export class SwapStore {
             this.changeData('pair', undefined)
             debug(
                 '#handleTokensChange only one token selected -> reset',
-                toJS(this.data), toJS(this.state), toJS(this.data.bill),
+                toJS(this.data),
+                toJS(this.state),
+                toJS(this.data.bill),
             )
             return
         }
@@ -780,7 +784,9 @@ export class SwapStore {
 
         debug(
             '#handleTokensChange check cross-exchange',
-            toJS(this.data), toJS(this.state), toJS(this.data.bill),
+            toJS(this.data),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
     }
 
@@ -898,7 +904,9 @@ export class SwapStore {
         ) {
             debug(
                 '#calculateByLeftAmount reset before start',
-                toJS(this.data), toJS(this.state), toJS(this.data.bill),
+                toJS(this.data),
+                toJS(this.state),
+                toJS(this.data.bill),
             )
             return
         }
@@ -907,7 +915,9 @@ export class SwapStore {
 
         debug(
             '#calculateByLeftAmount start',
-            toJS(this.data), toJS(this.state), toJS(this.data.bill),
+            toJS(this.data),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
 
         if (this.isEnoughLiquidity && this.isLeftAmountValid && this.leftTokenAddress !== undefined) {
@@ -952,7 +962,9 @@ export class SwapStore {
 
         debug(
             '#calculateByLeftAmount done',
-            toJS(this.data), toJS(this.state), toJS(this.data.bill),
+            toJS(this.data),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
     }
 
@@ -972,7 +984,9 @@ export class SwapStore {
         ) {
             debug(
                 '#calculateByRightAmount reset before start',
-                toJS(this.data), toJS(this.state), toJS(this.data.bill),
+                toJS(this.data),
+                toJS(this.state),
+                toJS(this.data.bill),
             )
             return
         }
@@ -981,7 +995,9 @@ export class SwapStore {
 
         debug(
             '#calculateByRightAmount start',
-            toJS(this.data), toJS(this.state), toJS(this.data.bill),
+            toJS(this.data),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
 
         if (this.isEnoughLiquidity && this.isRightAmountValid) {
@@ -1045,7 +1061,9 @@ export class SwapStore {
 
         debug(
             '#calculateByRightAmount done',
-            toJS(this.data), toJS(this.state), toJS(this.data.bill),
+            toJS(this.data),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
     }
 
@@ -1323,7 +1341,8 @@ export class SwapStore {
 
         debug(
             '#calculateLtrCrossExchangeBill invalidate routes',
-            toJS(this.data.bestCrossExchangeRoute), toJS(this.data.bill),
+            toJS(this.data.bestCrossExchangeRoute),
+            toJS(this.data.bill),
         )
 
         await (
@@ -1495,7 +1514,9 @@ export class SwapStore {
 
         debug(
             '#calculateLtrCrossExchangeBill done',
-            toJS(this.data), toJS(this.state), toJS(this.data.bill),
+            toJS(this.data),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
     }
 
@@ -1522,7 +1543,9 @@ export class SwapStore {
 
         debug(
             '#calculateRtlCrossExchangeBill invalidate routes',
-            toJS(this.data), toJS(this.state), toJS(this.data.bill),
+            toJS(this.data),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
 
         let routes: SwapRoute[] = []
@@ -1602,7 +1625,9 @@ export class SwapStore {
 
         debug(
             '#calculateRtlCrossExchangeBill first iteration',
-            toJS({ ...this.data, routes }), toJS(this.state), toJS(this.data.bill),
+            toJS({ ...this.data, routes }),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
 
         await (
@@ -1738,7 +1763,9 @@ export class SwapStore {
 
         debug(
             '#calculateRtlCrossExchangeBill done',
-            toJS(this.data), toJS(this.state), toJS(this.data.bill),
+            toJS(this.data),
+            toJS(this.state),
+            toJS(this.data.bill),
         )
     }
 

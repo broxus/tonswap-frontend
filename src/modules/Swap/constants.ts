@@ -8,7 +8,7 @@ import {
 } from '@/modules/Swap/types'
 
 
-/* WTON root address */
+/* WEVER root address */
 export const DEFAULT_LEFT_TOKEN_ROOT = DexConstants.WEVERRootAddress.toString()
 
 /* USDT root address */
@@ -50,3 +50,9 @@ export const DEFAULT_SWAP_STORE_STATE: SwapStoreState = {
     isSwapping: false,
     priceDirection: SwapDirection.LTR,
 }
+
+export const CROSS_PAIR_EXCHANGE_WHITE_LIST = [
+    DexConstants.WEVERRootAddress.toString(),
+    DexConstants.USDTRootAddress.toString(),
+    DexConstants.USDCRootAddress.toString(),
+]

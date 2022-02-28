@@ -1,5 +1,5 @@
-import { reaction } from 'mobx'
 import * as React from 'react'
+import { reaction } from 'mobx'
 import { useHistory, useParams } from 'react-router-dom'
 
 import { isAddressValid } from '@/misc'

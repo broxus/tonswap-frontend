@@ -1,10 +1,10 @@
 {
-    "extends": ["stylelint-config-standard", "stylelint-config-prettier"],
+    "extends": ["stylelint-config-standard", "stylelint-config-standard-scss", "stylelint-config-prettier"],
     "plugins": ["stylelint-order"],
     "rules": {
         "at-rule-no-unknown": null,
         "block-no-empty": [true, {
-            "ignore": ["comments", "hook"]
+            "ignore": ["comments"]
         }],
         "block-opening-brace-space-before": "always",
         "block-opening-brace-space-after": "always-single-line",
