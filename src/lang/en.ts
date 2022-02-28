@@ -231,6 +231,7 @@ export default {
     POOL_SUPPLY_RECEIPT_LEAD_CANCELLED: 'Supply cancelled',
     POOL_SUPPLY_RECEIPT_CANCELLED_NOTE: '<p>The Supply was canceled. Your balance hasn’t changed.</p>',
     POOL_SUPPLY_RECEIPT_POPUP_BTN_TEXT_CLOSE: 'Close',
+    POOL_INSUFFICIENT_TOKEN_BALANCE: 'Insufficient balance',
 
     FARMING_HEADER_TITLE: 'Farming',
     FARMING_HEADER_CREATE_LINK_TEXT: 'Create farm pool',
