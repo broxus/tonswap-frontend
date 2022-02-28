@@ -43,13 +43,15 @@ function Field({
         dexAccountBalance,
     })
 
+    const deFormattedBalance = balance.value?.replace(/\s/g, '') ?? 0
+
     const isInsufficientBalance = React.useMemo(
-        () => new BigNumber(props.value ?? 0).gt(balance.value),
+        () => new BigNumber(props.value ?? 0).gt(deFormattedBalance),
         [props.value, balance.value],
     )
 
     const onMax = () => {
-        props.onChange?.(balance.value)
+        props.onChange?.(deFormattedBalance)
     }
 
     return (

@@ -38,8 +38,10 @@ function Field({
         subscriberPrefix: 'field',
     })
 
+    const deFormattedBalance = balance.value?.replace(/\s/g, '') ?? 0
+
     const onMax = () => {
-        props.onChange?.(balance.value)
+        props.onChange?.(deFormattedBalance)
     }
 
     return (
