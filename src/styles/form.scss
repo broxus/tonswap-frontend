@@ -309,3 +309,10 @@ button.form-submit {
         cursor: not-allowed !important;
     }
 }
+
+.btn.form-btn-max {
+    line-height: 24px;
+    margin: 0 12px;
+    min-height: 24px;
+    padding: 0 10px;
+}

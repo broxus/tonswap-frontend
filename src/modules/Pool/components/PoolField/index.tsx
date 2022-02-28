@@ -42,6 +42,10 @@ function Field({
         dexAccountBalance,
     })
 
+    const onMax = () => {
+        props.onChange?.(balance.value)
+    }
+
     return (
         <fieldset
             className={classNames('form-fieldset', {
@@ -75,7 +79,18 @@ function Field({
                     onChange={field.onChange}
                     onKeyPress={props.onKeyPress}
                 />
-                {!token ? (
+                {token !== undefined && (
+                    <button
+                        key="max-button"
+                        type="button"
+                        className="btn btn-xs btn-secondary form-btn-max"
+                        disabled={props.disabled}
+                        onClick={onMax}
+                    >
+                        Max
+                    </button>
+                )}
+                {token === undefined ? (
                     <button
                         type="button"
                         className={classNames('btn form-select', {

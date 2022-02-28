@@ -38,6 +38,10 @@ function Field({
         subscriberPrefix: 'field',
     })
 
+    const onMax = () => {
+        props.onChange?.(balance.value)
+    }
+
     return (
         <label className="form-label" htmlFor={props.id}>
             <fieldset
@@ -71,8 +75,20 @@ function Field({
                         onBlur={field.onBlur}
                         onChange={field.onChange}
                     />
-                    {!token ? (
+                    {token !== undefined && (
                         <button
+                            key="max-button"
+                            type="button"
+                            className="btn btn-xs btn-secondary form-btn-max"
+                            disabled={props.disabled}
+                            onClick={onMax}
+                        >
+                            Max
+                        </button>
+                    )}
+                    {token === undefined ? (
+                        <button
+                            key="select-token"
                             type="button"
                             className={classNames('btn form-select', {
                                 disabled: props.disabled,
@@ -91,6 +107,7 @@ function Field({
                         </button>
                     ) : (
                         <button
+                            key="change-token"
                             type="button"
                             className={classNames('btn form-drop', {
                                 disabled: props.disabled,
