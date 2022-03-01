@@ -93,6 +93,7 @@ export type SwapStoreData = {
 
 export enum SwapExchangeMode {
     CROSS_PAIR_EXCHANGE = 'crossPair',
+    CROSS_PAIR_EXCHANGE_ONLY = 'crossPairOnly',
     DIRECT_EXCHANGE = 'direct',
 }
 
@@ -109,6 +110,7 @@ export type SwapStoreState = {
     isCrossExchangeCalculating: boolean;
     isCrossExchangePreparing: boolean;
     isEnoughLiquidity: boolean;
+    isLowTvl: boolean;
     isPairChecking: boolean;
     isSwapping: boolean;
     priceDirection?: SwapDirection;

@@ -5,7 +5,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import { isAddressValid } from '@/misc'
 import { DEFAULT_LEFT_TOKEN_ROOT, DEFAULT_RIGHT_TOKEN_ROOT } from '@/modules/Swap/constants'
 import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
-import { SwapDirection, SwapStoreData } from '@/modules/Swap/types'
+import { SwapDirection, SwapExchangeMode, SwapStoreData } from '@/modules/Swap/types'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { debounce, debug, error } from '@/utils'
 
@@ -127,8 +127,8 @@ export function useSwapForm(): SwapFormShape {
         if (value.length === 0) {
             swap.changeData('rightAmount', '')
             swap.forceInvalidate()
-            if (swap.pair !== undefined) {
-                swap.toDirectSwap()
+            if (swap.pair !== undefined && !swap.isLowTvl) {
+                swap.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
             }
         }
 
@@ -145,8 +145,8 @@ export function useSwapForm(): SwapFormShape {
         if (value.length === 0) {
             swap.changeData('leftAmount', '')
             swap.forceInvalidate()
-            if (swap.pair !== undefined) {
-                swap.toDirectSwap()
+            if (swap.pair !== undefined && !swap.isLowTvl) {
+                swap.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
             }
         }
 
@@ -182,7 +182,7 @@ export function useSwapForm(): SwapFormShape {
         else if (tokenSide) {
             swap.changeData(tokenSide, root)
         }
-        swap.toDirectSwap()
+        swap.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
         history.push({ pathname })
         hideTokensList()
     }

@@ -1,17 +1,9 @@
 import BigNumber from 'bignumber.js'
 import * as E from 'fp-ts/Either'
 import {
-    action,
-    IReactionDisposer,
-    makeAutoObservable,
-    reaction,
-    toJS,
+    action, IReactionDisposer, makeAutoObservable, reaction, toJS,
 } from 'mobx'
-import {
-    Address,
-    DecodedAbiFunctionInputs,
-    Subscriber,
-} from 'everscale-inpage-provider'
+import { Address, DecodedAbiFunctionInputs, Subscriber } from 'everscale-inpage-provider'
 
 import { useRpcClient } from '@/hooks/useRpcClient'
 import { checkPair, DexAbi, TokenWallet } from '@/misc'
@@ -54,11 +46,7 @@ import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensC
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { SwapApi, useSwapApi } from '@/modules/Swap/hooks/useApi'
 import {
-    debounce,
-    debug,
-    error,
-    isGoodBignumber,
-    storage,
+    debounce, debug, error, isGoodBignumber, storage,
 } from '@/utils'
 
 
@@ -151,7 +139,7 @@ export class SwapStore {
 
         await this.unsubscribeTransactionSubscriber()
 
-        this.#transactionSubscriber = rpc.createSubscriber()
+        this.#transactionSubscriber = new rpc.Subscriber()
 
         this.#slippageDisposer = reaction(
             () => this.data.slippage,
@@ -161,20 +149,21 @@ export class SwapStore {
         this.#tokensDisposer = reaction(
             () => [this.data.leftToken, this.data.rightToken],
             debounce(this.handleTokensChange, 100),
+            { fireImmediately: true },
         )
 
-        try {
-            this.changeData('slippage', storage.get('slippage') || '0.5')
-            await this.handleTokensChange([
-                this.data.leftToken,
-                this.data.rightToken,
-            ])
-            this.finalizeDirectCalculation()
-            await this.recalculate(true)
-        }
-        catch (e) {
-            error(e)
-        }
+        this.#tokensCacheDisposer = reaction(
+            () => this.tokensCache.tokens,
+            async () => {
+                await this.handleTokensChange([
+                    this.data.leftToken,
+                    this.data.rightToken,
+                ])
+            },
+            { fireImmediately: true },
+        )
+
+        this.changeData('slippage', storage.get('slippage') || '0.5')
     }
 
     /**
@@ -184,14 +173,16 @@ export class SwapStore {
      * @param {boolean} disposeWallet
      */
     public async dispose(disposeWallet: boolean = true): Promise<void> {
-        await this.unsubscribeTransactionSubscriber()
+        this.#slippageDisposer?.()
         this.#tokensDisposer?.()
+        this.#tokensCacheDisposer?.()
         if (disposeWallet) {
             this.#walletAccountDisposer?.()
         }
         this.cleanTransactionResult()
         this.cleanPairUpdatesInterval()
         this.reset()
+        await this.unsubscribeTransactionSubscriber()
     }
 
     /**
@@ -560,23 +551,9 @@ export class SwapStore {
      */
     public toggleSwapExchangeMode(): void {
         if (!this.isCrossExchangeMode && this.isCrossExchangeAvailable) {
-            this.toCrossExchangeSwap()
+            this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
             return
         }
-        this.toDirectSwap()
-    }
-
-    /**
-     * Sets cross-exchange swap mode.
-     */
-    public toCrossExchangeSwap(): void {
-        this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
-    }
-
-    /**
-     * Sets direct exchange swap mode.
-     */
-    public toDirectSwap(): void {
         this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
 
@@ -680,6 +657,8 @@ export class SwapStore {
 
         if (!isToggleDirection) {
             this.resetCrossExchangeData()
+            this.changeData('priceLeftToRight', undefined)
+            this.changeData('priceRightToLeft', undefined)
             debug('#handleTokensChange reset cross-exchange data')
         }
 
@@ -709,7 +688,7 @@ export class SwapStore {
                     address !== undefined
                         ? {
                             address,
-                            contract: rpc.createContract(DexAbi.Pair, address),
+                            contract: new rpc.Contract(DexAbi.Pair, address),
                         }
                         : undefined,
                 )
@@ -721,6 +700,23 @@ export class SwapStore {
         }
 
         if (this.pair?.address !== undefined && !isToggleDirection) {
+            const isPredefinedTokens = this.tokensCache.tokens.filter(
+                token => tokensRoots.includes(token.root),
+            ).length >= 2
+
+            try {
+                if (isPredefinedTokens) {
+                    const { tvl } = await this.api.pair({
+                        address: this.pair.address.toString(),
+                    })
+                    this.changeState('isLowTvl', new BigNumber(tvl ?? 0).lt(5e4))
+                    debug('TVL is less than 50k?', this.state.isLowTvl)
+                }
+            }
+            catch (e) {
+                error('Check Tvl error', e)
+            }
+
             try {
                 this.cleanPairUpdatesInterval()
 
@@ -736,39 +732,17 @@ export class SwapStore {
                     && !this.pairRightBalanceNumber.isZero(),
                 )
 
-                this.finalizeDirectCalculation()
+                if (this.state.isLowTvl) {
+                    this.changeData('priceLeftToRight', undefined)
+                    this.changeData('priceRightToLeft', undefined)
+                }
+                else {
+                    this.finalizeDirectCalculation()
+                }
             }
             catch (e) {
                 error('Sync pair data error', e)
             }
-
-            // this.#pairsUpdatesUpdater = setInterval(async () => {
-            //     if (this.isSwapping) {
-            //         return
-            //     }
-            //
-            //     try {
-            //         await this.syncPairState()
-            //         await this.syncPairBalances()
-            //     }
-            //     catch (e) {}
-            //
-            //     this.changeState(
-            //         'isEnoughLiquidity',
-            //         !this.pairLeftBalanceNumber.isZero()
-            //         && !this.pairRightBalanceNumber.isZero(),
-            //     )
-            //
-            //     try {
-            //         await this.syncCrossExchangePairsStates()
-            //         await this.syncCrossExchangePairsBalances()
-            //     }
-            //     catch (e) {}
-            //
-            //     debug('#handleTokensChange Update pair data by interval', toJS(this.pair))
-            //
-            //     await this.recalculate(!this.isCalculating)
-            // }, 10000)
         }
 
         this.changeState('isPairChecking', false)
@@ -835,8 +809,8 @@ export class SwapStore {
         this.changeData('rightAmount', '')
         this.forceInvalidate()
 
-        if (!this.isCrossExchangeOnly) {
-            this.toDirectSwap()
+        if (this.exchangeMode !== SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY) {
+            this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
         }
 
         await this.syncPairState()
@@ -880,8 +854,9 @@ export class SwapStore {
 
         this.changeState('isSwapping', false)
         this.forceInvalidate()
-        this.toDirectSwap()
+        this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
+
 
     /*
      * Internal utilities methods
@@ -1151,6 +1126,7 @@ export class SwapStore {
 
     /**
      * Change direct swap bill by the given key and value.
+     * @template {string} K
      * @param {K extends keyof SwapBill} key
      * @param {SwapBill[K]} value
      */
@@ -1372,7 +1348,7 @@ export class SwapStore {
                             }
 
                             if (pair.contract === undefined) {
-                                pair.contract = rpc.createContract(DexAbi.Pair, pair.address)
+                                pair.contract = new rpc.Contract(DexAbi.Pair, pair.address)
                             }
 
                             route.pairs.push(pair)
@@ -1506,9 +1482,7 @@ export class SwapStore {
 
         this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute)
 
-        if (bestCrossExchangeRoute === undefined) {
-            this.toDirectSwap()
-        }
+        this.checkCrossExchange()
 
         this.changeState('isCrossExchangeCalculating', false)
 
@@ -1575,7 +1549,7 @@ export class SwapStore {
                             }
 
                             if (pair.contract === undefined) {
-                                pair.contract = rpc.createContract(DexAbi.Pair, pair.address)
+                                pair.contract = new rpc.Contract(DexAbi.Pair, pair.address)
                             }
 
                             route.pairs.unshift(pair)
@@ -1646,7 +1620,7 @@ export class SwapStore {
                         }
 
                         if (step.pair.contract === undefined) {
-                            step.pair.contract = rpc.createContract(DexAbi.Pair, step.pair.address)
+                            step.pair.contract = new rpc.Contract(DexAbi.Pair, step.pair.address)
                         }
 
                         try {
@@ -1755,9 +1729,7 @@ export class SwapStore {
         this.changeData('routes', routes)
         this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute)
 
-        if (bestCrossExchangeRoute === undefined) {
-            this.toDirectSwap()
-        }
+        this.checkCrossExchange()
 
         this.changeState('isCrossExchangeCalculating', false)
 
@@ -1820,18 +1792,20 @@ export class SwapStore {
      * @protected
      */
     protected checkCrossExchange(): void {
-        if (this.pair === undefined && this.isCrossExchangeAvailable) {
+        if (
+            (this.pair === undefined && this.bestCrossExchangeRoute !== undefined)
+            || (this.bestCrossExchangeRoute !== undefined && this.state.isLowTvl)
+        ) {
+            this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY)
+            return
+        }
+
+        if ((!this.isEnoughLiquidity || this.pair === undefined) && this.bestCrossExchangeRoute !== undefined) {
             this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
             return
         }
 
-        if (
-            (!this.isEnoughLiquidity || this.pair === undefined)
-            && this.isCrossExchangeAvailable
-            && !this.isCrossExchangeMode
-        ) {
-            this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
-        }
+        this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
 
     /**
@@ -1880,7 +1854,7 @@ export class SwapStore {
         const crossPairs: SwapPair[] = [...leftPairs, ...rightPairs].map(({ meta }) => {
             const pair: SwapPair = {
                 address: new Address(meta.poolAddress),
-                contract: rpc.createContract(DexAbi.Pair, new Address(meta.poolAddress)),
+                contract: new rpc.Contract(DexAbi.Pair, new Address(meta.poolAddress)),
                 decimals: {
                     left: DEFAULT_DECIMALS,
                     right: DEFAULT_DECIMALS,
@@ -1971,7 +1945,7 @@ export class SwapStore {
                         }
 
                         if (pair.contract === undefined) {
-                            pair.contract = rpc.createContract(DexAbi.Pair, pair.address)
+                            pair.contract = new rpc.Contract(DexAbi.Pair, pair.address)
                         }
 
                         const {
@@ -2009,7 +1983,7 @@ export class SwapStore {
                         }
 
                         if (pair.contract === undefined) {
-                            pair.contract = rpc.createContract(DexAbi.Pair, pair.address)
+                            pair.contract = new rpc.Contract(DexAbi.Pair, pair.address)
                         }
 
                         const [
@@ -2157,10 +2131,7 @@ export class SwapStore {
      * @returns {boolean}
      */
     public get isCrossExchangeOnly(): boolean {
-        return (
-            (this.pair === undefined || !this.isEnoughLiquidity)
-            && this.isCrossExchangeAvailable
-        )
+        return this.exchangeMode === SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY
     }
 
     /**
@@ -2168,7 +2139,10 @@ export class SwapStore {
      * @returns {boolean}
      */
     public get isCrossExchangeMode(): boolean {
-        return this.exchangeMode === SwapExchangeMode.CROSS_PAIR_EXCHANGE
+        return [
+            SwapExchangeMode.CROSS_PAIR_EXCHANGE,
+            SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY,
+        ].includes(this.exchangeMode)
     }
 
     /**
@@ -2527,6 +2501,14 @@ export class SwapStore {
 
     /**
      *
+     * @returns {SwapStoreState['isLowTvl']}
+     */
+    public get isLowTvl(): SwapStoreState['isLowTvl'] {
+        return this.state.isLowTvl
+    }
+
+    /**
+     *
      * @returns {SwapStoreState['isConfirmationAwait']}
      */
     public get isConfirmationAwait(): SwapStoreState['isConfirmationAwait'] {
@@ -2582,6 +2564,8 @@ export class SwapStore {
     #slippageDisposer: IReactionDisposer | undefined
 
     #tokensDisposer: IReactionDisposer | undefined
+
+    #tokensCacheDisposer: IReactionDisposer | undefined
 
     #walletAccountDisposer: IReactionDisposer | undefined
 

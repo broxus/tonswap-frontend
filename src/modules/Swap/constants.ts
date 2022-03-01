@@ -46,6 +46,7 @@ export const DEFAULT_SWAP_STORE_STATE: SwapStoreState = {
     isCrossExchangeCalculating: false,
     isCrossExchangePreparing: false,
     isEnoughLiquidity: false,
+    isLowTvl: false,
     isPairChecking: false,
     isSwapping: false,
     priceDirection: SwapDirection.LTR,
