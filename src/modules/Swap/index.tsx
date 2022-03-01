@@ -61,6 +61,7 @@ export function Swap(): JSX.Element {
                                             : swap.leftAmount,
                                     )}
                                     readOnly={swap.isSwapping}
+                                    showMaxButton
                                     token={swap.leftToken}
                                     value={(swap.isCrossExchangeMode && swap.direction === SwapDirection.RTL)
                                         ? swap.crossExchangeLeftAmount

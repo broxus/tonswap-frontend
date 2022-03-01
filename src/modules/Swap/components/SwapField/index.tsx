@@ -16,6 +16,7 @@ type Props = {
     id?: string;
     isValid?: boolean;
     readOnly?: boolean;
+    showMaxButton?: boolean;
     token?: TokenCache;
     value?: string;
     onChange?: (value: string) => void;
@@ -25,6 +26,7 @@ type Props = {
 
 function Field({
     isValid = true,
+    showMaxButton = false,
     token,
     ...props
 }: Props): JSX.Element {
@@ -77,7 +79,7 @@ function Field({
                         onBlur={field.onBlur}
                         onChange={field.onChange}
                     />
-                    {token !== undefined && (
+                    {(token !== undefined && showMaxButton) && (
                         <button
                             key="max-button"
                             type="button"
