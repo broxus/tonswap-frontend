@@ -31,7 +31,7 @@ export function formattedAmount(
     const integerNumber = new BigNumber(parts[0] || 0)
 
     let fractionalPartNumber = new BigNumber(`0.${parts[1] || 0}`)
-    const roundOn = options?.roundOn === true ? 1e3 : options?.roundOn
+    const roundOn = typeof options?.roundOn === 'boolean' ? (options.roundOn && 1e3) : (options?.roundOn ?? 1e3)
 
     if (options?.preserve) {
         if (roundOn && integerNumber.gte(roundOn)) {
@@ -42,6 +42,9 @@ export function formattedAmount(
     }
 
     if (options?.truncate !== undefined) {
+        if (roundOn && integerNumber.gte(roundOn)) {
+            return formatDigits(integerNumber.toFixed()) ?? ''
+        }
         fractionalPartNumber = fractionalPartNumber.dp(options?.truncate, BigNumber.ROUND_DOWN)
         digits.push(fractionalPartNumber.toFixed().split('.')[1])
         return digits.filter(Boolean).join('.')
@@ -51,7 +54,7 @@ export function formattedAmount(
         return formatDigits(integerNumber.toFixed()) ?? ''
     }
 
-    let dp = 2
+    let dp = 4
 
     switch (true) {
         case roundOn && integerNumber.gte(roundOn):
@@ -62,8 +65,8 @@ export function formattedAmount(
             dp = fractionalPartNumber.decimalPlaces()
             break
 
-        case integerNumber.isZero() && fractionalPartNumber.lte(1e-3):
-            dp = 4
+        case integerNumber.gt(0) && roundOn && integerNumber.lt(roundOn):
+            dp = 2
             break
 
         case integerNumber.isZero() && fractionalPartNumber.lte(1e-2):
