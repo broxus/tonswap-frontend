@@ -9,7 +9,7 @@ import {
 } from 'mobx'
 
 import { useRpcClient } from '@/hooks/useRpcClient'
-import { MigrationTokenAbi, TokenWalletV4 } from '@/misc'
+import { MigrationTokenAbi, TokenWallet, TokenWalletV4 } from '@/misc'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { error } from '@/utils'
 
@@ -105,6 +105,13 @@ export class UpgradeTokens {
         try {
             // eslint-disable-next-line no-restricted-syntax
             for (const token of tokensToUpgrade) {
+                const rootV5Address = new Address(token.rootV5)
+                const owner = (await TokenWallet.rootOwnerAddress(rootV5Address)).toString()
+
+                if (owner !== token.proxy) {
+                    continue
+                }
+
                 const rootV4Address = new Address(token.rootV4)
                 const { state } = await rpc.getFullContractState({ address: rootV4Address })
 
@@ -169,7 +176,7 @@ export class UpgradeTokens {
         this.state.upgradingTokens.set(token.rootV4, true)
 
         const walletAddress = new Address(token.wallet)
-        const walletContract = rpc.createContract(MigrationTokenAbi.WalletV4, walletAddress)
+        const walletContract = new rpc.Contract(MigrationTokenAbi.WalletV4, walletAddress)
 
         try {
             await walletContract.methods.burnByOwner({

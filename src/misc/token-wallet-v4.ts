@@ -22,7 +22,7 @@ const rpc = useRpcClient()
 export class TokenWalletV4 {
 
     public static async walletAddress(args: WalletAddressRequest, state?: FullContractState): Promise<Address> {
-        const rootContract = rpc.createContract(MigrationTokenAbi.RootV4, args.root)
+        const rootContract = new rpc.Contract(MigrationTokenAbi.RootV4, args.root)
         return (await rootContract.methods.getWalletAddress({
             _answer_id: 0,
             owner_address_: args.owner,
@@ -40,21 +40,21 @@ export class TokenWalletV4 {
             wallet = await this.walletAddress(args as WalletAddressRequest)
         }
 
-        const tokenWalletContract = rpc.createContract(MigrationTokenAbi.WalletV4, wallet)
+        const tokenWalletContract = new rpc.Contract(MigrationTokenAbi.WalletV4, wallet)
         return (await tokenWalletContract.methods.balance({
             _answer_id: 0,
         }).call({ cachedState: state })).value0.toString()
     }
 
     public static async getDecimals(root: Address, state?: FullContractState): Promise<number> {
-        const rootContract = rpc.createContract(MigrationTokenAbi.RootV4, root)
+        const rootContract = new rpc.Contract(MigrationTokenAbi.RootV4, root)
         return parseInt((await rootContract.methods.decimals({}).call(
             { cachedState: state },
         )).decimals, 10)
     }
 
     public static async getName(root: Address, state?: FullContractState): Promise<string> {
-        const rootContract = rpc.createContract(MigrationTokenAbi.RootV4, root)
+        const rootContract = new rpc.Contract(MigrationTokenAbi.RootV4, root)
         const { name } = await rootContract.methods.name({}).call(
             { cachedState: state },
         )
@@ -62,7 +62,7 @@ export class TokenWalletV4 {
     }
 
     public static async getSymbol(root: Address, state?: FullContractState): Promise<string> {
-        const rootContract = rpc.createContract(MigrationTokenAbi.RootV4, root)
+        const rootContract = new rpc.Contract(MigrationTokenAbi.RootV4, root)
         const { symbol } = await rootContract.methods.symbol({}).call({ cachedState: state })
         return Buffer.from(symbol, 'base64').toString()
     }
