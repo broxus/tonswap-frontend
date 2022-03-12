@@ -23,24 +23,3 @@
         padding: 32px 16px;
     }
 }
-
-.wallets {
-    align-items: center;
-    background: rgba(5, 11, 46, 0.9) linear-gradient(0deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.08));
-    bottom: 0;
-    column-gap: 20px;
-    display: flex;
-    left: 0;
-    padding: 12px 20px;
-    position: fixed;
-    right: 0;
-
-    @media only screen and (min-width: 768px) {
-        background: none;
-        bottom: unset;
-        left: unset;
-        position: absolute;
-        right: 0;
-        top: 0;
-    }
-}

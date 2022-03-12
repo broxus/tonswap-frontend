@@ -1,0 +1,368 @@
+/* ========================================================================
+   Component: Navbar
+ ========================================================================== */
+
+/*
+ * 1. Create position context to center navbar group
+ */
+
+.navbar {
+    display: flex;
+
+    /* 1 */
+    position: relative;
+}
+
+/* Groups
+ ========================================================================== */
+
+/*
+ * 1. Align navs and items vertically if they have a different height
+ * 2. Note: IE 11 requires an extra `div` which affects the center selector
+ */
+
+.navbar-left,
+.navbar-right,
+/* 2. [class*='navbar-center'], */
+.navbar-center,
+.navbar-center-left > *,
+.navbar-center-right > * {
+    /* 1 */
+    align-items: center;
+    display: flex;
+}
+
+/*
+ * Horizontal alignment
+ * 1. Create position context for centered navbar with sub groups (left/right)
+ * 2. Fix text wrapping if content is larger than 50% of the container.
+ * 3. Needed for dropdowns because a new position context is created
+ *    `z-index` must be smaller than off-canvas
+ * 4. Align sub groups for centered navbar
+ */
+
+.navbar-right {
+    margin-left: auto;
+}
+
+.navbar-center:only-child {
+    margin-left: auto;
+    margin-right: auto;
+
+    /* 1 */
+    position: relative;
+}
+
+.navbar-center:not(:only-child) {
+    box-sizing: border-box;
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    /* 2 */
+    width: max-content;
+
+    /* 3 */
+    z-index: 1010;
+}
+
+/* 4 */
+.navbar-center-left,
+.navbar-center-right {
+    position: absolute;
+    top: 0;
+}
+
+.navbar-center-left {
+    right: 100%;
+}
+
+.navbar-center-right {
+    left: 100%;
+}
+
+[class*='navbar-center-'] {
+    box-sizing: border-box;
+    width: max-content;
+}
+
+
+/* Nav
+ ========================================================================== */
+
+/*
+ * 1. Reset list
+ */
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+
+    /* 1 */
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-nav .nav-item {
+    display: inline-block;
+    flex: none;
+}
+
+/*
+ * Allow items to wrap into the next line
+ * Only not `absolute` positioned groups
+ */
+
+.navbar-left,
+.navbar-right,
+.navbar-center:only-child {
+    flex-wrap: wrap;
+}
+
+/*
+ * Items
+ * 1. Center content vertically and horizontally
+ * 2. Dimensions
+ * 3. Style
+ * 4. Required for `a`
+ */
+
+.navbar-nav > li > a, /* Nav item */
+.navbar-nav .nav-item-rest,
+.navbar-item, /* Content item */
+.navbar-toggle { /* Clickable item */
+    align-items: center;
+
+    /* 2 */
+    box-sizing: border-box;
+
+    /* 1 */
+    display: flex;
+    font-family: inherit;
+
+    /* 3 */
+    font-size: 16px;
+    justify-content: center;
+    min-height: 64px;
+    padding: 0 16px;
+
+    /* 4 */
+    text-decoration: none;
+}
+
+.navbar-nav .nav-item-rest {
+    color: rgba(255, 255, 255, 0.48);
+    cursor: pointer;
+    padding: 0;
+}
+
+/*
+ * Nav items
+ */
+
+.navbar-nav > li > a {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+/*
+ * Hover
+ * Apply hover style also to focus state and if dropdown is opened
+ */
+
+.navbar-nav > li:hover > a,
+.navbar-nav > li > a:focus,
+.navbar-nav > li > a.open {
+    color: #fff;
+    outline: none;
+}
+
+/* OnClick */
+.navbar-nav > li > a:active {
+    color: #fff;
+}
+
+/* Active */
+.navbar-nav > li.active > a {
+    color: #fff;
+}
+
+
+/* Item
+ ========================================================================== */
+
+.navbar-item {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+/*
+ * Remove margin from the last-child
+ */
+
+.navbar-item > :last-child {
+    margin-bottom: 0;
+}
+
+
+/* Toggle
+ ========================================================================== */
+
+.navbar-toggle {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.navbar-toggle:hover,
+.navbar-toggle:focus,
+.navbar-toggle.open {
+    color: #fff;
+    outline: none;
+    text-decoration: none;
+}
+
+/*
+ * Icon
+ * Adopts `icon`
+ */
+
+.navbar-toggle-icon {
+
+}
+
+/* Hover + Focus */
+:hover > .navbar-toggle-icon,
+:focus > .navbar-toggle-icon {
+
+}
+
+
+/* Subtitle
+ ========================================================================== */
+
+.navbar-subtitle {
+    font-size: 14px;
+
+}
+
+
+/* Dropdown
+ ========================================================================== */
+
+/*
+ * Adopts `dropdown`
+ * 1. Hide by default
+ * 2. Set position
+ * 3. Set a default width
+ * 4. Style
+ */
+
+.navbar-dropdown {
+    background: #313551;
+
+    /* 3 */
+    box-sizing: border-box;
+    color: rgba(255, 255, 255, 0.48);
+
+    /* 1 */
+    display: block;
+
+    /* 4 */
+    padding: 12px;
+
+    /* 2 */
+    position: absolute;
+    width: 220px;
+    z-index: 1010;
+
+}
+
+/* Hide */
+.navbar-dropdown.hidden {
+    display: none;
+}
+
+/*
+ * Transform origin
+ */
+
+[class*='navbar-dropdown-left-top'] {
+    transform-origin: 100% 0;
+}
+
+[class*='navbar-dropdown-bottom'] {
+
+}
+
+[class*='navbar-dropdown-left'] {
+
+}
+
+[class*='navbar-dropdown-right-top'] {
+    transform-origin: 0 0;
+}
+
+
+/* Dropdown Nav
+ * Adopts `nav`
+ ========================================================================== */
+
+.navbar-dropdown-nav {
+
+}
+
+/*
+ * Items
+ */
+
+.navbar-dropdown-nav > li > a {
+    color: rgba(255, 255, 255, 0.48);
+
+}
+
+/* Hover + Focus */
+.navbar-dropdown-nav > li > a:hover,
+.navbar-dropdown-nav > li > a:focus {
+    color: #fff;
+
+}
+
+/* Active */
+.navbar-dropdown-nav > li.active > a {
+    color: #fff;
+
+}
+
+/*
+ * Header
+ */
+
+.navbar-dropdown-nav .nav-header {
+    color: #fff;
+
+}
+
+/*
+ * Divider
+ */
+
+.navbar-dropdown-nav .nav-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.48);
+
+}
+
+/*
+ * Sublists
+ */
+
+// noinspection Stylelint
+.navbar-dropdown-nav .nav-sub a {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.navbar-dropdown-nav .nav-sub a:hover,
+.navbar-dropdown-nav .nav-sub a:focus {
+    color: #fff;
+}
+
+.navbar-dropdown-nav .nav-sub li.active > a {
+    color: #fff;
+}

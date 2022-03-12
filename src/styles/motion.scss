@@ -1,0 +1,345 @@
+/* ========================================================================
+   Component: Motion
+ ========================================================================== */
+
+[class*='motion-']:not(.motion-collapse, .motion-zoom) {
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+}
+
+/* Motions
+ ========================================================================== */
+
+/*
+ * Collapse
+ */
+
+.motion-collapse {
+    overflow: hidden;
+    transition: height 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+/*
+ * Zoom
+ */
+
+.motion-zoom {
+    transform-origin: 0 0;
+
+    &-enter,
+    &-appear {
+        animation-duration: 0.3s;
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        opacity: 0;
+    }
+
+    &-enter-active,
+    &-appear-active {
+        animation-name: scale-zoom-in;
+        animation-play-state: running;
+    }
+
+    &-leave {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    }
+
+    &-leave-active {
+        animation-name: scale-zoom-out;
+        animation-play-state: running;
+    }
+
+}
+
+
+/*
+ * Fade
+ */
+
+.motion-fade {
+    animation-duration: 0.3s;
+
+    &-enter,
+    &-appear {
+        animation-timing-function: linear;
+        opacity: 0;
+    }
+
+    &-enter-active,
+    &-appear-active {
+        animation-name: fade;
+        animation-play-state: running;
+    }
+
+    &-leave {
+        animation-play-state: paused;
+        animation-timing-function: linear;
+    }
+
+    &-leave-active {
+        animation-direction: reverse;
+        animation-name: fade;
+        animation-play-state: running;
+        pointer-events: none;
+    }
+}
+
+/*
+ * Slide Up
+ */
+
+.motion-slide-up {
+    &-enter,
+    &-appear {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        opacity: 0;
+    }
+
+    &-enter-active,
+    &-appear-active {
+        animation-name: slide-up-in;
+        animation-play-state: running;
+    }
+
+    &-leave {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    }
+
+    &-leave-active {
+        animation-name: slide-up-out;
+        animation-play-state: running;
+        pointer-events: none;
+    }
+}
+
+/*
+ * Slide Down
+ */
+
+.motion-slide-down {
+    &-enter,
+    &-appear {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        opacity: 0;
+    }
+
+    &-enter-active,
+    &-appear-active {
+        animation-name: slide-down-in;
+        animation-play-state: running;
+    }
+
+    &-leave {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    }
+
+    &-leave-active {
+        animation-name: slide-down-out;
+        animation-play-state: running;
+        pointer-events: none;
+    }
+}
+
+/*
+ * Slide Left
+ */
+
+.motion-slide-left {
+    &-enter,
+    &-appear {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        opacity: 0;
+    }
+
+    &-enter-active,
+    &-appear-active {
+        animation-name: slide-left-in;
+        animation-play-state: running;
+    }
+
+    &-leave {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    }
+
+    &-leave-active {
+        animation-name: slide-left-out;
+        animation-play-state: running;
+        pointer-events: none;
+    }
+}
+
+/*
+ * Slide Right
+ */
+
+.motion-slide-right {
+    &-enter,
+    &-appear {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        opacity: 0;
+    }
+
+    &-enter-active,
+    &-appear-active {
+        animation-name: slide-right-in;
+        animation-play-state: running;
+    }
+
+    &-leave {
+        animation-play-state: paused;
+        animation-timing-function: cubic-bezier(0.755, 0.05, 0.855, 0.06);
+    }
+
+    &-leave-active {
+        animation-name: slide-right-out;
+        animation-play-state: running;
+        pointer-events: none;
+    }
+}
+
+
+/* Keyframes used by motion classes
+ ========================================================================== */
+
+@keyframes slide-up-in {
+    0% {
+        opacity: 0;
+        transform: scaleY(0.8);
+        transform-origin: 0 0;
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+        transform-origin: 0 0;
+    }
+}
+
+@keyframes slide-up-out {
+    0% {
+        opacity: 1;
+        transform: scaleY(1);
+        transform-origin: 0 0;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scaleY(0.8);
+        transform-origin: 0 0;
+    }
+}
+
+@keyframes slide-down-in {
+    0% {
+        opacity: 0;
+        transform: scaleY(0.8);
+        transform-origin: 100% 100%;
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1);
+        transform-origin: 100% 100%;
+    }
+}
+
+@keyframes slide-down-out {
+    0% {
+        opacity: 1;
+        transform: scaleY(1);
+        transform-origin: 100% 100%;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scaleY(0.8);
+        transform-origin: 100% 100%;
+    }
+}
+
+@keyframes slide-left-in {
+    0% {
+        opacity: 0;
+        transform: scaleX(0.8);
+        transform-origin: 0 0;
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+        transform-origin: 0 0;
+    }
+}
+
+@keyframes slide-left-out {
+    0% {
+        opacity: 1;
+        transform: scaleX(1);
+        transform-origin: 0 0;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scaleX(0.8);
+        transform-origin: 0 0;
+    }
+}
+
+@keyframes slide-right-in {
+    0% {
+        opacity: 0;
+        transform: scaleX(0.8);
+        transform-origin: 100% 0;
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleX(1);
+        transform-origin: 100% 0;
+    }
+}
+
+@keyframes slide-right-out {
+    0% {
+        opacity: 1;
+        transform: scaleX(1);
+        transform-origin: 100% 0;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scaleX(0.8);
+        transform-origin: 100% 0;
+    }
+}
+
+@keyframes scale-zoom-in {
+    0% {
+        opacity: 0;
+        transform: scale(0, 0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1, 1);
+    }
+}
+
+@keyframes scale-zoom-out {
+    0% {
+        transform: scale(1, 1);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0, 0);
+    }
+}

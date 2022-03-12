@@ -1,0 +1,447 @@
+/* ========================================================================
+   Component: Nav
+ ========================================================================== */
+
+/*
+ * Reset
+ */
+
+.nav,
+.nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/*
+ * 1. Center content vertically, e.g. an icon
+ * 2. Imitate white space gap when using flexbox
+ * 3. Reset link
+ * 4. Space is allocated solely based on content dimensions: 0 0 auto
+ */
+
+.nav li > a,
+.nav-item > a {
+    align-items: center;
+
+    /* 2 */
+    column-gap: 0.25em;
+
+    /* 1 */
+    display: flex;
+
+    /* 3 */
+    text-decoration: none;
+}
+
+/* 4 */
+.nav li > a > *,
+.nav-item > a > * {
+    flex: none;
+}
+
+/*
+ * Remove default focus style
+ */
+
+.nav li > a:focus,
+.nav-item > a:focus {
+    outline: none;
+}
+
+/*
+ * Items
+ * Must target `a` elements to exclude other elements (e.g. lists)
+ */
+
+.nav > li > a,
+.nav-item > a {
+    padding: 10px 0;
+}
+
+.nav-item {
+    position: relative;
+    white-space: nowrap;
+
+    /* Disabled */
+    &-disabled {
+        cursor: not-allowed;
+        opacity: 0.85;
+        pointer-events: none;
+    }
+}
+
+
+/* Modes, elements etc.
+ ========================================================================== */
+
+.nav {
+    // Overflow ellipsis
+    &-overflow {
+        display: flex;
+
+        &-item {
+            flex: none;
+        }
+    }
+
+    &-hidden,
+    &-submenu-hidden {
+        display: none;
+    }
+
+    &-vertical.nav-sub,
+    &-vertical-left.nav-sub,
+    &-vertical-right.nav-sub {
+        border-right: 0;
+        max-height: calc(100vh - 100px);
+        min-width: 160px;
+        overflow: hidden;
+        padding: 0;
+
+        &:not([class*='-active']) {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            border-right: 0;
+            left: 0;
+            margin-left: 0;
+
+            &::after {
+                border-right: 0;
+            }
+        }
+
+        > .nav-item,
+        > .nav-submenu {
+            transform-origin: 0 0;
+        }
+    }
+}
+
+
+/* Submenu
+ ========================================================================== */
+
+.nav-submenu {
+    &-title {
+        align-items: center;
+        column-gap: 0.25em; /* 2 */
+        cursor: pointer;
+        display: flex; /* 1 */
+        padding: 0 20px;
+        position: relative;
+        text-decoration: none; /* 3 */
+        white-space: nowrap;
+
+        /* 4 */
+        > * {
+            flex: none;
+        }
+
+        /* 4 */
+
+        /* Remove default focus style */
+        .nav-submenu-title:focus {
+            outline: none;
+        }
+    }
+
+    &-arrow {
+        color: rgba(255, 255, 255, 0.48);
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        width: 10px;
+
+        &::before,
+        &::after {
+            background-color: currentColor;
+            border-radius: 2px;
+            content: '';
+            height: 1.5px;
+            position: absolute;
+            transition: background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+                transform 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+                top 0.3s cubic-bezier(0.645, 0.045, 0.355, 1),
+                color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            width: 6px;
+        }
+    }
+
+    &-vertical &-arrow {
+        // →
+        &::before {
+            transform: rotate(45deg) translateY(-2.5px);
+        }
+
+        &::after {
+            transform: rotate(-45deg) translateY(2.5px);
+        }
+    }
+
+    &-inline &-arrow {
+        // ↓
+        &::before {
+            transform: rotate(-45deg) translateX(2.5px);
+        }
+
+        &::after {
+            transform: rotate(45deg) translateX(-2.5px);
+        }
+    }
+
+    &-open.nav-inline > &-title > &-arrow {
+        // ↑
+        transform: translateY(-2px);
+
+        &::after {
+            transform: rotate(-45deg) translateX(-2.5px);
+        }
+
+        &::before {
+            transform: rotate(45deg) translateX(2.5px);
+        }
+    }
+
+    &-horizontal &-arrow {
+        display: none;
+    }
+
+    &-popup {
+        position: absolute;
+        transform-origin: 0 0;
+
+        &::before {
+            bottom: 0;
+            content: ' ';
+            height: 100%;
+            left: 0;
+            opacity: 0.0001;
+            position: absolute;
+            right: 0;
+            top: -7px;
+            width: 100%;
+            z-index: -1;
+        }
+    }
+
+    &-placement-rightTop::before {
+        left: -7px;
+        top: 0;
+    }
+}
+
+
+/* Sublists
+ ========================================================================== */
+
+/*
+ * Level 2
+ * `ul` needed for higher specificity to override padding
+ */
+
+ul.nav-sub {
+    padding: 0 0 0 15px;
+}
+
+/*
+ * Level 3 and deeper
+ */
+
+.nav-sub ul {
+    padding-left: 15px;
+}
+
+/*
+ * Items
+ */
+
+.nav-sub a {
+    padding: 10px 0;
+}
+
+
+/* Header + Item group title
+ ========================================================================== */
+
+.nav-header,
+.nav-group-header {
+    font-size: 14px;
+    padding: 10px 0;
+    text-transform: uppercase;
+}
+
+.nav-header:not(:first-child),
+.nav-group-header:not(:first-child) {
+    margin-top: 10px;
+}
+
+
+/* Divider
+ ========================================================================== */
+
+.nav-divider {
+    margin: 10px 0;
+}
+
+
+/* Default modifier
+ ========================================================================== */
+
+.nav-default {
+
+}
+
+/*
+ * Items
+ */
+
+.nav-default > li > a {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+/* Hover + Focus */
+.nav-default > li > a:hover,
+.nav-default > li > a:focus {
+    color: #fff;
+}
+
+/* Active */
+.nav-default > li.active > a {
+    color: #fff;
+}
+
+/*
+ * Header
+ */
+
+.nav-default .nav-header {
+    color: #fff;
+}
+
+/*
+ * Divider
+ */
+
+.nav-default .nav-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/*
+ * Sublists
+ */
+
+.nav-default .nav-sub a {
+    color: rgba(255, 255, 255, 0.48);
+}
+
+.nav-default .nav-sub a:hover,
+.nav-default .nav-sub a:focus {
+    color: #fff;
+}
+
+.nav-default .nav-sub li.active > a {
+    color: #fff;
+}
+
+
+/* Primary modifier
+ ========================================================================== */
+
+.nav-primary {
+
+}
+
+/*
+ * Items
+ */
+
+.nav-primary > li > a {
+    color: rgba(197, 228, 243, 0.7);
+    font-size: 16px;
+    line-height: normal;
+}
+
+/* Hover + Focus */
+.nav-primary > li > a:hover,
+.nav-primary > li > a:focus {
+    color: #c5e4f3;
+}
+
+/* Active */
+.nav-primary > li.active > a {
+    color: #c5e4f3;
+}
+
+/*
+ * Header
+ */
+
+.nav-primary .nav-header {
+    color: #fff;
+}
+
+/*
+ * Divider
+ */
+
+.nav-primary .nav-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/*
+ * Sublists
+ */
+
+.nav-primary .nav-sub a {
+    color: rgba(197, 228, 243, 0.7);
+}
+
+.nav-primary .nav-sub a:hover,
+.nav-primary .nav-sub a:focus {
+    color: #c5e4f3;
+}
+
+.nav-primary .nav-sub li.active > a {
+    color: #c5e4f3;
+}
+
+
+/* Alignment modifier
+ ========================================================================== */
+
+/*
+ * 1. Center header
+ * 2. Center items
+ */
+
+/* 1 */
+.nav-center {
+    text-align: center;
+}
+
+/* 2 */
+.nav-center li > a {
+    justify-content: center;
+}
+
+/* Sublists */
+.nav-center .nav-sub,
+.nav-center .nav-sub ul {
+    padding-left: 0;
+}
+
+
+/* Style modifier
+ ========================================================================== */
+
+.nav.nav-divider > :not(.nav-divider) + :not(.nav-header, .nav-divider) {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    margin-top: 5px;
+    padding-top: 5px;
+}

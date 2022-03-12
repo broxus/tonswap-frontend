@@ -2,15 +2,20 @@ import * as React from 'react'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
+import { DisconnectButton } from '@/modules/Account/DisconnectButton'
 import { useWallet } from '@/stores/WalletService'
 import { formattedAmount, sliceAddress } from '@/utils'
 
 import './index.scss'
 
 
-export function Account(): JSX.Element | null {
+type Props = {
+    showDisconnectButton?: boolean;
+}
+
+
+export function Account({ showDisconnectButton = true }: Props): JSX.Element | null {
     const intl = useIntl()
     const wallet = useWallet()
 
@@ -50,9 +55,8 @@ export function Account(): JSX.Element | null {
                                         }, {
                                             balance: formattedAmount(
                                                 wallet.balance,
-                                                9, {
-                                                    preserve: true,
-                                                },
+                                                9,
+                                                { preserve: true },
                                             ),
                                             currency: 'EVER',
                                         })}
@@ -60,14 +64,9 @@ export function Account(): JSX.Element | null {
                                 )}
                             </div>
 
-                            <button
-                                key="logout"
-                                type="button"
-                                className="btn btn-logout"
-                                onClick={wallet.disconnect}
-                            >
-                                <Icon icon="logout" />
-                            </button>
+                            {showDisconnectButton && (
+                                <DisconnectButton />
+                            )}
                         </div>
                     )}
                 </div>

@@ -21,6 +21,7 @@ export default {
 
     WALLET_BALANCE_HINT: '{balance} {currency}',
     WALLET_BTN_TEXT_CONNECT: 'Connect to a wallet',
+    WALLET_BTN_TEXT_DISCONNECT: 'Logout',
 
     TOKENS_UPGRADE_POPUP_TITLE: 'Upgrade tokens',
     TOKENS_UPGRADE_POPUP_NOTE: 'We found some outdated tokens in your wallet. Please, upgrade these tokens to continue.',
