@@ -15,6 +15,7 @@ export const defaultProps = {
 
 /* eslint-disable */
 const library: Record<string, React.ElementType> = {
+    menu: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 24 24" {...getSize(20, 20, ratio)}><path fillRule="evenodd" clipRule="evenodd" d="M22 5V7H2V5H22Z" fill="currentColor" fillOpacity={0.48}/><path fillRule="evenodd" clipRule="evenodd" d="M22 11V13H2V11H22Z" fill="currentColor" fillOpacity={0.48}/><path fillRule="evenodd" clipRule="evenodd" d="M22 17V19H2V17H22Z" fill="currentColor" fillOpacity={0.48}/></svg>,
     arrowDown: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 20 20" {...getSize(20, 20, ratio)}><path d="M10 12.5L5 7.5H15L10 12.5Z"/></svg>,
     externalLink: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 512 512" {...getSize(20, 20, ratio)}><path d="M511.5,0.9v255.5h-34.4V63.2L159.4,381l-24.2-24.2L457.6,34.4H256V0h255.5V0.9z M374.9,477.6H34.8V137.5 h223.9v-34.4H0.5V512h408.9V249h-34.4V477.6z" fill="currentColor" strokeWidth={1.6}/></svg>,
     close: ({ ratio, ...props }) => <svg {...defaultProps} {...props} viewBox="0 0 40 40" {...getSize(40, 40, ratio)}><path d="M14 14L20 20M20 20L14 26M20 20L26 14M20 20L26 26" stroke="currentColor" strokeWidth={2}/></svg>,

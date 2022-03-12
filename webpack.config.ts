@@ -11,7 +11,7 @@ type WebpackConfig = webpack.Configuration & { devServer?: DevServerConfiguratio
 
 
 export default (_: any, options: any): WebpackConfig => {
-    const HOST = process.env.HOST ?? 'localhost'
+    const HOST = process.env.HOST ?? '0.0.0.0'
     const PORT = parseInt(process.env.PORT ?? '3000', 10)
     const showErrors = process.env.ERRORS
 

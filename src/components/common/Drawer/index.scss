@@ -1,0 +1,223 @@
+.drawer {
+    height: 100%;
+    position: fixed;
+    transition: height 0s ease 0.2s,
+        transform 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86),
+        width 0s ease 0.2s;
+    width: 0;
+    z-index: 1000;
+}
+
+.drawer-push-container,
+.drawer-reveal-container {
+    transform: none !important;
+}
+
+.drawer > * {
+    transition: box-shadow 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86),
+        transform 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}
+
+/* Reveal animation */
+.drawer-reveal:not(.drawer-open) .drawer-content-wrapper {
+    transform: none !important;
+    width: 0;
+}
+
+.drawer-reveal .drawer-content-wrapper {
+    overflow: hidden;
+    transition: width 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}
+
+.drawer-reveal .drawer-content {
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+.drawer-reveal.drawer-right .drawer-content {
+    left: auto;
+    right: 0;
+}
+
+.drawer-reveal.drawer-left .drawer-content,
+.drawer-reveal.drawer-right .drawer-content {
+    width: 360px;
+}
+
+.drawer-reveal.drawer-left.drawer-large .drawer-content,
+.drawer-reveal.drawer-right.drawer-large .drawer-content {
+    width: 768px;
+}
+
+
+// Content
+// ========================================================================
+
+.drawer-content-wrapper {
+    height: 100%;
+    position: absolute;
+    width: 100%;
+}
+
+.drawer-content {
+    background-clip: padding-box;
+    background: #1b213f;
+    border: 0 none;
+    height: 100%;
+    outline: 0 none;
+    overflow: visible;
+    position: relative;
+    width: 100%;
+    z-index: 1;
+}
+
+
+// Body
+// ========================================================================
+
+.drawer-body-wrapper {
+    display: flex;
+    flex-flow: column nowrap;
+    height: 100%;
+    width: 100%;
+}
+
+.drawer-body {
+    display: flex;
+    flex-grow: 1;
+    overflow: auto;
+    padding: 16px;
+    word-wrap: break-word;
+}
+
+
+// Side
+// ========================================================================
+
+/*
+ * Left and Right Placement
+ */
+.drawer-left,
+.drawer-right {
+    height: 100%;
+    top: 0;
+    width: 0;
+}
+
+// Content wrapper
+.drawer-left,
+.drawer-left .drawer-content-wrapper {
+    left: 0;
+}
+
+.drawer-right,
+.drawer-right .drawer-content-wrapper {
+    right: 0;
+}
+
+.drawer-left .drawer-content-wrapper,
+.drawer-right .drawer-content-wrapper {
+    height: 100%;
+}
+
+// Open state
+.drawer-left.drawer-open,
+.drawer-right.drawer-open {
+    transition: transform 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+    width: 100%;
+}
+
+/*
+ * Top an Bottom Placement
+ */
+.drawer-top,
+.drawer-bottom {
+    height: 0;
+    left: 0;
+    width: 100%;
+}
+
+// Content wrapper
+.drawer-top,
+.drawer-top .drawer-content-wrapper {
+    top: 0;
+}
+
+.drawer-bottom,
+.drawer-bottom .drawer-content-wrapper {
+    bottom: 0;
+}
+
+.drawer-top .drawer-content-wrapper,
+.drawer-bottom .drawer-content-wrapper {
+    width: 100%;
+}
+
+// Open state
+.drawer-top.drawer-open,
+.drawer-bottom.drawer-open {
+    height: 100%;
+    transition: transform 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+}
+
+
+// Size
+// ========================================================================
+
+/*
+ * Size
+ */
+.drawer-default.drawer-left .drawer-content-wrapper,
+.drawer-default.drawer-right .drawer-content-wrapper {
+    max-width: 100vw;
+    width: 360px;
+}
+
+.drawer-large.drawer-left .drawer-content-wrapper,
+.drawer-large.drawer-right .drawer-content-wrapper {
+    max-width: 100vw;
+    width: 768px;
+}
+
+.drawer-default.drawer-top .drawer-content-wrapper,
+.drawer-default.drawer-bottom .drawer-content-wrapper {
+    height: 360px;
+    max-height: 100vh;
+}
+
+.drawer-large.drawer-top .drawer-content-wrapper,
+.drawer-large.drawer-bottom .drawer-content-wrapper {
+    height: 768px;
+    max-height: 100vh;
+}
+
+
+// Mask
+// ========================================================================
+
+.drawer-mask {
+    animation: motion-fade 0.2s cubic-bezier(0.78, 0.14, 0.15, 0.86);
+    background-color: rgba(0, 0, 0, 0.1);
+    height: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    transition: height 0s ease 0.2s, opacity 0.2s linear;
+    width: 100%;
+
+    @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+        -webkit-backdrop-filter: blur(3px);
+        backdrop-filter: blur(3px);
+    }
+}
+
+.drawer-open .drawer-mask {
+    height: 100%;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.2s linear;
+}

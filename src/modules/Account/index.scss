@@ -1,7 +1,7 @@
 .wallet {
     &__wrapper {
         align-items: center;
-        column-gap: 15px;
+        column-gap: 8px;
         display: flex;
         justify-content: space-between;
     }
@@ -12,6 +12,7 @@
     }
 
     &__address {
+        color: #ffffff;
         font-size: 14px;
         letter-spacing: 0.5px;
         line-height: 20px;

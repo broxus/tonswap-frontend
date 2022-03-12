@@ -16,7 +16,6 @@ import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { ServiceAlert } from '@/components/common/ServiceAlert'
 import { Header } from '@/components/layout/Header'
 import messages from '@/lang/en'
-import { Account } from '@/modules/Account'
 import Builder from '@/pages/builder'
 import CreateToken from '@/pages/builder/create'
 import CustomToken from '@/pages/builder/token'
@@ -121,9 +120,6 @@ export function App(): JSX.Element {
                         </Switch>
                     </main>
                     <Footer key="footer" />
-                </div>
-                <div className="wallets">
-                    <Account key="account" />
                 </div>
                 <WalletConnectingModal />
                 <Observer>

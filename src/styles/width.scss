@@ -1,0 +1,12 @@
+[class*='width'] {
+    box-sizing: border-box;
+    max-width: 100%;
+    width: 100%;
+}
+
+.width-auto { width: auto; }
+
+.width-expand {
+    flex: 1;
+    min-width: 1px;
+}

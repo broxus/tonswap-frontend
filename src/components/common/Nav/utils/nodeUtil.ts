@@ -1,0 +1,33 @@
+import * as React from 'react'
+import toArray from 'rc-util/lib/Children/toArray'
+
+export function parseChildren(
+    children: React.ReactNode,
+    keyPath: string[],
+): React.ReactElement<unknown, string | React.JSXElementConstructor<any>>[] {
+    return toArray(children).map((child, index) => {
+        if (React.isValidElement(child)) {
+            const { key } = child
+            let eventKey = (child.props as any)?.eventKey ?? key
+
+            const emptyKey = eventKey === null || eventKey === undefined
+
+            if (emptyKey) {
+                eventKey = `tmp_key-${[...keyPath, index].join('-')}`
+            }
+
+            const cloneProps = {
+                eventKey,
+                key: eventKey,
+            } as any
+
+            if (process.env.NODE_ENV !== 'production' && emptyKey) {
+                cloneProps.warnKey = true
+            }
+
+            return React.cloneElement(child, cloneProps)
+        }
+
+        return child
+    })
+}
