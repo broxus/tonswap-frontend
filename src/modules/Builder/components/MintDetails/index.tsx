@@ -34,6 +34,7 @@ function Details(): JSX.Element {
 
     const currentSupply = React.useMemo(
         () => new BigNumber(managingToken.token?.totalSupply ?? 0)
+            .shiftedBy(-(managingToken.token?.decimals || 0))
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
         , [managingToken.token!.totalSupply],
@@ -41,8 +42,8 @@ function Details(): JSX.Element {
 
     const afterSupply = React.useMemo(
         () => new BigNumber(managingToken.token?.totalSupply ?? 0)
-            .plus(new BigNumber(managingToken.amountToMint ?? 0)
-                .shiftedBy(+managingToken.token!.decimals))
+            .shiftedBy(-(managingToken.token?.decimals || 0))
+            .plus(managingToken.amountToMint ?? 0)
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
         , [managingToken.token!.totalSupply, managingToken.amountToMint],
