@@ -41,7 +41,8 @@ function Details(): JSX.Element {
 
     const afterSupply = React.useMemo(
         () => new BigNumber(managingToken.token?.totalSupply ?? 0)
-            .minus(managingToken.amountToBurn)
+            .minus(new BigNumber(managingToken.amountToBurn ?? 0)
+                .shiftedBy(+managingToken.token!.decimals))
             .decimalPlaces(+managingToken.token!.decimals, BigNumber.ROUND_DOWN)
             .toFixed()
         , [managingToken.token!.totalSupply, managingToken.amountToBurn],
