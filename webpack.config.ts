@@ -206,6 +206,8 @@ export default (_: any, options: any): WebpackConfig => {
             host: HOST,
             port: PORT,
             historyApiFallback: true,
+            liveReload: false,
+            hot: false,
         }
     }
 

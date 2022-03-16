@@ -7,7 +7,8 @@
         "npm": ">=8"
     },
     "scripts": {
-        "start": "npx webpack serve --hot --mode development --config webpack.config.ts",
+        "serve": "npx webpack serve --mode development --config webpack.config.ts",
+        "start": "npm run serve -- --hot --live-reload",
         "build": "npx webpack --mode production --config webpack.config.ts",
         "lint": "npx eslint src --ext js,jsx,ts,tsx",
         "lint:fix": "npx eslint src --ext js,jsx,ts,tsx --fix",

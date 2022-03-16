@@ -109,7 +109,8 @@ export class ManageTokenStore {
                     this.changeData('token', {
                         ...this.data.token!,
                         totalSupply: this.data.token?.totalSupply ? new BigNumber(this.data.token.totalSupply)
-                            .plus(this.data.amountToMint)
+                            .plus(new BigNumber(this.data.amountToMint)
+                            .shiftedBy(+this.data.token!.decimals))
                             .decimalPlaces(+this.data.token!.decimals, BigNumber.ROUND_DOWN)
                             .toFixed() : undefined,
                     })
@@ -170,7 +171,8 @@ export class ManageTokenStore {
                     this.changeData('token', {
                         ...this.data.token!,
                         totalSupply: this.data.token?.totalSupply ? new BigNumber(this.data.token.totalSupply)
-                            .minus(this.data.amountToBurn)
+                            .minus(new BigNumber(this.data.amountToBurn ?? 0)
+                                .shiftedBy(+this.data.token!.decimals))
                             .decimalPlaces(+this.data.token!.decimals, BigNumber.ROUND_DOWN)
                             .toFixed() : undefined,
                     })
