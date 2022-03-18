@@ -70,7 +70,7 @@ export class FarmingListStore {
         return {
             limit: PAGE_SIZE,
             offset: PAGE_SIZE * (currentPage - 1),
-            ordering: 'aprdescending',
+            ordering: 'tvldescending',
             aprGe: filter.aprFrom ? filter.aprFrom : undefined,
             aprLe: filter.aprTo ? filter.aprTo : undefined,
             tvlGe: filter.tvlFrom ? filter.tvlFrom : undefined,
