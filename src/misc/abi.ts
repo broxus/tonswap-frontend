@@ -1,4 +1,5 @@
 /* eslint-disable max-classes-per-file */
+
 export class DexAbi {
 
     static Root = {
@@ -1299,6 +1300,455 @@ export class DexAbi {
         ],
         data: [],
         events: [],
+    } as const
+
+}
+
+export class EverAbi {
+
+    static EverToTip3 = {
+        'ABI version': 2,
+        version: '2.2',
+        header: ['pubkey', 'time', 'expire'],
+        functions: [
+            {
+                name: 'constructor',
+                inputs: [
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'onWeverWallet',
+                inputs: [
+                    { name: '_weverWallet', type: 'address' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'buildExchangePayload',
+                inputs: [
+                    { name: 'id', type: 'uint64' },
+                    { name: 'amount', type: 'uint128' },
+                    { name: 'pair', type: 'address' },
+                    { name: 'expectedAmount', type: 'uint128' },
+                    { name: 'deployWalletValue', type: 'uint128' },
+                ],
+                outputs: [
+                    { name: 'value0', type: 'cell' },
+                ],
+            },
+            {
+                name: 'swapEvers',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'payload', type: 'cell' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'onAcceptTokensMint',
+                inputs: [
+                    { name: 'value0', type: 'address' },
+                    { name: 'amount', type: 'uint128' },
+                    { name: 'user', type: 'address' },
+                    { name: 'payload', type: 'cell' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'onAcceptTokensTransfer',
+                inputs: [
+                    { name: 'value0', type: 'address' },
+                    { name: 'amount', type: 'uint128' },
+                    { name: 'sender', type: 'address' },
+                    { name: 'value3', type: 'address' },
+                    { name: 'user', type: 'address' },
+                    { name: 'payload', type: 'cell' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'onAcceptTokensBurn',
+                inputs: [
+                    { name: 'value0', type: 'uint128' },
+                    { name: 'value1', type: 'address' },
+                    { name: 'value2', type: 'address' },
+                    { name: 'user', type: 'address' },
+                    { name: 'payload', type: 'cell' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'weverRoot',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverRoot', type: 'address' },
+                ],
+            },
+            {
+                name: 'weverVault',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverVault', type: 'address' },
+                ],
+            },
+            {
+                name: 'weverWallet',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverWallet', type: 'address' },
+                ],
+            },
+        ],
+        data: [
+            { key: 1, name: 'randomNonce_', type: 'uint32' },
+            { key: 2, name: 'weverRoot', type: 'address' },
+            { key: 3, name: 'weverVault', type: 'address' },
+        ],
+        events: [
+            {
+                name: 'SwapEverToTip3WeverMint',
+                inputs: [
+                    { name: 'id', type: 'uint64' },
+                    { name: 'amount', type: 'uint128' },
+                    { name: 'pair', type: 'address' },
+                    { name: 'expectedAmount', type: 'uint128' },
+                    { name: 'deployWalletValue', type: 'uint128' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapEverToTip3SuccessTransfer',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapEverToTip3CancelTransfer',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapTip3EverSuccessTransfer',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapTip3EverCancelTransfer',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapEverWeverToTip3Unwrap',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+        ],
+        fields: [
+            { name: '_pubkey', type: 'uint256' },
+            { name: '_timestamp', type: 'uint64' },
+            { name: '_constructorFlag', type: 'bool' },
+            { name: 'randomNonce_', type: 'uint32' },
+            { name: 'weverRoot', type: 'address' },
+            { name: 'weverVault', type: 'address' },
+            { name: 'weverWallet', type: 'address' },
+        ],
+    } as const
+
+    static Tip3ToEver = {
+        'ABI version': 2,
+        version: '2.2',
+        header: ['pubkey', 'time', 'expire'],
+        functions: [
+            {
+                name: 'constructor',
+                inputs: [
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'onWeverWallet',
+                inputs: [
+                    { name: '_weverWallet', type: 'address' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'buildExchangePayload',
+                inputs: [
+                    { name: 'id', type: 'uint64' },
+                    { name: 'pair', type: 'address' },
+                    { name: 'expectedAmount', type: 'uint128' },
+                ],
+                outputs: [
+                    { name: 'value0', type: 'cell' },
+                ],
+            },
+            {
+                name: 'onAcceptTokensTransfer',
+                inputs: [
+                    { name: 'value0', type: 'address' },
+                    { name: 'amount', type: 'uint128' },
+                    { name: 'sender', type: 'address' },
+                    { name: 'value3', type: 'address' },
+                    { name: 'user', type: 'address' },
+                    { name: 'payload', type: 'cell' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'onAcceptTokensBurn',
+                inputs: [
+                    { name: 'value0', type: 'uint128' },
+                    { name: 'value1', type: 'address' },
+                    { name: 'value2', type: 'address' },
+                    { name: 'user', type: 'address' },
+                    { name: 'payload', type: 'cell' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'weverRoot',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverRoot', type: 'address' },
+                ],
+            },
+            {
+                name: 'weverVault',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverVault', type: 'address' },
+                ],
+            },
+            {
+                name: 'weverWallet',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverWallet', type: 'address' },
+                ],
+            },
+        ],
+        data: [
+            { key: 1, name: 'randomNonce_', type: 'uint32' },
+            { key: 2, name: 'weverRoot', type: 'address' },
+            { key: 3, name: 'weverVault', type: 'address' },
+        ],
+        events: [
+            {
+                name: 'SwapEverToTip3WeverMint',
+                inputs: [
+                    { name: 'id', type: 'uint64' },
+                    { name: 'amount', type: 'uint128' },
+                    { name: 'pair', type: 'address' },
+                    { name: 'expectedAmount', type: 'uint128' },
+                    { name: 'deployWalletValue', type: 'uint128' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapEverToTip3SuccessTransfer',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapEverToTip3CancelTransfer',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapTip3EverSuccessTransfer',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapTip3EverCancelTransfer',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'SwapEverWeverToTip3Unwrap',
+                inputs: [
+                    { name: 'user', type: 'address' },
+                    { name: 'id', type: 'uint64' },
+                ],
+                outputs: [
+                ],
+            },
+        ],
+        fields: [
+            { name: '_pubkey', type: 'uint256' },
+            { name: '_timestamp', type: 'uint64' },
+            { name: '_constructorFlag', type: 'bool' },
+            { name: 'randomNonce_', type: 'uint32' },
+            { name: 'weverRoot', type: 'address' },
+            { name: 'weverVault', type: 'address' },
+            { name: 'weverWallet', type: 'address' },
+        ],
+    } as const
+
+    static EverWeverToTipP3 = {
+        'ABI version': 2,
+        version: '2.2',
+        header: ['pubkey', 'time', 'expire'],
+        functions: [
+            {
+                name: 'constructor',
+                inputs: [
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'onWeverWallet',
+                inputs: [
+                    { name: '_weverWallet', type: 'address' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'buildExchangePayload',
+                inputs: [
+                    { name: 'id', type: 'uint64' },
+                    { name: 'amount', type: 'uint128' },
+                    { name: 'pair', type: 'address' },
+                    { name: 'expectedAmount', type: 'uint128' },
+                    { name: 'deployWalletValue', type: 'uint128' },
+                ],
+                outputs: [
+                    { name: 'value0', type: 'cell' },
+                ],
+            },
+            {
+                name: 'onAcceptTokensTransfer',
+                inputs: [
+                    { name: 'value0', type: 'address' },
+                    { name: 'amount', type: 'uint128' },
+                    { name: 'value2', type: 'address' },
+                    { name: 'value3', type: 'address' },
+                    { name: 'user', type: 'address' },
+                    { name: 'payload', type: 'cell' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'onAcceptTokensBurn',
+                inputs: [
+                    { name: 'value0', type: 'uint128' },
+                    { name: 'value1', type: 'address' },
+                    { name: 'value2', type: 'address' },
+                    { name: 'user', type: 'address' },
+                    { name: 'payload', type: 'cell' },
+                ],
+                outputs: [
+                ],
+            },
+            {
+                name: 'weverRoot',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverRoot', type: 'address' },
+                ],
+            },
+            {
+                name: 'weverVault',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverVault', type: 'address' },
+                ],
+            },
+            {
+                name: 'everToTip3',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'everToTip3', type: 'address' },
+                ],
+            },
+            {
+                name: 'weverWallet',
+                inputs: [
+                ],
+                outputs: [
+                    { name: 'weverWallet', type: 'address' },
+                ],
+            },
+        ],
+        data: [
+            { key: 1, name: 'randomNonce_', type: 'uint32' },
+            { key: 2, name: 'weverRoot', type: 'address' },
+            { key: 3, name: 'weverVault', type: 'address' },
+            { key: 4, name: 'everToTip3', type: 'address' },
+        ],
+        events: [
+        ],
+        fields: [
+            { name: '_pubkey', type: 'uint256' },
+            { name: '_timestamp', type: 'uint64' },
+            { name: '_constructorFlag', type: 'bool' },
+            { name: 'randomNonce_', type: 'uint32' },
+            { name: 'weverRoot', type: 'address' },
+            { name: 'weverVault', type: 'address' },
+            { name: 'everToTip3', type: 'address' },
+            { name: 'weverWallet', type: 'address' },
+        ],
     } as const
 
 }

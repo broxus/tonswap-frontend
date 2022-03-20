@@ -1,8 +1,10 @@
 import { Mutex } from '@broxus/await-semaphore'
 import {
     action,
-    makeAutoObservable,
-    reaction, runInAction,
+    computed,
+    makeObservable,
+    reaction,
+    runInAction,
 } from 'mobx'
 import { Address, Subscription } from 'everscale-inpage-provider'
 
@@ -13,15 +15,21 @@ import {
     Token,
     TokenWallet,
 } from '@/misc'
+import { BaseStore } from '@/stores/BaseStore'
 import { TokensListService, useTokensList } from '@/stores/TokensListService'
 import { useWallet, WalletService } from '@/stores/WalletService'
-import { debug, error, storage } from '@/utils'
+import {
+    debug,
+    error,
+    sliceAddress,
+    storage,
+    warn,
+} from '@/utils'
 
 
 export type TokenCache = Token
 
 export type TokensCacheData = {
-    customTokens: TokenCache[];
     tokens: TokenCache[];
 }
 
@@ -49,34 +57,34 @@ export function getImportedTokens(): string[] {
 }
 
 
-export class TokensCacheService {
-
-    /**
-     * Current data of the tokens cache
-     * @type {TokensCacheData}
-     * @protected
-     */
-    protected data: TokensCacheData = {
-        customTokens: [],
-        tokens: [],
-    }
-
-    protected state: TokensCacheState = {
-        isImporting: false,
-        queue: [],
-        updatingTokens: new Map<string, boolean>(),
-        updatingTokensBalance: new Map<string, boolean>(),
-        updatingTokensWallet: new Map<string, boolean>(),
-    }
+export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheState> {
 
     constructor(
         protected readonly wallet: WalletService,
         protected readonly tokensList: TokensListService,
-        protected readonly config?: TokensCacheCtorConfig,
+        protected readonly options?: TokensCacheCtorConfig,
     ) {
-        makeAutoObservable(this, {
+        super()
+
+        this.setData('tokens', [])
+        this.setState({
+            isImporting: false,
+            queue: [],
+            updatingTokens: new Map<string, boolean>(),
+            updatingTokensBalance: new Map<string, boolean>(),
+            updatingTokensWallet: new Map<string, boolean>(),
+        })
+
+        makeObservable<TokensCacheService, '_byRoot' | '_verifiedByRoot'>(this, {
+            _byRoot: computed,
+            _verifiedByRoot: computed,
             add: action.bound,
-            addCustomToken: action.bound,
+            tokens: computed,
+            verifiedBroxusTokens: computed,
+            roots: computed,
+            isImporting: computed,
+            queue: computed,
+            currentImportingToken: computed,
             onImportConfirm: action.bound,
             onImportDismiss: action.bound,
         })
@@ -112,7 +120,7 @@ export class TokensCacheService {
             return
         }
 
-        this.data.tokens = this.tokensList?.tokens.map(token => ({
+        this.setData('tokens', this.tokensList?.tokens.map(token => ({
             balance: undefined,
             decimals: token.decimals,
             icon: token.logoURI,
@@ -120,10 +128,12 @@ export class TokensCacheService {
             root: token.address,
             symbol: token.symbol,
             updatedAt: -1,
+            vendor: token.vendor,
+            verified: token.verified,
             wallet: undefined,
-        }))
+        })))
 
-        if (this.config?.withImportedTokens) {
+        if (this.options?.withImportedTokens) {
             const importedTokens = getImportedTokens()
 
             if (importedTokens.length > 0) {
@@ -151,8 +161,19 @@ export class TokensCacheService {
         this.tokens.forEach(token => {
             entries[token.root] = token
         })
-        this.customTokens.forEach(token => {
-            entries[token.root] = token
+        return entries
+    }
+
+    /**
+     * Returns verified tokens map where key is a token root address.
+     * @protected
+     */
+    protected get _verifiedByRoot(): Record<string, TokenCache> {
+        const entries: Record<string, TokenCache> = {}
+        this.tokens.forEach(token => {
+            if (token.verified) {
+                entries[token.root] = token
+            }
         })
         return entries
     }
@@ -166,6 +187,13 @@ export class TokensCacheService {
     }
 
     /**
+     * Returns only verified tokens and tokens were vendor is Broxus
+     */
+    public get verifiedBroxusTokens(): TokenCache[] {
+        return this.tokens.filter(token => (token.verified && token.vendor === 'broxus'))
+    }
+
+    /**
      * Returns list of the cached tokens root addresses.
      * @returns {string[]}
      */
@@ -176,11 +204,15 @@ export class TokensCacheService {
     /**
      * Returns token by the given token root address.
      * @param {string} [root]
+     * @param {boolean} [verified]
      * @returns {TokenCache}
      */
-    public get(root?: string): TokenCache | undefined {
+    public get(root?: string, verified: boolean = false): TokenCache | undefined {
         if (root === undefined) {
             return undefined
+        }
+        if (verified) {
+            return this._verifiedByRoot[root]
         }
         return this._byRoot[root]
     }
@@ -199,18 +231,19 @@ export class TokensCacheService {
      * @param {TokenCache} token
      */
     public add(token: TokenCache): void {
-        const tokens = this.tokens.slice()
-        const index = tokens.findIndex(item => item.root === token.root)
-        if (index > -1) {
-            tokens[index] = {
-                ...tokens[index],
-                ...token,
-            }
+        if (this.has(token.root)) {
+            this.setData('tokens', this.tokens.map(item => {
+                if (item.root === token.root) {
+                    return { ...item, ...token }
+                }
+                return item
+            }))
         }
         else {
+            const tokens = this.tokens.slice()
             tokens.push(token)
+            this.setData('tokens', tokens)
         }
-        this.data.tokens = tokens
     }
 
     /**
@@ -218,7 +251,7 @@ export class TokensCacheService {
      * @param {TokenCache} token
      */
     public remove(token: TokenCache): void {
-        this.data.tokens = this.tokens.filter(item => item.root !== token.root)
+        this.setData('tokens', this.tokens.filter(item => item.root !== token.root))
     }
 
     /**
@@ -229,158 +262,36 @@ export class TokensCacheService {
      * @param {TokenCache[K]} value
      */
     public update<K extends keyof TokenCache & string>(root: string, key: K, value: TokenCache[K]): void {
-        const token = this.get(root)
-        if (token !== undefined) {
-            token[key] = value
-        }
+        this.setData('tokens', this.tokens.map(token => {
+            if (token.root === root) {
+                return { ...token, [key]: value }
+            }
+            return token
+        }))
     }
 
     /**
      *
-     * @returns {TokenCache[]}
+     * @param {string} root
      */
-    public get customTokens(): TokenCache[] {
-        return this.data.customTokens
-    }
-
-    /**
-     * Import custom token to the list.
-     * Saves token root address to the localStorage.
-     * @param {TokenCache} token
-     */
-    public import(token: TokenCache): void {
-        try {
-            const importedTokens = getImportedTokens()
-            if (!importedTokens.includes(token.root)) {
-                importedTokens.push(token.root)
-                storage.set(IMPORTED_TOKENS_STORAGE_KEY, JSON.stringify(importedTokens))
-            }
-            this.add(token)
-            this.removeCustomToken(token)
-        }
-        catch (e) {
-            error('Can\'t import token', e)
-        }
-    }
-
-    /**
-     * Add a new custom token to the custom tokens list.
-     * @param {TokenCache} token
-     */
-    public addCustomToken(token: TokenCache): void {
-        const customTokens = this.customTokens.slice()
-        const index = customTokens.findIndex(item => item.root === token.root)
-        if (index > -1) {
-            customTokens[index] = {
-                ...customTokens[index],
-                ...token,
-            }
-        }
-        else {
-            customTokens.push(token)
-        }
-
-        this.data.customTokens = customTokens
-    }
-
-    /**
-     * Remove a given custom token from the custom tokens list.
-     * @param {TokenCache} token
-     */
-    public removeCustomToken(token: TokenCache): void {
-        this.data.customTokens = this.customTokens.filter(item => item.root !== token.root)
-    }
-
-    public get isImporting(): TokensCacheState['isImporting'] {
-        return this.state.isImporting
-    }
-
-    public get queue(): TokensCacheState['queue'] {
-        return this.state.queue
-    }
-
-    public get currentImportingToken(): TokenCache | undefined {
-        return this.queue.slice().shift()
-    }
-
-    public async addToImportQueue(root?: string): Promise<void> {
-        if (root === undefined || !isAddressValid(root)) {
-            return
-        }
-
-        try {
-            runInAction(() => {
-                this.state.isImporting = true
-            })
-            const customToken = await TokenWallet.getTokenFullDetails(root)
-            if (customToken) {
-                const filtered = this.queue.filter(token => token.root !== root)
-                filtered.push(customToken)
-                runInAction(() => {
-                    this.state.queue = filtered
-                })
-            }
-        }
-        catch (e) {
-            error(e)
-            runInAction(() => {
-                this.state.isImporting = this.queue.length > 0
-            })
-        }
-    }
-
     public isTokenUpdating(root: string): boolean {
         return this.state.updatingTokens.get(root) || false
     }
 
-    public isTokenUpdatingBalance(root: string): boolean {
-        return this.state.updatingTokensBalance.get(root) || false
-    }
-
-    public isTokenUpdatingWallet(root: string): boolean {
-        return this.state.updatingTokensWallet.get(root) || false
-    }
-
-    public onImportDismiss(): void {
-        const queue = this.queue.slice()
-        queue.shift()
-        runInAction(() => {
-            this.state.queue = queue
-            this.state.isImporting = queue.length > 0
-        })
-    }
-
-    public onImportConfirm(token: TokenCache): void {
-        this.import(token)
-        const queue = this.queue.slice()
-        queue.shift()
-        runInAction(() => {
-            this.state.queue = queue
-            this.state.isImporting = queue.length > 0
-        })
+    /**
+     *
+     * @param {string} root
+     */
+    public isTokenUpdatingBalance(root?: string): boolean {
+        return (root === undefined ? false : this.state.updatingTokensBalance.get(root)) || false
     }
 
     /**
+     *
      * @param {string} root
-     * @returns {Promise<void>}
      */
-    public async syncCustomToken(root: string): Promise<void> {
-        try {
-            if (this.has(root)) {
-                return
-            }
-
-            const token = await TokenWallet.getTokenFullDetails(root)
-
-            if (token === undefined || this.has(token.root)) {
-                return
-            }
-
-            this.addCustomToken(token)
-        }
-        catch (e) {
-            error('Sync custom token error', e)
-        }
+    public isTokenUpdatingWallet(root?: string): boolean {
+        return (root === undefined ? false : this.state.updatingTokensWallet.get(root)) || false
     }
 
     /**
@@ -410,7 +321,7 @@ export class TokensCacheService {
     }
 
     /**
-     * Sync token balance with balance in network by the given token root address.
+     * Sync token balance with balance in the network by the given token root address.
      * Pass `true` in second parameter to force update.
      * @param {string} root
      * @param {boolean} force
@@ -434,7 +345,7 @@ export class TokensCacheService {
 
         if (token.wallet === undefined && !this.isTokenUpdatingWallet(root)) {
             try {
-                await this.updateTokenWalletAddress(root)
+                await this.syncTokenWalletAddress(root)
             }
             catch (e) {
                 error('Sync token wallet address error', e)
@@ -444,10 +355,10 @@ export class TokensCacheService {
 
         if (token.wallet !== undefined && !this.isTokenUpdatingBalance(root)) {
             try {
-                await this.updateTokenBalance(root)
+                await this.syncTokenBalance(root)
             }
             catch (e) {
-                error('Sync token balance error', e)
+                warn('Sync token balance error', e)
                 this.update(root, 'balance', undefined)
             }
         }
@@ -457,13 +368,37 @@ export class TokensCacheService {
     }
 
     /**
-     * Start to watch token balance updates by the given token root address.
+     * Sync custom token
      * @param {string} root
-     * @param {string} prefix
      * @returns {Promise<void>}
      */
-    public async watch(root: string, prefix: string): Promise<void> {
-        if (this.wallet.address === undefined) {
+    public async syncCustomToken(root: string): Promise<void> {
+        try {
+            if (this.has(root)) {
+                return
+            }
+
+            const token = await TokenWallet.getTokenFullDetails(root)
+
+            if (token === undefined || this.has(token.root)) {
+                return
+            }
+
+            this.add(token)
+        }
+        catch (e) {
+            error('Sync custom token error', e)
+        }
+    }
+
+    /**
+     * Start to watch token balance updates by the given token root address.
+     * @param {string} [root]
+     * @param {string} [prefix]
+     * @returns {Promise<void>}
+     */
+    public async watch(root?: string, prefix: string = ''): Promise<void> {
+        if (this.wallet.address === undefined || root === undefined) {
             return
         }
 
@@ -479,7 +414,7 @@ export class TokensCacheService {
         catch (e) {}
 
         if (token.wallet !== undefined) {
-            const key = `${prefix}-${root}`
+            const key = `${prefix}-${(root)}`
 
             await this.#tokensBalancesSubscribersMutex.use(async () => {
                 const entry = this.#tokensBalancesSubscribers.get(key)
@@ -494,7 +429,7 @@ export class TokensCacheService {
                     address,
                 })).on('data', async event => {
                     debug(
-                        '%cTON Provider%c The token\'s `contractStateChanged` event was captured',
+                        '%cRPC%c The token\'s `contractStateChanged` event was captured',
                         'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                         'color: #c5e4f3',
                         event,
@@ -505,14 +440,14 @@ export class TokensCacheService {
                 this.#tokensBalancesSubscribers.set(key, subscription)
 
                 debug(
-                    `%cTON Provider%c Subscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
-               Key: (${key})`,
+                    `%cRPC%c Subscribe to the %c${token.symbol}%c token wallet %c${sliceAddress(token.wallet)}%c balance updates with key %c${prefix}-${sliceAddress(root)}`,
                     'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                     'color: #c5e4f3',
                     'color: #bae701',
                     'color: #c5e4f3',
                     'color: #bae701',
                     'color: #c5e4f3',
+                    'color: #bae701',
                 )
             })
         }
@@ -520,12 +455,12 @@ export class TokensCacheService {
 
     /**
      * Stop watching token balance updates by the given token root address.
-     * @param {string} root
-     * @param {string} prefix
+     * @param {string} [root]
+     * @param {string} [prefix]
      * @returns {Promise<void>}
      */
-    public async unwatch(root: string, prefix: string): Promise<void> {
-        if (this.wallet.address === undefined) {
+    public async unwatch(root?: string, prefix: string = ''): Promise<void> {
+        if (this.wallet.address === undefined || root === undefined) {
             return
         }
 
@@ -550,14 +485,14 @@ export class TokensCacheService {
             this.#tokensBalancesSubscribers.delete(key)
 
             debug(
-                `%cTON Provider%c Unsubscribe to a token %c${token.symbol}%c wallet (%c${token.wallet}%c) balance updates.
-                Key: (${key})`,
+                `%cRPC%c Unsubscribe from the %c${token.symbol}%c token wallet %c${sliceAddress(token.wallet)}%c balance updates with key %c${prefix}-${sliceAddress(root)}`,
                 'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                 'color: #c5e4f3',
                 'color: #bae701',
                 'color: #c5e4f3',
                 'color: #bae701',
                 'color: #c5e4f3',
+                'color: #bae701',
             )
         })
     }
@@ -567,7 +502,7 @@ export class TokensCacheService {
      * It updates balance in the tokens list.
      * @param {string} root
      */
-    public async updateTokenBalance(root: string): Promise<void> {
+    public async syncTokenBalance(root: string): Promise<void> {
         if (root === undefined || this.wallet.account?.address === undefined || this.isTokenUpdatingBalance(root)) {
             return
         }
@@ -585,10 +520,15 @@ export class TokensCacheService {
                 wallet: new Address(token.wallet),
             })
 
+            // Force update
+            runInAction(() => {
+                token.balance = balance
+            })
+
             this.update(root, 'balance', balance)
         }
-        catch (e) {
-            error('Token balance update error', e)
+        catch (e: any) {
+            warn('Cannot update token balance. Wallet account of this token not created yet ->', e.message)
             this.update(root, 'balance', undefined)
         }
         finally {
@@ -601,7 +541,7 @@ export class TokensCacheService {
      * @param {string} root
      * @returns {Promise<void>}
      */
-    public async updateTokenWalletAddress(root: string): Promise<void> {
+    public async syncTokenWalletAddress(root: string): Promise<void> {
         if (root === undefined || this.wallet.account?.address === undefined || this.isTokenUpdatingWallet(root)) {
             return
         }
@@ -621,6 +561,11 @@ export class TokensCacheService {
                     root: new Address(token.root),
                 })
 
+                // Force update
+                runInAction(() => {
+                    token.wallet = address.toString()
+                })
+
                 this.update(root, 'wallet', address.toString())
             }
             catch (e) {
@@ -630,6 +575,99 @@ export class TokensCacheService {
                 this.state.updatingTokensWallet.set(root, false)
             }
         }
+    }
+
+    /**
+     * Import custom token to the list.
+     * Saves token root address to the localStorage.
+     * @param {TokenCache} token
+     */
+    public import(token: TokenCache): void {
+        try {
+            const importedTokens = getImportedTokens()
+            if (!importedTokens.includes(token.root)) {
+                importedTokens.push(token.root)
+                storage.set(IMPORTED_TOKENS_STORAGE_KEY, JSON.stringify(importedTokens))
+            }
+            this.add(token)
+        }
+        catch (e) {
+            error('Can\'t import token', e)
+        }
+    }
+
+    /**
+     *
+     */
+    public get isImporting(): TokensCacheState['isImporting'] {
+        return this.state.isImporting
+    }
+
+    /**
+     *
+     */
+    public get queue(): TokensCacheState['queue'] {
+        return this.state.queue
+    }
+
+    /**
+     *
+     */
+    public get currentImportingToken(): TokenCache | undefined {
+        return this.queue.slice().shift()
+    }
+
+    /**
+     *
+     * @param {string} [root]
+     */
+    public async addToImportQueue(root?: string): Promise<void> {
+        if (root === undefined || !isAddressValid(root)) {
+            return
+        }
+
+        try {
+            const customToken = await TokenWallet.getTokenFullDetails(root)
+
+            if (customToken) {
+                const filtered = this.queue.filter(token => token.root !== root)
+                filtered.push(customToken)
+                this.setState('queue', filtered)
+                this.setState('isImporting', true)
+            }
+            else {
+                this.setState('isImporting', this.queue.length > 0)
+            }
+        }
+        catch (e) {
+            error(e)
+            this.setState('isImporting', this.queue.length > 0)
+        }
+    }
+
+    /**
+     *
+     */
+    public onImportDismiss(): void {
+        const queue = this.queue.slice()
+        queue.shift()
+        this.setState({
+            isImporting: queue.length > 0,
+            queue,
+        })
+    }
+
+    /**
+     *
+     */
+    public onImportConfirm(token: TokenCache): void {
+        this.import(token)
+        const queue = this.queue.slice()
+        queue.shift()
+        this.setState({
+            isImporting: queue.length > 0,
+            queue,
+        })
     }
 
     /**

@@ -64,6 +64,7 @@ export function Pool(): JSX.Element {
                                     label={intl.formatMessage({
                                         id: 'POOL_FIELD_LABEL_LEFT',
                                     })}
+                                    id="leftField"
                                     isCaution={pool.isAutoExchangeEnabled}
                                     isValid={useBalanceValidation(
                                         pool.leftToken,
@@ -100,6 +101,7 @@ export function Pool(): JSX.Element {
                                     label={intl.formatMessage({
                                         id: 'POOL_FIELD_LABEL_RIGHT',
                                     })}
+                                    id="rightField"
                                     isCaution={pool.isAutoExchangeEnabled}
                                     isValid={useBalanceValidation(
                                         pool.rightToken,

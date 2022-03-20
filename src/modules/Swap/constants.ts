@@ -16,6 +16,8 @@ export const DEFAULT_RIGHT_TOKEN_ROOT = DexConstants.USDTRootAddress.toString()
 
 export const DEFAULT_DECIMALS = 18
 
+export const DEFAULT_SLIPPAGE_VALUE = '0.5'
+
 export const DEFAULT_SWAP_BILL: SwapBill = {
     amount: undefined,
     expectedAmount: undefined,
@@ -24,6 +26,9 @@ export const DEFAULT_SWAP_BILL: SwapBill = {
     priceImpact: undefined,
 }
 
+/**
+ * @deprecated
+ */
 export const DEFAULT_SWAP_STORE_DATA: SwapStoreData = {
     bestCrossExchangeRoute: undefined,
     bill: DEFAULT_SWAP_BILL,
@@ -35,9 +40,12 @@ export const DEFAULT_SWAP_STORE_DATA: SwapStoreData = {
     rightAmount: '',
     rightToken: undefined,
     routes: [],
-    slippage: '0.5',
+    slippage: DEFAULT_SLIPPAGE_VALUE,
 }
 
+/**
+ * @deprecated
+ */
 export const DEFAULT_SWAP_STORE_STATE: SwapStoreState = {
     direction: SwapDirection.LTR,
     exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,

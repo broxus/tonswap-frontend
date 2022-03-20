@@ -4,7 +4,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { useWallet } from '@/stores/WalletService'
-import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
+import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { useBalanceValidation } from '@/hooks/useBalanceValidation'
 import { SwapDirection } from '@/modules/Swap/types'
 
@@ -12,9 +12,9 @@ import { SwapDirection } from '@/modules/Swap/types'
 function SubmitButton(): JSX.Element {
     const intl = useIntl()
     const wallet = useWallet()
-    const swap = useSwapStore()
+    const formStore = useSwapFormStore()
 
-    if (swap.isSwapping || swap.isCrossExchangePreparing || swap.isCrossExchangeCalculating) {
+    if (formStore.isSwapping || formStore.isCalculating) {
         return (
             <button
                 type="button"
@@ -43,22 +43,22 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case swap.leftToken === undefined || swap.rightToken === undefined:
+        case formStore.leftToken === undefined || formStore.rightToken === undefined:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_SELECT_A_TOKEN',
             })
             break
 
-        case swap.leftAmount.length === 0 && swap.direction === SwapDirection.LTR:
-        case swap.rightAmount.length === 0 && swap.direction === SwapDirection.RTL:
+        case formStore.leftAmount.length === 0 && formStore.direction === SwapDirection.LTR:
+        case formStore.rightAmount.length === 0 && formStore.direction === SwapDirection.RTL:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_ENTER_AN_AMOUNT',
             })
             break
 
-        case !swap.isCrossExchangeAvailable:
+        case !formStore.isCrossExchangeAvailable:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_ROUTE_DOES_NOT_EXIST',
@@ -66,36 +66,36 @@ function SubmitButton(): JSX.Element {
             break
 
         case !useBalanceValidation(
-            swap.leftToken,
-            swap.direction === SwapDirection.LTR
-                ? swap.leftAmount
-                : swap.bestCrossExchangeRoute?.leftAmount,
+            formStore.leftToken,
+            formStore.direction === SwapDirection.LTR
+                ? formStore.leftAmount
+                : formStore.swap?.leftAmount,
         ):
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_INSUFFICIENT_TOKEN_BALANCE',
             }, {
-                symbol: swap.leftToken?.symbol || '',
-                // eslint-disable-next-line react/no-multi-comp,react/destructuring-assignment
+                symbol: formStore.leftToken?.symbol || '',
+                // eslint-disable-next-line react/no-multi-comp,react/destructuring-assignment,react/no-unstable-nested-components
                 s: parts => <span className="truncate-name">{parts.join('')}</span>,
             })
             break
 
-        case swap.isConfirmationAwait:
+        case formStore.isConfirmationAwait:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_CONFIRMATION_AWAIT',
             })
             break
 
-        case swap.isCrossExchangeSwapValid:
+        case formStore.swap.isValid:
             buttonProps.onClick = () => {
-                swap.changeState('isConfirmationAwait', true)
+                formStore.setState('isConfirmationAwait', true)
             }
             break
 
         default:
-            buttonProps.disabled = !swap.isCrossExchangeSwapValid || swap.isLoading
+            buttonProps.disabled = !formStore.swap.isValid || formStore.isLoading
     }
 
     return (

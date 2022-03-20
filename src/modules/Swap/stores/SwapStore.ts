@@ -1,16 +1,24 @@
 import BigNumber from 'bignumber.js'
 import * as E from 'fp-ts/Either'
 import {
-    action, IReactionDisposer, makeAutoObservable, reaction, toJS,
+    action,
+    IReactionDisposer, makeObservable,
+    reaction,
+    toJS,
 } from 'mobx'
 import { Address, DecodedAbiFunctionInputs, Subscriber } from 'everscale-inpage-provider'
 
 import { useRpcClient } from '@/hooks/useRpcClient'
-import { checkPair, DexAbi, TokenWallet } from '@/misc'
+import {
+    checkPair,
+    DexAbi,
+    DexConstants,
+    TokenWallet,
+} from '@/misc'
 import { CrossPairsRequest, PairsResponse } from '@/modules/Pairs/types'
 import {
     CROSS_PAIR_EXCHANGE_WHITE_LIST,
-    DEFAULT_DECIMALS,
+    DEFAULT_DECIMALS, DEFAULT_SLIPPAGE_VALUE,
     DEFAULT_SWAP_BILL,
     DEFAULT_SWAP_STORE_DATA,
     DEFAULT_SWAP_STORE_STATE,
@@ -20,6 +28,7 @@ import {
     SwapDirection,
     SwapExchangeMode,
     SwapFailureResult,
+    SwapOptions,
     SwapPair,
     SwapRoute,
     SwapRouteResult,
@@ -43,31 +52,25 @@ import {
     intersection,
 } from '@/modules/Swap/utils'
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
-import { useWallet, WalletService } from '@/stores/WalletService'
+import { useWallet, WalletNativeCoin, WalletService } from '@/stores/WalletService'
 import { SwapApi, useSwapApi } from '@/modules/Swap/hooks/useApi'
 import {
-    debounce, debug, error, isGoodBignumber, storage,
+    debounce,
+    debug,
+    error,
+    isGoodBignumber,
+    storage,
 } from '@/utils'
+import { BaseStore } from '@/stores/BaseStore'
 
 
 const rpc = useRpcClient()
 
 
-export class SwapStore {
-
-    /**
-     * Current data of the swap form.
-     * @type {SwapStoreData}
-     * @protected
-     */
-    protected data: SwapStoreData = DEFAULT_SWAP_STORE_DATA
-
-    /**
-     * Current state of the swap store and form.
-     * @type {SwapStoreState}
-     * @protected
-     */
-    protected state: SwapStoreState = DEFAULT_SWAP_STORE_STATE
+/**
+ * @deprecated
+ */
+export class SwapStore extends BaseStore<SwapStoreData, SwapStoreState> {
 
     /**
      * Last swap transaction result data.
@@ -81,14 +84,19 @@ export class SwapStore {
     constructor(
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
+        protected readonly options?: SwapOptions,
     ) {
-        makeAutoObservable<
+        super()
+
+        this.setData(DEFAULT_SWAP_STORE_DATA)
+        this.setState(DEFAULT_SWAP_STORE_STATE)
+
+        makeObservable<
             SwapStore,
             | 'handleSlippageChange'
             | 'handleTokensChange'
             | 'handleWalletAccountChange'
         >(this, {
-            changeData: action.bound,
             cleanTransactionResult: action.bound,
             toggleDirection: action.bound,
             toggleSwapExchangeMode: action.bound,
@@ -98,29 +106,6 @@ export class SwapStore {
         })
     }
 
-
-    /*
-     * Public actions. Useful in UI
-     * ----------------------------------------------------------------------------------
-     */
-
-    /**
-     * Change store data by the given key and value.
-     * @param {K extends keyof SwapStoreData} key
-     * @param {SwapStoreData[K]} value
-     */
-    public changeData<K extends keyof SwapStoreData>(key: K, value: SwapStoreData[K]): void {
-        this.data[key] = value
-    }
-
-    /**
-     * Change store state by the given key and value.
-     * @param {K extends keyof SwapStoreState} key
-     * @param {SwapStoreState[K]} value
-     */
-    public changeState<K extends keyof SwapStoreState>(key: K, value: SwapStoreState[K]): void {
-        this.state[key] = value
-    }
 
     /**
      * Manually initiate store.
@@ -140,6 +125,12 @@ export class SwapStore {
         await this.unsubscribeTransactionSubscriber()
 
         this.#transactionSubscriber = new rpc.Subscriber()
+
+        this.#coinDisposer = reaction(() => this.nativeCoinSide, value => {
+            if (value !== undefined) {
+                this.setData(value, this.options?.multipleSwapTokenRoot)
+            }
+        }, { fireImmediately: true })
 
         this.#slippageDisposer = reaction(
             () => this.data.slippage,
@@ -163,16 +154,17 @@ export class SwapStore {
             { fireImmediately: true },
         )
 
-        this.changeData('slippage', storage.get('slippage') || '0.5')
+        this.setData('slippage', storage.get('slippage') || '0.5')
     }
 
     /**
-     * Manually dispose all of the internal subscribers.
+     * Manually dispose all the internal subscribers.
      * Clean last transaction result, intervals
      * and reset all data to their defaults.
      * @param {boolean} disposeWallet
      */
     public async dispose(disposeWallet: boolean = true): Promise<void> {
+        this.#coinDisposer?.()
         this.#slippageDisposer?.()
         this.#tokensDisposer?.()
         this.#tokensCacheDisposer?.()
@@ -191,7 +183,7 @@ export class SwapStore {
      */
     public async swap(): Promise<void> {
         if (!this.isDirectSwapValid) {
-            this.changeState('isSwapping', false)
+            this.setState('isSwapping', false)
             return
         }
 
@@ -219,7 +211,7 @@ export class SwapStore {
         })
 
         // noinspection DuplicatedCode
-        this.changeState('isSwapping', true)
+        this.setState('isSwapping', true)
 
         let stream = this.#transactionSubscriber?.transactions(this.wallet.account!.address)
 
@@ -269,7 +261,7 @@ export class SwapStore {
         }
         catch (e) {
             error('decodeTransaction error: ', e)
-            this.changeState('isSwapping', false)
+            this.setState('isSwapping', false)
         }
     }
 
@@ -284,7 +276,7 @@ export class SwapStore {
             || firstPair?.address === undefined
             || firstPair.contract === undefined
         ) {
-            this.changeState('isSwapping', false)
+            this.setState('isSwapping', false)
             return
         }
 
@@ -324,7 +316,7 @@ export class SwapStore {
         })
 
         // noinspection DuplicatedCode
-        this.changeState('isSwapping', true)
+        this.setState('isSwapping', true)
 
         let stream = this.#transactionSubscriber?.transactions(this.wallet.account!.address)
 
@@ -445,7 +437,7 @@ export class SwapStore {
         }
         catch (e) {
             error('decodeTransaction error: ', e)
-            this.changeState('isSwapping', false)
+            this.setState('isSwapping', false)
         }
     }
 
@@ -459,9 +451,9 @@ export class SwapStore {
         }
 
         if (this.pair?.address === undefined && !this.isCrossExchangeAvailable) {
-            this.changeData('priceLeftToRight', undefined)
-            this.changeData('priceRightToLeft', undefined)
-            this.changeState('isEnoughLiquidity', false)
+            this.setData('priceLeftToRight', undefined)
+            this.setData('priceRightToLeft', undefined)
+            this.setState('isEnoughLiquidity', false)
             debug(
                 '#recalculate reset when no pair',
                 toJS(this.data),
@@ -471,7 +463,7 @@ export class SwapStore {
             return
         }
 
-        this.changeState(
+        this.setState(
             'isEnoughLiquidity',
             !this.pairLeftBalanceNumber.isZero()
             && !this.pairRightBalanceNumber.isZero(),
@@ -515,21 +507,21 @@ export class SwapStore {
             priceRightToLeft,
         } = this.data
 
-        this.changeData('priceLeftToRight', priceRightToLeft)
-        this.changeData('priceRightToLeft', priceLeftToRight)
+        this.setData('priceLeftToRight', priceRightToLeft)
+        this.setData('priceRightToLeft', priceLeftToRight)
 
-        this.changeData('leftToken', rightToken)
-        this.changeData('rightToken', leftToken)
+        this.setData('leftToken', rightToken)
+        this.setData('rightToken', leftToken)
 
         if (this.direction === SwapDirection.RTL) {
-            this.changeState('direction', SwapDirection.LTR)
-            this.changeData('leftAmount', rightAmount)
-            this.changeData('rightAmount', '')
+            this.setState('direction', SwapDirection.LTR)
+            this.setData('leftAmount', rightAmount)
+            this.setData('rightAmount', '')
         }
         else if (this.direction === SwapDirection.LTR) {
-            this.changeState('direction', SwapDirection.RTL)
-            this.changeData('rightAmount', leftAmount)
-            this.changeData('leftAmount', '')
+            this.setState('direction', SwapDirection.RTL)
+            this.setData('rightAmount', leftAmount)
+            this.setData('leftAmount', '')
         }
 
         this.forceInvalidate()
@@ -540,10 +532,10 @@ export class SwapStore {
      */
     public togglePriceDirection(): void {
         if (this.priceDirection === SwapDirection.LTR) {
-            this.changeState('priceDirection', SwapDirection.RTL)
+            this.setState('priceDirection', SwapDirection.RTL)
             return
         }
-        this.changeState('priceDirection', SwapDirection.LTR)
+        this.setState('priceDirection', SwapDirection.LTR)
     }
 
     /**
@@ -551,10 +543,10 @@ export class SwapStore {
      */
     public toggleSwapExchangeMode(): void {
         if (!this.isCrossExchangeMode && this.isCrossExchangeAvailable) {
-            this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
+            this.setState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
             return
         }
-        this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
+        this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
 
     /**
@@ -569,7 +561,7 @@ export class SwapStore {
      */
     public forceInvalidate(): void {
         this.resetBill()
-        this.changeData('bestCrossExchangeRoute', undefined)
+        this.setData('bestCrossExchangeRoute', undefined)
         this.finalizeDirectCalculation()
     }
 
@@ -591,7 +583,7 @@ export class SwapStore {
             && isGoodBignumber(new BigNumber(value || 0))
         ) {
             if (this.isCrossExchangeMode) {
-                this.changeData('bestCrossExchangeRoute', undefined)
+                this.setData('bestCrossExchangeRoute', undefined)
                 await this.recalculate(!this.isCalculating)
             }
 
@@ -639,15 +631,15 @@ export class SwapStore {
         if (leftRoot === rightRoot) {
             if (isRightChanged) {
                 const { leftAmount } = this
-                this.changeData('rightAmount', leftAmount)
-                this.changeData('leftAmount', '')
-                this.changeState('direction', SwapDirection.RTL)
+                this.setData('rightAmount', leftAmount)
+                this.setData('leftAmount', '')
+                this.setState('direction', SwapDirection.RTL)
             }
             else if (isLeftChanged) {
                 const { rightAmount } = this
-                this.changeData('leftAmount', rightAmount)
-                this.changeData('rightAmount', '')
-                this.changeState('direction', SwapDirection.LTR)
+                this.setData('leftAmount', rightAmount)
+                this.setData('rightAmount', '')
+                this.setState('direction', SwapDirection.LTR)
             }
         }
 
@@ -657,18 +649,18 @@ export class SwapStore {
 
         if (!isToggleDirection) {
             this.resetCrossExchangeData()
-            this.changeData('priceLeftToRight', undefined)
-            this.changeData('priceRightToLeft', undefined)
+            this.setData('priceLeftToRight', undefined)
+            this.setData('priceRightToLeft', undefined)
             debug('#handleTokensChange reset cross-exchange data')
         }
 
         if (isChanged) {
-            this.changeData('pair', undefined)
+            this.setData('pair', undefined)
             debug('#handleTokensChange change token')
         }
 
         if (leftRoot === undefined || rightRoot === undefined) {
-            this.changeData('pair', undefined)
+            this.setData('pair', undefined)
             debug(
                 '#handleTokensChange only one token selected -> reset',
                 toJS(this.data),
@@ -679,11 +671,11 @@ export class SwapStore {
         }
 
         if (this.pair === undefined) {
-            this.changeState('isPairChecking', true)
+            this.setState('isPairChecking', true)
 
             try {
                 const address = await checkPair(leftRoot, rightRoot)
-                this.changeData(
+                this.setData(
                     'pair',
                     address !== undefined
                         ? {
@@ -695,7 +687,7 @@ export class SwapStore {
             }
             catch (e) {
                 error('Check pair error', e)
-                this.changeData('pair', undefined)
+                this.setData('pair', undefined)
             }
         }
 
@@ -709,7 +701,7 @@ export class SwapStore {
                     const { tvl } = await this.api.pair({
                         address: this.pair.address.toString(),
                     })
-                    this.changeState('isLowTvl', new BigNumber(tvl ?? 0).lt(5e4))
+                    this.setState('isLowTvl', new BigNumber(tvl ?? 0).lt(5e4))
                     debug('TVL is less than 50k?', this.state.isLowTvl)
                 }
             }
@@ -726,15 +718,15 @@ export class SwapStore {
                     this.syncPairData(),
                 ])
 
-                this.changeState(
+                this.setState(
                     'isEnoughLiquidity',
                     !this.pairLeftBalanceNumber.isZero()
                     && !this.pairRightBalanceNumber.isZero(),
                 )
 
                 if (this.state.isLowTvl) {
-                    this.changeData('priceLeftToRight', undefined)
-                    this.changeData('priceRightToLeft', undefined)
+                    this.setData('priceLeftToRight', undefined)
+                    this.setData('priceRightToLeft', undefined)
                 }
                 else {
                     this.finalizeDirectCalculation()
@@ -745,7 +737,7 @@ export class SwapStore {
             }
         }
 
-        this.changeState('isPairChecking', false)
+        this.setState('isPairChecking', false)
 
         if (isChanged) {
             await this.prepareCrossExchange()
@@ -804,13 +796,13 @@ export class SwapStore {
             success: true,
         }
 
-        this.changeState('isSwapping', false)
-        this.changeData('leftAmount', '')
-        this.changeData('rightAmount', '')
+        this.setState('isSwapping', false)
+        this.setData('leftAmount', '')
+        this.setData('rightAmount', '')
         this.forceInvalidate()
 
         if (this.exchangeMode !== SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY) {
-            this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
+            this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
         }
 
         await this.syncPairState()
@@ -852,9 +844,9 @@ export class SwapStore {
             success: false,
         }
 
-        this.changeState('isSwapping', false)
+        this.setState('isSwapping', false)
         this.forceInvalidate()
-        this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
+        this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
 
 
@@ -886,7 +878,7 @@ export class SwapStore {
             return
         }
 
-        this.changeState('isCalculating', !force)
+        this.setState('isCalculating', !force)
 
         debug(
             '#calculateByLeftAmount start',
@@ -910,7 +902,7 @@ export class SwapStore {
 
                     const expectedAmountBN = new BigNumber(expectedAmount || 0)
 
-                    this.changeData('bill', {
+                    this.setData('bill', {
                         amount: this.leftAmountNumber.toFixed(),
                         expectedAmount: expectedAmountBN.toFixed(),
                         fee,
@@ -920,7 +912,7 @@ export class SwapStore {
                         ).toFixed(),
                     })
 
-                    this.changeData(
+                    this.setData(
                         'rightAmount',
                         isGoodBignumber(expectedAmountBN)
                             ? expectedAmountBN.shiftedBy(-this.rightTokenDecimals).toFixed()
@@ -933,7 +925,7 @@ export class SwapStore {
 
         this.finalizeDirectCalculation()
 
-        this.changeState('isCalculating', false)
+        this.setState('isCalculating', false)
 
         debug(
             '#calculateByLeftAmount done',
@@ -966,7 +958,7 @@ export class SwapStore {
             return
         }
 
-        this.changeState('isCalculating', !force)
+        this.setState('isCalculating', !force)
 
         debug(
             '#calculateByRightAmount start',
@@ -976,7 +968,7 @@ export class SwapStore {
         )
 
         if (this.isEnoughLiquidity && this.isRightAmountValid) {
-            this.changeState(
+            this.setState(
                 'isEnoughLiquidity',
                 this.rightAmountNumber.lt(
                     this.isPairInverted
@@ -986,7 +978,7 @@ export class SwapStore {
             )
 
             if (!this.isEnoughLiquidity) {
-                this.changeData('leftAmount', '')
+                this.setData('leftAmount', '')
             }
         }
 
@@ -1006,7 +998,7 @@ export class SwapStore {
                     const expectedAmountBN = new BigNumber(expectedAmount || 0)
 
                     if (isGoodBignumber(expectedAmountBN)) {
-                        this.changeData('bill', {
+                        this.setData('bill', {
                             amount: expectedAmountBN.toFixed(),
                             expectedAmount: this.rightAmountNumber.toFixed(),
                             fee,
@@ -1016,14 +1008,14 @@ export class SwapStore {
                             ).toFixed(),
                         })
 
-                        this.changeData(
+                        this.setData(
                             'leftAmount',
                             expectedAmountBN.shiftedBy(-this.leftTokenDecimals).toFixed(),
                         )
                     }
                     else {
-                        this.changeData('leftAmount', '')
-                        this.changeData('rightAmount', '')
+                        this.setData('leftAmount', '')
+                        this.setData('rightAmount', '')
                     }
                 }
                 catch (e) {}
@@ -1032,7 +1024,7 @@ export class SwapStore {
 
         this.finalizeDirectCalculation()
 
-        this.changeState('isCalculating', false)
+        this.setState('isCalculating', false)
 
         debug(
             '#calculateByRightAmount done',
@@ -1049,8 +1041,8 @@ export class SwapStore {
      */
     protected finalizeDirectCalculation(): void {
         if (!this.isEnoughLiquidity) {
-            this.changeData('priceLeftToRight', undefined)
-            this.changeData('priceRightToLeft', undefined)
+            this.setData('priceLeftToRight', undefined)
+            this.setData('priceRightToLeft', undefined)
             return
         }
 
@@ -1078,11 +1070,11 @@ export class SwapStore {
             || this.pair.numerator === undefined
         ) {
             if (isGoodBignumber(priceLeftToRight)) {
-                this.changeData('priceLeftToRight', priceLeftToRight.toFixed())
+                this.setData('priceLeftToRight', priceLeftToRight.toFixed())
             }
 
             if (isGoodBignumber(priceRightToLeft)) {
-                this.changeData('priceRightToLeft', priceRightToLeft.toFixed())
+                this.setData('priceRightToLeft', priceRightToLeft.toFixed())
             }
 
             return
@@ -1116,11 +1108,11 @@ export class SwapStore {
         )
 
         if (isGoodBignumber(priceLeftToRight)) {
-            this.changeData('priceLeftToRight', priceLeftToRight.toFixed())
+            this.setData('priceLeftToRight', priceLeftToRight.toFixed())
         }
 
         if (isGoodBignumber(priceRightToLeft)) {
-            this.changeData('priceRightToLeft', priceRightToLeft.toFixed())
+            this.setData('priceRightToLeft', priceRightToLeft.toFixed())
         }
     }
 
@@ -1232,7 +1224,7 @@ export class SwapStore {
             }),
         ])
 
-        this.changeData('pair', {
+        this.setData('pair', {
             ...this.pair,
             denominator,
             numerator,
@@ -1262,7 +1254,7 @@ export class SwapStore {
                 }),
             ])
 
-            this.changeData('pair', {
+            this.setData('pair', {
                 ...this.pair,
                 balances: { left, right },
             })
@@ -1285,7 +1277,7 @@ export class SwapStore {
             address: this.pair.address,
         })
 
-        this.changeData('pair', { ...this.pair, state })
+        this.setData('pair', { ...this.pair, state })
     }
 
 
@@ -1313,7 +1305,7 @@ export class SwapStore {
             return
         }
 
-        this.changeState('isCrossExchangeCalculating', !force)
+        this.setState('isCrossExchangeCalculating', !force)
 
         debug(
             '#calculateLtrCrossExchangeBill invalidate routes',
@@ -1408,7 +1400,7 @@ export class SwapStore {
                     routes.push(route)
                 }
 
-                this.changeData('routes', routes)
+                this.setData('routes', routes)
             }
         )()
 
@@ -1423,7 +1415,7 @@ export class SwapStore {
             ),
             bestCrossExchangeRoute: SwapRoute | undefined
 
-        this.changeData('bestCrossExchangeRoute', undefined)
+        this.setData('bestCrossExchangeRoute', undefined)
 
         // eslint-disable-next-line no-restricted-syntax
         for (const route of this.routes) {
@@ -1480,11 +1472,11 @@ export class SwapStore {
             }
         }
 
-        this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute)
+        this.setData('bestCrossExchangeRoute', bestCrossExchangeRoute)
 
         this.checkCrossExchange()
 
-        this.changeState('isCrossExchangeCalculating', false)
+        this.setState('isCrossExchangeCalculating', false)
 
         debug(
             '#calculateLtrCrossExchangeBill done',
@@ -1513,7 +1505,7 @@ export class SwapStore {
             return
         }
 
-        this.changeState('isCrossExchangeCalculating', !force)
+        this.setState('isCrossExchangeCalculating', !force)
 
         debug(
             '#calculateRtlCrossExchangeBill invalidate routes',
@@ -1664,7 +1656,7 @@ export class SwapStore {
             ),
             bestCrossExchangeRoute: SwapRoute | undefined
 
-        this.changeData('bestCrossExchangeRoute', undefined)
+        this.setData('bestCrossExchangeRoute', undefined)
 
         // eslint-disable-next-line no-restricted-syntax
         for (const route of routes) {
@@ -1726,12 +1718,12 @@ export class SwapStore {
         }
 
 
-        this.changeData('routes', routes)
-        this.changeData('bestCrossExchangeRoute', bestCrossExchangeRoute)
+        this.setData('routes', routes)
+        this.setData('bestCrossExchangeRoute', bestCrossExchangeRoute)
 
         this.checkCrossExchange()
 
-        this.changeState('isCrossExchangeCalculating', false)
+        this.setState('isCrossExchangeCalculating', false)
 
         debug(
             '#calculateRtlCrossExchangeBill done',
@@ -1796,16 +1788,16 @@ export class SwapStore {
             (this.pair === undefined && this.bestCrossExchangeRoute !== undefined)
             || (this.bestCrossExchangeRoute !== undefined && this.state.isLowTvl)
         ) {
-            this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY)
+            this.setState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY)
             return
         }
 
         if ((!this.isEnoughLiquidity || this.pair === undefined) && this.bestCrossExchangeRoute !== undefined) {
-            this.changeState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
+            this.setState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE)
             return
         }
 
-        this.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
+        this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
 
     /**
@@ -1828,7 +1820,7 @@ export class SwapStore {
 
         let response: PairsResponse[] | undefined
 
-        this.changeState('isCrossExchangePreparing', true)
+        this.setState('isCrossExchangePreparing', true)
 
         try {
             response = await this.loadCrossPairs()
@@ -1838,7 +1830,7 @@ export class SwapStore {
         }
 
         if (response === undefined) {
-            this.changeState('isCrossExchangePreparing', false)
+            this.setState('isCrossExchangePreparing', false)
             return
         }
 
@@ -1879,7 +1871,7 @@ export class SwapStore {
             return pair
         }).filter(pair => pair.address?.toString() !== this.pair?.address?.toString())
 
-        this.changeData('crossPairs', crossPairs)
+        this.setData('crossPairs', crossPairs)
 
         await this.syncCrossExchangePairsStates()
         await this.syncCrossExchangePairs()
@@ -1913,6 +1905,7 @@ export class SwapStore {
                                     leftAmount: this.leftAmount,
                                     pairs: [],
                                     rightAmount: this.rightAmount,
+                                    slippage: DEFAULT_SLIPPAGE_VALUE,
                                     steps: [],
                                     tokens: [token],
                                 })
@@ -1924,8 +1917,8 @@ export class SwapStore {
         }
         catch (e) {}
         finally {
-            this.changeData('routes', routes)
-            this.changeState('isCrossExchangePreparing', false)
+            this.setData('routes', routes)
+            this.setState('isCrossExchangePreparing', false)
         }
     }
 
@@ -2031,7 +2024,7 @@ export class SwapStore {
                 crossPairs[idx] = { ...crossPairs[idx], state }
             })
 
-            this.changeData('crossPairs', crossPairs)
+            this.setData('crossPairs', crossPairs)
         }
         catch (e) {
             error('Sync cross exchange pairs states error', e)
@@ -2074,9 +2067,9 @@ export class SwapStore {
      * @protected
      */
     protected resetCrossExchangeData(): void {
-        this.changeData('bestCrossExchangeRoute', undefined)
-        this.changeData('crossPairs', [])
-        this.changeData('routes', [])
+        this.setData('bestCrossExchangeRoute', undefined)
+        this.setData('crossPairs', [])
+        this.setData('routes', [])
     }
 
     /**
@@ -2084,7 +2077,7 @@ export class SwapStore {
      * @protected
      */
     protected invalidateCrossExchangeRoutes(): void {
-        this.changeData(
+        this.setData(
             'routes',
             this.routes.map(route => ({
                 ...route,
@@ -2103,6 +2096,13 @@ export class SwapStore {
      * Computed states and values
      * ----------------------------------------------------------------------------------
      */
+
+    /**
+     * Proxy method to get wallet native coin
+     */
+    public get coin(): WalletNativeCoin {
+        return this.wallet.coin
+    }
 
     /**
      * Returns `true` if left amount value is valid, otherwise `false`.
@@ -2202,6 +2202,13 @@ export class SwapStore {
     }
 
     /**
+     * Returns `true` if native coin is selected
+     */
+    public get isNativeCoinSelected(): boolean {
+        return this.state.nativeCoinSide !== undefined
+    }
+
+    /**
      * Returns memoized left token decimals or global default decimals - 18.
      * @returns {boolean}
      */
@@ -2295,7 +2302,7 @@ export class SwapStore {
      */
     public get crossExchangeSlippage(): SwapRoute['slippage'] {
         if (this.bestCrossExchangeRoute?.slippage === undefined) {
-            return undefined
+            return DEFAULT_SLIPPAGE_VALUE
         }
         return getCrossExchangeSlippage(
             this.data.slippage,
@@ -2468,6 +2475,14 @@ export class SwapStore {
     }
 
     /**
+     * Returns native coin selected side
+     * @returns {SwapStoreState['nativeCoinSide']}
+     */
+    public get nativeCoinSide(): SwapStoreState['nativeCoinSide'] {
+        return this.state.nativeCoinSide
+    }
+
+    /**
      *
      * @returns {SwapStoreState['isCalculating']}
      */
@@ -2561,6 +2576,8 @@ export class SwapStore {
      * ----------------------------------------------------------------------------------
      */
 
+    #coinDisposer: IReactionDisposer | undefined
+
     #slippageDisposer: IReactionDisposer | undefined
 
     #tokensDisposer: IReactionDisposer | undefined
@@ -2572,8 +2589,18 @@ export class SwapStore {
 }
 
 
-const SwapStoreSingleton = new SwapStore(useWallet(), useTokensCache())
+const SwapStoreSingleton = new SwapStore(
+    useWallet(),
+    useTokensCache(),
+    {
+        multipleSwapTokenRoot: DexConstants.WEVERRootAddress.toString(),
+        useNativeCoinByDefault: true,
+    },
+)
 
+/**
+ * @deprecated
+ */
 export function useSwapStore(): SwapStore {
     return SwapStoreSingleton
 }

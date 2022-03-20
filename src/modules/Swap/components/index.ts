@@ -1,3 +1,5 @@
+export * from '@/modules/Swap/components/ConversionInfo'
+export * from '@/modules/Swap/components/ConversionSubmitButton'
 export * from '@/modules/Swap/components/CrossExchangeSubmitButton'
 export * from '@/modules/Swap/components/SwapBill'
 export * from '@/modules/Swap/components/SwapConfirmationPopup'

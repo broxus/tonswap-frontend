@@ -5,7 +5,7 @@ import {
 
 import { useRpcClient } from '@/hooks/useRpcClient'
 import { Dex } from '@/misc/dex'
-import { debug } from '@/utils'
+import { debug, sliceAddress } from '@/utils'
 
 
 const rpc = useRpcClient()
@@ -31,7 +31,7 @@ export async function checkPair(leftRoot: string, rightRoot: string): Promise<Ad
     if (!pairState.state?.isDeployed) {
         if (process.env.NODE_ENV === 'development') {
             debug(
-                `%cTON Provider%c Check Pair: %c${pairAddress?.toString()}%c is%c not deployed`,
+                `%cRPC%c [Check Pair]: %c${sliceAddress(pairAddress?.toString())}%c is%c not deployed`,
                 'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                 'color: #c5e4f3',
                 'color: #bae701',
@@ -49,7 +49,7 @@ export async function checkPair(leftRoot: string, rightRoot: string): Promise<Ad
 
     if (process.env.NODE_ENV === 'development') {
         debug(
-            `%cTON Provider%c Check Pair: Found one: %c${pairAddress?.toString()}`,
+            `%cRPC%c [Check Pair]: Found one -> %c${sliceAddress(pairAddress?.toString())}`,
             'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
             'color: #c5e4f3',
             'color: #bae701',

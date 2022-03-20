@@ -1,33 +1,37 @@
 import * as React from 'react'
-import { reaction } from 'mobx'
 import { useHistory, useParams } from 'react-router-dom'
+import { reaction } from 'mobx'
 
 import { isAddressValid } from '@/misc'
 import { DEFAULT_LEFT_TOKEN_ROOT, DEFAULT_RIGHT_TOKEN_ROOT } from '@/modules/Swap/constants'
-import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
-import { SwapDirection, SwapExchangeMode, SwapStoreData } from '@/modules/Swap/types'
-import { useTokensCache } from '@/stores/TokensCacheService'
+import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
+import type { BaseSwapStoreData } from '@/modules/Swap/types'
+import { SwapExchangeMode } from '@/modules/Swap/types'
 import { debounce, debug, error } from '@/utils'
+import type { TokenSide } from '@/modules/TokensList'
 
-
-type TokenSide = keyof Pick<SwapStoreData, 'leftToken' | 'rightToken'>
 
 type SwapFormShape = {
     isTokenListShown: boolean;
-    tokenSide: TokenSide | null;
+    tokenSide: TokenSide | undefined;
     hideTokensList: () => void;
     showTokensList: (side: TokenSide) => () => void;
-    toggleTokensDirection: () => void;
-    onChangeLeftAmount: (value: SwapStoreData['leftAmount']) => void;
-    onChangeRightAmount: (value: SwapStoreData['rightAmount']) => void;
-    onKeyPress: () => void;
-    onSelectToken: (root: string) => void;
+    toggleConversionDirection: () => void;
+    toggleSwapDirection: () => void;
+    onChangeLeftAmount: (value: BaseSwapStoreData['leftAmount']) => void;
+    onChangeRightAmount: (value: BaseSwapStoreData['rightAmount']) => void;
+    onSelectMultipleSwap: () => void;
+    onSelectLeftNativeCoin: () => void;
+    onSelectRightNativeCoin: () => void;
+    onSelectLeftToken: (root: string) => void;
+    onSelectRightToken: (root: string) => void;
     onDismissTransactionReceipt: () => void;
 }
 
 
 export function useSwapForm(): SwapFormShape {
-    const swap = useSwapStore()
+    const formStore = useSwapFormStore()
+    const tokensCache = formStore.useTokensCache
     const {
         leftTokenRoot,
         rightTokenRoot,
@@ -36,19 +40,18 @@ export function useSwapForm(): SwapFormShape {
         rightTokenRoot: string,
     }>()
     const history = useHistory()
-    const tokensCache = useTokensCache()
 
     const [isTokenListShown, setTokenListVisible] = React.useState(false)
 
-    const [tokenSide, setTokenSide] = React.useState<TokenSide | null>(null)
+    const [tokenSide, setTokenSide] = React.useState<TokenSide>()
 
     const hideTokensList = () => {
-        setTokenSide(null)
+        setTokenSide(undefined)
         setTokenListVisible(false)
     }
 
     const showTokensList = (side: TokenSide) => () => {
-        if (swap.isLoading) {
+        if (formStore.isLoading) {
             return
         }
 
@@ -56,36 +59,82 @@ export function useSwapForm(): SwapFormShape {
         setTokenListVisible(true)
     }
 
-    const toggleTokensDirection = async () => {
-        if (swap.isLoading || swap.isSwapping) {
+    const updateUrl = (force: boolean = false) => {
+        if (tokensCache.isImporting) {
             return
         }
 
-        await swap.toggleDirection()
-
-        if (swap.leftToken?.root !== undefined && swap.rightToken?.root !== undefined) {
-            history.replace(`/swap/${swap.leftToken?.root}/${swap.rightToken?.root}`)
+        if (
+            !force
+            && formStore.leftToken?.root === DEFAULT_LEFT_TOKEN_ROOT
+            && formStore.rightToken?.root === DEFAULT_RIGHT_TOKEN_ROOT
+            && !leftTokenRoot
+            && !rightTokenRoot
+        ) {
+            return
         }
-        else if (swap.leftToken?.root !== undefined && swap.rightToken?.root === undefined) {
-            history.replace(`/swap/${swap.leftToken?.root}`)
+
+        if (formStore.leftToken?.root !== undefined && formStore.rightToken?.root !== undefined) {
+            history.replace(`/swap/${formStore.leftToken?.root}/${formStore.rightToken?.root}`)
+        }
+        else if (formStore.leftToken?.root !== undefined && formStore.rightToken?.root === undefined) {
+            history.replace(`/swap/${formStore.leftToken?.root}`)
         }
     }
 
-    const updateTokens = (leftRoot: string, rightRoot: string) => {
-        if (!isAddressValid(leftRoot) && !isAddressValid(leftRoot)) {
-            swap.changeData('leftToken', DEFAULT_LEFT_TOKEN_ROOT)
-            swap.changeData('rightToken', DEFAULT_RIGHT_TOKEN_ROOT)
+    const toggleSwapDirection = async () => {
+        if (formStore.isLoading || formStore.isSwapping) {
             return
         }
 
-        swap.changeData('leftToken', leftRoot)
-        swap.changeData('rightToken', rightRoot)
+        if (formStore.isMultipleSwapMode) {
+            formStore.setState({
+                exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+                isMultiple: false,
+            })
+        }
+
+        await formStore.toggleDirection()
+
+        updateUrl(true)
+    }
+
+    const toggleConversionDirection = async () => {
+        if (formStore.isLoading || formStore.isSwapping) {
+            return
+        }
+
+        await formStore.toggleConversionDirection()
+    }
+
+    const updateTokens = (leftRoot: string, rightRoot: string) => {
+        const isLeftRootValid = isAddressValid(leftRoot)
+        const isRightRootValid = isAddressValid(rightRoot)
+
+        if (!isLeftRootValid && !isRightRootValid) {
+            return
+        }
+
+        formStore.setData({
+            leftToken: leftRoot,
+            rightToken: rightRoot,
+        })
+
+        if (leftRoot === formStore.multipleSwapTokenRoot && rightRoot === formStore.multipleSwapTokenRoot) {
+            formStore.setState({
+                exchangeMode: SwapExchangeMode.WRAP_EVER,
+                nativeCoinSide: 'leftToken',
+            })
+            formStore.setData('leftToken', undefined)
+            history.replace('/swap')
+            return
+        }
+
+        updateUrl(true)
 
         if (tokensCache.tokens.length > 0) {
-            const isLeftRootValid = isAddressValid(leftRoot)
-            const isRightRootValid = isAddressValid(rightRoot)
-            const leftInCache = swap.leftToken !== undefined
-            const rightInCache = swap.rightToken !== undefined;
+            const leftInCache = formStore.leftToken !== undefined
+            const rightInCache = formStore.rightToken !== undefined;
 
             (async () => {
                 try {
@@ -95,7 +144,8 @@ export function useSwapForm(): SwapFormShape {
                     }
                 }
                 catch (e) {
-                    error(e)
+                    error('Left token import error', e)
+                    formStore.setData('leftToken', undefined)
                 }
 
                 try {
@@ -105,125 +155,170 @@ export function useSwapForm(): SwapFormShape {
                     }
                 }
                 catch (e) {
-                    error(e)
+                    error('Right token import error', e)
+                    formStore.setData('rightToken', undefined)
                 }
             })()
         }
     }
 
-    const onKeyPress: SwapFormShape['onKeyPress'] = React.useCallback(debounce(() => {
+    const onKeyPress = React.useCallback(debounce(() => {
         (async () => {
-            await swap.recalculate(true)
+            await formStore.recalculate(true)
         })()
-    }, 400), [swap.isCalculating])
+    }, 400), [formStore.isCalculating])
 
     const onChangeLeftAmount: SwapFormShape['onChangeLeftAmount'] = value => {
-        if (swap.direction === SwapDirection.RTL) {
-            swap.changeState('direction', SwapDirection.LTR)
-        }
-
-        swap.changeData('leftAmount', value)
-
-        if (value.length === 0) {
-            swap.changeData('rightAmount', '')
-            swap.forceInvalidate()
-            if (swap.pair !== undefined && !swap.isLowTvl) {
-                swap.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
-            }
-        }
-
-        onKeyPress()
+        formStore.changeLeftAmount(value, onKeyPress)
     }
 
     const onChangeRightAmount: SwapFormShape['onChangeRightAmount'] = value => {
-        if (swap.direction === SwapDirection.LTR) {
-            swap.changeState('direction', SwapDirection.RTL)
-        }
-
-        swap.changeData('rightAmount', value)
-
-        if (value.length === 0) {
-            swap.changeData('leftAmount', '')
-            swap.forceInvalidate()
-            if (swap.pair !== undefined && !swap.isLowTvl) {
-                swap.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
-            }
-        }
-
-        onKeyPress()
+        formStore.changeRightAmount(value, onKeyPress)
     }
 
-    const onSelectToken: SwapFormShape['onSelectToken'] = root => {
-        let pathname = '/swap'
-        if (tokenSide === 'leftToken' && swap.rightToken?.root !== undefined) {
-            let rightRoot = swap.rightToken.root
-            if (swap.leftToken?.root !== undefined && swap.rightToken.root === root) {
-                pathname += `/${root}/${swap.leftToken.root}`
-                rightRoot = swap.leftToken.root
-            }
-            else {
-                pathname += `/${root}/${swap.rightToken.root}`
-            }
-            swap.changeData('leftToken', root)
-            swap.changeData('rightToken', rightRoot)
+    const onSelectMultipleSwap = async () => {
+        formStore.setState({
+            exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+            isMultiple: true,
+            nativeCoinSide: undefined,
+        })
+        if (formStore.rightToken?.root === formStore.multipleSwapTokenRoot) {
+            formStore.setData('rightToken', formStore.leftToken?.root)
         }
-        else if (tokenSide === 'rightToken' && swap.leftToken?.root !== undefined) {
-            let leftRoot = swap.leftToken.root
-            if (swap.rightToken?.root !== undefined && swap.leftToken.root === root) {
-                pathname += `/${swap.rightToken.root}/${root}`
-                leftRoot = swap.rightToken.root
-            }
-            else {
-                pathname += `/${swap.leftToken.root}/${root}`
-            }
-            swap.changeData('rightToken', root)
-            swap.changeData('leftToken', leftRoot)
-        }
-        else if (tokenSide) {
-            swap.changeData(tokenSide, root)
-        }
-        swap.changeState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
-        history.push({ pathname })
         hideTokensList()
+        await formStore.changeLeftToken(formStore.multipleSwapTokenRoot)
+    }
+
+    const onSelectLeftNativeCoin = async () => {
+        hideTokensList()
+
+        formStore.setState({
+            isMultiple: false,
+            nativeCoinSide: 'leftToken',
+        })
+
+        history.push({ pathname: '/swap' })
+
+        if (formStore.rightToken?.root === formStore.multipleSwapTokenRoot) {
+            formStore.setData('leftToken', undefined)
+            formStore.setState('exchangeMode', SwapExchangeMode.WRAP_EVER)
+        }
+        else {
+            await formStore.changeLeftToken(formStore.multipleSwapTokenRoot)
+        }
+    }
+
+    const onSelectRightNativeCoin = async () => {
+        hideTokensList()
+
+        if (formStore.isMultipleSwapMode || formStore.leftToken?.root === formStore.multipleSwapTokenRoot) {
+            formStore.setData('rightToken', undefined)
+            formStore.setState('exchangeMode', SwapExchangeMode.UNWRAP_WEVER)
+        }
+
+        formStore.setState({
+            isMultiple: false,
+            nativeCoinSide: 'rightToken',
+        })
+
+        history.push({ pathname: '/swap' })
+    }
+
+    const onSelectLeftToken: SwapFormShape['onSelectLeftToken'] = async root => {
+        hideTokensList()
+
+        formStore.setState({
+            exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+            isMultiple: false,
+            nativeCoinSide: formStore.nativeCoinSide === 'leftToken'
+                ? undefined
+                : formStore.nativeCoinSide,
+        })
+
+        await formStore.changeLeftToken(root)
+    }
+
+    const onSelectRightToken: SwapFormShape['onSelectRightToken'] = async root => {
+        hideTokensList()
+
+        if (formStore.isMultipleSwapMode && root === formStore.multipleSwapTokenRoot) {
+            formStore.setData({
+                leftToken: undefined,
+                rightToken: root,
+            })
+            formStore.setState({
+                exchangeMode: SwapExchangeMode.WRAP_EVER,
+                isMultiple: false,
+                nativeCoinSide: 'leftToken',
+            })
+            return
+        }
+
+        if (root !== formStore.multipleSwapTokenRoot && formStore.nativeCoinSide === 'leftToken') {
+            formStore.setData({
+                leftToken: formStore.multipleSwapTokenRoot,
+                rightToken: root,
+            })
+            formStore.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
+            await formStore.changeRightToken(root)
+            return
+        }
+
+        formStore.setState({
+            exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+            nativeCoinSide: formStore.nativeCoinSide === 'rightToken'
+                ? undefined
+                : formStore.nativeCoinSide,
+        })
+        await formStore.changeRightToken(root)
     }
 
     const onDismissTransactionReceipt = () => {
-        swap.cleanTransactionResult()
+        formStore.cleanTransactionResult()
     }
 
     React.useEffect(() => {
         (async () => {
-            await swap.init()
+            await formStore.init()
         })()
 
         const tokensListDisposer = reaction(
-            () => [tokensCache.tokens, tokensCache.customTokens],
+            () => tokensCache.tokens.length,
             () => {
                 updateTokens(leftTokenRoot, rightTokenRoot)
             },
+            { fireImmediately: true },
+        )
+
+        const tokensDisposer = reaction(
+            () => [formStore.leftToken, formStore.rightToken],
+            () => {
+                updateUrl()
+            },
+            { fireImmediately: true },
         )
 
         return () => {
-            swap.dispose().catch(reason => error(reason))
+            formStore.dispose().catch(reason => error(reason))
             tokensListDisposer()
+            tokensDisposer()
         }
     }, [])
-
-    // Update tokens state after change the uri params
-    React.useEffect(() => {
-        updateTokens(leftTokenRoot, rightTokenRoot)
-    }, [leftTokenRoot, rightTokenRoot])
 
     return {
         isTokenListShown,
         tokenSide,
         hideTokensList,
         showTokensList,
-        toggleTokensDirection,
+        toggleConversionDirection,
+        toggleSwapDirection,
         onChangeLeftAmount,
         onChangeRightAmount,
-        onKeyPress,
-        onSelectToken,
+        onSelectMultipleSwap,
+        onSelectLeftNativeCoin,
+        onSelectRightNativeCoin,
+        onSelectLeftToken,
+        onSelectRightToken,
         onDismissTransactionReceipt,
     }
 }

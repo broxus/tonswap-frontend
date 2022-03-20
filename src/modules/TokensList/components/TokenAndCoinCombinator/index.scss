@@ -1,0 +1,20 @@
+.popup-list-combined-selector {
+    display: flex;
+    flex-direction: column;
+
+    > .popup-item {
+        border-top: 0 !important;
+        .token-icon:last-child {
+            margin-top: -8px;
+            margin-left: 8px;
+        }
+    }
+}
+
+.popup-list-combined-selector-inner {
+    margin-left: 36px;
+
+    .popup-item-wrapper {
+        margin: 0 !important;
+    }
+}

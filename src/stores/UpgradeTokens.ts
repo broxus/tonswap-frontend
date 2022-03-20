@@ -105,52 +105,57 @@ export class UpgradeTokens {
         try {
             // eslint-disable-next-line no-restricted-syntax
             for (const token of tokensToUpgrade) {
-                const rootV5Address = new Address(token.rootV5)
-                const owner = (await TokenWallet.rootOwnerAddress(rootV5Address)).toString()
+                try {
+                    const rootV5Address = new Address(token.rootV5)
+                    const owner = (await TokenWallet.rootOwnerAddress(rootV5Address)).toString()
 
-                if (owner !== token.proxy) {
-                    continue
+                    if (owner !== token.proxy) {
+                        continue
+                    }
+
+                    const rootV4Address = new Address(token.rootV4)
+                    const { state } = await rpc.getFullContractState({ address: rootV4Address })
+
+                    if (state === undefined || !state.isDeployed) {
+                        continue
+                    }
+
+                    const wallet = await TokenWalletV4.walletAddress({
+                        owner: this.tonWallet.account.address,
+                        root: rootV4Address,
+                    })
+
+                    const { state: walletState } = await rpc.getFullContractState({
+                        address: wallet,
+                    })
+
+                    if (walletState === undefined || !walletState.isDeployed) {
+                        continue
+                    }
+
+                    const [balance, decimals, symbol, name] = await Promise.all([
+                        TokenWalletV4.balance({ wallet }, walletState),
+                        TokenWalletV4.getDecimals(rootV4Address, state),
+                        TokenWalletV4.getSymbol(rootV4Address, state),
+                        TokenWalletV4.getName(rootV4Address, state),
+                    ])
+
+                    if (new BigNumber(balance ?? 0).isZero() || decimals == null) {
+                        continue
+                    }
+
+                    tokens.push({
+                        ...token,
+                        balance,
+                        decimals,
+                        name,
+                        symbol,
+                        wallet: wallet.toString(),
+                    })
                 }
-
-                const rootV4Address = new Address(token.rootV4)
-                const { state } = await rpc.getFullContractState({ address: rootV4Address })
-
-                if (state === undefined || !state.isDeployed) {
-                    continue
+                catch (e) {
+                    error('Token check error', token, e)
                 }
-
-                const wallet = await TokenWalletV4.walletAddress({
-                    owner: this.tonWallet.account.address,
-                    root: rootV4Address,
-                })
-
-                const { state: walletState } = await rpc.getFullContractState({
-                    address: wallet,
-                })
-
-                if (walletState === undefined || !walletState.isDeployed) {
-                    continue
-                }
-
-                const [balance, decimals, symbol, name] = await Promise.all([
-                    TokenWalletV4.balance({ wallet }, walletState),
-                    TokenWalletV4.getDecimals(rootV4Address, state),
-                    TokenWalletV4.getSymbol(rootV4Address, state),
-                    TokenWalletV4.getName(rootV4Address, state),
-                ])
-
-                if (new BigNumber(balance ?? 0).isZero() || decimals == null) {
-                    continue
-                }
-
-                tokens.push({
-                    ...token,
-                    balance,
-                    decimals,
-                    name,
-                    symbol,
-                    wallet: wallet.toString(),
-                })
             }
 
             runInAction(() => {

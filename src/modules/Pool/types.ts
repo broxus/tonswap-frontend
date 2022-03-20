@@ -10,8 +10,6 @@ export type PoolStoreData = {
     rightToken?: string;
 }
 
-export type TokenSide = 'leftToken' | 'rightToken'
-
 export type PoolStoreState = {
     isAutoExchangeEnabled: boolean;
     isDepositingLeft: boolean;

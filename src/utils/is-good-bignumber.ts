@@ -1,10 +1,12 @@
 import BigNumber from 'bignumber.js'
 
-export function isGoodBignumber(value: BigNumber, nonZeroCheck = true): boolean {
+export function isGoodBignumber(value: BigNumber | number | string, nonZeroCheck = true): boolean {
+    const valueBN = value instanceof BigNumber ? value : new BigNumber(value)
+
     return (
-        value.isFinite()
-        && !value.isNaN()
-        && value.isPositive()
-        && (nonZeroCheck ? !value.isZero() : true)
+        valueBN.isFinite()
+        && !valueBN.isNaN()
+        && valueBN.isPositive()
+        && (nonZeroCheck ? !valueBN.isZero() : true)
     )
 }

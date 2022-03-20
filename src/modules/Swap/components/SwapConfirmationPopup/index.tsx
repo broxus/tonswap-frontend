@@ -7,63 +7,41 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { SwapBill } from '@/modules/Swap/components/SwapBill'
-import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
-import { SwapDirection } from '@/modules/Swap/types'
+import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 
 import './index.scss'
 
 
 function ConfirmationPopup(): JSX.Element {
     const intl = useIntl()
-    const swap = useSwapStore()
+    const formStore = useSwapFormStore()
 
-    const [minExpectedAmount, setMinExpectedAmount] = React.useState(swap.minExpectedAmount)
-    const [leftAmount, setLeftAmount] = React.useState(
-        () => ((swap.isCrossExchangeMode && swap.direction !== SwapDirection.LTR)
-            ? swap.bestCrossExchangeRoute?.leftAmount
-            : swap.leftAmount),
-    )
-    const [rightAmount, setRightAmount] = React.useState(
-        () => ((swap.isCrossExchangeMode && swap.direction !== SwapDirection.RTL)
-            ? swap.bestCrossExchangeRoute?.rightAmount
-            : swap.rightAmount),
-    )
+    const [minExpectedAmount, setMinExpectedAmount] = React.useState(formStore.swap.minExpectedAmount)
+    const [leftAmount, setLeftAmount] = React.useState(formStore.swap.leftAmount)
+    const [rightAmount, setRightAmount] = React.useState(formStore.swap.rightAmount)
 
     const [isChanged, setChangedTo] = React.useState(false)
 
     const onUpdate = () => {
-        setMinExpectedAmount(swap.minExpectedAmount)
-        setLeftAmount((swap.isCrossExchangeMode && swap.direction !== SwapDirection.LTR)
-            ? swap.bestCrossExchangeRoute?.leftAmount
-            : swap.leftAmount)
-        setRightAmount((swap.isCrossExchangeMode && swap.direction !== SwapDirection.RTL)
-            ? swap.bestCrossExchangeRoute?.rightAmount
-            : swap.rightAmount)
+        setMinExpectedAmount(formStore.swap.minExpectedAmount)
+        setLeftAmount(formStore.swap.leftAmount)
+        setRightAmount(formStore.swap.rightAmount)
         setChangedTo(false)
     }
 
     const onDismiss = () => {
-        swap.changeState('isConfirmationAwait', false)
+        formStore.setState('isConfirmationAwait', false)
     }
 
     const onSubmit = async () => {
-        swap.changeState('isConfirmationAwait', false)
-        if (swap.isCrossExchangeMode) {
-            await swap.crossExchangeSwap()
-        }
-        else {
-            await swap.swap()
-        }
+        formStore.setState('isConfirmationAwait', false)
+        await formStore.swap.submit()
     }
 
     React.useEffect(() => reaction(() => [
-        (swap.isCrossExchangeMode && swap.direction !== SwapDirection.LTR)
-            ? swap.bestCrossExchangeRoute?.leftAmount
-            : swap.leftAmount,
-        (swap.isCrossExchangeMode && swap.direction !== SwapDirection.RTL)
-            ? swap.bestCrossExchangeRoute?.rightAmount
-            : swap.rightAmount,
-        swap.minExpectedAmount,
+        formStore.swap.leftAmount,
+        formStore.swap.rightAmount,
+        formStore.swap.minExpectedAmount,
     ], ([
         nextLeftAmount,
         nextRightAmount,
@@ -113,14 +91,14 @@ function ConfirmationPopup(): JSX.Element {
                         <div className="btn form-drop">
                             <span className="form-drop__logo">
                                 <TokenIcon
-                                    address={swap.leftToken?.root}
-                                    name={swap.leftToken?.symbol}
+                                    address={formStore.leftToken?.root}
+                                    name={formStore.leftToken?.symbol}
                                     size="small"
-                                    icon={swap.leftToken?.icon}
+                                    icon={formStore.leftToken?.icon}
                                 />
                             </span>
                             <span className="form-drop__name">
-                                {swap.leftToken?.symbol}
+                                {formStore.leftToken?.symbol}
                             </span>
                         </div>
                     </div>
@@ -144,14 +122,14 @@ function ConfirmationPopup(): JSX.Element {
                         <div className="btn form-drop">
                             <span className="form-drop__logo">
                                 <TokenIcon
-                                    address={swap.rightToken?.root}
-                                    name={swap.rightToken?.symbol}
+                                    address={formStore.rightToken?.root}
+                                    name={formStore.rightToken?.symbol}
                                     size="small"
-                                    icon={swap.rightToken?.icon}
+                                    icon={formStore.rightToken?.icon}
                                 />
                             </span>
                             <span className="form-drop__name">
-                                {swap.rightToken?.symbol}
+                                {formStore.rightToken?.symbol}
                             </span>
                         </div>
                     </div>
@@ -178,17 +156,15 @@ function ConfirmationPopup(): JSX.Element {
                 ) : (
                     <SwapBill
                         key="bill"
-                        fee={swap.fee}
-                        isCrossExchangeAvailable={swap.isCrossExchangeAvailable}
-                        isCrossExchangeMode={swap.isCrossExchangeMode}
-                        leftToken={swap.leftToken}
+                        fee={formStore.swap.fee}
+                        isCrossExchangeAvailable={formStore.isCrossExchangeAvailable}
+                        isCrossExchangeMode={formStore.isCrossExchangeMode}
+                        leftToken={formStore.leftToken}
                         minExpectedAmount={minExpectedAmount}
-                        priceImpact={swap.priceImpact}
-                        rightToken={swap.rightToken}
-                        slippage={swap.isCrossExchangeMode
-                            ? swap.bestCrossExchangeRoute?.slippage
-                            : swap.slippage}
-                        tokens={swap.bestCrossExchangeRoute?.tokens}
+                        priceImpact={formStore.swap.priceImpact}
+                        rightToken={formStore.rightToken}
+                        slippage={formStore.swap.slippage}
+                        tokens={formStore.route?.tokens}
                     />
                 )}
 

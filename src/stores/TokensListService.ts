@@ -10,6 +10,8 @@ export type TonToken = {
     decimals: number;
     address: string;
     logoURI?: string;
+    vendor?: string | null;
+    verified?: boolean;
     version?: number;
 }
 

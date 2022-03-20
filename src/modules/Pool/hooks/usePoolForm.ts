@@ -4,7 +4,8 @@ import { useHistory, useParams } from 'react-router-dom'
 
 import { isAddressValid } from '@/misc'
 import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
-import { PoolStoreData, TokenSide } from '@/modules/Pool/types'
+import { PoolStoreData } from '@/modules/Pool/types'
+import { TokenSide } from '@/modules/TokensList'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet } from '@/stores/WalletService'
 import { debounce, debug, error } from '@/utils'
@@ -137,7 +138,7 @@ export function usePoolForm(): PoolFormShape {
         })()
 
         const tokensListDisposer = reaction(
-            () => [tokensCache.tokens, tokensCache.customTokens],
+            () => [tokensCache.tokens],
             () => {
                 updateTokens(leftTokenRoot, rightTokenRoot)
             },

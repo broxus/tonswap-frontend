@@ -7,24 +7,24 @@ import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
 import { Icon } from '@/components/common/Icon'
 import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 import { UserAvatar } from '@/components/common/UserAvatar'
-import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
+import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { formattedTokenAmount } from '@/utils'
 
 
 function Transaction(): JSX.Element | null {
     const intl = useIntl()
-    const swap = useSwapStore()
+    const formStore = useSwapFormStore()
 
-    if (swap.transaction == null) {
+    if (formStore.transaction == null) {
         return null
     }
 
     const actions = (
         <div key="actions" className="popup-actions">
-            {(swap.transaction.isCrossExchangeCanceled && swap.transaction.spentRoot !== undefined) && (
+            {(formStore.transaction.isCrossExchangeCanceled && formStore.transaction.spentRoot !== undefined) && (
                 <AccountExplorerLink
                     key="crossPair"
-                    address={swap.transaction.spentRoot}
+                    address={formStore.transaction.spentRoot}
                     className="btn btn-secondary"
                 >
                     {intl.formatMessage({
@@ -33,10 +33,10 @@ function Transaction(): JSX.Element | null {
                 </AccountExplorerLink>
             )}
 
-            {(!swap.transaction.isCrossExchangeCanceled && swap.transaction.receivedRoot !== undefined) && (
+            {(!formStore.transaction.isCrossExchangeCanceled && formStore.transaction.receivedRoot !== undefined) && (
                 <AccountExplorerLink
                     key="directPair"
-                    address={swap.transaction.receivedRoot}
+                    address={formStore.transaction.receivedRoot}
                     className="btn btn-secondary"
                 >
                     {intl.formatMessage({
@@ -44,9 +44,9 @@ function Transaction(): JSX.Element | null {
                     })}
                 </AccountExplorerLink>
             )}
-            {swap.transaction.hash !== undefined && (
+            {formStore.transaction.hash !== undefined && (
                 <TransactionExplorerLink
-                    id={swap.transaction.hash}
+                    id={formStore.transaction.hash}
                     className="btn btn-secondary"
                 >
                     {intl.formatMessage({
@@ -58,33 +58,33 @@ function Transaction(): JSX.Element | null {
     )
     const receivedToken = (
         <div key="receivedToken" className="popup-main nb np">
-            {swap.transaction.isCrossExchangeCanceled ? (
+            {formStore.transaction.isCrossExchangeCanceled ? (
                 <div key="crossExchangeIcon" className="popup-main__ava">
-                    {swap.transaction.spentIcon !== undefined
+                    {formStore.transaction.spentIcon !== undefined
                         ? (
                             <img
-                                alt={swap.transaction.spentSymbol}
-                                src={swap.transaction.spentIcon}
+                                alt={formStore.transaction.spentSymbol}
+                                src={formStore.transaction.spentIcon}
                             />
                         )
-                        : swap.transaction.spentRoot !== undefined && (
+                        : formStore.transaction.spentRoot !== undefined && (
                             <UserAvatar
-                                address={swap.transaction.spentRoot}
+                                address={formStore.transaction.spentRoot}
                             />
                         )}
                 </div>
             ) : (
                 <div key="directIcon" className="popup-main__ava">
-                    {swap.transaction.receivedIcon !== undefined
+                    {formStore.transaction.receivedIcon !== undefined
                         ? (
                             <img
-                                alt={swap.transaction.receivedSymbol}
-                                src={swap.transaction.receivedIcon}
+                                alt={formStore.transaction.receivedSymbol}
+                                src={formStore.transaction.receivedIcon}
                             />
                         )
-                        : swap.transaction.receivedRoot !== undefined && (
+                        : formStore.transaction.receivedRoot !== undefined && (
                             <UserAvatar
-                                address={swap.transaction.receivedRoot}
+                                address={formStore.transaction.receivedRoot}
                             />
                         )}
                 </div>
@@ -97,16 +97,16 @@ function Transaction(): JSX.Element | null {
                         id: 'SWAP_TRANSACTION_RECEIPT_LEAD_RECEIVED_AMOUNT',
                     }, {
                         value: formattedTokenAmount(
-                            swap.transaction.amount,
-                            swap.transaction.isCrossExchangeCanceled
-                                ? swap.transaction.spentDecimals
-                                : swap.transaction.receivedDecimals,
+                            formStore.transaction.amount,
+                            formStore.transaction.isCrossExchangeCanceled
+                                ? formStore.transaction.spentDecimals
+                                : formStore.transaction.receivedDecimals,
                             { preserve: true },
                         ),
                         symbol:
-                            swap.transaction.isCrossExchangeCanceled
-                                ? swap.transaction.spentSymbol
-                                : swap.transaction.receivedSymbol,
+                            formStore.transaction.isCrossExchangeCanceled
+                                ? formStore.transaction.spentSymbol
+                                : formStore.transaction.receivedSymbol,
                     }, {
                         ignoreTag: true,
                     }),
@@ -122,18 +122,18 @@ function Transaction(): JSX.Element | null {
                 <button
                     type="button"
                     className="btn btn-icon popup-close"
-                    onClick={swap.cleanTransactionResult}
+                    onClick={formStore.cleanTransactionResult}
                 >
                     <Icon icon="close" />
                 </button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
-                        id: swap.transaction.success
+                        id: formStore.transaction.success
                             ? 'SWAP_TRANSACTION_RECEIPT_POPUP_TITLE_SUCCESS'
                             : 'SWAP_TRANSACTION_RECEIPT_POPUP_TITLE_FAILURE',
                     })}
                 </h2>
-                {swap.transaction.success ? (
+                {formStore.transaction.success ? (
                     <>
                         {receivedToken}
                         {actions}
@@ -145,17 +145,17 @@ function Transaction(): JSX.Element | null {
                             className="popup-txt"
                             dangerouslySetInnerHTML={{
                                 __html: intl.formatMessage({
-                                    id: swap.transaction.isCrossExchangeCanceled
+                                    id: formStore.transaction.isCrossExchangeCanceled
                                         ? 'SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE'
                                         : 'SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE',
                                 }, {
-                                    leftSymbol: swap.transaction.spentSymbol,
-                                    rightSymbol: swap.transaction.receivedSymbol,
-                                    slippage: swap.transaction.slippage,
+                                    leftSymbol: formStore.transaction.spentSymbol,
+                                    rightSymbol: formStore.transaction.receivedSymbol,
+                                    slippage: formStore.transaction.slippage,
                                 }),
                             }}
                         />
-                        {swap.transaction.isCrossExchangeCanceled && receivedToken}
+                        {formStore.transaction.isCrossExchangeCanceled && receivedToken}
                         {actions}
                     </>
                 )}
