@@ -188,8 +188,13 @@ export interface BaseSwapStoreState {
     isSwapping: boolean;
 }
 
+export interface DirectSwapStoreInitialData extends BaseSwapStoreInitialData {
+    coin: WalletNativeCoin;
+}
+
 export interface DirectSwapStoreData extends BaseSwapStoreData {
     bill: SwapBill;
+    coin: WalletNativeCoin;
     pair?: SwapPair;
     priceLeftToRight?: string;
     priceRightToLeft?: string;
@@ -200,8 +205,8 @@ export interface DirectSwapStoreState extends BaseSwapStoreState {
     isPairChecking: boolean;
 }
 
-export interface MultipleSwapStoreInitialData extends BaseSwapStoreInitialData {
-    multipleSwapFee?: string;
+export interface CoinSwapStoreInitialData extends DirectSwapStoreInitialData {
+    swapFee?: string;
 }
 
 export interface CrossPairSwapStoreData extends BaseSwapStoreData {

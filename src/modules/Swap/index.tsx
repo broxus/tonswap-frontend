@@ -9,6 +9,7 @@ import {
     ConversionSubmitButton,
     ConversionTransactionReceipt,
     CrossExchangeSubmitButton,
+    MultiSwapConfirmationPopup,
     SwapBill,
     SwapConfirmationPopup,
     SwapField,
@@ -88,9 +89,7 @@ export function Swap(): JSX.Element {
                                     readOnly={formStore.isSwapping}
                                     showMaxButton
                                     token={formStore.leftToken}
-                                    value={formStore.isConversionMode
-                                        ? formStore.leftAmount
-                                        : formStore.swap.leftAmount}
+                                    value={formStore.leftAmount}
                                     onChange={form.onChangeLeftAmount}
                                     onToggleTokensList={form.showTokensList('leftToken')}
                                 />
@@ -127,7 +126,7 @@ export function Swap(): JSX.Element {
                                     nativeCoin={formStore.nativeCoinSide === 'rightToken' ? formStore.coin : undefined}
                                     readOnly={formStore.isSwapping}
                                     token={formStore.rightToken}
-                                    value={formStore.swap.rightAmount}
+                                    value={formStore.rightAmount}
                                     onChange={form.onChangeRightAmount}
                                     onToggleTokensList={form.showTokensList('rightToken')}
                                 />
@@ -210,7 +209,13 @@ export function Swap(): JSX.Element {
                             {formStore.rightToken?.symbol ?? '--'}
                         </p>
                         {formStore.isConfirmationAwait && (
-                            <SwapConfirmationPopup key="confirmationPopup" />
+                            <>
+                                {formStore.isMultipleSwapMode ? (
+                                    <MultiSwapConfirmationPopup key="multiSwapConfirmationPopup" />
+                                ) : (
+                                    <SwapConfirmationPopup key="confirmationPopup" />
+                                )}
+                            </>
                         )}
                     </>
                 )}

@@ -124,6 +124,8 @@ export class BaseSwapStore<
 
     /**
      * Returns `true` if left amount value is valid, otherwise `false`.
+     * NOTE: Use it only in UI for determining field validation and
+     * DON'T USE it in internal calculations or validations
      * @returns {boolean}
      */
     public get isLeftAmountValid(): boolean {
@@ -135,6 +137,8 @@ export class BaseSwapStore<
 
     /**
      * Returns `true` if right amount value is valid, otherwise `false`.
+     * NOTE: Use it only in UI for determining field validation and
+     * DON'T USE it in internal calculations or validations
      * @returns {boolean}
      */
     public get isRightAmountValid(): boolean {
@@ -145,7 +149,7 @@ export class BaseSwapStore<
     }
 
     /**
-     * Returns left amount BigNumber shifted by the left token decimals
+     * Returns left amount BigNumber unshifted by the left token decimals
      * @returns {BigNumber}
      * @protected
      */
@@ -160,7 +164,6 @@ export class BaseSwapStore<
      * @returns {TokenCache | undefined}
      */
     public get leftToken(): TokenCache | undefined {
-        // Note: should use only accepted tokens
         return this.tokensCache.get(this.data.leftToken)
     }
 
@@ -182,11 +185,21 @@ export class BaseSwapStore<
     }
 
     /**
+     * Returns right amount BigNumber unshifted by the right token decimals
+     * @returns {BigNumber}
+     * @protected
+     */
+    protected get rightAmountNumber(): BigNumber {
+        return new BigNumber(this.data.rightAmount)
+            .shiftedBy(this.rightTokenDecimals)
+            .dp(0, BigNumber.ROUND_DOWN)
+    }
+
+    /**
      * Returns memoized right selected token
      * @returns {TokenCache | undefined}
      */
     public get rightToken(): TokenCache | undefined {
-        // Note: should use only accepted tokens
         return this.tokensCache.get(this.data.rightToken)
     }
 
@@ -205,17 +218,6 @@ export class BaseSwapStore<
      */
     public get rightTokenDecimals(): number {
         return this.rightToken?.decimals ?? DEFAULT_DECIMALS
-    }
-
-    /**
-     * Returns right amount BigNumber shifted by the right token decimals
-     * @returns {BigNumber}
-     * @protected
-     */
-    protected get rightAmountNumber(): BigNumber {
-        return new BigNumber(this.data.rightAmount)
-            .shiftedBy(this.rightTokenDecimals)
-            .dp(0, BigNumber.ROUND_DOWN)
     }
 
 }

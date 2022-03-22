@@ -65,6 +65,7 @@ export default {
     SWAP_BTN_TEXT_SELECT_A_TOKEN: 'Select a token',
     SWAP_BTN_TEXT_ENTER_AN_AMOUNT: 'Enter an amount',
     SWAP_BTN_TEXT_NOT_ENOUGH_LIQUIDITY: 'Not enough liquidity',
+    SWAP_BTN_TEXT_INSUFFICIENT_BALANCE: 'Insufficient balance',
     SWAP_BTN_TEXT_INSUFFICIENT_TOKEN_BALANCE: 'Insufficient <s>{symbol}</s> balance',
     SWAP_BTN_TEXT_ROUTE_DOES_NOT_EXIST: 'Route doesn’t exist',
     SWAP_BTN_TEXT_SUBMIT: 'Swap',

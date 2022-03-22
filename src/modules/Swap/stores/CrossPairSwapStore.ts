@@ -403,7 +403,10 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
      * Invalidate bills data and recalculate
      */
     public forceInvalidate(): void {
-        this.setData('route', undefined)
+        this.setData({
+            route: undefined,
+            routes: [],
+        })
     }
 
     /**
@@ -844,7 +847,6 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
             'CrossPairSwapStore@calculateRightToLeft done',
             toJS(this.data),
             toJS(this.state),
-            toJS(this.data.directBill),
         )
     }
 

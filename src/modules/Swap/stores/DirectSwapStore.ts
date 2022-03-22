@@ -24,8 +24,8 @@ import { TokensCacheService } from '@/stores/TokensCacheService'
 import { WalletService } from '@/stores/WalletService'
 import { debug, error, isGoodBignumber } from '@/utils'
 import type {
-    BaseSwapStoreInitialData,
     DirectSwapStoreData,
+    DirectSwapStoreInitialData,
     DirectSwapStoreState,
     SwapFailureResult,
     SwapSuccessResult,
@@ -36,20 +36,18 @@ import type {
 const rpc = useRpcClient()
 
 
-export class DirectSwapStore<
-    T extends DirectSwapStoreData | Record<string, any>,
-    U extends DirectSwapStoreState | Record<string, any>
-> extends BaseSwapStore<T, U> {
+export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, DirectSwapStoreState> {
 
     constructor(
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
-        protected readonly initialData?: BaseSwapStoreInitialData,
+        protected readonly initialData?: DirectSwapStoreInitialData,
         protected readonly callbacks?: SwapTransactionCallbacks,
     ) {
         super(tokensCache, initialData)
 
         this.setData({
+            coin: initialData?.coin,
             bill: DEFAULT_SWAP_BILL,
             leftAmount: initialData?.leftAmount ?? '',
             leftToken: initialData?.leftToken,
@@ -66,7 +64,7 @@ export class DirectSwapStore<
         })
 
         makeObservable<
-            DirectSwapStore<T, U>,
+            DirectSwapStore,
             | 'isPairInverted'
             | 'pairLeftBalanceNumber'
             | 'pairRightBalanceNumber'
@@ -572,10 +570,10 @@ export class DirectSwapStore<
             && this.pair?.contract !== undefined
             && this.leftToken?.wallet !== undefined
             && this.leftTokenAddress !== undefined
-            && new BigNumber(this.amount || 0).gt(0)
-            && new BigNumber(this.expectedAmount || 0).gt(0)
-            && new BigNumber(this.minExpectedAmount || 0).gt(0)
-            && new BigNumber(this.leftToken.balance || 0).gte(this.amount || 0)
+            && isGoodBignumber(this.amount || 0)
+            && isGoodBignumber(this.expectedAmount || 0)
+            && isGoodBignumber(this.minExpectedAmount || 0)
+            && isGoodBignumber(this.leftAmount || 0)
         )
     }
 

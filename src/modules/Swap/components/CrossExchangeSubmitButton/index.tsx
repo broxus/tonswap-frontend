@@ -5,7 +5,6 @@ import { useIntl } from 'react-intl'
 import { Icon } from '@/components/common/Icon'
 import { useWallet } from '@/stores/WalletService'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
-import { useBalanceValidation } from '@/hooks/useBalanceValidation'
 import { SwapDirection } from '@/modules/Swap/types'
 
 
@@ -65,12 +64,7 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case !useBalanceValidation(
-            formStore.leftToken,
-            formStore.direction === SwapDirection.LTR
-                ? formStore.leftAmount
-                : formStore.swap?.leftAmount,
-        ):
+        case !formStore.isLeftAmountValid:
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_INSUFFICIENT_TOKEN_BALANCE',
