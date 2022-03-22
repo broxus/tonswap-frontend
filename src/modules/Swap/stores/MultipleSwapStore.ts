@@ -17,7 +17,7 @@ export class MultipleSwapStore extends CoinSwapStore {
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
         protected readonly initialData?: CoinSwapStoreInitialData,
-        protected readonly callbacks?: SwapTransactionCallbacks,
+        protected readonly callbacks?: SwapTransactionCallbacks<any, any>,
     ) {
         super(wallet, tokensCache, initialData)
 

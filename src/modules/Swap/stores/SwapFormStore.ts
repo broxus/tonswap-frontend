@@ -17,7 +17,7 @@ import { CrossPairSwapStore } from '@/modules/Swap/stores/CrossPairSwapStore'
 import { DirectSwapStore } from '@/modules/Swap/stores/DirectSwapStore'
 import { MultipleSwapStore } from '@/modules/Swap/stores/MultipleSwapStore'
 import type {
-    BaseSwapStoreData,
+    BaseSwapStoreData, CoinSwapSuccessResult,
     ConversionTransactionResponse,
     CrossPairSwapStoreData,
     DirectSwapStoreData,
@@ -117,7 +117,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             slippage: this.data.slippage,
             swapFee: options?.multipleSwapFee,
         }, {
-            onTransactionSuccess: (...args) => this.handleSwapSuccess(...args),
+            onTransactionSuccess: (...args) => this.handleCoinSwapSuccess(...args),
             onTransactionFailure: (...args) => this.handleSwapFailure(...args),
         })
 
@@ -234,6 +234,29 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             this.#walletAccountDisposer?.()
         }
         this.reset()
+    }
+
+    public async submit(): Promise<void> {
+        switch (true) {
+            case this.isCrossExchangeMode:
+                await this.#crossPairSwap.submit()
+                break
+
+            case this.isMultipleSwapMode:
+                await this.#multipleSwap.submit()
+                break
+
+            case this.nativeCoinSide === 'leftToken':
+                await this.#coinSwap.submit('fromCoinToTip3')
+                break
+
+            case this.nativeCoinSide === 'rightToken':
+                await this.#coinSwap.submit('fromTip3ToCoin')
+                break
+
+            default:
+                await this.#directSwap.submit()
+        }
     }
 
     /**
@@ -1036,15 +1059,14 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             },
         })
 
-        // @ts-ignore
-        this._swap.setState('isSwapping', false)
-        this.#crossPairSwap.setState('isSwapping', false)
-
         this.checkExchangeMode()
         this.forceInvalidate()
 
         await this._swap.syncPairState()
-        await this.#crossPairSwap.syncCrossExchangePairsStates()
+
+        if (!this.isMultipleSwapMode) {
+            await this.#crossPairSwap.syncCrossExchangePairsStates()
+        }
     }
 
     /**
@@ -1084,14 +1106,34 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             },
         })
 
-        // @ts-ignore
-        this._swap.setState('isSwapping', false)
-        this.#crossPairSwap.setState('isSwapping', false)
-
         this.checkExchangeMode()
         this.forceInvalidate()
 
         this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
+    }
+
+    protected async handleCoinSwapSuccess({ input, transaction }: CoinSwapSuccessResult): Promise<void> {
+        this.setData({
+            leftAmount: '',
+            rightAmount: '',
+            transaction: {
+                amount: input.amount.toString(),
+                hash: transaction.id.hash,
+                receivedDecimals: this.rightTokenDecimals,
+                receivedIcon: this.rightToken?.icon,
+                receivedRoot: this.rightToken?.root,
+                receivedSymbol: this.rightToken?.symbol,
+                success: true,
+            },
+        })
+        this.checkExchangeMode()
+        this.forceInvalidate()
+
+        await this._swap.syncPairState()
+
+        if (!this.isMultipleSwapMode) {
+            await this.#crossPairSwap.syncCrossExchangePairsStates()
+        }
     }
 
     /**

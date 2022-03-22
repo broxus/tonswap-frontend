@@ -342,10 +342,10 @@ export class WalletService {
     public get coin(): WalletNativeCoin {
         return {
             balance: this.balance,
-            decimals: DexConstants.CoinDecimals,
-            icon: DexConstants.CoinLogoURI,
-            name: DexConstants.CoinSymbol,
-            symbol: DexConstants.CoinSymbol,
+            decimals: this.nativeCoin?.decimals ?? DexConstants.CoinDecimals,
+            icon: this.nativeCoin?.icon || DexConstants.CoinLogoURI,
+            name: this.nativeCoin?.name || DexConstants.CoinSymbol,
+            symbol: this.nativeCoin?.symbol || DexConstants.CoinSymbol,
         }
     }
 
@@ -363,7 +363,7 @@ export class WalletService {
      */
     public get walletContractCallbacks(): Contract<typeof DexAbi.Callbacks> | undefined {
         return this.account?.address !== undefined
-            ? rpc.createContract(DexAbi.Callbacks, this.account?.address)
+            ? new rpc.Contract(DexAbi.Callbacks, this.account?.address)
             : undefined
     }
 
@@ -443,7 +443,12 @@ export class WalletService {
 }
 
 
-const WalletServiceStore = new WalletService()
+const WalletServiceStore = new WalletService({
+    decimals: DexConstants.CoinDecimals,
+    icon: DexConstants.CoinLogoURI,
+    name: DexConstants.CoinSymbol,
+    symbol: DexConstants.CoinSymbol,
+})
 
 export function useWallet(): WalletService {
     return WalletServiceStore

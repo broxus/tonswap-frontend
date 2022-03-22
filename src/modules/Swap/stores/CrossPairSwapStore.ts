@@ -52,7 +52,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
         protected readonly initialData?: BaseSwapStoreInitialData,
-        protected readonly callbacks?: SwapTransactionCallbacks,
+        protected readonly callbacks?: SwapTransactionCallbacks<SwapSuccessResult, SwapFailureResult>,
     ) {
         super(tokensCache, initialData)
 
@@ -388,8 +388,14 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
 
             if (resultHandler !== undefined) {
                 E.match(
-                    (r: SwapFailureResult) => this.callbacks?.onTransactionFailure?.(r),
-                    (r: SwapSuccessResult) => this.callbacks?.onTransactionSuccess?.(r),
+                    (r: SwapFailureResult) => {
+                        this.setState('isSwapping', false)
+                        this.callbacks?.onTransactionFailure?.(r)
+                    },
+                    (r: SwapSuccessResult) => {
+                        this.setState('isSwapping', false)
+                        this.callbacks?.onTransactionSuccess?.(r)
+                    },
                 )(await resultHandler)
             }
         }

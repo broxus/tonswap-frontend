@@ -34,7 +34,7 @@ function ConfirmationPopup(): JSX.Element {
 
     const onSubmit = async () => {
         formStore.setState('isConfirmationAwait', false)
-        await formStore.swap.submit()
+        await formStore.submit()
     }
 
     React.useEffect(() => reaction(() => [

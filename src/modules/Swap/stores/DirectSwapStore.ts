@@ -1,11 +1,7 @@
 import BigNumber from 'bignumber.js'
 import { Address, Subscriber } from 'everscale-inpage-provider'
 import * as E from 'fp-ts/Either'
-import {
-    computed,
-    makeObservable,
-    toJS,
-} from 'mobx'
+import { computed, makeObservable, toJS } from 'mobx'
 
 import { useRpcClient } from '@/hooks/useRpcClient'
 import { checkPair, DexAbi, TokenWallet } from '@/misc'
@@ -42,7 +38,7 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, DirectSw
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
         protected readonly initialData?: DirectSwapStoreInitialData,
-        protected readonly callbacks?: SwapTransactionCallbacks,
+        protected readonly callbacks?: SwapTransactionCallbacks<SwapSuccessResult, SwapFailureResult>,
     ) {
         super(tokensCache, initialData)
 
@@ -164,11 +160,13 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, DirectSw
      * Manually start direct swap process.
      * @returns {Promise<void>}
      */
-    public async submit(): Promise<void> {
+    public async submit(..._: any[]): Promise<void> {
         if (!this.isValid) {
             this.setState('isSwapping', false)
             return
         }
+
+        this.setState('isSwapping', true)
 
         const deployGrams = this.rightToken?.balance === undefined ? '100000000' : '0'
 
@@ -183,18 +181,15 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, DirectSw
             ) + 1,
         ).toFixed()
 
-        const {
-            value0: payload,
-        } = await this.pair!.contract!.methods.buildExchangePayload({
-            id: processingId,
-            expected_amount: this.data.bill.minExpectedAmount!,
-            deploy_wallet_grams: deployGrams,
-        }).call({
-            cachedState: toJS(this.pair!.state),
-        })
-
-        // noinspection DuplicatedCode
-        this.setState('isSwapping', true)
+        const payload = (await this.pair!.contract!
+            .methods.buildExchangePayload({
+                deploy_wallet_grams: deployGrams,
+                expected_amount: this.minExpectedAmount!,
+                id: processingId,
+            })
+            .call({
+                cachedState: toJS(this.pair!.state),
+            })).value0
 
         let stream = this.#transactionSubscriber?.transactions(this.wallet.account!.address)
 
@@ -214,10 +209,12 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, DirectSw
 
             if (result !== undefined) {
                 if (result.method === 'dexPairOperationCancelled' && result.input.id.toString() === processingId) {
+                    this.setState('isSwapping', false)
                     return E.left({ input: result.input })
                 }
 
                 if (result.method === 'dexPairExchangeSuccess' && result.input.id.toString() === processingId) {
+                    this.setState('isSwapping', false)
                     return E.right({ input: result.input, transaction })
                 }
             }
@@ -232,13 +229,19 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, DirectSw
                 owner: this.wallet.account!.address,
                 payload,
                 recipient: pairWallet,
-                tokens: this.data.bill.amount!,
+                tokens: this.amount!,
             })
 
             if (resultHandler !== undefined) {
                 E.match(
-                    (r: SwapFailureResult) => this.callbacks?.onTransactionFailure?.(r),
-                    (r: SwapSuccessResult) => this.callbacks?.onTransactionSuccess?.(r),
+                    (r: SwapFailureResult) => {
+                        this.setState('isSwapping', false)
+                        this.callbacks?.onTransactionFailure?.(r)
+                    },
+                    (r: SwapSuccessResult) => {
+                        this.setState('isSwapping', false)
+                        this.callbacks?.onTransactionSuccess?.(r)
+                    },
                 )(await resultHandler)
             }
         }

@@ -134,11 +134,10 @@ export type SwapStoreState = {
     priceDirection?: SwapDirection;
 }
 
-export type SwapTransactionCallbacks = {
-    onTransactionSuccess?: (response: SwapSuccessResult) => Promise<void> | void;
-    onTransactionFailure?: (reason: SwapFailureResult) => Promise<void> | void;
+export type SwapTransactionCallbacks<T, U> = {
+    onTransactionSuccess?: (response: T) => Promise<void> | void;
+    onTransactionFailure?: (reason: U) => Promise<void> | void;
 }
-
 
 export type SwapTransactionReceipt = {
     amount?: string;
@@ -169,7 +168,6 @@ export type SwapFailureResult = {
     input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>;
     step?: SwapRouteResult;
 }
-
 
 export interface BaseSwapStoreInitialData {
     leftAmount: string;
@@ -207,6 +205,15 @@ export interface DirectSwapStoreState extends BaseSwapStoreState {
 
 export interface CoinSwapStoreInitialData extends DirectSwapStoreInitialData {
     swapFee?: string;
+}
+
+export type CoinSwapSuccessResult = {
+    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'onSwapEverToTip3Success'>;
+    transaction: Transaction;
+}
+
+export type CoinSwapFailureResult = {
+    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'onSwapEverToTip3Cancel'>;
 }
 
 export interface CrossPairSwapStoreData extends BaseSwapStoreData {

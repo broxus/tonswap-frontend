@@ -71,7 +71,7 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
             const { transaction } = await rpc.sendMessage({
                 amount,
                 bounce: false,
-                recipient: DexConstants.DexVaultAddress,
+                recipient: DexConstants.WeverVaultAddress,
                 sender: this.wallet.account.address,
             })
 
@@ -116,7 +116,7 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
                     amount,
                     deployWalletValue: '0',
                     notify: true,
-                    recipient: DexConstants.DexVaultAddress,
+                    recipient: DexConstants.WeverVaultAddress,
                     remainingGasTo: this.wallet.account.address,
                     payload: '',
                 })
