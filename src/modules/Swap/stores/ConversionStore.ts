@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { Address } from 'everscale-inpage-provider'
+import { computed, makeObservable } from 'mobx'
 
 import { DexConstants, TokenAbi } from '@/misc'
 import { useRpcClient } from '@/hooks/useRpcClient'
@@ -7,26 +8,13 @@ import { BaseStore } from '@/stores/BaseStore'
 import { TokensCacheService } from '@/stores/TokensCacheService'
 import { WalletService } from '@/stores/WalletService'
 import { error, isGoodBignumber, log } from '@/utils'
-import type { SwapTransactionCallbacks } from '@/modules/Swap/types'
+import type {
+    ConversionStoreData,
+    ConversionStoreInitialData,
+    ConversionStoreState,
+    ConversionTransactionCallbacks,
+} from '@/modules/Swap/types'
 import type { TokenCache } from '@/stores/TokensCacheService'
-import type { WalletNativeCoin } from '@/stores/WalletService'
-
-
-export type ConversionStoreInitialData = {
-    coin?: WalletNativeCoin;
-    token?: string;
-    wrapFee?: string;
-}
-
-export interface ConversionStoreData extends Exclude<ConversionStoreInitialData, 'wrapFee'> {
-    amount: string;
-    wrappedAmount?: string;
-    unwrappedAmount?: string;
-}
-
-export type ConversionStoreState = {
-    isProcessing: boolean;
-}
 
 
 const rpc = useRpcClient()
@@ -38,7 +26,7 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
         protected readonly initialData?: ConversionStoreInitialData,
-        protected readonly callbacks?: SwapTransactionCallbacks,
+        protected readonly callbacks?: ConversionTransactionCallbacks,
     ) {
         super()
 
@@ -50,6 +38,22 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
 
         this.setState({
             isProcessing: false,
+        })
+
+        makeObservable(this, {
+            amount: computed,
+            wrappedAmount: computed,
+            unwrappedAmount: computed,
+            coin: computed,
+            token: computed,
+            txHash: computed,
+            isWrapAmountValid: computed,
+            isUnwrapAmountValid: computed,
+            isInsufficientWrapBalance: computed,
+            isInsufficientUnwrapBalance: computed,
+            isProcessing: computed,
+            isWrapValid: computed,
+            isUnwrapValid: computed,
         })
     }
 
@@ -75,7 +79,13 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
 
             this.setData({
                 amount: '',
+                txHash: transaction.id.hash,
                 wrappedAmount: wrappedAmount.toFixed(),
+            })
+
+            this.callbacks?.onTransactionSuccess?.({
+                amount: wrappedAmount.toFixed(),
+                txHash: transaction.id.hash,
             })
         }
         catch (e) {
@@ -101,7 +111,7 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
             this.setState('isProcessing', true)
 
             const tokenWalletContract = new rpc.Contract(TokenAbi.Wallet, new Address(this.token.wallet))
-            const transactionId = (await tokenWalletContract
+            const transaction = await tokenWalletContract
                 .methods.transfer({
                     amount,
                     deployWalletValue: '0',
@@ -114,14 +124,19 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
                     amount: '500000000',
                     bounce: false,
                     from: this.wallet.account.address,
-                }))
-                .id
+                })
 
-            log('Unwrap successful. Tx: Hash', transactionId.hash)
+            log('Unwrap successful. Tx: Hash', transaction.id.hash)
 
             this.setData({
                 amount: '',
+                txHash: transaction.id.hash,
                 unwrappedAmount: amount,
+            })
+
+            this.callbacks?.onTransactionSuccess?.({
+                amount,
+                txHash: transaction.id.hash,
             })
         }
         catch (e) {
@@ -136,12 +151,24 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
         return this.data.amount
     }
 
+    public get wrappedAmount(): ConversionStoreData['wrappedAmount'] {
+        return this.data.wrappedAmount
+    }
+
+    public get unwrappedAmount(): ConversionStoreData['unwrappedAmount'] {
+        return this.data.unwrappedAmount
+    }
+
     public get coin(): ConversionStoreData['coin'] {
         return this.data.coin
     }
 
     public get token(): TokenCache | undefined {
         return this.tokensCache.get(this.data.token)
+    }
+
+    public get txHash(): ConversionStoreData['txHash'] {
+        return this.data.txHash
     }
 
     public get isWrapAmountValid(): boolean {

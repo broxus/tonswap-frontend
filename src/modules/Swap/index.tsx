@@ -7,6 +7,7 @@ import { Icon } from '@/components/common/Icon'
 import {
     ConversionInfo,
     ConversionSubmitButton,
+    ConversionTransactionReceipt,
     CrossExchangeSubmitButton,
     SwapBill,
     SwapConfirmationPopup,
@@ -14,7 +15,7 @@ import {
     SwapPrice,
     SwapSettings,
     SwapSubmitButton,
-    SwapTransaction,
+    SwapTransactionReceipt,
 } from '@/modules/Swap/components'
 import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
@@ -176,7 +177,9 @@ export function Swap(): JSX.Element {
                 )}
             </Observer>
 
-            <SwapTransaction key="transaction" />
+            <SwapTransactionReceipt key="swap-transaction-receipt" />
+
+            <ConversionTransactionReceipt key="conversion-transaction-receipt" />
 
             <Observer>
                 {() => (

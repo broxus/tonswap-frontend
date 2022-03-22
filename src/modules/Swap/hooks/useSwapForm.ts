@@ -200,7 +200,10 @@ export function useSwapForm(): SwapFormShape {
         history.push({ pathname: '/swap' })
 
         if (formStore.rightToken?.root === formStore.multipleSwapTokenRoot) {
-            formStore.setData('leftToken', undefined)
+            formStore.setData({
+                leftToken: undefined,
+                rightAmount: formStore.leftAmount,
+            })
             formStore.setState('exchangeMode', SwapExchangeMode.WRAP_EVER)
         }
         else {
@@ -212,7 +215,10 @@ export function useSwapForm(): SwapFormShape {
         hideTokensList()
 
         if (formStore.isMultipleSwapMode || formStore.leftToken?.root === formStore.multipleSwapTokenRoot) {
-            formStore.setData('rightToken', undefined)
+            formStore.setData({
+                rightAmount: formStore.leftAmount,
+                rightToken: undefined,
+            })
             formStore.setState('exchangeMode', SwapExchangeMode.UNWRAP_WEVER)
         }
 
@@ -251,6 +257,7 @@ export function useSwapForm(): SwapFormShape {
                 isMultiple: false,
                 nativeCoinSide: 'leftToken',
             })
+            formStore.forceRightAmountUpdate(formStore.leftAmount)
             return
         }
 

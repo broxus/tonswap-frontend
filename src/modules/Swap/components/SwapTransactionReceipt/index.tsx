@@ -11,7 +11,7 @@ import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { formattedTokenAmount } from '@/utils'
 
 
-function Transaction(): JSX.Element | null {
+function SwapReceipt(): JSX.Element | null {
     const intl = useIntl()
     const formStore = useSwapFormStore()
 
@@ -165,4 +165,4 @@ function Transaction(): JSX.Element | null {
     )
 }
 
-export const SwapTransaction = observer(Transaction)
+export const SwapTransactionReceipt = observer(SwapReceipt)

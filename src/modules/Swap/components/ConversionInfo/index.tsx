@@ -11,7 +11,6 @@ import './index.scss'
 export function ConversionInfo(): JSX.Element {
     const intl = useIntl()
     const formStore = useSwapFormStore()
-    const conversion = formStore.useConversionStore
 
     return (
         <div className="form-row conversion-info">
@@ -23,14 +22,14 @@ export function ConversionInfo(): JSX.Element {
                                 switch (formStore.exchangeMode) {
                                     case SwapExchangeMode.WRAP_EVER:
                                         return intl.formatMessage({
-                                            id: conversion.isInsufficientWrapBalance
+                                            id: formStore.conversion.isInsufficientWrapBalance
                                                 ? 'CONVERSION_FORM_INSUFFICIENT_BALANCE'
                                                 : 'CONVERSION_FORM_EXPECTED_AMOUNT',
                                         })
 
                                     case SwapExchangeMode.UNWRAP_WEVER:
                                         return intl.formatMessage({
-                                            id: conversion.isInsufficientUnwrapBalance
+                                            id: formStore.conversion.isInsufficientUnwrapBalance
                                                 ? 'CONVERSION_FORM_INSUFFICIENT_BALANCE'
                                                 : 'CONVERSION_FORM_EXPECTED_AMOUNT',
                                         })
@@ -44,7 +43,7 @@ export function ConversionInfo(): JSX.Element {
                             {(() => {
                                 switch (formStore.exchangeMode) {
                                     case SwapExchangeMode.WRAP_EVER:
-                                        if (conversion.isInsufficientWrapBalance) {
+                                        if (formStore.conversion.isInsufficientWrapBalance) {
                                             return null
                                         }
 
@@ -58,7 +57,7 @@ export function ConversionInfo(): JSX.Element {
                                             })
 
                                     default:
-                                        if (conversion.isInsufficientUnwrapBalance) {
+                                        if (formStore.conversion.isInsufficientUnwrapBalance) {
                                             return null
                                         }
 

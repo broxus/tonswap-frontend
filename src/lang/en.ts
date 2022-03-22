@@ -95,6 +95,11 @@ export default {
     CONVERSION_FORM_EXPECTED_AMOUNT_VALUE: '{value} {symbol}',
     CONVERSION_FORM_WRAP_BTN_TEXT: 'Wrap {symbol}',
     CONVERSION_FORM_UNWRAP_BTN_TEXT: 'Unwrap {symbol}',
+    WRAP_RECEIPT_POPUP_TITLE_SUCCESS: 'Wrap receipt',
+    UNWRAP_RECEIPT_POPUP_TITLE_SUCCESS: 'Unwrap receipt',
+    CONVERSION_RECEIPT_LEAD_RECEIVED_AMOUNT: '+ <span>{value}</span> {symbol}',
+    CONVERSION_RECEIPT_LINK_TXT_TOKEN_ROOT_CONTRACT: 'Token root contract',
+    CONVERSION_RECEIPT_LINK_TXT_TRANSACTION: 'Transaction result',
 
     TOKENS_LIST_POPUP_TITLE: 'Select a token',
     TOKENS_LIST_POPUP_FIELD_SEARCH_PLACEHOLDER: 'Enter a token name or address...',

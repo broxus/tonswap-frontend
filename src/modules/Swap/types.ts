@@ -8,6 +8,7 @@ import type {
 import { DexAbi } from '@/misc'
 import type { TokenSide } from '@/modules/TokensList'
 import type { TokenCache } from '@/stores/TokensCacheService'
+import { WalletNativeCoin } from '@/stores/WalletService'
 
 
 export type SwapOptions = {
@@ -213,6 +214,33 @@ export interface CrossPairSwapStoreData extends BaseSwapStoreData {
 
 export interface CrossPairSwapStoreState extends BaseSwapStoreState {
     isPreparing: boolean;
+}
+
+export type ConversionStoreInitialData = {
+    coin?: WalletNativeCoin;
+    token?: string;
+    wrapFee?: string;
+}
+
+export interface ConversionStoreData extends Exclude<ConversionStoreInitialData, 'wrapFee'> {
+    amount: string;
+    wrappedAmount?: string;
+    txHash?: string;
+    unwrappedAmount?: string;
+}
+
+export type ConversionStoreState = {
+    isProcessing: boolean;
+}
+
+export type ConversionTransactionResponse = {
+    amount: string;
+    txHash: string;
+}
+
+export type ConversionTransactionCallbacks = {
+    onTransactionSuccess?: (response: ConversionTransactionResponse) => void;
+    onTransactionFailure?: (reason: unknown) => void;
 }
 
 export type SwapFormStoreState = {

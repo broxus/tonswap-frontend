@@ -10,10 +10,9 @@ import { SwapExchangeMode } from '@/modules/Swap/types'
 function SubmitButton(): JSX.Element {
     const intl = useIntl()
     const formStore = useSwapFormStore()
-    const conversion = formStore.useConversionStore
     const wallet = formStore.useWallet
 
-    if (conversion.isProcessing) {
+    if (formStore.conversion.isProcessing) {
         return (
             <button
                 type="button"
@@ -32,12 +31,12 @@ function SubmitButton(): JSX.Element {
     if (formStore.isWrapMode) {
         buttonText = intl.formatMessage({
             id: 'CONVERSION_FORM_WRAP_BTN_TEXT',
-        }, { symbol: conversion.coin?.symbol })
+        }, { symbol: formStore.conversion.coin?.symbol })
     }
     else if (formStore.isUnwrapMode) {
         buttonText = intl.formatMessage({
             id: 'CONVERSION_FORM_UNWRAP_BTN_TEXT',
-        }, { symbol: conversion.token?.symbol })
+        }, { symbol: formStore.conversion.token?.symbol })
     }
 
     switch (true) {
@@ -51,21 +50,21 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case formStore.isWrapMode && conversion.isWrapValid:
+        case formStore.isWrapMode && formStore.conversion.isWrapValid:
             buttonProps.disabled = false
             buttonProps.onClick = async () => {
-                await conversion.wrap()
+                await formStore.conversion.wrap()
             }
             break
 
-        case formStore.isUnwrapMode && conversion.isUnwrapValid:
+        case formStore.isUnwrapMode && formStore.conversion.isUnwrapValid:
             buttonProps.disabled = false
             buttonProps.onClick = async () => {
                 if (formStore.exchangeMode === SwapExchangeMode.WRAP_EVER) {
-                    await conversion.wrap()
+                    await formStore.conversion.wrap()
                 }
                 else {
-                    await conversion.unwrap()
+                    await formStore.conversion.unwrap()
                 }
             }
             break

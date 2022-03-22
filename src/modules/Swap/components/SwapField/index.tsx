@@ -105,7 +105,7 @@ function Field({
                             </button>
                         )}
                         {(token !== undefined && nativeCoin === undefined) && (
-                            <div className="swap-field-balance truncate" key="token-balance">
+                            <div key="token-balance" className="swap-field-balance truncate">
                                 {intl.formatMessage({
                                     id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
                                 }, {
@@ -114,7 +114,7 @@ function Field({
                             </div>
                         )}
                         {nativeCoin !== undefined && (
-                            <div className="swap-field-balance truncate" key="token-balance">
+                            <div key="coin-balance" className="swap-field-balance">
                                 {intl.formatMessage({
                                     id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
                                 }, {

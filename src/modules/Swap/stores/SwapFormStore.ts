@@ -7,14 +7,17 @@ import {
     reaction,
 } from 'mobx'
 
+import { useBalanceValidation } from '@/hooks/useBalanceValidation'
 import { DexConstants } from '@/misc'
 import { DEFAULT_LEFT_TOKEN_ROOT, DEFAULT_RIGHT_TOKEN_ROOT } from '@/modules/Swap/constants'
 import { BaseSwapStore } from '@/modules/Swap/stores/BaseSwapStore'
+import { ConversionStore } from '@/modules/Swap/stores/ConversionStore'
 import { CrossPairSwapStore } from '@/modules/Swap/stores/CrossPairSwapStore'
 import { DirectSwapStore } from '@/modules/Swap/stores/DirectSwapStore'
 import { MultipleSwapStore } from '@/modules/Swap/stores/MultipleSwapStore'
 import type {
     BaseSwapStoreData,
+    ConversionTransactionResponse,
     CrossPairSwapStoreData,
     DirectSwapStoreData,
     DirectSwapStoreState,
@@ -36,8 +39,6 @@ import {
     storage,
     warn,
 } from '@/utils'
-import { ConversionStore } from '@/modules/Swap/stores/ConversionStore'
-import { useBalanceValidation } from '@/hooks/useBalanceValidation'
 
 
 export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStoreState> {
@@ -67,6 +68,8 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             coin: this.coin,
             token: options?.multipleSwapTokenRoot,
             wrapFee: options?.wrapFee,
+        }, {
+            onTransactionSuccess: (...args) => this.handleConversionSuccess(...args),
         })
 
         this.#crossPairSwap = new CrossPairSwapStore(wallet, tokensCache, {
@@ -108,6 +111,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             | 'handleWalletAccountChange'
             | 'handleSwapSuccess'
             | 'handleSwapFailure'
+            | 'handleConversionSuccess'
         >(this, {
             toggleSwapExchangeMode: action.bound,
             togglePriceDirection: action.bound,
@@ -132,15 +136,15 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             pair: computed,
             route: computed,
             swap: computed,
-            useConversionStore: computed,
+            conversion: computed,
             useWallet: computed,
             handleWalletAccountChange: action.bound,
             handleSwapSuccess: action.bound,
             handleSwapFailure: action.bound,
+            handleConversionSuccess: action.bound,
             directSwap: computed,
         })
     }
-
 
     /*
      * Public actions. Useful in UI
@@ -747,7 +751,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      * @returns {boolean}
      */
     public get isSwapping(): boolean {
-        return this.directSwap.isSwapping || this.#crossPairSwap.isSwapping
+        return this.directSwap.isSwapping || this.#crossPairSwap.isSwapping || this.conversion.isProcessing
     }
 
     public get isLeftAmountValid(): boolean {
@@ -812,9 +816,18 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             case this.isCrossExchangeMode:
                 return this.#crossPairSwap
 
+            case this.isMultipleSwapMode:
             default:
                 return this.directSwap
         }
+    }
+
+    /**
+     * Returns related conversion store
+     * @returns {ConversionStore}
+     */
+    public get conversion(): ConversionStore {
+        return this.#conversion
     }
 
 
@@ -830,14 +843,6 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         this.#crossPairSwap.forceInvalidate()
         this.#directSwap.forceInvalidate()
         this.#multipleSwap.forceInvalidate()
-    }
-
-    /**
-     * Returns related conversion store
-     * @returns {ConversionStore}
-     */
-    public get useConversionStore(): ConversionStore {
-        return this.#conversion
     }
 
     /**
@@ -1029,6 +1034,10 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
 
+    protected handleConversionSuccess(_: ConversionTransactionResponse): void {
+        this.forceLeftAmountUpdate('')
+        this.forceRightAmountUpdate('')
+    }
 
     /*
      * Private swap stores instances
