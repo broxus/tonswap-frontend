@@ -425,7 +425,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             return
         }
 
-        const isReverting = root === this.data.rightToken
+        const isReverting = root === this.data.rightToken && !this.isConversionMode
 
         if (isReverting) {
             this.setData({
@@ -450,14 +450,11 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
 
         this.forceInvalidate()
 
-        if (this.isConversionMode) {
-            this.forceRightTokenUpdate(undefined)
-        }
-
         callback?.()
 
         if (this.data.leftToken === undefined || this.data.rightToken === undefined) {
             this.forcePairUpdate(undefined)
+            await this.trackData()
             return
         }
 
@@ -488,7 +485,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             return
         }
 
-        const isReverting = root === this.data.leftToken
+        const isReverting = root === this.data.leftToken && !this.isConversionMode
 
         if (isReverting) {
             this.setData({
@@ -513,14 +510,11 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
 
         this.forceInvalidate()
 
-        if (this.isConversionMode) {
-            this.setData('leftToken', undefined)
-        }
-
         callback?.()
 
         if (this.leftToken === undefined || this.rightToken === undefined) {
             this.forcePairUpdate(undefined)
+            await this.trackData()
             return
         }
 

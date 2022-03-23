@@ -114,8 +114,8 @@ export function useSwapForm(): SwapFormShape {
         await formStore.changeLeftToken(formStore.leftToken?.root)
 
         if (tokensCache.isReady) {
-            const leftInCache = formStore.leftToken !== undefined
-            const rightInCache = formStore.rightToken !== undefined
+            const leftInCache = tokensCache.has(leftRoot)
+            const rightInCache = tokensCache.has(rightRoot)
 
             try {
                 if (isLeftRootValid && !leftInCache && !isLeftCoin) {
@@ -229,7 +229,11 @@ export function useSwapForm(): SwapFormShape {
         })
 
         if (formStore.rightToken?.root === formStore.multipleSwapTokenRoot) {
-            formStore.forceRightTokenUpdate(formStore.leftToken?.root)
+            formStore.forceRightTokenUpdate(
+                formStore.leftToken?.root === formStore.multipleSwapTokenRoot
+                    ? undefined
+                    : formStore.leftToken?.root,
+            )
         }
 
         hideTokensList()
@@ -307,6 +311,22 @@ export function useSwapForm(): SwapFormShape {
     const onSelectRightToken: SwapFormShape['onSelectRightToken'] = async root => {
         hideTokensList()
 
+        const navigate = () => {
+            let leftParam = formStore.leftToken?.root !== undefined ? `/${formStore.leftToken?.root}` : undefined
+
+            if (formStore.nativeCoinSide === 'leftToken') {
+                leftParam = '/coin'
+            }
+
+            if (formStore.isMultipleSwapMode) {
+                leftParam = '/combined'
+            }
+
+            if (leftParam !== undefined) {
+                history.replace(`/swap${leftParam}/${root}`)
+            }
+        }
+
         if (formStore.isMultipleSwapMode && root === formStore.multipleSwapTokenRoot) {
             formStore.setData({
                 leftToken: undefined,
@@ -318,6 +338,7 @@ export function useSwapForm(): SwapFormShape {
                 nativeCoinSide: 'leftToken',
             })
             formStore.forceRightAmountUpdate(formStore.leftAmount)
+            navigate()
             return
         }
 
@@ -328,6 +349,7 @@ export function useSwapForm(): SwapFormShape {
             })
             formStore.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
             await formStore.changeRightToken(root)
+            navigate()
             return
         }
 
@@ -340,19 +362,7 @@ export function useSwapForm(): SwapFormShape {
 
         await formStore.changeRightToken(root)
 
-        let leftParam = formStore.leftToken?.root !== undefined ? `/${formStore.leftToken?.root}` : undefined
-
-        if (formStore.nativeCoinSide === 'leftToken') {
-            leftParam = '/coin'
-        }
-
-        if (formStore.isMultipleSwapMode) {
-            leftParam = '/combined'
-        }
-
-        if (leftParam !== undefined) {
-            history.replace(`/swap${leftParam}/${root}`)
-        }
+        navigate()
     }
 
     const onDismissTransactionReceipt = () => {

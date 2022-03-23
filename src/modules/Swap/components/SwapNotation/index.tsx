@@ -48,7 +48,7 @@ export function SwapNotation(): JSX.Element | null {
                 EVER and wEVER, which you can swap for any other TIP-3.1 tokens.
             </p>
             <p>
-                You can can also swap by using only your EVER or wEVER balance, if preferable.
+                You can also swap by using only your EVER or wEVER balance, if preferable.
             </p>
             <p>
                 <a
