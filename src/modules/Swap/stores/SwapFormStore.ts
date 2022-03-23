@@ -9,7 +9,6 @@ import {
 } from 'mobx'
 
 import { DexConstants } from '@/misc'
-import { DEFAULT_LEFT_TOKEN_ROOT, DEFAULT_RIGHT_TOKEN_ROOT } from '@/modules/Swap/constants'
 import { BaseSwapStore } from '@/modules/Swap/stores/BaseSwapStore'
 import { CoinSwapStore } from '@/modules/Swap/stores/CoinSwapStore'
 import { ConversionStore } from '@/modules/Swap/stores/ConversionStore'
@@ -207,25 +206,14 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         }, { fireImmediately: true })
 
         this.#tokensCacheDisposer = reaction(
-            () => this.tokensCache.tokens.length,
-            async (value, prevValue) => {
-                if (value !== prevValue && value > 0) {
-                    if (this.direction === SwapDirection.LTR) {
-                        await this.changeLeftToken(this.data.leftToken)
-                    }
-                    else if (this.direction === SwapDirection.RTL) {
-                        await this.changeRightToken(this.data.rightToken)
-                    }
+            () => this.tokensCache.isReady,
+            async isReady => {
+                if (isReady && this.data.leftToken !== undefined && this.data.rightToken !== undefined) {
+                    await this.recalculate(true)
                 }
             },
             { fireImmediately: true },
         )
-
-        if (this.data.leftToken === undefined && this.data.rightToken === undefined) {
-            this.setData('rightToken', DEFAULT_RIGHT_TOKEN_ROOT)
-            this.setState('isMultiple', true)
-            await this.changeLeftToken(DEFAULT_LEFT_TOKEN_ROOT)
-        }
     }
 
     /**
@@ -329,6 +317,22 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         this.#crossPairSwap.setData('pair', value)
         this.#directSwap.setData('pair', value)
         this.#multipleSwap.setData('pair', value)
+    }
+
+    public forceLeftTokenUpdate(value?: string): void {
+        this.setData('leftToken', value)
+        this.#coinSwap.setData('leftToken', value)
+        this.#crossPairSwap.setData('leftToken', value)
+        this.#directSwap.setData('leftToken', value)
+        this.#multipleSwap.setData('leftToken', value)
+    }
+
+    public forceRightTokenUpdate(value?: string): void {
+        this.setData('rightToken', value)
+        this.#coinSwap.setData('rightToken', value)
+        this.#crossPairSwap.setData('rightToken', value)
+        this.#directSwap.setData('rightToken', value)
+        this.#multipleSwap.setData('rightToken', value)
     }
 
     /**
@@ -437,13 +441,17 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         else {
             this.forcePairUpdate(undefined)
             this.setData('leftToken', root)
-            this.forceLeftAmountUpdate('')
+            this.forceRightAmountUpdate('')
+            this.#crossPairSwap.setData('routes', [])
         }
+
+        this.forceLeftTokenUpdate(this.data.leftToken)
+        this.forceRightTokenUpdate(this.data.rightToken)
 
         this.forceInvalidate()
 
         if (this.isConversionMode) {
-            this.setData('rightToken', undefined)
+            this.forceRightTokenUpdate(undefined)
         }
 
         callback?.()
@@ -458,7 +466,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             this.forcePairUpdate(this._swap.pair)
         }
 
-        if (!this.isMultipleSwapMode) {
+        if (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode)) {
             await this.#crossPairSwap.prepare()
         }
 
@@ -496,8 +504,12 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         else {
             this.forcePairUpdate(undefined)
             this.setData('rightToken', root)
-            this.forceRightAmountUpdate('')
+            this.forceLeftAmountUpdate('')
+            this.#crossPairSwap.setData('routes', [])
         }
+
+        this.forceLeftTokenUpdate(this.data.leftToken)
+        this.forceRightTokenUpdate(this.data.rightToken)
 
         this.forceInvalidate()
 
@@ -517,7 +529,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             this.forcePairUpdate(this._swap.pair)
         }
 
-        if (!this.isMultipleSwapMode) {
+        if (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode)) {
             await this.#crossPairSwap.prepare()
         }
 
@@ -653,28 +665,28 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         if (this.direction === SwapDirection.LTR && !this.leftAmountNumber.isZero()) {
             await this._swap.calculateLeftToRight(force)
 
-            if (this.isCrossExchangeAvailable && !this.isMultipleSwapMode) {
+            if (this.isCrossExchangeAvailable && (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
                 await this.#crossPairSwap.calculateLeftToRight(force)
             }
         }
         else if (this.direction === SwapDirection.RTL && !this.rightAmountNumber.isZero()) {
             await this._swap.calculateRightToLeft(force)
 
-            if (this.isCrossExchangeAvailable && !this.isMultipleSwapMode) {
-                await this.#crossPairSwap.calculateRightToLeft(force)
+            if (this.isCrossExchangeAvailable && (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
+                await this.#crossPairSwap.calculateRightToLeft(force, this.isEnoughLiquidity)
             }
         }
 
         setTimeout(() => {
-            this.setData({
-                leftAmount: this.swap.leftAmount || this.leftAmount,
-                rightAmount: this.swap.rightAmount || this.rightAmount,
-            })
+            this.forceLeftAmountUpdate(this.swap.leftAmount || this.leftAmount)
+            this.forceRightAmountUpdate(this.swap.rightAmount || this.rightAmount)
         }, 0)
 
         this.setState('isCalculating', false)
 
-        this.checkExchangeMode()
+        if (!this.isCrossExchangeOnly) {
+            this.checkExchangeMode()
+        }
 
         debug('Recalculated. Stores data', this, this._swap, this.#crossPairSwap)
 
@@ -805,6 +817,10 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      */
     public get isUnwrapMode(): boolean {
         return this.exchangeMode === SwapExchangeMode.UNWRAP_WEVER
+    }
+
+    public get isCoinBasedSwapMode(): boolean {
+        return this.nativeCoinSide !== undefined
     }
 
     /**
@@ -996,6 +1012,11 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      */
     protected checkExchangeMode(): void {
         switch (true) {
+            case this.pair === undefined && this.route !== undefined:
+            case this.route !== undefined && this.isLowTvl:
+                this.setState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY)
+                break
+
             case this.isMultipleSwapMode:
                 this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
                 break
@@ -1006,11 +1027,6 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
 
             case this.nativeCoinSide === 'rightToken' && this.leftToken?.root === this.multipleSwapTokenRoot:
                 this.setState('exchangeMode', SwapExchangeMode.WRAP_EVER)
-                break
-
-            case this.pair === undefined && this.route !== undefined:
-            case this.route !== undefined && this.isLowTvl:
-                this.setState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY)
                 break
 
             case (!this.isEnoughLiquidity || this.pair === undefined) && this.route !== undefined:

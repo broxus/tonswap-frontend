@@ -75,7 +75,7 @@ export const farmingApiRoutes = {
 
 export const appRoutes = {
     swap: new Route<{ leftTokenRoot?: string, rightTokenRoot?: string }>(
-        '/swap/:leftTokenRoot([0][:][0-9a-f]{64})?/:rightTokenRoot([0][:][0-9a-f]{64})?',
+        '/swap/:leftTokenRoot?/:rightTokenRoot?',
     ),
     poolList: new Route(
         '/pools',

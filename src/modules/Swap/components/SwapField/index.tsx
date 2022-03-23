@@ -54,29 +54,6 @@ function Field({
                     checking: tokensCache.isTokenUpdatingBalance(token?.root) && !props.disabled,
                 })}
             >
-                <div className="form-fieldset__header">
-                    <div className="form-fieldset__header-label">{props.label}</div>
-                    <div className="form-fieldset__header-inner">
-                        {((token !== undefined || nativeCoin !== undefined) && typeof props.onMaximize === 'function') && (
-                            <button
-                                key="max-button"
-                                type="button"
-                                className="btn btn-xs btn-secondary form-btn-max"
-                                disabled={props.disabled}
-                                onClick={props.onMaximize}
-                            >
-                                Max
-                            </button>
-                        )}
-                        <div key="token-balance" className="swap-field-balance truncate">
-                            {intl.formatMessage({
-                                id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
-                            }, {
-                                balance,
-                            })}
-                        </div>
-                    </div>
-                </div>
                 <div className="form-fieldset__main">
                     <input
                         autoComplete="off"
@@ -181,6 +158,30 @@ function Field({
                                 )
                         }
                     })()}
+                </div>
+
+                <div className="form-fieldset__footer">
+                    <div className="form-fieldset__footer-label">{props.label}</div>
+                    <div className="form-fieldset__footer-inner">
+                        {((token !== undefined || nativeCoin !== undefined) && typeof props.onMaximize === 'function') && (
+                            <button
+                                key="max-button"
+                                type="button"
+                                className="btn btn-xs btn-secondary form-btn-max"
+                                disabled={props.disabled}
+                                onClick={props.onMaximize}
+                            >
+                                Max
+                            </button>
+                        )}
+                        <div key="token-balance" className="swap-field-balance truncate">
+                            {intl.formatMessage({
+                                id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
+                            }, {
+                                balance,
+                            })}
+                        </div>
+                    </div>
                 </div>
             </fieldset>
         </label>

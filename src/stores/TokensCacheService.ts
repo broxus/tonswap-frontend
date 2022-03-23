@@ -35,6 +35,7 @@ export type TokensCacheData = {
 
 export type TokensCacheState = {
     isImporting: boolean;
+    isReady: boolean;
     queue: TokenCache[];
     updatingTokens: Map<string, boolean>;
     updatingTokensBalance: Map<string, boolean>;
@@ -67,8 +68,10 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
         super()
 
         this.setData('tokens', [])
+
         this.setState({
             isImporting: false,
+            isReady: false,
             queue: [],
             updatingTokens: new Map<string, boolean>(),
             updatingTokensBalance: new Map<string, boolean>(),
@@ -82,7 +85,9 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
             tokens: computed,
             verifiedBroxusTokens: computed,
             roots: computed,
+            isFetching: computed,
             isImporting: computed,
+            isReady: computed,
             queue: computed,
             currentImportingToken: computed,
             onImportConfirm: action.bound,
@@ -104,10 +109,12 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
             { delay: 100 },
         )
 
-        tokensList.fetch(DexConstants.TokenListURI)
-
         this.#tokensBalancesSubscribers = new Map<string, Subscription<'contractStateChanged'>>()
-        this.#tokensBalancesSubscribersMutex = new Mutex()
+        this.#tokensBalancesSubscribersMutex = new Mutex();
+
+        (async () => {
+            await tokensList.fetch(DexConstants.TokenListURI)
+        })()
     }
 
     /**
@@ -117,8 +124,11 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
      */
     protected async build(): Promise<void> {
         if (this.tokensList.tokens.length === 0) {
+            this.setState('isReady', false)
             return
         }
+
+        this.setState('isReady', false)
 
         this.setData('tokens', this.tokensList?.tokens.map(token => ({
             balance: undefined,
@@ -150,6 +160,8 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
                 results.forEach(this.add)
             }
         }
+
+        this.setState('isReady', true)
     }
 
     /**
@@ -268,6 +280,13 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
             }
             return token
         }))
+    }
+
+    /**
+     *
+     */
+    public get isFetching(): boolean {
+        return this.tokensList.isFetching
     }
 
     /**
@@ -604,6 +623,13 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
      */
     public get isImporting(): TokensCacheState['isImporting'] {
         return this.state.isImporting
+    }
+
+    /**
+     *
+     */
+    public get isReady(): TokensCacheState['isReady'] {
+        return this.state.isReady
     }
 
     /**
