@@ -311,6 +311,10 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         this.#multipleSwap.setData('pair', value)
     }
 
+    /**
+     *
+     * @param {string} [value]
+     */
     public forceLeftTokenUpdate(value?: string): void {
         this.setData('leftToken', value)
         this.#coinSwap.setData('leftToken', value)
@@ -319,6 +323,10 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         this.#multipleSwap.setData('leftToken', value)
     }
 
+    /**
+     *
+     * @param {string} [value]
+     */
     public forceRightTokenUpdate(value?: string): void {
         this.setData('rightToken', value)
         this.#coinSwap.setData('rightToken', value)
@@ -331,26 +339,27 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      *
      */
     public async maximizeLeftAmount(): Promise<void> {
-        let balance = this.leftBalance
+        let balance = new BigNumber(this.leftBalance || 0)
 
         if (this.isMultipleSwapMode) {
-            balance = new BigNumber(this.leftBalance || 0)
+            balance = balance
                 .minus(new BigNumber(this.options?.multipleSwapFee ?? 0).shiftedBy(-this.coin.decimals))
-                .toFixed()
         }
 
         if (this.isWrapMode) {
-            balance = new BigNumber(this.leftBalance || 0)
+            balance = balance
                 .minus(new BigNumber(this.options?.wrapGas ?? 0).shiftedBy(-this.coin.decimals))
-                .toFixed()
         }
         else if (this.nativeCoinSide === 'leftToken') {
-            balance = new BigNumber(this.leftBalance || 0)
+            balance = balance
                 .minus(new BigNumber(this.options?.multipleSwapFee ?? 0).shiftedBy(-this.coin.decimals))
-                .toFixed()
         }
 
-        await this.changeLeftAmount(balance, debounce(async () => {
+        if (balance.lte(0)) {
+            balance = new BigNumber(0)
+        }
+
+        await this.changeLeftAmount(balance.toFixed(), debounce(async () => {
             if (this.isConversionMode) {
                 this.forceRightAmountUpdate(this.leftAmount)
             }
@@ -813,6 +822,9 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         return this.exchangeMode === SwapExchangeMode.UNWRAP_WEVER
     }
 
+    /**
+     *
+     */
     public get isCoinBasedSwapMode(): boolean {
         return this.nativeCoinSide !== undefined
     }
@@ -898,6 +910,9 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         return this.wallet.coin
     }
 
+    /**
+     *
+     */
     public get leftBalance(): string {
         if (this.isMultipleSwapMode) {
             return formattedBalance(this.leftToken?.balance, this.leftTokenDecimals, this.coin.balance)
@@ -919,6 +934,9 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         return this._swap.pair
     }
 
+    /**
+     *
+     */
     public get rightBalance(): string {
         if (this.nativeCoinSide === 'rightToken') {
             return formattedBalance(this.coin.balance, this.coin.decimals)

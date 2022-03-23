@@ -180,7 +180,7 @@ export class MultipleSwapStore extends CoinSwapStore {
         }
         return (
             this.leftAmount.length > 0
-            && isGoodBignumber(this.leftAmountNumber)
+            && isGoodBignumber(this.leftAmountNumber, false)
             && this.isEnoughCombinedBalance
         )
     }
