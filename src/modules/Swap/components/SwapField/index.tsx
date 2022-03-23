@@ -2,20 +2,18 @@ import * as React from 'react'
 import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
-import BigNumber from 'bignumber.js'
 
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { TokenIcons } from '@/components/common/TokenIcons'
 import { useField } from '@/hooks/useField'
-import { useTokenBalanceWatcher } from '@/hooks/useTokenBalanceWatcher'
 import { WalletNativeCoin } from '@/stores/WalletService'
-import { formattedBalance } from '@/utils'
 import type { TokenCache } from '@/stores/TokensCacheService'
-import { DexConstants } from '@/misc'
+import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 
 
 type Props = {
+    balance?: string;
     disabled?: boolean;
     label?: string;
     id?: string;
@@ -23,23 +21,19 @@ type Props = {
     isValid?: boolean;
     nativeCoin?: WalletNativeCoin;
     readOnly?: boolean;
-    showMaxButton?: boolean;
     token?: TokenCache;
     value?: string;
     onChange?: (value: string) => void;
+    onMaximize?: () => void;
     onToggleTokensList?: () => void;
-}
-
-function deFormattedBalance(value: string): string {
-    return value?.replace(/\s/g, '') ?? 0
 }
 
 
 function Field({
+    balance = '0',
     isMultiple = false,
     isValid = true,
     nativeCoin,
-    showMaxButton = false,
     token,
     ...props
 }: Props): JSX.Element {
@@ -49,79 +43,38 @@ function Field({
         value: props.value,
         onChange: props.onChange,
     })
-    const balance = useTokenBalanceWatcher(token, {
-        syncTokenOnMount: false,
-        unwatchOnUnmount: false,
-        watchOnMount: false,
-    })
-
-    if (nativeCoin !== undefined) {
-        balance.value = formattedBalance(
-            nativeCoin?.balance,
-            nativeCoin.decimals,
-            isMultiple ? token?.balance : 0,
-        )
-    }
-
-    const onMaximize = () => {
-        const balanceValue = new BigNumber(token?.balance || 0).shiftedBy(-(token?.decimals ?? 0))
-        if (nativeCoin !== undefined) {
-            const fee = new BigNumber(DexConstants.EVERMultipleSwapFee).shiftedBy(-nativeCoin.decimals)
-            const value = new BigNumber(nativeCoin.balance || 0).shiftedBy(-nativeCoin.decimals)
-            if (isMultiple) {
-                props.onChange?.((
-                    value.lte(fee)
-                        ? value.plus(balanceValue).toFixed()
-                        : value.minus(fee).plus(balanceValue).toString()
-                ))
-                return
-            }
-            props.onChange?.((value.lte(fee) ? value.toFixed() : value.minus(fee)).toString())
-            return
-        }
-        props.onChange?.(balanceValue.toFixed())
-    }
+    const formStore = useSwapFormStore()
+    const tokensCache = formStore.useTokensCache
 
     return (
         <label className="form-label" htmlFor={props.id}>
             <fieldset
                 className={classNames('form-fieldset', {
                     invalid: !isValid,
-                    checking: balance.isFetching && !props.disabled,
+                    checking: tokensCache.isTokenUpdatingBalance(token?.root) && !props.disabled,
                 })}
             >
                 <div className="form-fieldset__header">
-                    <div className="form-fieldset__header-label truncate">{props.label}</div>
+                    <div className="form-fieldset__header-label">{props.label}</div>
                     <div className="form-fieldset__header-inner">
-                        {((token !== undefined || nativeCoin !== undefined) && showMaxButton) && (
+                        {((token !== undefined || nativeCoin !== undefined) && typeof props.onMaximize === 'function') && (
                             <button
                                 key="max-button"
                                 type="button"
                                 className="btn btn-xs btn-secondary form-btn-max"
                                 disabled={props.disabled}
-                                onClick={onMaximize}
+                                onClick={props.onMaximize}
                             >
                                 Max
                             </button>
                         )}
-                        {(token !== undefined && nativeCoin === undefined) && (
-                            <div key="token-balance" className="swap-field-balance truncate">
-                                {intl.formatMessage({
-                                    id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
-                                }, {
-                                    balance: balance.value || token.balance,
-                                })}
-                            </div>
-                        )}
-                        {nativeCoin !== undefined && (
-                            <div key="coin-balance" className="swap-field-balance">
-                                {intl.formatMessage({
-                                    id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
-                                }, {
-                                    balance: balance.value || nativeCoin?.balance,
-                                })}
-                            </div>
-                        )}
+                        <div key="token-balance" className="swap-field-balance">
+                            {intl.formatMessage({
+                                id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
+                            }, {
+                                balance,
+                            })}
+                        </div>
                     </div>
                 </div>
                 <div className="form-fieldset__main">

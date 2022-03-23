@@ -17,15 +17,16 @@ import { CrossPairSwapStore } from '@/modules/Swap/stores/CrossPairSwapStore'
 import { DirectSwapStore } from '@/modules/Swap/stores/DirectSwapStore'
 import { MultipleSwapStore } from '@/modules/Swap/stores/MultipleSwapStore'
 import type {
-    BaseSwapStoreData, CoinSwapSuccessResult,
+    BaseSwapStoreData,
+    CoinSwapSuccessResult,
     ConversionTransactionResponse,
+    CrossPairSwapFailureResult,
     CrossPairSwapStoreData,
     DirectSwapStoreData,
-    SwapFailureResult,
+    DirectTransactionSuccessResult,
     SwapFormStoreState,
     SwapOptions,
     SwapPair,
-    SwapSuccessResult,
 } from '@/modules/Swap/types'
 import { SwapDirection, SwapExchangeMode } from '@/modules/Swap/types'
 import { getCrossExchangeSlippage, getSlippageMinExpectedAmount } from '@/modules/Swap/utils'
@@ -33,8 +34,8 @@ import type { WalletNativeCoin } from '@/stores/WalletService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import {
-    cleanObject,
-    debug,
+    cleanObject, debounce,
+    debug, formattedBalance,
     isGoodBignumber,
     storage,
     warn,
@@ -67,7 +68,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         this.#conversion = new ConversionStore(wallet, tokensCache, {
             coin: this.coin,
             token: options?.multipleSwapTokenRoot,
-            wrapFee: options?.wrapFee,
+            wrapFee: options?.wrapGas,
         }, {
             onTransactionSuccess: (...args) => this.handleConversionSuccess(...args),
         })
@@ -104,7 +105,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             slippage: this.data.slippage,
             swapFee: options?.multipleSwapFee,
         }, {
-            onTransactionSuccess: (...args) => this.handleSwapSuccess(...args),
+            onTransactionSuccess: (...args) => this.handleCoinSwapSuccess(...args),
             onTransactionFailure: (...args) => this.handleSwapFailure(...args),
         })
 
@@ -129,6 +130,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             | 'handleConversionSuccess'
             | '_swap'
         >(this, {
+            maximizeLeftAmount: action.bound,
             toggleSwapExchangeMode: action.bound,
             togglePriceDirection: action.bound,
             cleanTransactionResult: action.bound,
@@ -150,7 +152,9 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             isLoading: computed,
             isLeftAmountValid: override,
             coin: computed,
+            leftBalance: override,
             pair: computed,
+            rightBalance: override,
             route: computed,
             swap: computed,
             conversion: computed,
@@ -175,7 +179,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
     public async init(): Promise<void> {
         this.#walletAccountDisposer?.()
         this.#walletAccountDisposer = reaction(
-            () => [this.wallet.address, this.wallet.balance],
+            () => this.wallet.address,
             this.handleWalletAccountChange,
         )
 
@@ -184,9 +188,13 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         }
 
         this.#formDisposer = reaction(() => ({
+            coin: this.coin,
             directBill: {
-                amount: this._swap.amount || this._swap.leftAmount,
-                expectedAmount: this._swap.expectedAmount || '0',
+                amount: this._swap.amount || this._swap.leftAmount || this.leftAmount,
+                expectedAmount: this._swap.expectedAmount,
+                fee: this._swap.fee,
+                minExpectedAmount: this._swap.minExpectedAmount,
+                priceImpact: this._swap.priceImpact,
             },
             leftToken: this.data.leftToken,
             rightToken: this.data.rightToken,
@@ -194,9 +202,9 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         }), ({ directBill, ...formData }) => {
             this.#crossPairSwap.setData(cleanObject({ ...formData, directBill }))
             // todo pass pair by the is multiple
-            this.#coinSwap.setData(cleanObject(formData))
-            this.#directSwap.setData(cleanObject(formData))
-            this.#multipleSwap.setData(cleanObject(formData))
+            this.#coinSwap.setData(cleanObject({ ...formData, bill: directBill }))
+            this.#directSwap.setData(cleanObject({ ...formData, bill: directBill }))
+            this.#multipleSwap.setData(cleanObject({ ...formData, bill: directBill }))
         }, { fireImmediately: true })
 
         this.#tokensCacheDisposer = reaction(
@@ -240,6 +248,14 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         switch (true) {
             case this.isCrossExchangeMode:
                 await this.#crossPairSwap.submit()
+                break
+
+            case this.isMultipleSwapMode && this.#multipleSwap.isEnoughTokenBalance:
+                await this.#directSwap.submit()
+                break
+
+            case this.isMultipleSwapMode && this.#multipleSwap.isEnoughCoinBalance:
+                await this.#coinSwap.submit('fromCoinToTip3')
                 break
 
             case this.isMultipleSwapMode:
@@ -317,6 +333,33 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
     }
 
     /**
+     *
+     */
+    public async maximizeLeftAmount(): Promise<void> {
+        let balance = this.leftBalance
+
+        if (this.isMultipleSwapMode) {
+            balance = new BigNumber(this.leftBalance || 0)
+                .minus(new BigNumber(this.options?.multipleSwapFee ?? 0).shiftedBy(-this.coin.decimals))
+                .toFixed()
+        }
+
+        if (this.isWrapMode) {
+            balance = new BigNumber(this.leftBalance || 0)
+                .minus(new BigNumber(this.options?.wrapGas ?? 0).shiftedBy(-this.coin.decimals))
+                .toFixed()
+        }
+
+        if (this.nativeCoinSide === 'leftToken') {
+            balance = new BigNumber(this.leftBalance || 0)
+                .minus(new BigNumber(this.options?.multipleSwapFee ?? 0).shiftedBy(-this.coin.decimals))
+                .toFixed()
+        }
+
+        await this.changeLeftAmount(balance, debounce(() => this.recalculate(!this.isCalculating), 400))
+    }
+
+    /**
      * Use this method to change left amount value instead of direct change value via `setData`
      * Pass the callback function as second argument (e.g. debounced `recalculate`) and
      * it will be fires after all data and states changes.
@@ -324,12 +367,6 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      * @param {() => void} [callback]
      */
     public changeLeftAmount(value: string, callback?: () => void): void {
-        if (this.isConversionMode) {
-            this.forceLeftAmountUpdate(value)
-            this.forceRightAmountUpdate(value)
-            return
-        }
-
         if (value === this.data.leftAmount) {
             return
         }
@@ -356,12 +393,6 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      * @param {() => void} [callback]
      */
     public changeRightAmount(value: string, callback?: () => void): void {
-        if (this.isConversionMode) {
-            this.forceRightAmountUpdate(value)
-            this.forceLeftAmountUpdate(value)
-            return
-        }
-
         if (value === this.data.rightAmount) {
             return
         }
@@ -801,7 +832,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      * @returns {boolean}
      */
     public get isSwapping(): boolean {
-        return this._swap.isSwapping || this.#crossPairSwap.isSwapping || this.conversion.isProcessing
+        return this._swap.isSwapping || this.#crossPairSwap.isSwapping || this.#conversion.isProcessing
     }
 
     /**
@@ -853,6 +884,18 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         return this.wallet.coin
     }
 
+    public get leftBalance(): string {
+        if (this.isMultipleSwapMode) {
+            return formattedBalance(this.leftToken?.balance, this.leftTokenDecimals, this.coin.balance)
+        }
+
+        if (this.nativeCoinSide === 'leftToken') {
+            return formattedBalance(this.coin.balance, this.coin.decimals)
+        }
+
+        return formattedBalance(this.leftToken?.balance, this.leftTokenDecimals)
+    }
+
     /**
      * Returns memoized current direct pair
      * Proxy to direct swap store instance
@@ -860,6 +903,14 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      */
     public get pair(): DirectSwapStoreData['pair'] {
         return this._swap.pair
+    }
+
+    public get rightBalance(): string {
+        if (this.nativeCoinSide === 'rightToken') {
+            return formattedBalance(this.coin.balance, this.coin.decimals)
+        }
+
+        return formattedBalance(this.rightToken?.balance, this.rightTokenDecimals)
     }
 
     /**
@@ -891,14 +942,6 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      */
     public get conversion(): ConversionStore {
         return this.#conversion
-    }
-
-    /**
-     * Returns related coin swap store
-     * @returns {CoinSwapStore}
-     */
-    public get coinSwap(): CoinSwapStore {
-        return this.#coinSwap
     }
 
     /**
@@ -1005,23 +1048,10 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
     /**
      * Handle wallet account change.
      * @param {string} [walletAddress]
-     * @param {string} [balance]
      * @protected
      */
-    protected async handleWalletAccountChange([walletAddress, balance]: (string | undefined)[]): Promise<void> {
+    protected async handleWalletAccountChange(walletAddress?: string): Promise<void> {
         await this.dispose(false)
-        this.#conversion.setData('coin', {
-            ...this.coin,
-            balance,
-        })
-        this.#directSwap.setData('coin', {
-            ...this.coin,
-            balance,
-        })
-        this.#multipleSwap.setData('coin', {
-            ...this.coin,
-            balance,
-        })
         if (walletAddress !== undefined) {
             await this.init()
             await this.recalculate(true)
@@ -1036,33 +1066,33 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
 
     /**
      * Success transaction callback handler
-     * @param {SwapSuccessResult['input']} input
-     * @param {SwapSuccessResult['transaction']} transaction
+     * @param {DirectTransactionSuccessResult['input']} input
+     * @param {DirectTransactionSuccessResult['transaction']} transaction
      * @protected
      */
-    protected async handleSwapSuccess({ input, transaction }: SwapSuccessResult): Promise<void> {
-        this.setData({
-            leftAmount: '',
-            rightAmount: '',
-            transaction: {
-                amount: input.result.received.toString(),
-                hash: transaction.id.hash,
-                receivedDecimals: this.rightTokenDecimals,
-                receivedIcon: this.rightToken?.icon,
-                receivedRoot: this.rightToken?.root,
-                receivedSymbol: this.rightToken?.symbol,
-                spentAmount: input.result.spent.toString(),
-                spentDecimals: this.leftTokenDecimals,
-                spentFee: input.result.fee.toString(),
-                spentSymbol: this.leftToken?.symbol,
-                success: true,
-            },
+    protected async handleSwapSuccess({ input, transaction }: DirectTransactionSuccessResult): Promise<void> {
+        this.forceLeftAmountUpdate('')
+        this.forceRightAmountUpdate('')
+
+        this.setData('transaction', {
+            amount: input.result.received.toString(),
+            hash: transaction.id.hash,
+            receivedDecimals: this.rightTokenDecimals,
+            receivedIcon: this.rightToken?.icon,
+            receivedRoot: this.rightToken?.root,
+            receivedSymbol: this.rightToken?.symbol,
+            spentAmount: input.result.spent.toString(),
+            spentDecimals: this.leftTokenDecimals,
+            spentFee: input.result.fee.toString(),
+            spentSymbol: this.leftToken?.symbol,
+            success: true,
         })
 
         this.checkExchangeMode()
         this.forceInvalidate()
 
         await this._swap.syncPairState()
+        await this.trackData()
 
         if (!this.isMultipleSwapMode) {
             await this.#crossPairSwap.syncCrossExchangePairsStates()
@@ -1071,12 +1101,12 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
 
     /**
      * Failure transaction callback handler
-     * @param {SwapSuccessResult['index']} index
-     * @param {SwapSuccessResult['input']} input
-     * @param {SwapSuccessResult['step']} step
+     * @param {CrossPairSwapFailureResult['index']} index
+     * @param {CrossPairSwapFailureResult['input']} input
+     * @param {CrossPairSwapFailureResult['step']} step
      * @protected
      */
-    protected handleSwapFailure({ cancelStep, index, step }: SwapFailureResult): void {
+    protected handleSwapFailure({ cancelStep, index, step }: CrossPairSwapFailureResult): void {
         const leftToken = cancelStep?.step.spentAddress !== undefined
             ? this.tokensCache.get(cancelStep.step.spentAddress.toString())
             : undefined
@@ -1084,48 +1114,44 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             ? this.tokensCache.get(cancelStep.step.receiveAddress.toString())
             : undefined
 
-        this.setData({
-            transaction:  {
-                amount: step?.amount,
-                hash: cancelStep?.transaction?.id.hash,
-                isCrossExchangeCanceled: step !== undefined,
-                receivedDecimals: rightToken?.decimals,
-                receivedRoot: rightToken?.root,
-                receivedSymbol: rightToken?.symbol,
-                slippage: index !== undefined
-                    ? getCrossExchangeSlippage(
-                        this.#crossPairSwap.slippage,
-                        index + 1,
-                    )
-                    : undefined,
-                spentDecimals: leftToken?.decimals,
-                spentIcon: leftToken?.icon,
-                spentRoot: leftToken?.root,
-                spentSymbol: leftToken?.symbol,
-                success: false,
-            },
+        this.setData('transaction', {
+            amount: step?.amount,
+            hash: cancelStep?.transaction?.id.hash,
+            isCrossExchangeCanceled: step !== undefined,
+            receivedDecimals: rightToken?.decimals,
+            receivedRoot: rightToken?.root,
+            receivedSymbol: rightToken?.symbol,
+            slippage: index !== undefined
+                ? getCrossExchangeSlippage(
+                    this.#crossPairSwap.slippage,
+                    index + 1,
+                )
+                : undefined,
+            spentDecimals: leftToken?.decimals,
+            spentIcon: leftToken?.icon,
+            spentRoot: leftToken?.root,
+            spentSymbol: leftToken?.symbol,
+            success: false,
         })
 
         this.checkExchangeMode()
         this.forceInvalidate()
-
-        this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
     }
 
     protected async handleCoinSwapSuccess({ input, transaction }: CoinSwapSuccessResult): Promise<void> {
-        this.setData({
-            leftAmount: '',
-            rightAmount: '',
-            transaction: {
-                amount: input.amount.toString(),
-                hash: transaction.id.hash,
-                receivedDecimals: this.rightTokenDecimals,
-                receivedIcon: this.rightToken?.icon,
-                receivedRoot: this.rightToken?.root,
-                receivedSymbol: this.rightToken?.symbol,
-                success: true,
-            },
+        this.forceLeftAmountUpdate('')
+        this.forceRightAmountUpdate('')
+
+        this.setData('transaction', {
+            amount: input.amount.toString(),
+            hash: transaction.id.hash,
+            receivedDecimals: this.rightTokenDecimals,
+            receivedIcon: this.rightToken?.icon,
+            receivedRoot: this.rightToken?.root,
+            receivedSymbol: this.rightToken?.symbol,
+            success: true,
         })
+
         this.checkExchangeMode()
         this.forceInvalidate()
 
@@ -1220,7 +1246,7 @@ export function useSwapFormStore(): SwapFormStore {
                 multipleSwapFee: DexConstants.EVERMultipleSwapFee,
                 multipleSwapTokenRoot: DexConstants.WEVERRootAddress.toString(),
                 useNativeCoinByDefault: true,
-                wrapFee: DexConstants.EVERWrapFee,
+                wrapGas: DexConstants.EVERWrapGas,
             },
         )
     }

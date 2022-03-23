@@ -6,11 +6,11 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
+import { TokenIcons } from '@/components/common/TokenIcons'
 import { SwapBill } from '@/modules/Swap/components/SwapBill'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 
 import './index.scss'
-import { TokenIcons } from '@/components/common/TokenIcons'
 
 
 function ConfirmationPopup(): JSX.Element {
@@ -35,7 +35,7 @@ function ConfirmationPopup(): JSX.Element {
 
     const onSubmit = async () => {
         formStore.setState('isConfirmationAwait', false)
-        await formStore.multipleSwap.submit()
+        await formStore.submit()
     }
 
     React.useEffect(() => reaction(() => [
@@ -206,7 +206,7 @@ function ConfirmationPopup(): JSX.Element {
                         isCrossExchangeMode={false}
                         leftToken={formStore.leftToken}
                         minExpectedAmount={minExpectedAmount}
-                        priceImpact={formStore.multipleSwap.priceImpact}
+                        priceImpact={formStore.swap.priceImpact}
                         rightToken={formStore.rightToken}
                         slippage={formStore.swap.slippage}
                     />

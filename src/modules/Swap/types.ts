@@ -15,7 +15,7 @@ export type SwapOptions = {
     multipleSwapFee?: string;
     multipleSwapTokenRoot?: string;
     useNativeCoinByDefault?: boolean;
-    wrapFee?: string;
+    wrapGas?: string;
 }
 
 export type SwapBill = {
@@ -134,9 +134,18 @@ export type SwapStoreState = {
     priceDirection?: SwapDirection;
 }
 
-export type SwapTransactionCallbacks<T, U> = {
+export interface TransactionCallbacks<T, U> {
     onTransactionSuccess?: (response: T) => Promise<void> | void;
     onTransactionFailure?: (reason: U) => Promise<void> | void;
+}
+
+export interface TransactionSuccessResult<T> {
+    input: T;
+    transaction: Transaction;
+}
+
+export interface TransactionFailureResult<T> {
+    input?: T;
 }
 
 export type SwapTransactionReceipt = {
@@ -157,16 +166,32 @@ export type SwapTransactionReceipt = {
     success: boolean;
 }
 
+/**
+ * @deprecated
+ */
 export type SwapSuccessResult = {
     input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairExchangeSuccess'>;
     transaction: Transaction;
 }
 
+/**
+ * @deprecated
+ */
 export type SwapFailureResult = {
     cancelStep?: SwapRouteResult;
     index?: number;
     input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>;
     step?: SwapRouteResult;
+}
+
+export type SwapFormStoreState = {
+    direction: SwapDirection;
+    exchangeMode: SwapExchangeMode;
+    isCalculating: boolean;
+    isConfirmationAwait: boolean;
+    isMultiple: boolean;
+    nativeCoinSide?: TokenSide;
+    priceDirection: SwapDirection;
 }
 
 export interface BaseSwapStoreInitialData {
@@ -203,18 +228,28 @@ export interface DirectSwapStoreState extends BaseSwapStoreState {
     isPairChecking: boolean;
 }
 
+export type DirectTransactionSuccessResult = TransactionSuccessResult<DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairExchangeSuccess'>>
+
+export type DirectTransactionFailureResult = TransactionFailureResult<DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>>
+
+export type DirectTransactionCallbacks = TransactionCallbacks<
+    DirectTransactionSuccessResult,
+    DirectTransactionFailureResult
+>
+
 export interface CoinSwapStoreInitialData extends DirectSwapStoreInitialData {
     swapFee?: string;
 }
 
-export type CoinSwapSuccessResult = {
-    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'onSwapEverToTip3Success'>;
-    transaction: Transaction;
-}
+export type CoinSwapSuccessResult =
+    TransactionSuccessResult<DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'onSwapEverToTip3Success'>>
+    | TransactionSuccessResult<DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'onSwapTip3ToEverSuccess'>>
 
-export type CoinSwapFailureResult = {
-    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'onSwapEverToTip3Cancel'>;
-}
+export type CoinSwapFailureResult =
+    TransactionFailureResult<DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'onSwapEverToTip3Cancel'>>
+    | TransactionFailureResult<DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'onSwapTip3ToEverCancel'>>
+
+export type CoinSwapTransactionCallbacks = TransactionCallbacks<CoinSwapSuccessResult, CoinSwapFailureResult>
 
 export interface CrossPairSwapStoreData extends BaseSwapStoreData {
     crossPairs: SwapPair[];
@@ -227,6 +262,17 @@ export interface CrossPairSwapStoreData extends BaseSwapStoreData {
 export interface CrossPairSwapStoreState extends BaseSwapStoreState {
     isPreparing: boolean;
 }
+
+export interface CrossPairSwapFailureResult extends DirectTransactionFailureResult {
+    cancelStep?: SwapRouteResult;
+    index?: number;
+    step?: SwapRouteResult;
+}
+
+export type CrossPairSwapTransactionCallbacks = TransactionCallbacks<
+    DirectTransactionSuccessResult,
+    CrossPairSwapFailureResult
+>
 
 export type ConversionStoreInitialData = {
     coin?: WalletNativeCoin;
@@ -253,14 +299,4 @@ export type ConversionTransactionResponse = {
 export type ConversionTransactionCallbacks = {
     onTransactionSuccess?: (response: ConversionTransactionResponse) => void;
     onTransactionFailure?: (reason: unknown) => void;
-}
-
-export type SwapFormStoreState = {
-    direction: SwapDirection;
-    exchangeMode: SwapExchangeMode;
-    isCalculating: boolean;
-    isConfirmationAwait: boolean;
-    isMultiple: boolean;
-    nativeCoinSide?: TokenSide;
-    priceDirection: SwapDirection;
 }

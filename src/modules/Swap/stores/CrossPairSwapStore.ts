@@ -31,14 +31,14 @@ import { WalletService } from '@/stores/WalletService'
 import { debug, error, isGoodBignumber } from '@/utils'
 import type {
     BaseSwapStoreInitialData,
+    CrossPairSwapFailureResult,
     CrossPairSwapStoreData,
     CrossPairSwapStoreState,
-    SwapFailureResult,
+    CrossPairSwapTransactionCallbacks,
+    DirectTransactionSuccessResult,
     SwapPair,
     SwapRoute,
     SwapRouteResult,
-    SwapSuccessResult,
-    SwapTransactionCallbacks,
 } from '@/modules/Swap/types'
 import type { CrossPairsRequest, PairsResponse } from '@/modules/Pairs/types'
 
@@ -52,7 +52,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
         protected readonly initialData?: BaseSwapStoreInitialData,
-        protected readonly callbacks?: SwapTransactionCallbacks<SwapSuccessResult, SwapFailureResult>,
+        protected readonly callbacks?: CrossPairSwapTransactionCallbacks,
     ) {
         super(tokensCache, initialData)
 
@@ -111,6 +111,8 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
         ) {
             return
         }
+
+        debug('Prepare cross-pair')
 
         let response: PairsResponse[] | undefined
 
@@ -388,11 +390,11 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
 
             if (resultHandler !== undefined) {
                 E.match(
-                    (r: SwapFailureResult) => {
+                    (r: CrossPairSwapFailureResult) => {
                         this.setState('isSwapping', false)
                         this.callbacks?.onTransactionFailure?.(r)
                     },
-                    (r: SwapSuccessResult) => {
+                    (r: DirectTransactionSuccessResult) => {
                         this.setState('isSwapping', false)
                         this.callbacks?.onTransactionSuccess?.(r)
                     },
@@ -1062,6 +1064,8 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
      * @protected
      */
     protected async syncCrossExchangePairs(): Promise<void> {
+        debug('Sync cross-pairs')
+
         try {
             await (
                 async () => {
@@ -1100,6 +1104,8 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
      * @protected
      */
     protected async syncCrossExchangePairsBalances(): Promise<void> {
+        debug('Sync cross-pairs balances')
+
         try {
             await (
                 async () => {
@@ -1143,6 +1149,8 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
      * @protected
      */
     public async syncCrossExchangePairsStates(): Promise<void> {
+        debug('Sync cross-pairs states')
+
         try {
             const crossPairs = this.data.crossPairs.slice()
 

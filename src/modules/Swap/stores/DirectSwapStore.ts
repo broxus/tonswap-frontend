@@ -23,9 +23,9 @@ import type {
     DirectSwapStoreData,
     DirectSwapStoreInitialData,
     DirectSwapStoreState,
-    SwapFailureResult,
-    SwapSuccessResult,
-    SwapTransactionCallbacks,
+    DirectTransactionCallbacks,
+    DirectTransactionFailureResult,
+    DirectTransactionSuccessResult,
 } from '@/modules/Swap/types'
 
 
@@ -38,7 +38,7 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, DirectSw
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
         protected readonly initialData?: DirectSwapStoreInitialData,
-        protected readonly callbacks?: SwapTransactionCallbacks<SwapSuccessResult, SwapFailureResult>,
+        protected readonly callbacks?: DirectTransactionCallbacks,
     ) {
         super(tokensCache, initialData)
 
@@ -234,11 +234,11 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, DirectSw
 
             if (resultHandler !== undefined) {
                 E.match(
-                    (r: SwapFailureResult) => {
+                    (r: DirectTransactionFailureResult) => {
                         this.setState('isSwapping', false)
                         this.callbacks?.onTransactionFailure?.(r)
                     },
-                    (r: SwapSuccessResult) => {
+                    (r: DirectTransactionSuccessResult) => {
                         this.setState('isSwapping', false)
                         this.callbacks?.onTransactionSuccess?.(r)
                     },

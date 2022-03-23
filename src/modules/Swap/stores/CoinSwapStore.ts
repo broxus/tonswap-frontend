@@ -13,8 +13,8 @@ import type {
     CoinSwapFailureResult,
     CoinSwapStoreInitialData,
     CoinSwapSuccessResult,
+    CoinSwapTransactionCallbacks,
     DirectSwapStoreData,
-    SwapTransactionCallbacks,
 } from '@/modules/Swap/types'
 
 
@@ -27,7 +27,7 @@ export class CoinSwapStore extends DirectSwapStore {
         protected readonly wallet: WalletService,
         protected readonly tokensCache: TokensCacheService,
         protected readonly initialData?: CoinSwapStoreInitialData,
-        protected readonly callbacks?: SwapTransactionCallbacks<any, any>,
+        protected readonly _callbacks?: CoinSwapTransactionCallbacks,
     ) {
         super(wallet, tokensCache, initialData)
 
@@ -166,11 +166,11 @@ export class CoinSwapStore extends DirectSwapStore {
                 E.match(
                     (r: CoinSwapFailureResult) => {
                         this.setState('isSwapping', false)
-                        this.callbacks?.onTransactionFailure?.(r)
+                        this._callbacks?.onTransactionFailure?.(r)
                     },
                     (r: CoinSwapSuccessResult) => {
                         this.setState('isSwapping', false)
-                        this.callbacks?.onTransactionSuccess?.(r)
+                        this._callbacks?.onTransactionSuccess?.(r)
                     },
                 )(await resultHandler)
             }
@@ -260,6 +260,7 @@ export class CoinSwapStore extends DirectSwapStore {
         }).first()
 
         const tokenWalletContract = new rpc.Contract(TokenAbi.Wallet, new Address(this.leftToken!.wallet!))
+
         try {
             await tokenWalletContract.methods.transfer({
                 payload,
@@ -278,11 +279,11 @@ export class CoinSwapStore extends DirectSwapStore {
                 E.match(
                     (r: CoinSwapFailureResult) => {
                         this.setState('isSwapping', false)
-                        this.callbacks?.onTransactionFailure?.(r)
+                        this._callbacks?.onTransactionFailure?.(r)
                     },
                     (r: CoinSwapSuccessResult) => {
                         this.setState('isSwapping', false)
-                        this.callbacks?.onTransactionSuccess?.(r)
+                        this._callbacks?.onTransactionSuccess?.(r)
                     },
                 )(await resultHandler)
             }

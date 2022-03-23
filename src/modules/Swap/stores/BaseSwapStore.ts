@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js'
 import { Address } from 'everscale-inpage-provider'
-import { computed, makeObservable } from 'mobx'
+import { computed, makeObservable, toJS } from 'mobx'
 
 import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
 import { BaseStore } from '@/stores/BaseStore'
 import { TokenCache, TokensCacheService } from '@/stores/TokensCacheService'
-import { isGoodBignumber } from '@/utils'
+import { formattedBalance, isGoodBignumber } from '@/utils'
 import type {
     BaseSwapStoreData,
     BaseSwapStoreInitialData,
@@ -44,21 +44,23 @@ export class BaseSwapStore<
             | 'rightTokenAddress'
             | 'rightAmountNumber'
         >(this, {
-            isLeftAmountValid: computed,
-            isRightAmountValid: computed,
-            leftTokenDecimals: computed,
-            rightTokenDecimals: computed,
+            leftAmount: computed,
             leftAmountNumber: computed,
+            leftBalance: computed,
             leftToken: computed,
             leftTokenAddress: computed,
+            leftTokenDecimals: computed,
+            rightAmount: computed,
+            rightAmountNumber: computed,
+            rightBalance: computed,
             rightToken: computed,
             rightTokenAddress: computed,
-            rightAmountNumber: computed,
-            leftAmount: computed,
-            rightAmount: computed,
+            rightTokenDecimals: computed,
             slippage: computed,
             transaction: computed,
             isCalculating: computed,
+            isLeftAmountValid: computed,
+            isRightAmountValid: computed,
             isSwapping: computed,
         })
     }
@@ -164,7 +166,7 @@ export class BaseSwapStore<
      * @returns {TokenCache | undefined}
      */
     public get leftToken(): TokenCache | undefined {
-        return this.tokensCache.get(this.data.leftToken)
+        return toJS(this.tokensCache.get(this.data.leftToken))
     }
 
     /**
@@ -200,7 +202,7 @@ export class BaseSwapStore<
      * @returns {TokenCache | undefined}
      */
     public get rightToken(): TokenCache | undefined {
-        return this.tokensCache.get(this.data.rightToken)
+        return toJS(this.tokensCache.get(this.data.rightToken))
     }
 
     /**
@@ -218,6 +220,14 @@ export class BaseSwapStore<
      */
     public get rightTokenDecimals(): number {
         return this.rightToken?.decimals ?? DEFAULT_DECIMALS
+    }
+
+    public get leftBalance(): string {
+        return formattedBalance(this.leftToken?.balance, this.leftTokenDecimals)
+    }
+
+    public get rightBalance(): string {
+        return formattedBalance(this.rightToken?.balance, this.rightTokenDecimals)
     }
 
 }

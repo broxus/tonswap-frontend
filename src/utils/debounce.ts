@@ -2,7 +2,7 @@ export function debounce(
     fn: (...args: any[]) => unknown,
     wait: number,
     immediate?: boolean,
-): () => void {
+): (...args: any[]) => void {
     let timeout: ReturnType<typeof setTimeout>
 
     return (...args: any[]) => {

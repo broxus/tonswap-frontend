@@ -5,7 +5,6 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import {
-    ConversionInfo,
     ConversionSubmitButton,
     ConversionTransactionReceipt,
     CrossExchangeSubmitButton,
@@ -20,7 +19,6 @@ import {
 } from '@/modules/Swap/components'
 import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
-import { SwapExchangeMode } from '@/modules/Swap/types'
 import { TokensList } from '@/modules/TokensList'
 import { TokenImportPopup } from '@/modules/TokensList/components'
 import type { CrossPairSwapStore } from '@/modules/Swap/stores/CrossPairSwapStore'
@@ -42,24 +40,9 @@ export function Swap(): JSX.Element {
                         <Observer>
                             {() => (
                                 <h2 className="card-title">
-                                    {(() => {
-                                        switch (formStore.exchangeMode) {
-                                            case SwapExchangeMode.WRAP_EVER:
-                                                return intl.formatMessage({
-                                                    id: 'SWAP_HEADER_WRAP_TITLE',
-                                                }, { symbol: formStore.coin?.symbol })
-
-                                            case SwapExchangeMode.UNWRAP_WEVER:
-                                                return intl.formatMessage({
-                                                    id: 'SWAP_HEADER_UNWRAP_TITLE',
-                                                }, { symbol: formStore.leftToken?.symbol })
-
-                                            default:
-                                                return intl.formatMessage({
-                                                    id: 'SWAP_HEADER_TITLE',
-                                                })
-                                        }
-                                    })()}
+                                    {intl.formatMessage({
+                                        id: 'SWAP_HEADER_TITLE',
+                                    })}
                                 </h2>
                             )}
                         </Observer>
@@ -72,12 +55,9 @@ export function Swap(): JSX.Element {
                             {() => (
                                 <SwapField
                                     key="leftField"
+                                    balance={formStore.leftBalance}
                                     disabled={formStore.isLoading || formStore.isSwapping}
-                                    label={formStore.isConversionMode ? intl.formatMessage({
-                                        id: formStore.isWrapMode
-                                            ? 'CONVERSION_FIELD_LABEL_WRAP'
-                                            : 'CONVERSION_FIELD_LABEL_UNWRAP',
-                                    }) : intl.formatMessage({
+                                    label={intl.formatMessage({
                                         id: 'SWAP_FIELD_LABEL_LEFT',
                                     })}
                                     id="leftField"
@@ -87,10 +67,10 @@ export function Swap(): JSX.Element {
                                         ? formStore.coin
                                         : undefined}
                                     readOnly={formStore.isSwapping}
-                                    showMaxButton
                                     token={formStore.leftToken}
                                     value={formStore.leftAmount}
                                     onChange={form.onChangeLeftAmount}
+                                    onMaximize={formStore.maximizeLeftAmount}
                                     onToggleTokensList={form.showTokensList('leftToken')}
                                 />
                             )}
@@ -115,10 +95,9 @@ export function Swap(): JSX.Element {
                             {() => (
                                 <SwapField
                                     key="rightField"
+                                    balance={formStore.rightBalance}
                                     disabled={formStore.isLoading || formStore.isSwapping}
-                                    label={formStore.isConversionMode ? intl.formatMessage({
-                                        id: 'CONVERSION_FIELD_LABEL_RECEIVE',
-                                    }) : intl.formatMessage({
+                                    label={intl.formatMessage({
                                         id: 'SWAP_FIELD_LABEL_RIGHT',
                                     })}
                                     id="rightField"
@@ -134,11 +113,13 @@ export function Swap(): JSX.Element {
                         </Observer>
 
                         <Observer>
-                            {() => (formStore.isConversionMode ? (
-                                <ConversionInfo key="conversion" />
-                            ) : (
-                                <SwapPrice key="price" />
-                            ))}
+                            {() => (
+                                <>
+                                    {!formStore.isConversionMode && (
+                                        <SwapPrice key="price" />
+                                    )}
+                                </>
+                            )}
                         </Observer>
 
                         <Observer>
@@ -183,31 +164,6 @@ export function Swap(): JSX.Element {
             <Observer>
                 {() => (
                     <>
-                        <p>
-                            is multiple:
-                            {' '}
-                            {formStore.isMultipleSwapMode ? 'true' : 'false'}
-                        </p>
-                        <p>
-                            exchange mode:
-                            {' '}
-                            {formStore.exchangeMode}
-                        </p>
-                        <p>
-                            native coin side:
-                            {' '}
-                            {formStore.nativeCoinSide ?? '--'}
-                        </p>
-                        <p>
-                            left token:
-                            {' '}
-                            {formStore.leftToken?.symbol ?? '--'}
-                        </p>
-                        <p>
-                            right token:
-                            {' '}
-                            {formStore.rightToken?.symbol ?? '--'}
-                        </p>
                         {formStore.isConfirmationAwait && (
                             <>
                                 {formStore.isMultipleSwapMode ? (

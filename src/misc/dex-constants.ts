@@ -10,7 +10,7 @@ export class DexConstants {
 
     static CoinLogoURI = CoinLogo
 
-    static EVERWrapFee = '1000000000' // <= 1 EVER
+    static EVERWrapGas = '1000000000' // <= 1 EVER
 
     static EVERMultipleSwapFee = '10000000000' // <= 10 EVER
 

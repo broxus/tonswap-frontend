@@ -168,12 +168,32 @@ export function useSwapForm(): SwapFormShape {
         })()
     }, 400), [formStore.isCalculating])
 
+    const debouncedLeftAmount = React.useCallback(debounce((value: string) => {
+        formStore.forceLeftAmountUpdate(value)
+    }, 400), [formStore.isCalculating])
+
+    const debouncedRightAmount = React.useCallback(debounce((value: string) => {
+        formStore.forceRightAmountUpdate(value)
+    }, 400), [formStore.isCalculating])
+
     const onChangeLeftAmount: SwapFormShape['onChangeLeftAmount'] = value => {
-        formStore.changeLeftAmount(value, onKeyPress)
+        if (formStore.isConversionMode) {
+            formStore.forceLeftAmountUpdate(value)
+            debouncedRightAmount(value)
+        }
+        else {
+            formStore.changeLeftAmount(value, onKeyPress)
+        }
     }
 
     const onChangeRightAmount: SwapFormShape['onChangeRightAmount'] = value => {
-        formStore.changeRightAmount(value, onKeyPress)
+        if (formStore.isConversionMode) {
+            formStore.forceRightAmountUpdate(value)
+            debouncedLeftAmount(value)
+        }
+        else {
+            formStore.changeRightAmount(value, onKeyPress)
+        }
     }
 
     const onSelectMultipleSwap = async () => {
@@ -306,9 +326,9 @@ export function useSwapForm(): SwapFormShape {
         )
 
         return () => {
-            formStore.dispose().catch(reason => error(reason))
-            tokensListDisposer()
             tokensDisposer()
+            tokensListDisposer()
+            formStore.dispose().catch(reason => error(reason))
         }
     }, [])
 
