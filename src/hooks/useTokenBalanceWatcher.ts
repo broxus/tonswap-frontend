@@ -1,14 +1,16 @@
 import * as React from 'react'
+import { reaction } from 'mobx'
 
 import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
 import { error, formattedBalance } from '@/utils'
 
 
 export type TokenFormattedBalanceOptions = {
-    dexAccountBalance?: string;
+    dexAccountBalance?: string | number;
     subscriberPrefix?: string;
-    watchOnMount?: boolean;
+    syncTokenOnMount?: boolean;
     unwatchOnUnmount?: boolean;
+    watchOnMount?: boolean;
 }
 
 export type TokenFormattedBalanceShape = {
@@ -16,11 +18,10 @@ export type TokenFormattedBalanceShape = {
     isFetching: boolean;
 }
 
+const syncingTokens: Record<string, boolean> = {}
 
-const mountedTokens: Record<string, boolean> = {}
 
-
-export function useTokenFormattedBalance(
+export function useTokenBalanceWatcher(
     token?: TokenCache,
     options?: TokenFormattedBalanceOptions,
 ): TokenFormattedBalanceShape {
@@ -29,65 +30,59 @@ export function useTokenFormattedBalance(
     const {
         dexAccountBalance,
         subscriberPrefix = 'sub',
+        syncTokenOnMount = true,
         watchOnMount = true,
         unwatchOnUnmount = watchOnMount as boolean,
     } = { ...options }
 
     const [balance, setBalance] = React.useState(
         formattedBalance(
-            token?.balance || '0',
+            token?.balance || 0,
             token?.decimals,
-            dexAccountBalance || '0',
+            dexAccountBalance || 0,
         ) || '0',
     )
 
-    const [isFetching, setFetchingTo] = React.useState(false)
-
     React.useEffect(() => {
         setBalance(formattedBalance(
-            token?.balance || '0',
+            token?.balance || 0,
             token?.decimals,
-            dexAccountBalance || '0',
+            dexAccountBalance || 0,
         ) || '0')
     }, [dexAccountBalance, token?.balance])
 
     React.useEffect(() => {
-        if (token !== undefined) {
-            mountedTokens[`${subscriberPrefix}-${token.root}`] = true;
+        const tokenDisposer = reaction(() => tokensCache.get(token?.root), updatedToken => {
+            setBalance(formattedBalance(
+                updatedToken?.balance || 0,
+                updatedToken?.decimals,
+                dexAccountBalance || 0,
+            ) || '0')
+        })
 
+        if (token !== undefined) {
             (async () => {
-                setFetchingTo(true)
                 try {
-                    await tokensCache.syncToken(token.root)
-                    if (mountedTokens[`${subscriberPrefix}-${token.root}`]) {
-                        setBalance(formattedBalance(
-                            token.balance || '0',
-                            token.decimals,
-                            dexAccountBalance || '0',
-                        ) || '0')
-                        setFetchingTo(false)
+                    if (syncTokenOnMount) {
+                        await tokensCache.syncToken(token.root)
                     }
                 }
                 catch (e) {
                     error('Token update failure', e)
-                    if (mountedTokens[`${subscriberPrefix}-${token.root}`]) {
-                        setFetchingTo(false)
-                    }
                 }
                 finally {
-                    if (mountedTokens[`${subscriberPrefix}-${token.root}`]) {
-                        setFetchingTo(false)
-                        if (watchOnMount) {
-                            await tokensCache.watch(token.root, subscriberPrefix)
-                        }
+                    if (watchOnMount && !syncingTokens[`${subscriberPrefix}-${token.root}`]) {
+                        await tokensCache.watch(token.root, subscriberPrefix)
                     }
                 }
             })()
         }
 
         return () => {
+            tokenDisposer()
+
             if (token) {
-                mountedTokens[`${subscriberPrefix}-${token.root}`] = false
+                syncingTokens[`${subscriberPrefix}-${token.root}`] = false
             }
 
             if (token && unwatchOnUnmount) {
@@ -96,5 +91,5 @@ export function useTokenFormattedBalance(
         }
     }, [token, token?.wallet])
 
-    return { value: balance, isFetching }
+    return { value: balance, isFetching: tokensCache.isTokenUpdatingBalance(token?.root) }
 }

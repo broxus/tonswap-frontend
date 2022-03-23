@@ -1,24 +1,47 @@
 import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import classNames from 'classnames'
-import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { WaypointWrappedItem } from '@/modules/TokensList/components'
-import { TokenCache, useTokensCache } from '@/stores/TokensCacheService'
+import { NativeCoinItem, TokenAndCoinCombinator, WaypointWrappedItem } from '@/modules/TokensList/components'
+import { useTokensCache } from '@/stores/TokensCacheService'
+import type { TokenCache } from '@/stores/TokensCacheService'
+import type { WalletNativeCoin } from '@/stores/WalletService'
 
 import './index.scss'
 
+export type TokenSide = 'leftToken' | 'rightToken'
+
 
 type Props = {
+    allowMultiple?: boolean;
     currentToken?: TokenCache;
+    currentTokenSide?: TokenSide;
+    isMultiple?: boolean;
+    combinedTokenRoot?: string;
+    nativeCoin?: WalletNativeCoin;
+    nativeCoinSide?: TokenSide;
     onDismiss?: () => void;
+    onSelectMultipleSwap?: () => void;
+    onSelectNativeCoin?: () => void;
     onSelectToken?: (root: string) => void;
 }
 
 
-export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.Element {
+export function TokensList({
+    allowMultiple,
+    currentToken,
+    currentTokenSide,
+    isMultiple,
+    combinedTokenRoot,
+    nativeCoin,
+    nativeCoinSide,
+    onDismiss,
+    onSelectMultipleSwap,
+    onSelectNativeCoin,
+    onSelectToken,
+}: Props): JSX.Element {
     const intl = useIntl()
     const tokensCache = useTokensCache()
 
@@ -26,12 +49,15 @@ export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.El
     const [searchResults, setSearchResults] = React.useState<TokenCache[]>([])
 
     const tokens = React.useMemo(() => (
+        // eslint-disable-next-line no-nested-ternary
         (query !== undefined || searchResults.length > 0)
             ? searchResults
-            : tokensCache.tokens
-    ), [query, searchResults, tokensCache.tokens])
+            : !allowMultiple ? tokensCache.tokens : tokensCache.tokens.filter(
+                token => token.root !== combinedTokenRoot,
+            )
+    ), [allowMultiple, query, searchResults, tokensCache.tokens])
 
-    const onChangeSearchInput = React.useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const onSearch = React.useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target
         if (value.length > 0) {
             setSearchQuery(value)
@@ -68,33 +94,54 @@ export function TokensList({ currentToken, onDismiss, ...props }: Props): JSX.El
                             id: 'TOKENS_LIST_POPUP_FIELD_SEARCH_PLACEHOLDER',
                         })}
                         value={query}
-                        onChange={onChangeSearchInput}
+                        onChange={onSearch}
                     />
                 </form>
-                <Observer>
-                    {() => (
-                        <div
-                            className={classNames('popup-list', {
-                                'popup-list__no-results': tokens.length === 0,
+                <div
+                    className={classNames('popup-list', {
+                        'popup-list__no-results': tokens.length === 0,
+                    })}
+                >
+                    {(allowMultiple && nativeCoin !== undefined && !query) && (
+                        <TokenAndCoinCombinator
+                            key="multiple"
+                            allowMultiple={allowMultiple}
+                            combinedTokenRoot={combinedTokenRoot}
+                            currentToken={currentToken}
+                            currentTokenSide={currentTokenSide}
+                            isMultiple={isMultiple}
+                            nativeCoin={nativeCoin}
+                            nativeCoinSide={nativeCoinSide}
+                            onSelectMultipleSwap={onSelectMultipleSwap}
+                            onSelectNativeCoin={onSelectNativeCoin}
+                            onSelectToken={onSelectToken}
+                        />
+                    )}
+                    {(!allowMultiple && nativeCoin !== undefined && !query) && (
+                        <NativeCoinItem
+                            key={nativeCoin.symbol}
+                            disabled={currentTokenSide === nativeCoinSide}
+                            coin={nativeCoin}
+                            onSelect={onSelectNativeCoin}
+                        />
+                    )}
+                    {tokens.length > 0 ? tokens.map(token => (
+                        <WaypointWrappedItem
+                            key={token.root}
+                            disabled={currentToken?.root === combinedTokenRoot
+                                ? false
+                                : currentToken?.root === token.root}
+                            token={token}
+                            onSelect={onSelectToken}
+                        />
+                    )) : (
+                        <div className="popup-search__message">
+                            {intl.formatMessage({
+                                id: 'TOKENS_LIST_POPUP_NO_RESULTS',
                             })}
-                        >
-                            {tokens.length > 0 ? tokens.map(token => (
-                                <WaypointWrappedItem
-                                    key={token.root}
-                                    disabled={currentToken?.root === token.root}
-                                    token={token}
-                                    onSelect={props.onSelectToken}
-                                />
-                            )) : (
-                                <div className="popup-search__message">
-                                    {intl.formatMessage({
-                                        id: 'TOKENS_LIST_POPUP_NO_RESULTS',
-                                    })}
-                                </div>
-                            )}
                         </div>
                     )}
-                </Observer>
+                </div>
             </div>
         </div>,
         document.body,

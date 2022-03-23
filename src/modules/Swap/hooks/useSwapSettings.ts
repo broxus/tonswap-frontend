@@ -1,7 +1,8 @@
 import BigNumber from 'bignumber.js'
 import * as React from 'react'
 
-import { useSwapStore } from '@/modules/Swap/stores/SwapStore'
+import { DEFAULT_SLIPPAGE_VALUE } from '@/modules/Swap/constants'
+import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { isGoodBignumber } from '@/utils'
 
 
@@ -18,7 +19,7 @@ type SwapSettingsShape = {
 
 
 export function useSwapSettings(): SwapSettingsShape {
-    const swap = useSwapStore()
+    const formStore = useSwapFormStore()
 
     const popupRef = React.useRef<HTMLDivElement>(null)
 
@@ -27,7 +28,7 @@ export function useSwapSettings(): SwapSettingsShape {
     const [isOpen, setOpen] = React.useState(false)
 
     const show = () => {
-        if (swap.isSwapping) {
+        if (formStore.isSwapping) {
             return
         }
         setOpen(true)
@@ -50,24 +51,24 @@ export function useSwapSettings(): SwapSettingsShape {
     const onBlur: React.FormEventHandler<HTMLInputElement> = event => {
         const value = new BigNumber(event.currentTarget.value || 0)
         if (!isGoodBignumber(value)) {
-            swap.changeData('slippage', '0.5')
+            formStore.setData('slippage', DEFAULT_SLIPPAGE_VALUE)
         }
     }
 
-    const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
+    const onChange: React.ChangeEventHandler<HTMLInputElement> = async event => {
         let { value } = event.target
         value = value.replace(/[,]/g, '.')
         if (
-            swap.slippage
-            && swap.slippage.indexOf('.') > -1
-            && value.length > swap.slippage.length
+            formStore.slippage
+            && formStore.slippage.indexOf('.') > -1
+            && value.length > formStore.slippage.length
             && value.charAt(value.length - 1) === '.'
         ) {
             return
         }
         value = value.replace(/[.]+/g, '.')
         value = value.replace(/(?!- )[^0-9.]/g, '')
-        swap.changeData('slippage', value)
+        await formStore.changeSlippage(value)
     }
 
     React.useEffect(() => {

@@ -15,9 +15,13 @@ import {
 } from 'everscale-inpage-provider'
 
 import { useRpcClient } from '@/hooks/useRpcClient'
-import { connectToWallet } from '@/misc/helpers'
+import {
+    connectToWallet,
+    DexAbi,
+    DexConstants,
+    Token,
+} from '@/misc'
 import { debug, error } from '@/utils'
-import { DexAbi, DexConstants } from '@/misc'
 
 
 export type Account = Permissions['accountInteraction']
@@ -36,6 +40,8 @@ export type WalletState = {
     isInitialized: boolean;
     isInitializing: boolean;
 }
+
+export type WalletNativeCoin = Pick<Token, 'balance' | 'decimals' | 'icon' | 'name' | 'symbol'>
 
 const DEFAULT_WALLET_DATA: WalletData = {
     account: undefined,
@@ -70,7 +76,7 @@ export class WalletService {
      */
     protected state: WalletState = DEFAULT_WALLET_STATE
 
-    constructor() {
+    constructor(protected readonly nativeCoin?: WalletNativeCoin) {
         this.#contractSubscriber = undefined
 
         makeAutoObservable(this, {
@@ -288,7 +294,7 @@ export class WalletService {
 
             this.#contractSubscriber.on('data', event => {
                 debug(
-                    '%cTON Provider%c The wallet\'s `contractStateChanged` event was captured',
+                    '%cRPC%c The wallet\'s `contractStateChanged` event was captured',
                     'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                     'color: #c5e4f3',
                     event,
@@ -330,6 +336,20 @@ export class WalletService {
     }
 
     /**
+     * Returns base native wallet coin
+     * @returns {WalletNativeCoin}
+     */
+    public get coin(): WalletNativeCoin {
+        return {
+            balance: this.balance,
+            decimals: this.nativeCoin?.decimals ?? DexConstants.CoinDecimals,
+            icon: this.nativeCoin?.icon || DexConstants.CoinLogoURI,
+            name: this.nativeCoin?.name || DexConstants.CoinSymbol,
+            symbol: this.nativeCoin?.symbol || DexConstants.CoinSymbol,
+        }
+    }
+
+    /**
      * Returns computed wallet contract state
      * @returns {WalletData['contract']}
      */
@@ -343,7 +363,7 @@ export class WalletService {
      */
     public get walletContractCallbacks(): Contract<typeof DexAbi.Callbacks> | undefined {
         return this.account?.address !== undefined
-            ? rpc.createContract(DexAbi.Callbacks, this.account?.address)
+            ? new rpc.Contract(DexAbi.Callbacks, this.account?.address)
             : undefined
     }
 
@@ -423,7 +443,12 @@ export class WalletService {
 }
 
 
-const WalletServiceStore = new WalletService()
+const WalletServiceStore = new WalletService({
+    decimals: DexConstants.CoinDecimals,
+    icon: DexConstants.CoinLogoURI,
+    name: DexConstants.CoinSymbol,
+    symbol: DexConstants.CoinSymbol,
+})
 
 export function useWallet(): WalletService {
     return WalletServiceStore

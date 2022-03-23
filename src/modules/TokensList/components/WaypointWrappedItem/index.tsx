@@ -1,10 +1,10 @@
 import * as React from 'react'
 import { Waypoint } from 'react-waypoint'
 
-import { Item, Props } from '@/modules/TokensList/components/Item'
+import { Item, ItemProps } from '@/modules/TokensList/components/Item'
 
 
-export function WaypointWrappedItem(props: Props): JSX.Element {
+export function WaypointWrappedItem(props: ItemProps): JSX.Element {
     const [visible, setVisibleTo] = React.useState(false)
 
     const onPositionChange = ({ currentPosition }: Waypoint.CallbackArgs) => {

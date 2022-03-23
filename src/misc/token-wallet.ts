@@ -6,7 +6,8 @@ import {
 
 import { useRpcClient } from '@/hooks/useRpcClient'
 import { TokenAbi } from '@/misc/abi'
-import { debug, error, sliceAddress } from '@/utils'
+import { debug, sliceAddress } from '@/utils'
+import { SupportedInterfaceDetection } from '@/misc/supported-interface-detection'
 
 
 export type Token = {
@@ -15,11 +16,13 @@ export type Token = {
     icon?: string;
     name?: string;
     root: string;
-    symbol: string;
-    updatedAt?: number;
-    wallet?: string;
-    totalSupply?: string;
     rootOwnerAddress?: Address;
+    symbol: string;
+    totalSupply?: string;
+    updatedAt?: number;
+    vendor?: string | null;
+    verified?: boolean;
+    wallet?: string;
 }
 
 export type BalanceWalletRequest = {
@@ -59,7 +62,7 @@ export class TokenWallet {
         }).call({ cachedState: state })).value0
 
         debug(
-            `%cToken Wallet%c Request wallet address in token %c${sliceAddress(args.root.toString())}%c by owner %c${sliceAddress(args.owner.toString())}%c => %c${sliceAddress(tokenWallet.toString())}`,
+            `%cToken Wallet%c Request wallet address in token %c${sliceAddress(args.root.toString())}%c by owner %c${sliceAddress(args.owner.toString())}%c -> %c${sliceAddress(tokenWallet.toString())}`,
             'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
             'color: #c5e4f3',
             'color: #bae701',
@@ -88,7 +91,7 @@ export class TokenWallet {
         }).call({ cachedState: state })).value0
 
         debug(
-            `%cToken Wallet%c Request token wallet %c${sliceAddress(wallet.toString())}%c balance => %c${balance}`,
+            `%cToken Wallet%c Request token wallet %c${sliceAddress(wallet.toString())}%c balance -> %c${balance}`,
             'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
             'color: #c5e4f3',
             'color: #bae701',
@@ -110,7 +113,6 @@ export class TokenWallet {
             })
         }
         catch (e) {
-            error(e)
             return '0'
         }
     }
@@ -122,7 +124,6 @@ export class TokenWallet {
             })
         }
         catch (e) {
-            error(e)
             return '0'
         }
     }
@@ -140,6 +141,10 @@ export class TokenWallet {
     }
 
     public static async getTokenFullDetails(root: string): Promise<Token | undefined> {
+        if (!await this.isNewTip3(root)) {
+            return undefined
+        }
+
         const address = new Address(root)
 
         const { state } = await rpc.getFullContractState({ address })
@@ -150,7 +155,7 @@ export class TokenWallet {
 
         if (state.isDeployed) {
             const [decimals, name, symbol, details] = await Promise.all([
-                TokenWallet.getDecimals(address, state),
+                TokenWallet.getDecimals(address),
                 TokenWallet.getName(address, state),
                 TokenWallet.getSymbol(address, state),
                 TokenWallet.getDetails(address, state),
@@ -170,9 +175,10 @@ export class TokenWallet {
 
     public static async getDecimals(root: Address, state?: FullContractState): Promise<number> {
         const rootContract = new rpc.Contract(TokenAbi.Root, root)
-        const response = (await rootContract.methods.decimals({ answerId: 0 }).call(
-            { cachedState: state },
-        )).value0
+        const response = (await rootContract.methods.decimals({ answerId: 0 }).call({
+            cachedState: state,
+            responsible: true,
+        })).value0
         return parseInt(response, 10)
     }
 
@@ -206,6 +212,20 @@ export class TokenWallet {
             cachedState: state,
             responsible: true,
         })).value0
+    }
+
+    public static async isNewTip3(root: string): Promise<boolean> {
+        const address = new Address(root)
+
+        const { state } = await rpc.getFullContractState({ address })
+        if (!state || !state.isDeployed) {
+            return false
+        }
+
+        return SupportedInterfaceDetection.supports({
+            address,
+            interfaces: [0x4371d8ed, 0x0b1fd263],
+        })
     }
 
     public static async send(args = params<{

@@ -11,8 +11,8 @@ type WebpackConfig = webpack.Configuration & { devServer?: DevServerConfiguratio
 
 
 export default (_: any, options: any): WebpackConfig => {
-    const HOST = process.env.HOST ?? '0.0.0.0'
-    const PORT = parseInt(process.env.PORT ?? '3000', 10)
+    const host = process.env.HOST ?? '0.0.0.0'
+    const port = parseInt(process.env.PORT ?? '3000', 10)
     const showErrors = process.env.ERRORS
 
     const isProduction = options.mode === 'production'
@@ -203,8 +203,8 @@ export default (_: any, options: any): WebpackConfig => {
 
     if (isDevelopment) {
         config.devServer = {
-            host: HOST,
-            port: PORT,
+            host,
+            port,
             historyApiFallback: true,
             liveReload: false,
             hot: false,

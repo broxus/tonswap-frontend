@@ -83,7 +83,8 @@
         box-shadow: 0 0 2px 0 #eb4361;
     }
 
-    &__header {
+    &__header,
+    &__footer {
         align-items: center;
         color: #ffffff;
         display: flex;
@@ -92,6 +93,19 @@
         letter-spacing: 0.75px;
         line-height: 20px;
         margin-bottom: 4px;
+
+        &-inner {
+            align-items: center;
+            display: flex;
+            flex-direction: row;
+        }
+    }
+    &__header-label {
+        padding: 0 !important;
+    }
+    &__footer {
+        margin-bottom: 0;
+        margin-top: 4px;
     }
 
     &__main {
@@ -272,10 +286,19 @@ button.form-submit {
         flex-shrink: 0;
         height: 24px;
         margin-right: 8px;
-        width: 24px;
+        min-width: 24px;
 
         img {
             width: 100%;
+            @media only screen and (max-width: 767px) {
+                height: 20px;
+                width: 20px;
+            }
+        }
+
+        @media only screen and (max-width: 767px) {
+            height: 20px;
+            min-width: 20px;
         }
     }
 
@@ -285,12 +308,23 @@ button.form-submit {
         font-size: 18px;
         font-weight: 500;
         letter-spacing: 0.5px;
-        line-height: 24px;
+        line-height: 20px;
         max-width: 100px;
         overflow: hidden;
         text-align: left;
         text-overflow: ellipsis;
         white-space: nowrap;
+        @media only screen and (max-width: 767px) {
+            font-size: 16px;
+        }
+    }
+
+    &-extra {
+        flex-flow: row nowrap;
+        min-width: fit-content;
+    }
+    &-extra &__name {
+        max-width: 150px;
     }
 
     &__arrow {
@@ -310,8 +344,9 @@ button.form-submit {
 }
 
 .btn.form-btn-max {
-    line-height: 24px;
+    font-size: 12px;
+    line-height: 20px;
     margin: 0 12px;
-    min-height: 24px;
+    min-height: 20px;
     padding: 0 10px;
 }

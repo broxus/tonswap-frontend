@@ -33,8 +33,8 @@ import {
     PoolData,
     PoolStoreData,
     PoolStoreState,
-    TokenSide,
 } from '@/modules/Pool/types'
+import { TokenSide } from '@/modules/TokensList'
 import { DexAccountService, useDexAccount } from '@/stores/DexAccountService'
 import { TokenCache, TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import { useWallet, WalletService } from '@/stores/WalletService'

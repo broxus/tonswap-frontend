@@ -145,17 +145,15 @@
     flex-wrap: wrap;
 }
 
-.truncate {
-    &-name {
-        display: inline-block;
-        max-width: 120px;
-        overflow: hidden;
-        padding: 0 5px;
-        text-align: left;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
+[class*='truncate'] {
+    display: inline-block;
+    overflow: hidden;
+    padding: 0 5px;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+.truncate-name { max-width: 120px; }
 
 .hidden {
     display: none;

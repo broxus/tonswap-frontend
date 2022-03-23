@@ -1,4 +1,5 @@
 export * from './camelify'
+export * from './clean-object'
 export * from './console'
 export * from './create-handler'
 export * from './debounce'

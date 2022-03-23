@@ -16,14 +16,14 @@ export function DeviceNav({ onNavigate }: Props): JSX.Element {
 
     return (
         <Nav className="device-nav" modifiers={['divider']}>
-            <Nav.Item>
+            <Nav.Item key="swap">
                 <NavLink to="/swap" onClick={onNavigate}>
                     {intl.formatMessage({
                         id: 'NAV_LINK_TEXT_SWAP',
                     })}
                 </NavLink>
             </Nav.Item>
-            <Nav.Item>
+            <Nav.Item key="pools">
                 <NavLink
                     to="/pools"
                     isActive={(_, location) => location.pathname.indexOf('/pool') === 0}
@@ -34,28 +34,28 @@ export function DeviceNav({ onNavigate }: Props): JSX.Element {
                     })}
                 </NavLink>
             </Nav.Item>
-            <Nav.Item>
+            <Nav.Item key="tokens">
                 <NavLink to="/tokens" onClick={onNavigate}>
                     {intl.formatMessage({
                         id: 'NAV_LINK_TEXT_TOKENS',
                     })}
                 </NavLink>
             </Nav.Item>
-            <Nav.Item>
+            <Nav.Item key="pairs">
                 <NavLink to="/pairs" onClick={onNavigate}>
                     {intl.formatMessage({
                         id: 'NAV_LINK_TEXT_PAIRS',
                     })}
                 </NavLink>
             </Nav.Item>
-            <Nav.Item>
+            <Nav.Item key="farming">
                 <NavLink to="/farming" onClick={onNavigate}>
                     {intl.formatMessage({
                         id: 'NAV_LINK_TEXT_FARMING',
                     })}
                 </NavLink>
             </Nav.Item>
-            <Nav.Item>
+            <Nav.Item key="builder">
                 <NavLink to="/builder" onClick={onNavigate}>
                     {intl.formatMessage({
                         id: 'NAV_LINK_TEXT_BUILDER',

@@ -240,7 +240,7 @@ const typescriptConfig = {
     ],
     overrides: [
         {
-            files: ['*.d.ts'],
+            files: ['*.d.ts', '**/*/types.ts'],
             rules: {
                 camelcase: 'off',
                 'max-len': 'off',
