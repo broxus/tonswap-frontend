@@ -54,7 +54,6 @@ function ConversionReceipt(): JSX.Element | null {
                             />
                         ) : (
                             <TokenIcon
-                                address={formStore.conversion.token?.root}
                                 icon={formStore.conversion.coin?.icon}
                             />
                         )}

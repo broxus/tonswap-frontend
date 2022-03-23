@@ -12,6 +12,7 @@ import {
     SwapBill,
     SwapConfirmationPopup,
     SwapField,
+    SwapNotation,
     SwapPrice,
     SwapSettings,
     SwapSubmitButton,
@@ -23,7 +24,6 @@ import { TokensList } from '@/modules/TokensList'
 import { TokenImportPopup } from '@/modules/TokensList/components'
 
 import './index.scss'
-import { SwapNotation } from '@/modules/Swap/components/SwapNotation'
 
 
 export function Swap(): JSX.Element {

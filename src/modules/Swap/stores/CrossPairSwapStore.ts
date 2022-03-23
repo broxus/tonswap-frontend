@@ -56,7 +56,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
     ) {
         super(tokensCache, initialData)
 
-        this.data = {
+        this.setData({
             crossPairs: [],
             directBill: DEFAULT_SWAP_BILL,
             leftAmount: initialData?.leftAmount ?? '',
@@ -65,13 +65,13 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
             rightToken: initialData?.rightToken,
             routes: [],
             slippage: initialData?.slippage ?? DEFAULT_SLIPPAGE_VALUE,
-        }
+        })
 
-        this.state = {
+        this.setState({
             isCalculating: false,
             isPreparing: false,
             isSwapping: false,
-        }
+        })
 
         makeObservable(this, {
             amount: computed,
@@ -413,7 +413,6 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
     public forceInvalidate(): void {
         this.setData({
             route: undefined,
-            routes: [],
         })
     }
 
@@ -618,9 +617,10 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
     /**
      * Calculate cross-exchange `bill` by the changes in the right field.
      * @param {boolean} [force] - pass `true` to calculate in background without loadings
+     * @param {boolean} [isEnoughLiquidity]
      * @protected
      */
-    public async calculateRightToLeft(force: boolean = false): Promise<void> {
+    public async calculateRightToLeft(force: boolean = false, isEnoughLiquidity: boolean = false): Promise<void> {
         if (
             this.leftToken === undefined
             || this.rightToken === undefined
@@ -793,9 +793,8 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
             const amountBN = new BigNumber(route.bill.amount || 0)
 
             if (
-                // todo: pass from direct swap
-                /*! this.isEnoughLiquidity
-                || */(directAmount.isZero() && amountBN.gt(0))
+                !isEnoughLiquidity
+                || (directAmount.isZero() && amountBN.gt(0))
                 || (directAmount.gt(amountBN) && (bestAmount.isZero() || bestAmount.gt(amountBN)))
             ) {
                 const prices: Pick<SwapRoute, 'priceLeftToRight' | 'priceRightToLeft'> = {}

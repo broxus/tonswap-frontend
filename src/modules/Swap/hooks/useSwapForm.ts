@@ -1,14 +1,14 @@
 import * as React from 'react'
-import { useHistory, useParams } from 'react-router-dom'
 import { reaction } from 'mobx'
+import { useHistory, useParams } from 'react-router-dom'
 
 import { isAddressValid } from '@/misc'
 import { DEFAULT_LEFT_TOKEN_ROOT, DEFAULT_RIGHT_TOKEN_ROOT } from '@/modules/Swap/constants'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import type { BaseSwapStoreData } from '@/modules/Swap/types'
 import { SwapExchangeMode } from '@/modules/Swap/types'
-import { debounce, debug, error } from '@/utils'
 import type { TokenSide } from '@/modules/TokensList'
+import { debounce, debug, error } from '@/utils'
 
 
 type SwapFormShape = {
@@ -59,32 +59,103 @@ export function useSwapForm(): SwapFormShape {
         setTokenListVisible(true)
     }
 
-    const updateUrl = (force: boolean = false) => {
-        if (tokensCache.isImporting) {
+    const updateTokens = async (leftRoot: string, rightRoot: string) => {
+        const isLeftRootValid = isAddressValid(leftRoot)
+        const isRightRootValid = isAddressValid(rightRoot)
+        const isLeftCoin = leftRoot === 'coin'
+        const isRightCoin = rightRoot === 'coin'
+        const isCombined = leftRoot === 'combined' || (!isLeftRootValid && !isRightRootValid && !isLeftCoin && !isRightCoin)
+        const isWrap = isLeftCoin && isRightRootValid && rightRoot === formStore.multipleSwapTokenRoot
+        const isUnwrap = isRightCoin && isLeftRootValid && leftRoot === formStore.multipleSwapTokenRoot
+
+        if (isLeftRootValid && isRightRootValid) {
+            formStore.setState({
+                isMultiple: false,
+                nativeCoinSide: undefined,
+            })
+            formStore.forceLeftTokenUpdate(leftRoot)
+            formStore.forceRightTokenUpdate(rightRoot)
+        }
+        else if (isLeftCoin) {
+            formStore.setState({
+                isMultiple: false,
+                nativeCoinSide: 'leftToken',
+            })
+            formStore.forceLeftTokenUpdate(formStore.multipleSwapTokenRoot)
+            formStore.forceRightTokenUpdate(rightRoot)
+            if (isWrap) {
+                formStore.setState('exchangeMode', SwapExchangeMode.WRAP_EVER)
+            }
+        }
+        else if (isRightCoin) {
+            formStore.setState({
+                isMultiple: false,
+                nativeCoinSide: 'rightToken',
+            })
+            formStore.forceLeftTokenUpdate(leftRoot)
+            formStore.forceRightTokenUpdate(formStore.multipleSwapTokenRoot)
+            if (isUnwrap) {
+                formStore.setState('exchangeMode', SwapExchangeMode.UNWRAP_WEVER)
+            }
+        }
+        else if (isCombined) {
+            formStore.forceLeftTokenUpdate(DEFAULT_LEFT_TOKEN_ROOT)
+            formStore.forceRightTokenUpdate(rightRoot ?? formStore.rightToken?.root ?? DEFAULT_RIGHT_TOKEN_ROOT)
+            formStore.setState('isMultiple', true)
+        }
+
+        if (formStore.leftToken?.root === undefined && formStore.rightToken?.root === undefined) {
+            formStore.forceRightTokenUpdate(DEFAULT_RIGHT_TOKEN_ROOT)
+            formStore.setState('isMultiple', true)
+            await formStore.changeLeftToken(DEFAULT_LEFT_TOKEN_ROOT)
             return
         }
 
-        if (
-            !force
-            && formStore.leftToken?.root === DEFAULT_LEFT_TOKEN_ROOT
-            && formStore.rightToken?.root === DEFAULT_RIGHT_TOKEN_ROOT
-            && !leftTokenRoot
-            && !rightTokenRoot
-        ) {
-            return
-        }
+        await formStore.changeLeftToken(formStore.leftToken?.root)
 
-        if (formStore.leftToken?.root !== undefined && formStore.rightToken?.root !== undefined) {
-            history.replace(`/swap/${formStore.leftToken?.root}/${formStore.rightToken?.root}`)
-        }
-        else if (formStore.leftToken?.root !== undefined && formStore.rightToken?.root === undefined) {
-            history.replace(`/swap/${formStore.leftToken?.root}`)
+        if (tokensCache.isReady) {
+            const leftInCache = formStore.leftToken !== undefined
+            const rightInCache = formStore.rightToken !== undefined
+
+            try {
+                if (isLeftRootValid && !leftInCache && !isLeftCoin) {
+                    debug('Try to fetch left token')
+                    await tokensCache.addToImportQueue(leftRoot)
+                }
+            }
+            catch (e) {
+                error('Left token import error', e)
+                formStore.forceLeftTokenUpdate(undefined)
+            }
+
+            try {
+                if (isRightRootValid && !rightInCache && !isRightCoin) {
+                    debug('Try to fetch right token')
+                    await tokensCache.addToImportQueue(rightRoot)
+                }
+            }
+            catch (e) {
+                error('Right token import error', e)
+                formStore.forceRightTokenUpdate(undefined)
+            }
         }
     }
 
     const toggleSwapDirection = async () => {
         if (formStore.isLoading || formStore.isSwapping) {
             return
+        }
+
+        await formStore.toggleDirection()
+
+        let leftParam = formStore.leftToken?.root ?? '',
+            rightParam = formStore.rightToken?.root ?? ''
+
+        if (formStore.nativeCoinSide === 'rightToken') {
+            rightParam = 'coin'
+        }
+        else if (formStore.nativeCoinSide === 'leftToken') {
+            leftParam = 'coin'
         }
 
         if (formStore.isMultipleSwapMode) {
@@ -94,9 +165,10 @@ export function useSwapForm(): SwapFormShape {
             })
         }
 
-        await formStore.toggleDirection()
+        const params = [leftParam, rightParam].filter(Boolean)
+        const hasParams = params.length > 0
 
-        updateUrl(true)
+        history.replace(`/swap${hasParams ? `/${params.join('/')}` : ''}`)
     }
 
     const toggleConversionDirection = async () => {
@@ -105,61 +177,14 @@ export function useSwapForm(): SwapFormShape {
         }
 
         await formStore.toggleConversionDirection()
-    }
 
-    const updateTokens = (leftRoot: string, rightRoot: string) => {
-        const isLeftRootValid = isAddressValid(leftRoot)
-        const isRightRootValid = isAddressValid(rightRoot)
+        const leftParam = formStore.isWrapMode ? 'coin' : formStore.multipleSwapTokenRoot
+        const rightParam = formStore.isWrapMode ? formStore.multipleSwapTokenRoot : 'coin'
 
-        if (!isLeftRootValid && !isRightRootValid) {
-            return
-        }
+        const params = [leftParam, rightParam].filter(Boolean)
+        const hasParams = params.length > 0
 
-        formStore.setData({
-            leftToken: leftRoot,
-            rightToken: rightRoot,
-        })
-
-        if (leftRoot === formStore.multipleSwapTokenRoot && rightRoot === formStore.multipleSwapTokenRoot) {
-            formStore.setState({
-                exchangeMode: SwapExchangeMode.WRAP_EVER,
-                nativeCoinSide: 'leftToken',
-            })
-            formStore.setData('leftToken', undefined)
-            history.replace('/swap')
-            return
-        }
-
-        updateUrl(true)
-
-        if (tokensCache.tokens.length > 0) {
-            const leftInCache = formStore.leftToken !== undefined
-            const rightInCache = formStore.rightToken !== undefined;
-
-            (async () => {
-                try {
-                    if (isLeftRootValid && !leftInCache) {
-                        debug('Try to fetch left token')
-                        await tokensCache.addToImportQueue(leftRoot)
-                    }
-                }
-                catch (e) {
-                    error('Left token import error', e)
-                    formStore.setData('leftToken', undefined)
-                }
-
-                try {
-                    if (isRightRootValid && !rightInCache) {
-                        debug('Try to fetch right token')
-                        await tokensCache.addToImportQueue(rightRoot)
-                    }
-                }
-                catch (e) {
-                    error('Right token import error', e)
-                    formStore.setData('rightToken', undefined)
-                }
-            })()
-        }
+        history.replace(`/swap${hasParams ? `/${params.join('/')}` : ''}`)
     }
 
     const onKeyPress = React.useCallback(debounce(() => {
@@ -202,11 +227,18 @@ export function useSwapForm(): SwapFormShape {
             isMultiple: true,
             nativeCoinSide: undefined,
         })
+
         if (formStore.rightToken?.root === formStore.multipleSwapTokenRoot) {
-            formStore.setData('rightToken', formStore.leftToken?.root)
+            formStore.forceRightTokenUpdate(formStore.leftToken?.root)
         }
+
         hideTokensList()
+
         await formStore.changeLeftToken(formStore.multipleSwapTokenRoot)
+
+        const rightParam = formStore.rightToken?.root !== undefined ? `/${formStore.rightToken?.root}` : ''
+
+        history.replace(`/swap/combined${rightParam}`)
     }
 
     const onSelectLeftNativeCoin = async () => {
@@ -217,18 +249,16 @@ export function useSwapForm(): SwapFormShape {
             nativeCoinSide: 'leftToken',
         })
 
-        history.push({ pathname: '/swap' })
+        // formStore.forceLeftTokenUpdate(formStore.rightToken?.root)
+        formStore.setState('nativeCoinSide', 'leftToken')
 
         if (formStore.rightToken?.root === formStore.multipleSwapTokenRoot) {
-            formStore.setData({
-                leftToken: undefined,
-                rightAmount: formStore.leftAmount,
-            })
             formStore.setState('exchangeMode', SwapExchangeMode.WRAP_EVER)
         }
-        else {
-            await formStore.changeLeftToken(formStore.multipleSwapTokenRoot)
-        }
+
+        const rightParam = formStore.rightToken?.root !== undefined ? `/${formStore.rightToken?.root}` : ''
+
+        history.replace(`/swap/coin${rightParam}`)
     }
 
     const onSelectRightNativeCoin = async () => {
@@ -247,7 +277,9 @@ export function useSwapForm(): SwapFormShape {
             nativeCoinSide: 'rightToken',
         })
 
-        history.push({ pathname: '/swap' })
+        const leftParam = formStore.leftToken?.root !== undefined ? `/${formStore.leftToken?.root}` : ''
+
+        history.replace(`/swap${leftParam}/coin`)
     }
 
     const onSelectLeftToken: SwapFormShape['onSelectLeftToken'] = async root => {
@@ -262,6 +294,14 @@ export function useSwapForm(): SwapFormShape {
         })
 
         await formStore.changeLeftToken(root)
+
+        let rightParam = formStore.rightToken?.root !== undefined ? `/${formStore.rightToken?.root}` : ''
+
+        if (formStore.nativeCoinSide === 'rightToken') {
+            rightParam = '/coin'
+        }
+
+        history.replace(`/swap/${root}${rightParam}`)
     }
 
     const onSelectRightToken: SwapFormShape['onSelectRightToken'] = async root => {
@@ -297,7 +337,22 @@ export function useSwapForm(): SwapFormShape {
                 ? undefined
                 : formStore.nativeCoinSide,
         })
+
         await formStore.changeRightToken(root)
+
+        let leftParam = formStore.leftToken?.root !== undefined ? `/${formStore.leftToken?.root}` : undefined
+
+        if (formStore.nativeCoinSide === 'leftToken') {
+            leftParam = '/coin'
+        }
+
+        if (formStore.isMultipleSwapMode) {
+            leftParam = '/combined'
+        }
+
+        if (leftParam !== undefined) {
+            history.replace(`/swap${leftParam}/${root}`)
+        }
     }
 
     const onDismissTransactionReceipt = () => {
@@ -305,28 +360,21 @@ export function useSwapForm(): SwapFormShape {
     }
 
     React.useEffect(() => {
+        const tokensListDisposer = reaction(
+            () => tokensCache.isReady,
+            async isReady => {
+                if (isReady) {
+                    await updateTokens(leftTokenRoot, rightTokenRoot)
+                }
+            },
+            { fireImmediately: true },
+        );
+
         (async () => {
             await formStore.init()
         })()
 
-        const tokensListDisposer = reaction(
-            () => tokensCache.tokens.length,
-            () => {
-                updateTokens(leftTokenRoot, rightTokenRoot)
-            },
-            { fireImmediately: true },
-        )
-
-        const tokensDisposer = reaction(
-            () => [formStore.leftToken, formStore.rightToken],
-            () => {
-                updateUrl()
-            },
-            { fireImmediately: true },
-        )
-
         return () => {
-            tokensDisposer()
             tokensListDisposer()
             formStore.dispose().catch(reason => error(reason))
         }

@@ -10,9 +10,16 @@ import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 function SubmitButton(): JSX.Element {
     const intl = useIntl()
     const formStore = useSwapFormStore()
+    const tokensCache = formStore.useTokensCache
     const wallet = formStore.useWallet
 
-    if (formStore.isSwapping || formStore.isLoading || formStore.isCalculating) {
+    if (
+        formStore.isSwapping
+        || formStore.isLoading
+        || formStore.isCalculating
+        || tokensCache.isFetching
+        || !tokensCache.isReady
+    ) {
         return (
             <button
                 type="button"

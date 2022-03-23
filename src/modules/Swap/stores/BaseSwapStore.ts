@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 import { Address } from 'everscale-inpage-provider'
-import { computed, makeObservable, toJS } from 'mobx'
+import { computed, makeObservable } from 'mobx'
 
 import { DEFAULT_DECIMALS } from '@/modules/Swap/constants'
 import { BaseStore } from '@/stores/BaseStore'
@@ -166,7 +166,7 @@ export class BaseSwapStore<
      * @returns {TokenCache | undefined}
      */
     public get leftToken(): TokenCache | undefined {
-        return toJS(this.tokensCache.get(this.data.leftToken))
+        return this.tokensCache.get(this.data.leftToken)
     }
 
     /**
@@ -202,7 +202,7 @@ export class BaseSwapStore<
      * @returns {TokenCache | undefined}
      */
     public get rightToken(): TokenCache | undefined {
-        return toJS(this.tokensCache.get(this.data.rightToken))
+        return this.tokensCache.get(this.data.rightToken)
     }
 
     /**
