@@ -21,7 +21,6 @@ import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { TokensList } from '@/modules/TokensList'
 import { TokenImportPopup } from '@/modules/TokensList/components'
-import type { CrossPairSwapStore } from '@/modules/Swap/stores/CrossPairSwapStore'
 
 import './index.scss'
 
@@ -62,7 +61,7 @@ export function Swap(): JSX.Element {
                                     })}
                                     id="leftField"
                                     isMultiple={formStore.isMultipleSwapMode}
-                                    isValid={formStore.isLeftAmountValid}
+                                    isValid={formStore.isSwapping || formStore.isLeftAmountValid}
                                     nativeCoin={(formStore.isMultipleSwapMode || formStore.nativeCoinSide === 'leftToken')
                                         ? formStore.coin
                                         : undefined}
@@ -142,18 +141,22 @@ export function Swap(): JSX.Element {
 
             <Observer>
                 {() => (
-                    <SwapBill
-                        key="bill"
-                        fee={formStore.swap.fee}
-                        isCrossExchangeAvailable={formStore.isCrossExchangeAvailable}
-                        isCrossExchangeMode={formStore.isCrossExchangeMode}
-                        leftToken={formStore.leftToken}
-                        minExpectedAmount={formStore.swap.minExpectedAmount}
-                        priceImpact={formStore.swap.priceImpact}
-                        rightToken={formStore.rightToken}
-                        slippage={formStore.swap.slippage}
-                        tokens={(formStore.swap as CrossPairSwapStore).route?.tokens}
-                    />
+                    <>
+                        {!formStore.isConversionMode && (
+                            <SwapBill
+                                key="bill"
+                                fee={formStore.swap.fee}
+                                isCrossExchangeAvailable={formStore.isCrossExchangeAvailable}
+                                isCrossExchangeMode={formStore.isCrossExchangeMode}
+                                leftToken={formStore.leftToken}
+                                minExpectedAmount={formStore.swap.minExpectedAmount}
+                                priceImpact={formStore.swap.priceImpact}
+                                rightToken={formStore.rightToken}
+                                slippage={formStore.swap.slippage}
+                                tokens={formStore.route?.tokens}
+                            />
+                        )}
+                    </>
                 )}
             </Observer>
 

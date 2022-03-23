@@ -68,7 +68,7 @@ function Field({
                                 Max
                             </button>
                         )}
-                        <div key="token-balance" className="swap-field-balance">
+                        <div key="token-balance" className="swap-field-balance truncate">
                             {intl.formatMessage({
                                 id: 'SWAP_FIELD_TOKEN_WALLET_BALANCE',
                             }, {

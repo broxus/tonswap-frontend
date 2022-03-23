@@ -201,7 +201,6 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             slippage: this.data.slippage,
         }), ({ directBill, ...formData }) => {
             this.#crossPairSwap.setData(cleanObject({ ...formData, directBill }))
-            // todo pass pair by the is multiple
             this.#coinSwap.setData(cleanObject({ ...formData, bill: directBill }))
             this.#directSwap.setData(cleanObject({ ...formData, bill: directBill }))
             this.#multipleSwap.setData(cleanObject({ ...formData, bill: directBill }))
@@ -349,8 +348,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
                 .minus(new BigNumber(this.options?.wrapGas ?? 0).shiftedBy(-this.coin.decimals))
                 .toFixed()
         }
-
-        if (this.nativeCoinSide === 'leftToken') {
+        else if (this.nativeCoinSide === 'leftToken') {
             balance = new BigNumber(this.leftBalance || 0)
                 .minus(new BigNumber(this.options?.multipleSwapFee ?? 0).shiftedBy(-this.coin.decimals))
                 .toFixed()
@@ -432,11 +430,14 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
                 rightAmount: '',
                 rightToken: this.data.leftToken,
             })
+            this.forceLeftAmountUpdate(this.leftAmount)
+            this.forceRightAmountUpdate('')
             this.setState('direction', SwapDirection.LTR)
         }
         else {
             this.forcePairUpdate(undefined)
             this.setData('leftToken', root)
+            this.forceLeftAmountUpdate('')
         }
 
         this.forceInvalidate()
@@ -489,10 +490,13 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
                 rightToken: root,
             })
             this.setState('direction', SwapDirection.RTL)
+            this.forceLeftAmountUpdate('')
+            this.forceRightAmountUpdate(this.rightAmount)
         }
         else {
             this.forcePairUpdate(undefined)
             this.setData('rightToken', root)
+            this.forceRightAmountUpdate('')
         }
 
         this.forceInvalidate()

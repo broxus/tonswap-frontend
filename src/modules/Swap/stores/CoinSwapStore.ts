@@ -110,10 +110,10 @@ export class CoinSwapStore extends DirectSwapStore {
         const coinToTip3Contract = new rpc.Contract(EverAbi.EverToTip3, DexConstants.EverToTip3Address)
 
         const payload = (await coinToTip3Contract.methods.buildExchangePayload({
-            id: processingId,
-            deployWalletValue: deployGrams,
             amount: this.leftAmountNumber.toFixed(),
+            deployWalletValue: deployGrams,
             expectedAmount: this.minExpectedAmount!,
+            id: processingId,
             pair: this.pair!.address!,
         }).call()).value0
 
@@ -152,14 +152,14 @@ export class CoinSwapStore extends DirectSwapStore {
 
         try {
             await weverVault.methods.wrap({
-                payload,
-                tokens: this.leftAmountNumber.toFixed(),
                 gas_back_address: this.wallet.account!.address,
                 owner_address: DexConstants.EverToTip3Address,
+                payload,
+                tokens: this.leftAmountNumber.toFixed(),
             }).send({
                 amount: this.leftAmountNumber.plus('5000000000').toFixed(),
-                from: this.wallet.account!.address,
                 bounce: true,
+                from: this.wallet.account!.address,
             })
 
             if (resultHandler !== undefined) {
@@ -184,7 +184,6 @@ export class CoinSwapStore extends DirectSwapStore {
     protected async swapTip3ToCoin(): Promise<void> {
         if (!this.isValid) {
             this.setState('isSwapping', false)
-
         }
 
         this.setState('isSwapping', true)
@@ -223,9 +222,9 @@ export class CoinSwapStore extends DirectSwapStore {
         ).toFixed()
 
         const payload = (await tip3ToCoinContract.methods.buildExchangePayload({
+            expectedAmount: this.minExpectedAmount!,
             id: processingId,
             pair: this.pair!.address!,
-            expectedAmount: this.minExpectedAmount!,
         }).call()).value0
 
         let stream = this.#transactionSubscriber?.transactions(this.wallet.account!.address)
@@ -263,16 +262,16 @@ export class CoinSwapStore extends DirectSwapStore {
 
         try {
             await tokenWalletContract.methods.transfer({
+                amount: this.amount!,
+                deployWalletValue: deployGrams,
+                notify: true,
                 payload,
                 recipient: DexConstants.Tip3ToEverAddress,
-                deployWalletValue: deployGrams,
-                amount: this.amount!,
-                notify: true,
                 remainingGasTo: this.wallet.account!.address!,
             }).send({
                 amount: new BigNumber(3600000000).plus(deployGrams).toFixed(),
-                from: this.wallet.account!.address!,
                 bounce: true,
+                from: this.wallet.account!.address!,
             })
 
             if (resultHandler !== undefined) {

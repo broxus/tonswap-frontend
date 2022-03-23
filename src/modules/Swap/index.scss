@@ -17,6 +17,10 @@
     svg { stroke: #ffffff; }
 }
 .swap-field-balance {
+    max-width: 205px;
     padding: 0 !important;
     white-space: nowrap;
+    @media only screen and (min-width: 768px) {
+        max-width: unset;
+    }
 }
