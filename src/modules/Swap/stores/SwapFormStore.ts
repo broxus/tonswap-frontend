@@ -1,11 +1,7 @@
 import BigNumber from 'bignumber.js'
 import type { IReactionDisposer } from 'mobx'
 import {
-    action,
-    computed,
-    makeObservable,
-    override,
-    reaction,
+    action, computed, makeObservable, override, reaction,
 } from 'mobx'
 
 import { DexConstants } from '@/misc'
@@ -33,11 +29,7 @@ import type { WalletNativeCoin } from '@/stores/WalletService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import {
-    cleanObject, debounce,
-    debug, formattedBalance,
-    isGoodBignumber,
-    storage,
-    warn,
+    cleanObject, debounce, debug, formattedBalance, isGoodBignumber, storage, warn,
 } from '@/utils'
 
 
@@ -358,7 +350,14 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
                 .toFixed()
         }
 
-        await this.changeLeftAmount(balance, debounce(() => this.recalculate(!this.isCalculating), 400))
+        await this.changeLeftAmount(balance, debounce(async () => {
+            if (this.isConversionMode) {
+                this.forceRightAmountUpdate(this.leftAmount)
+            }
+            else {
+                await this.recalculate(!this.isCalculating)
+            }
+        }, 400))
     }
 
     /**
@@ -579,6 +578,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         })
 
         this.setState({
+            direction: SwapDirection.LTR,
             exchangeMode: this.exchangeMode === SwapExchangeMode.WRAP_EVER
                 ? SwapExchangeMode.UNWRAP_WEVER
                 : SwapExchangeMode.WRAP_EVER,
