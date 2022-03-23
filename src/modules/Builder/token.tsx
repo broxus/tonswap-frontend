@@ -2,6 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
+import BigNumber from 'bignumber.js'
 
 import {
     BuilderConfirmationPopup,
@@ -121,7 +122,9 @@ export function Token(): JSX.Element {
                                                     id: 'BUILDER_MANAGE_TOKEN_LABEL_TOTAL_SUPPLY',
                                                 })}
                                                 readOnly
-                                                value={managingToken.token?.totalSupply}
+                                                value={new BigNumber(managingToken.token?.totalSupply ?? 0)
+                                                    .shiftedBy(-(managingToken.token?.decimals || 0))
+                                                    .toFixed()}
                                             />
                                         </div>
                                     </div>

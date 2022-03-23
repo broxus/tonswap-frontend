@@ -21,7 +21,7 @@ type PoolData = {
     apiResponse: FarmingPoolResponse;
     poolDetails?: PoolDetails;
     pairBalances?: PairBalances;
-    rewardCurrencies: CurrencyInfo[];
+    rewardCurrencies: (CurrencyInfo | undefined)[];
 }
 
 type UserData = {
@@ -65,7 +65,7 @@ export class FarmingDataStore {
         apiResponse: FarmingPoolResponse,
         poolDetails?: PoolDetails,
         pairBalances?: PairBalances,
-        rewardCurrencies: CurrencyInfo[],
+        rewardCurrencies: (CurrencyInfo | undefined)[],
     }> {
         const [apiResponse, poolDetails] = await Promise.all([
             this.api.farmingPool({
@@ -107,9 +107,11 @@ export class FarmingDataStore {
 
         const rewardCurrencies = await Promise.all(
             apiResponse.reward_token_root_info
-                .map(reward => this.api.currency({
-                    address: reward.reward_root_address,
-                })),
+                .map(reward => (
+                    this.api.currency({
+                        address: reward.reward_root_address,
+                    }).catch(() => undefined)
+                )),
         )
 
         return {
@@ -497,6 +499,11 @@ export class FarmingDataStore {
             return undefined
         }
 
+        const { rewardCurrencies } = poolData
+        if (rewardCurrencies.includes(undefined)) {
+            return undefined
+        }
+
         const rewardTokens = this.rewardTokensAddress
             .map(tokenAddress => this.tokensCache.get(tokenAddress))
 
@@ -510,7 +517,7 @@ export class FarmingDataStore {
                 return acc
             }
             const { decimals } = token
-            const currency = poolData.rewardCurrencies[index]
+            const currency = rewardCurrencies[index] as CurrencyInfo
             const current = new BigNumber(item).shiftedBy(-decimals).multipliedBy(currency.price)
             return acc.plus(current)
         }
