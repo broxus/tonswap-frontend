@@ -188,7 +188,7 @@ export async function depositToken(
             owner: new Address(accountAddress),
             recipient: poolWallet,
             tokens: deposit.toFixed(),
-            grams: '5000000000',
+            grams: '10000000000',
             payload: depositPayload,
         })
     }

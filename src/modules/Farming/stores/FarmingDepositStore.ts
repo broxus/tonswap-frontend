@@ -86,7 +86,7 @@ export class FarmingDepositStore {
                     owner: new Address(ownerAddress),
                     recipient: new Address(poolWalletAddress),
                     tokens: amountBN.toFixed(),
-                    grams: '5000000000',
+                    grams: '10000000000',
                     payload: await Farm.poolDepositPayload(
                         new Address(poolAddress),
                         new Address(ownerAddress),

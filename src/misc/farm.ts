@@ -79,7 +79,7 @@ export class Farm {
         }).send({
             from: owner,
             bounce: true,
-            amount: '5000000000',
+            amount: '10000000000',
         })
         return id
     }
@@ -97,7 +97,7 @@ export class Farm {
         }).send({
             from: owner,
             bounce: true,
-            amount: '5000000000',
+            amount: '10000000000',
         })
         return id
     }
@@ -113,7 +113,7 @@ export class Farm {
         }).send({
             from: owner,
             bounce: true,
-            amount: '5000000000',
+            amount: '10000000000',
         })
         return id
     }
@@ -130,7 +130,7 @@ export class Farm {
         }).send({
             from: owner,
             bounce: true,
-            amount: '5000000000',
+            amount: '10000000000',
         })
         return id
     }
@@ -147,7 +147,7 @@ export class Farm {
         }).send({
             from: owner,
             bounce: true,
-            amount: '5000000000',
+            amount: '10000000000',
         })
         return id
     }
@@ -168,7 +168,7 @@ export class Farm {
         }).send({
             from: owner,
             bounce: true,
-            amount: '5000000000',
+            amount: '10000000000',
         })
         return id
     }
@@ -185,7 +185,7 @@ export class Farm {
         }).send({
             from: owner,
             bounce: true,
-            amount: '5000000000',
+            amount: '10000000000',
         })
         return id
     }
