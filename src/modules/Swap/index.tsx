@@ -59,9 +59,6 @@ export function Swap(): JSX.Element {
                                         key="leftField"
                                         balance={formStore.leftBalance}
                                         disabled={formStore.isLoading || formStore.isSwapping}
-                                        label={intl.formatMessage({
-                                            id: 'SWAP_FIELD_LABEL_LEFT',
-                                        })}
                                         id="leftField"
                                         isMultiple={formStore.isMultipleSwapMode}
                                         isValid={formStore.isSwapping || formStore.isLeftAmountValid}
@@ -99,9 +96,6 @@ export function Swap(): JSX.Element {
                                         key="rightField"
                                         balance={formStore.rightBalance}
                                         disabled={formStore.isLoading || formStore.isSwapping}
-                                        label={intl.formatMessage({
-                                            id: 'SWAP_FIELD_LABEL_RIGHT',
-                                        })}
                                         id="rightField"
                                         isValid={formStore.isRightAmountValid}
                                         nativeCoin={formStore.nativeCoinSide === 'rightToken' ? formStore.coin : undefined}
