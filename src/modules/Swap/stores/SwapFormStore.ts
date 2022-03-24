@@ -1183,10 +1183,10 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         this.setData('transaction', {
             amount: input.amount.toString(),
             hash: transaction.id.hash,
-            receivedDecimals: this.rightTokenDecimals,
-            receivedIcon: this.rightToken?.icon,
+            receivedDecimals: this.nativeCoinSide === 'rightToken' ? this.coin.decimals : this.rightTokenDecimals,
+            receivedIcon: this.nativeCoinSide === 'rightToken' ? this.coin.icon : this.rightToken?.icon,
             receivedRoot: this.rightToken?.root,
-            receivedSymbol: this.rightToken?.symbol,
+            receivedSymbol: this.nativeCoinSide === 'rightToken' ? this.coin.symbol : this.rightToken?.symbol,
             success: true,
         })
 
