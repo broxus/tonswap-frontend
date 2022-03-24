@@ -203,6 +203,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
                 if (isReady && this.data.leftToken !== undefined && this.data.rightToken !== undefined) {
                     await this.recalculate(true)
                 }
+                await this.trackData()
             },
             { fireImmediately: true },
         )
@@ -268,9 +269,11 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         this.setState({
             direction: SwapDirection.LTR,
             isConfirmationAwait: false,
+            // nativeCoinSide: undefined,
             priceDirection: SwapDirection.LTR,
         })
         this.#directSwap.reset()
+        this.#coinSwap.reset()
         this.#multipleSwap.reset()
         this.#crossPairSwap.reset()
     }
@@ -437,19 +440,19 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
 
         if (isReverting) {
             this.setData({
-                leftAmount: this.rightAmount,
+                // leftAmount: this.rightAmount,
                 leftToken: root,
-                rightAmount: '',
+                // rightAmount: '',
                 rightToken: this.data.leftToken,
             })
-            this.forceLeftAmountUpdate(this.leftAmount)
-            this.forceRightAmountUpdate('')
+            // this.forceLeftAmountUpdate(this.leftAmount)
+            // this.forceRightAmountUpdate('')
             this.setState('direction', SwapDirection.LTR)
         }
         else {
             this.forcePairUpdate(undefined)
             this.setData('leftToken', root)
-            this.forceRightAmountUpdate('')
+            // this.forceRightAmountUpdate('')
             this.#crossPairSwap.setData('routes', [])
         }
 
@@ -497,14 +500,14 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
 
         if (isReverting) {
             this.setData({
-                leftAmount: '',
+                // leftAmount: '',
                 leftToken: this.data.rightToken,
-                rightAmount: this.leftAmount,
+                // rightAmount: this.leftAmount,
                 rightToken: root,
             })
             this.setState('direction', SwapDirection.RTL)
-            this.forceLeftAmountUpdate('')
-            this.forceRightAmountUpdate(this.rightAmount)
+            // this.forceLeftAmountUpdate('')
+            // this.forceRightAmountUpdate(this.rightAmount)
         }
         else {
             this.forcePairUpdate(undefined)
@@ -1063,14 +1066,14 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      */
     protected async trackData(): Promise<void> {
         try {
-            await Promise.all([
-                this.data.leftToken && this.tokensCache.unwatch(this.data.leftToken, 'swap-field'),
-                this.data.rightToken && this.tokensCache.unwatch(this.data.rightToken, 'swap-field'),
-            ])
-            await Promise.all([
-                this.data.leftToken && this.tokensCache.watch(this.data.leftToken, 'swap-field'),
-                this.data.rightToken && this.tokensCache.watch(this.data.rightToken, 'swap-field'),
-            ])
+            // await Promise.all([
+            //     this.data.leftToken && this.tokensCache.unwatch(this.data.leftToken, 'swap-field'),
+            //     this.data.rightToken && this.tokensCache.unwatch(this.data.rightToken, 'swap-field'),
+            // ])
+            // await Promise.all([
+            //     this.data.leftToken && this.tokensCache.watch(this.data.leftToken, 'swap-field'),
+            //     this.data.rightToken && this.tokensCache.watch(this.data.rightToken, 'swap-field'),
+            // ])
         }
         catch (e) {
             warn(e)

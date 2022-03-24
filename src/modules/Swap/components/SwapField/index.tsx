@@ -5,6 +5,7 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
+import { useTokenBalanceWatcher } from '@/hooks/useTokenBalanceWatcher'
 import { TokenIcons } from '@/components/common/TokenIcons'
 import { useField } from '@/hooks/useField'
 import { WalletNativeCoin } from '@/stores/WalletService'
@@ -45,6 +46,10 @@ function Field({
     })
     const formStore = useSwapFormStore()
     const tokensCache = formStore.useTokensCache
+
+    useTokenBalanceWatcher(token, {
+        subscriberPrefix: 'swap-filed',
+    })
 
     return (
         <label className="form-label" htmlFor={props.id}>

@@ -105,7 +105,6 @@ export function TokensList({
                     {(allowMultiple && nativeCoin !== undefined && !query) && (
                         <TokenAndCoinCombinator
                             key="multiple"
-                            allowMultiple={allowMultiple}
                             combinedTokenRoot={combinedTokenRoot}
                             currentToken={currentToken}
                             currentTokenSide={currentTokenSide}
@@ -128,9 +127,7 @@ export function TokensList({
                     {tokens.length > 0 ? tokens.map(token => (
                         <WaypointWrappedItem
                             key={token.root}
-                            disabled={currentToken?.root === combinedTokenRoot
-                                ? false
-                                : currentToken?.root === token.root}
+                            disabled={currentTokenSide !== nativeCoinSide && currentToken?.root === token.root}
                             token={token}
                             onSelect={onSelectToken}
                         />

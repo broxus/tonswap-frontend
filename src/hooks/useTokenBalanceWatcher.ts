@@ -60,11 +60,11 @@ export function useTokenBalanceWatcher(
             ) || '0')
         })
 
-        if (token !== undefined) {
+        if (token?.root !== undefined) {
             (async () => {
                 try {
                     if (syncTokenOnMount) {
-                        await tokensCache.syncToken(token.root)
+                        await tokensCache.syncToken(token.root, true)
                     }
                 }
                 catch (e) {
@@ -72,6 +72,7 @@ export function useTokenBalanceWatcher(
                 }
                 finally {
                     if (watchOnMount && !syncingTokens[`${subscriberPrefix}-${token.root}`]) {
+                        syncingTokens[`${subscriberPrefix}-${token.root}`] = true
                         await tokensCache.watch(token.root, subscriberPrefix)
                     }
                 }
@@ -81,15 +82,12 @@ export function useTokenBalanceWatcher(
         return () => {
             tokenDisposer()
 
-            if (token) {
-                syncingTokens[`${subscriberPrefix}-${token.root}`] = false
-            }
-
-            if (token && unwatchOnUnmount) {
+            if (token?.root !== undefined && unwatchOnUnmount) {
+                syncingTokens[`${subscriberPrefix}-${token?.root}`] = false
                 tokensCache.unwatch(token.root, subscriberPrefix).catch(reason => error(reason))
             }
         }
-    }, [token, token?.wallet])
+    }, [token?.root])
 
     return { value: balance, isFetching: tokensCache.isTokenUpdatingBalance(token?.root) }
 }

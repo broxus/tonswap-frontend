@@ -17,7 +17,6 @@ import './index.scss'
 
 
 type Props = {
-    allowMultiple?: boolean;
     combinedTokenRoot?: string;
     currentToken?: TokenCache;
     currentTokenSide?: TokenSide;
@@ -31,7 +30,6 @@ type Props = {
 
 
 export function TokenAndCoinCombinatorInner({
-    allowMultiple,
     combinedTokenRoot,
     currentToken,
     currentTokenSide,
@@ -63,9 +61,9 @@ export function TokenAndCoinCombinatorInner({
         <div className="popup-list-combined-selector">
             <div
                 className={classNames('popup-item', {
-                    disabled: allowMultiple ? isMultiple : true,
+                    disabled: isMultiple,
                 })}
-                onClick={allowMultiple ? onSelectMultipleSwap : undefined}
+                onClick={onSelectMultipleSwap}
             >
                 <div className="popup-item__left">
                     <div className="popup-item__icon">
