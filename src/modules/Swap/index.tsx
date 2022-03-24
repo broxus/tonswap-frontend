@@ -24,12 +24,14 @@ import { TokensList } from '@/modules/TokensList'
 import { TokenImportPopup } from '@/modules/TokensList/components'
 
 import './index.scss'
+import { sliceAddress } from '@/utils'
 
 
 export function Swap(): JSX.Element {
     const intl = useIntl()
     const formStore = useSwapFormStore()
     const tokensCache = formStore.useTokensCache
+    const wallet = formStore.useWallet
     const form = useSwapForm()
 
     return (
@@ -66,6 +68,7 @@ export function Swap(): JSX.Element {
                                             ? formStore.coin
                                             : undefined}
                                         readOnly={formStore.isSwapping}
+                                        showMaximizeButton={formStore.leftBalanceBN.gt(0)}
                                         token={formStore.leftToken}
                                         value={formStore.leftAmount}
                                         onChange={form.onChangeLeftAmount}
@@ -111,7 +114,7 @@ export function Swap(): JSX.Element {
                             <Observer>
                                 {() => (
                                     <>
-                                        {!formStore.isConversionMode && (
+                                        {(wallet.isConnected && !formStore.isConversionMode) && (
                                             <SwapPrice key="price" />
                                         )}
                                     </>
@@ -153,6 +156,19 @@ export function Swap(): JSX.Element {
                                 slippage={formStore.swap.slippage}
                                 tokens={formStore.route?.tokens}
                             />
+                        )}
+
+                        {process.env.NODE_ENV === 'development' && (
+                            <>
+                                <p>DEBUG</p>
+                                <p>{`mode: ${formStore.exchangeMode}`}</p>
+                                <p>{`is multiple: ${formStore.isMultipleSwapMode}`}</p>
+                                <p>{`is cross-pair: ${formStore.isCrossExchangeMode}`}</p>
+                                <p>{`is cross-pair available: ${formStore.isCrossExchangeAvailable}`}</p>
+                                <p>{`coin side: ${formStore.nativeCoinSide}`}</p>
+                                <p>{`left token: ${formStore.leftToken?.symbol} ${sliceAddress(formStore.leftToken?.root)}`}</p>
+                                <p>{`right token: ${formStore.rightToken?.symbol} ${sliceAddress(formStore.rightToken?.root)}`}</p>
+                            </>
                         )}
                     </>
                 )}

@@ -59,29 +59,29 @@ export function useSwapForm(): SwapFormShape {
         setTokenListVisible(true)
     }
 
-    const updateTokens = async (leftRoot: string, rightRoot: string) => {
-        const isLeftRootValid = isAddressValid(leftRoot)
-        const isRightRootValid = isAddressValid(rightRoot)
-        const isLeftCoin = leftRoot === 'coin'
-        const isRightCoin = rightRoot === 'coin'
+    const prepare = async (leftRoot: string, rightRoot: string) => {
+        const isLeftRootValid = isAddressValid(leftRoot) || isAddressValid(formStore.leftToken?.root)
+        const isRightRootValid = isAddressValid(rightRoot) || isAddressValid(formStore.rightToken?.root)
+        const isLeftCoin = leftRoot === 'coin' || formStore.nativeCoinSide === 'leftToken'
+        const isRightCoin = rightRoot === 'coin' || formStore.nativeCoinSide === 'rightToken'
         const isCombined = leftRoot === 'combined' || (!isLeftRootValid && !isRightRootValid && !isLeftCoin && !isRightCoin)
         const isWrap = isLeftCoin && isRightRootValid && rightRoot === formStore.multipleSwapTokenRoot
         const isUnwrap = isRightCoin && isLeftRootValid && leftRoot === formStore.multipleSwapTokenRoot
 
-        if (isLeftRootValid && isRightRootValid) {
+        if (isLeftRootValid && isRightRootValid && !isLeftCoin && !isRightCoin && !isCombined) {
             formStore.setState({
-                isMultiple: false,
+                isMultiple: formStore.isMultipleSwapMode,
                 nativeCoinSide: undefined,
             })
-            formStore.forceLeftTokenUpdate(leftRoot)
-            formStore.forceRightTokenUpdate(rightRoot)
+            formStore.forceLeftTokenUpdate(leftRoot ?? formStore.leftToken?.root)
+            formStore.forceRightTokenUpdate(rightRoot ?? formStore.rightToken?.root)
         }
         else if (isLeftCoin) {
             formStore.setState({
                 isMultiple: false,
                 nativeCoinSide: 'leftToken',
             })
-            formStore.forceRightTokenUpdate(rightRoot)
+            formStore.forceRightTokenUpdate(rightRoot ?? formStore.rightToken?.root)
             if (isWrap) {
                 formStore.forceLeftTokenUpdate(undefined)
                 formStore.setState('exchangeMode', SwapExchangeMode.WRAP_EVER)
@@ -95,7 +95,7 @@ export function useSwapForm(): SwapFormShape {
                 isMultiple: false,
                 nativeCoinSide: 'rightToken',
             })
-            formStore.forceLeftTokenUpdate(leftRoot)
+            formStore.forceLeftTokenUpdate(leftRoot ?? formStore.leftToken?.root)
             if (isUnwrap) {
                 formStore.forceRightTokenUpdate(undefined)
                 formStore.setState('exchangeMode', SwapExchangeMode.UNWRAP_WEVER)
@@ -108,13 +108,6 @@ export function useSwapForm(): SwapFormShape {
             formStore.forceLeftTokenUpdate(DEFAULT_LEFT_TOKEN_ROOT)
             formStore.forceRightTokenUpdate(rightRoot ?? formStore.rightToken?.root ?? DEFAULT_RIGHT_TOKEN_ROOT)
             formStore.setState('isMultiple', true)
-        }
-
-        if (formStore.leftToken?.root === undefined && formStore.rightToken?.root === undefined) {
-            formStore.forceRightTokenUpdate(DEFAULT_RIGHT_TOKEN_ROOT)
-            formStore.setState('isMultiple', true)
-            await formStore.changeLeftToken(DEFAULT_LEFT_TOKEN_ROOT)
-            return
         }
 
         await formStore.changeLeftToken(formStore.leftToken?.root)
@@ -367,11 +360,23 @@ export function useSwapForm(): SwapFormShape {
 
             // from ever/tip3 to tip3/tip3
             case formStore.nativeCoinSide === 'leftToken':
-                formStore.setState({
-                    exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
-                    nativeCoinSide: undefined,
-                })
-                formStore.setData('leftToken', root)
+                if (root === formStore.rightToken?.root) {
+                    formStore.setState({
+                        exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+                        nativeCoinSide: 'rightToken',
+                    })
+                    formStore.setData({
+                        leftToken: root,
+                        rightToken: formStore.multipleSwapTokenRoot,
+                    })
+                }
+                else {
+                    formStore.setState({
+                        exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+                        nativeCoinSide: undefined,
+                    })
+                    formStore.setData('leftToken', root)
+                }
                 break
 
             // from tip3/ever
@@ -477,11 +482,23 @@ export function useSwapForm(): SwapFormShape {
 
             // from tip3/ever to tip3/tip3
             case formStore.nativeCoinSide === 'rightToken':
-                formStore.setState({
-                    exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
-                    nativeCoinSide: undefined,
-                })
-                formStore.setData('rightToken', root)
+                if (root === formStore.leftToken?.root) {
+                    formStore.setState({
+                        exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+                        nativeCoinSide: 'leftToken',
+                    })
+                    formStore.setData({
+                        leftToken: formStore.multipleSwapTokenRoot,
+                        rightToken: root,
+                    })
+                }
+                else {
+                    formStore.setState({
+                        exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
+                        nativeCoinSide: undefined,
+                    })
+                    formStore.setData('rightToken', root)
+                }
                 break
 
             default:
@@ -501,7 +518,7 @@ export function useSwapForm(): SwapFormShape {
             () => tokensCache.isReady,
             async isReady => {
                 if (isReady) {
-                    await updateTokens(leftTokenRoot, rightTokenRoot)
+                    await prepare(leftTokenRoot, rightTokenRoot)
                 }
             },
             { fireImmediately: true },

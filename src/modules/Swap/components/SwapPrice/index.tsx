@@ -95,8 +95,8 @@ function Price(): JSX.Element | null {
                                         formStore.leftToken.decimals,
                                     )
                                     : '--',
-                                leftSymbol: formStore.leftToken.symbol,
-                                rightSymbol: formStore.rightToken.symbol,
+                                leftSymbol: formStore.nativeCoinSide === 'leftToken' ? formStore.coin.symbol : formStore.leftToken.symbol,
+                                rightSymbol: formStore.nativeCoinSide === 'rightToken' ? formStore.coin.symbol : formStore.rightToken.symbol,
                             }, {
                                 ignoreTag: true,
                             }),
@@ -115,8 +115,8 @@ function Price(): JSX.Element | null {
                                         formStore.rightToken.decimals,
                                     )
                                     : '--',
-                                leftSymbol: formStore.rightToken.symbol,
-                                rightSymbol: formStore.leftToken.symbol,
+                                leftSymbol: formStore.nativeCoinSide === 'rightToken' ? formStore.coin.symbol : formStore.rightToken.symbol,
+                                rightSymbol: formStore.nativeCoinSide === 'leftToken' ? formStore.coin.symbol : formStore.leftToken.symbol,
                             }, {
                                 ignoreTag: true,
                             }),

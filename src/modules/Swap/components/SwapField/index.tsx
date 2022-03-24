@@ -22,6 +22,7 @@ type Props = {
     isValid?: boolean;
     nativeCoin?: WalletNativeCoin;
     readOnly?: boolean;
+    showMaximizeButton?: boolean;
     token?: TokenCache;
     value?: string;
     onChange?: (value: string) => void;
@@ -35,6 +36,7 @@ function Field({
     isMultiple = false,
     isValid = true,
     nativeCoin,
+    showMaximizeButton,
     token,
     ...props
 }: Props): JSX.Element {
@@ -168,7 +170,11 @@ function Field({
                 <div className="form-fieldset__footer">
                     <div className="form-fieldset__footer-label">{props.label}</div>
                     <div className="form-fieldset__footer-inner">
-                        {((token !== undefined || nativeCoin !== undefined) && typeof props.onMaximize === 'function') && (
+                        {(
+                            (token !== undefined || nativeCoin !== undefined)
+                            && typeof props.onMaximize === 'function'
+                            && showMaximizeButton
+                        ) && (
                             <button
                                 key="max-button"
                                 type="button"
