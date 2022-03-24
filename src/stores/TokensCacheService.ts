@@ -456,7 +456,7 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
                         'color: #c5e4f3',
                         event,
                     )
-                    await this.syncToken(root)
+                    await this.syncToken(root, true)
                 })
 
                 this.#tokensBalancesSubscribers.set(key, subscription)

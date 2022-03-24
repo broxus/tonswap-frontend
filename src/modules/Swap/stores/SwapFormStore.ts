@@ -509,7 +509,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
         else {
             this.forcePairUpdate(undefined)
             this.setData('rightToken', root)
-            this.forceLeftAmountUpdate('')
+            // this.forceLeftAmountUpdate('')
             this.#crossPairSwap.setData('routes', [])
         }
 
@@ -858,7 +858,13 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
      * @returns {boolean}
      */
     public get isSwapping(): boolean {
-        return this._swap.isSwapping || this.#crossPairSwap.isSwapping || this.#conversion.isProcessing
+        return (
+            this.#coinSwap.isSwapping
+            || this.#conversion.isProcessing
+            || this.#crossPairSwap.isSwapping
+            || this.#directSwap.isSwapping
+            || this.#multipleSwap.isSwapping
+        )
     }
 
     /**
