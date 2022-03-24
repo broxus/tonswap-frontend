@@ -1188,7 +1188,7 @@ export class SwapFormStore extends BaseSwapStore<BaseSwapStoreData, SwapFormStor
             hash: transaction.id.hash,
             receivedDecimals: this.nativeCoinSide === 'rightToken' ? this.coin.decimals : this.rightTokenDecimals,
             receivedIcon: this.nativeCoinSide === 'rightToken' ? this.coin.icon : this.rightToken?.icon,
-            receivedRoot: this.rightToken?.root,
+            receivedRoot: this.nativeCoinSide === 'rightToken' ? undefined : this.rightToken?.root,
             receivedSymbol: this.nativeCoinSide === 'rightToken' ? this.coin.symbol : this.rightToken?.symbol,
             success: true,
         })
