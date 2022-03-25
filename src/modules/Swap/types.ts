@@ -194,6 +194,7 @@ export type SwapFormStoreState = {
     isCalculating: boolean;
     isConfirmationAwait: boolean;
     isMultiple: boolean;
+    isPreparing: boolean;
     nativeCoinSide?: TokenSide;
     priceDirection: SwapDirection;
 }

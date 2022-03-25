@@ -13,7 +13,13 @@ function SubmitButton(): JSX.Element {
     const tokensCache = formStore.useTokensCache
     const wallet = formStore.useWallet
 
-    if (formStore.isSwapping || formStore.isCalculating || formStore.isLoading || !tokensCache.isReady) {
+    if (
+        formStore.isPreparing
+        || formStore.isSwapping
+        || formStore.isCalculating
+        || formStore.isLoading
+        || !tokensCache.isReady
+    ) {
         return (
             <button
                 type="button"

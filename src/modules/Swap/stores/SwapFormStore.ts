@@ -65,6 +65,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             direction: SwapDirection.LTR,
             exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
             isConfirmationAwait: false,
+            isPreparing: false,
             priceDirection: SwapDirection.LTR,
         })
 
@@ -146,6 +147,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             isCrossExchangeMode: computed,
             isCrossExchangeOnly: computed,
             isConversionMode: computed,
+            isPreparing: computed,
             isWrapMode: computed,
             isUnwrapMode: computed,
             isLoading: computed,
@@ -712,6 +714,14 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      */
     public get isMultipleSwapMode(): SwapFormStoreState['isMultiple'] {
         return this.state.isMultiple
+    }
+
+    /**
+     * Returns memoized preparing state value
+     * @returns {SwapFormStoreState['isPreparing']}
+     */
+    public get isPreparing(): SwapFormStoreState['isPreparing'] {
+        return this.state.isPreparing
     }
 
     /**

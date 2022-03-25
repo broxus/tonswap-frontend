@@ -22,7 +22,6 @@ import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { TokensList } from '@/modules/TokensList'
 import { TokenImportPopup } from '@/modules/TokensList/components'
-import { sliceAddress } from '@/utils'
 
 import './index.scss'
 import { SwapDirection } from '@/modules/Swap/types'
@@ -72,7 +71,7 @@ export function Swap(): JSX.Element {
                                         nativeCoin={(formStore.isMultipleSwapMode || formStore.nativeCoinSide === 'leftToken')
                                             ? formStore.coin
                                             : undefined}
-                                        readOnly={formStore.isSwapping}
+                                        readOnly={formStore.isPreparing || formStore.isSwapping}
                                         showMaximizeButton={formStore.leftBalanceNumber.gt(0)}
                                         token={formStore.leftToken}
                                         value={(
@@ -90,7 +89,11 @@ export function Swap(): JSX.Element {
                                 {() => (
                                     <div
                                         className={classNames('swap-icon', {
-                                            disabled: formStore.isLoading || formStore.isSwapping,
+                                            disabled: (
+                                                formStore.isPreparing
+                                                || formStore.isLoading
+                                                || formStore.isSwapping
+                                            ),
                                         })}
                                         onClick={formStore.isConversionMode
                                             ? form.toggleConversionDirection
@@ -114,7 +117,7 @@ export function Swap(): JSX.Element {
                                             || formStore.isRightAmountValid
                                         )}
                                         nativeCoin={formStore.nativeCoinSide === 'rightToken' ? formStore.coin : undefined}
-                                        readOnly={formStore.isSwapping}
+                                        readOnly={formStore.isPreparing || formStore.isSwapping}
                                         token={formStore.rightToken}
                                         value={(
                                             formStore.isCrossExchangeMode
@@ -129,7 +132,11 @@ export function Swap(): JSX.Element {
                             <Observer>
                                 {() => (
                                     <>
-                                        {(wallet.isConnected && !formStore.isConversionMode) && (
+                                        {(
+                                            wallet.isConnected
+                                            && !formStore.isPreparing
+                                            && !formStore.isConversionMode
+                                        ) && (
                                             <SwapPrice key="price" />
                                         )}
                                     </>
@@ -172,7 +179,7 @@ export function Swap(): JSX.Element {
                                 tokens={formStore.route?.tokens}
                             />
                         )}
-
+                        {/*
                         {process.env.NODE_ENV === 'development' && (
                             <>
                                 <p>DEBUG</p>
@@ -187,6 +194,7 @@ export function Swap(): JSX.Element {
                                 <p>{`pair: ${formStore.pair !== undefined}`}</p>
                             </>
                         )}
+                        */}
                     </>
                 )}
             </Observer>

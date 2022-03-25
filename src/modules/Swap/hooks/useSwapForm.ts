@@ -561,16 +561,20 @@ export function useSwapForm(): SwapFormShape {
         const tokensListDisposer = reaction(
             () => tokensCache.isReady,
             async isReady => {
+                formStore.setState('isPreparing', true)
                 if (isReady) {
-                    await prepare(leftTokenRoot, rightTokenRoot)
+                    try {
+                        await prepare(leftTokenRoot, rightTokenRoot)
+                        await formStore.init()
+                    }
+                    catch (e) {}
+                    finally {
+                        formStore.setState('isPreparing', false)
+                    }
                 }
             },
             { fireImmediately: true, delay: 50 },
-        );
-
-        (async () => {
-            await formStore.init()
-        })()
+        )
 
         return () => {
             tokensListDisposer()
