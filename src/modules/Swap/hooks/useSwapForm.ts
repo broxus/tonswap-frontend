@@ -70,17 +70,7 @@ export function useSwapForm(): SwapFormShape {
         const isWrap = isLeftCoin && rightRoot === formStore.multipleSwapTokenRoot
         const isUnwrap = isRightCoin && leftRoot === formStore.multipleSwapTokenRoot
 
-        if (isLeftRootValid && isRightRootValid && !isLeftCoin && !isRightCoin && !isCombined) {
-            formStore.setState({
-                isMultiple: formStore.isMultipleSwapMode,
-                nativeCoinSide: undefined,
-            })
-            formStore.setData({
-                leftToken: leftRoot ?? formStore.leftToken?.root,
-                rightToken: rightRoot ?? formStore.rightToken?.root,
-            })
-        }
-        else if (isLeftCoin) {
+        if (isLeftCoin) {
             formStore.setState({
                 isMultiple: false,
                 nativeCoinSide: 'leftToken',
@@ -107,6 +97,16 @@ export function useSwapForm(): SwapFormShape {
             else {
                 formStore.setData('rightToken', formStore.multipleSwapTokenRoot)
             }
+        }
+        else if (isLeftRootValid && isRightRootValid && !isLeftCoin && !isRightCoin && !isCombined) {
+            formStore.setState({
+                isMultiple: formStore.isMultipleSwapMode,
+                nativeCoinSide: undefined,
+            })
+            formStore.setData({
+                leftToken: leftRoot ?? formStore.leftToken?.root,
+                rightToken: rightRoot ?? formStore.rightToken?.root,
+            })
         }
         else if (isCombined) {
             formStore.setData({
@@ -565,7 +565,7 @@ export function useSwapForm(): SwapFormShape {
                     await prepare(leftTokenRoot, rightTokenRoot)
                 }
             },
-            { fireImmediately: true },
+            { fireImmediately: true, delay: 50 },
         );
 
         (async () => {

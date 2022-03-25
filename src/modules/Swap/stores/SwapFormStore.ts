@@ -70,8 +70,9 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         this.#conversion = new ConversionStore(wallet, tokensCache, {
             coin: this.coin,
+            safeAmount: options?.multipleSwapFee,
             token: options?.multipleSwapTokenRoot,
-            wrapFee: options?.wrapGas,
+            wrapGas: options?.wrapGas,
         }, {
             onTransactionSuccess: (...args) => this.handleConversionSuccess(...args),
         })
@@ -186,8 +187,8 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
         }
 
         this.#formDisposer = reaction(() => ({
-            coin: this.coin,
             bill: this.data.bill,
+            coin: this.coin,
             leftAmount: this.data.leftAmount,
             leftToken: this.data.leftToken,
             pair: this.data.pair,
@@ -196,6 +197,11 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             slippage: this.data.slippage,
         }), formData => {
             this.#crossPairSwap.setData(cleanObject(formData))
+            this.#conversion.setData({
+                amount: formData.leftAmount,
+                coin: formData.coin,
+                token: this.multipleSwapTokenRoot,
+            })
             this.#coinSwap.setData(cleanObject(formData))
             this.#directSwap.setData(cleanObject(formData))
             this.#multipleSwap.setData(cleanObject(formData))
@@ -304,14 +310,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
     public async maximizeLeftAmount(): Promise<void> {
         let balance = this.leftBalanceNumber
 
-        if (this.isMultipleSwapMode) {
-            balance = balance.minus(new BigNumber(this.options?.multipleSwapFee || 0).shiftedBy(-this.coin.decimals))
-        }
-
-        if (this.isWrapMode) {
-            balance = balance.minus(new BigNumber(this.options?.wrapGas || 0).shiftedBy(-this.coin.decimals))
-        }
-        else if (this.nativeCoinSide === 'leftToken') {
+        if (this.isMultipleSwapMode || this.isWrapMode || this.nativeCoinSide === 'leftToken') {
             balance = balance.minus(new BigNumber(this.options?.multipleSwapFee || 0).shiftedBy(-this.coin.decimals))
         }
 

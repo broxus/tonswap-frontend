@@ -62,7 +62,7 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
 
         try {
             const wrappedAmount = new BigNumber(this.amount ?? 0).shiftedBy(this.coin.decimals)
-            const amount = wrappedAmount.plus(this.initialData?.wrapFee ?? 0).toFixed()
+            const amount = wrappedAmount.plus(this.initialData?.wrapGas ?? 0).toFixed()
 
             this.setState('isProcessing', true)
 
@@ -192,9 +192,9 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
 
         const amount = new BigNumber(this.amount || 0)
         const balance = new BigNumber(this.wallet.balance || 0).shiftedBy(-this.coin.decimals)
-        const fee = new BigNumber(this.initialData?.wrapFee ?? 0).shiftedBy(-this.coin.decimals)
+        const safeAmount = new BigNumber(this.initialData?.safeAmount ?? 0).shiftedBy(-this.coin.decimals)
 
-        return isGoodBignumber(amount) && balance.minus(fee).lt(amount)
+        return isGoodBignumber(amount) && balance.minus(safeAmount).lt(amount)
     }
 
     public get isInsufficientUnwrapBalance(): boolean {

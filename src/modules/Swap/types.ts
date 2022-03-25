@@ -277,8 +277,9 @@ export type CrossPairSwapTransactionCallbacks = TransactionCallbacks<
 
 export type ConversionStoreInitialData = {
     coin?: WalletNativeCoin;
+    safeAmount?: string;
     token?: string;
-    wrapFee?: string;
+    wrapGas?: string;
 }
 
 export interface ConversionStoreData extends Exclude<ConversionStoreInitialData, 'wrapFee'> {
