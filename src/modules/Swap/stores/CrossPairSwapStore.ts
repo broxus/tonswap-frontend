@@ -410,6 +410,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
             rightAmount: '',
             route: undefined,
         })
+        this.finalizeCalculation()
     }
 
     /**

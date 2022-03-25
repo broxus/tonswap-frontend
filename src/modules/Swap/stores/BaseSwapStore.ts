@@ -252,17 +252,11 @@ export class BaseSwapStore<
      */
     public get isEnoughLiquidity(): boolean {
         if (isGoodBignumber(this.rightAmountNumber)) {
-            return this.rightAmountNumber.lt(
-                this.isPairInverted
-                    ? this.pairLeftBalanceNumber
-                    : this.pairRightBalanceNumber,
-            )
+            const pairRightBalanceBN = this.isPairInverted ? this.pairLeftBalanceNumber : this.pairRightBalanceNumber
+            return this.rightAmountNumber.lt(pairRightBalanceBN.shiftedBy(this.rightTokenDecimals))
         }
 
-        return (
-            !this.pairLeftBalanceNumber.isZero()
-            && !this.pairRightBalanceNumber.isZero()
-        )
+        return !this.pairLeftBalanceNumber.isZero() && !this.pairRightBalanceNumber.isZero()
     }
 
     /**

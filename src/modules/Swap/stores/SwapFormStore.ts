@@ -37,7 +37,6 @@ import type { WalletNativeCoin } from '@/stores/WalletService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import {
-    cleanObject,
     debounce,
     debug,
     formattedBalance,
@@ -198,15 +197,15 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             rightToken: this.data.rightToken,
             slippage: this.data.slippage,
         }), formData => {
-            this.#crossPairSwap.setData(cleanObject(formData))
+            this.#crossPairSwap.setData(formData)
             this.#conversion.setData({
                 amount: formData.leftAmount,
                 coin: formData.coin,
                 token: this.multipleSwapTokenRoot,
             })
-            this.#coinSwap.setData(cleanObject(formData))
-            this.#directSwap.setData(cleanObject(formData))
-            this.#multipleSwap.setData(cleanObject(formData))
+            this.#coinSwap.setData(formData)
+            this.#directSwap.setData(formData)
+            this.#multipleSwap.setData(formData)
         }, { fireImmediately: true })
 
         this.#tokensCacheDisposer = reaction(
@@ -634,13 +633,6 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             }
         }
 
-        // setTimeout(() => {
-        //     this.setData({
-        //         leftAmount: this.swap.leftAmount || this.leftAmount,
-        //         rightAmount: this.swap.rightAmount || this.rightAmount,
-        //     })
-        // }, 0)
-
         this.setState('isCalculating', false)
 
         if (!this.isCrossExchangeOnly) {
@@ -652,7 +644,6 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
         }
 
         debug('Recalculated. Stores data', this, this.currentSwap, this.#crossPairSwap)
-
     }
 
     /**
