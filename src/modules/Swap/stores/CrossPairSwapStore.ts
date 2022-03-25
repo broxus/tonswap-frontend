@@ -1,4 +1,6 @@
-import { computed, makeObservable, toJS } from 'mobx'
+import {
+    computed, makeObservable, override, toJS,
+} from 'mobx'
 import BigNumber from 'bignumber.js'
 import { Address, Subscriber } from 'everscale-inpage-provider'
 import * as E from 'fp-ts/Either'
@@ -58,29 +60,21 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
 
         this.setData({
             crossPairs: [],
-            directBill: DEFAULT_SWAP_BILL,
-            leftAmount: initialData?.leftAmount ?? '',
-            leftToken: initialData?.leftToken,
-            rightAmount: initialData?.rightAmount ?? '',
-            rightToken: initialData?.rightToken,
             routes: [],
-            slippage: initialData?.slippage ?? DEFAULT_SLIPPAGE_VALUE,
         })
 
         this.setState({
-            isCalculating: false,
             isPreparing: false,
-            isSwapping: false,
         })
 
         makeObservable(this, {
-            amount: computed,
-            expectedAmount: computed,
-            fee: computed,
-            minExpectedAmount: computed,
-            priceImpact: computed,
-            priceLeftToRight: computed,
-            priceRightToLeft: computed,
+            amount: override,
+            expectedAmount: override,
+            fee: override,
+            minExpectedAmount: override,
+            priceImpact: override,
+            priceLeftToRight: override,
+            priceRightToLeft: override,
             route: computed,
             routes: computed,
         })
@@ -119,7 +113,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
         this.setState('isPreparing', true)
 
         try {
-            response = await this.loadCrossPairs()
+            response = await this.fetchCrossPairs()
         }
         catch (e) {
             error('Load cross-pairs error', e)
@@ -540,7 +534,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
             ? new BigNumber(currentRoute.bill.amount || 0)
             : this.leftAmountNumber
         const isAmountDecreased = prevAmountBN.gt(this.leftAmountNumber)
-        const directExpectedAmount = new BigNumber(this.data.directBill.expectedAmount || 0)
+        const directExpectedAmount = new BigNumber(this.data.bill.expectedAmount || 0)
         let bestExpectedAmount = new BigNumber(
                 isAmountDecreased ? 0 : (currentRoute?.bill.expectedAmount || 0),
             ),
@@ -776,7 +770,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
             ? new BigNumber(currentRoute.bill.amount || 0)
             : this.rightAmountNumber
         const isAmountDecreased = prevAmountBN.gte(this.rightAmountNumber)
-        const directAmount = new BigNumber(this.data.directBill.amount || 0)
+        const directAmount = new BigNumber(this.data.bill.amount || 0)
         let bestAmount = new BigNumber(
                 isAmountDecreased ? 0 : (currentRoute?.bill.amount || 0),
             ),
@@ -857,10 +851,13 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
         )
     }
 
+    /**
+     *
+     */
     public reset(): void {
         this.setData({
             crossPairs: [],
-            directBill: DEFAULT_SWAP_BILL,
+            bill: DEFAULT_SWAP_BILL,
             leftAmount: '',
             leftToken: undefined,
             pair: undefined,
@@ -877,6 +874,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
             isPreparing: false,
         })
     }
+
 
     /*
      * Memoized store data and state values
@@ -1177,7 +1175,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
      * Filter by TVl value which greater or equal $100000.
      * @protected
      */
-    protected async loadCrossPairs(): Promise<PairsResponse[] | undefined> {
+    protected async fetchCrossPairs(): Promise<PairsResponse[] | undefined> {
         if (this.leftToken === undefined || this.rightToken === undefined) {
             return undefined
         }

@@ -3,17 +3,22 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
-import { useWallet } from '@/stores/WalletService'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { SwapDirection } from '@/modules/Swap/types'
 
 
 function SubmitButton(): JSX.Element {
     const intl = useIntl()
-    const wallet = useWallet()
     const formStore = useSwapFormStore()
+    const tokensCache = formStore.useTokensCache
+    const wallet = formStore.useWallet
 
-    if (formStore.isSwapping || formStore.isCalculating) {
+    if (
+        formStore.isSwapping
+        || formStore.isCalculating
+        || formStore.isLoading
+        || !tokensCache.isReady
+    ) {
         return (
             <button
                 type="button"

@@ -3,16 +3,17 @@ import { useIntl } from 'react-intl'
 
 import { Icon } from '@/components/common/Icon'
 import { TokenCache } from '@/stores/TokensCacheService'
+import { WalletNativeCoin } from '@/stores/WalletService'
 import { formattedTokenAmount } from '@/utils'
 
 type Props = {
     fee?: string;
     isCrossExchangeAvailable: boolean;
     isCrossExchangeMode: boolean;
-    leftToken?: TokenCache;
+    leftToken?: TokenCache | WalletNativeCoin;
     minExpectedAmount?: string;
     priceImpact?: string;
-    rightToken?: TokenCache;
+    rightToken?: TokenCache | WalletNativeCoin;
     slippage?: string;
     tokens?: TokenCache[];
 }

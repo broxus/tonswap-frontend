@@ -15,9 +15,8 @@ function SubmitButton(): JSX.Element {
 
     if (
         formStore.isSwapping
-        || formStore.isLoading
         || formStore.isCalculating
-        || tokensCache.isFetching
+        || formStore.isLoading
         || !tokensCache.isReady
     ) {
         return (

@@ -32,8 +32,8 @@ export class MultipleSwapStore extends CoinSwapStore {
 
         makeObservable(this, {
             combinedBalanceNumber: computed,
+            isEnoughCombinedBalance: computed,
             isEnoughTokenBalance: computed,
-            isEnoughCoinBalance: override,
             isLeftAmountValid: override,
             isValid: override,
         })

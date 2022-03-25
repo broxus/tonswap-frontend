@@ -14,7 +14,6 @@ import type {
     CoinSwapStoreInitialData,
     CoinSwapSuccessResult,
     CoinSwapTransactionCallbacks,
-    DirectSwapStoreData,
 } from '@/modules/Swap/types'
 
 
@@ -32,7 +31,6 @@ export class CoinSwapStore extends DirectSwapStore {
         super(wallet, tokensCache, initialData)
 
         makeObservable(this, {
-            coin: computed,
             isEnoughCoinBalance: computed,
             isLeftAmountValid: override,
             isValid: override,
@@ -41,6 +39,16 @@ export class CoinSwapStore extends DirectSwapStore {
         this.#transactionSubscriber = new rpc.Subscriber()
     }
 
+
+    /*
+     * Public actions. Useful in UI
+     * ----------------------------------------------------------------------------------
+     */
+
+    /**
+     *
+     * @param way
+     */
     public async submit(way: 'fromCoinToTip3' | 'fromTip3ToCoin'): Promise<void> {
         switch (way) {
             case 'fromCoinToTip3':
@@ -55,10 +63,15 @@ export class CoinSwapStore extends DirectSwapStore {
         }
     }
 
-    public get coin(): DirectSwapStoreData['coin'] {
-        return this.data.coin
-    }
 
+    /*
+     * Computed values
+     * ----------------------------------------------------------------------------------
+     */
+
+    /**
+     *
+     */
     public get isEnoughCoinBalance(): boolean {
         const balance = new BigNumber(this.coin.balance ?? 0).shiftedBy(-this.coin.decimals)
         const fee = new BigNumber(this.initialData?.swapFee ?? 0).shiftedBy(-this.coin.decimals)
@@ -68,6 +81,16 @@ export class CoinSwapStore extends DirectSwapStore {
         )
     }
 
+
+    /*
+     * Internal and external utilities methods
+     * ----------------------------------------------------------------------------------
+     */
+
+    /**
+     *
+     * @protected
+     */
     protected async swapCoinToTip3(): Promise<void> {
         if (!this.isValid) {
             this.setState('isSwapping', false)
@@ -181,6 +204,10 @@ export class CoinSwapStore extends DirectSwapStore {
         }
     }
 
+    /**
+     *
+     * @protected
+     */
     protected async swapTip3ToCoin(): Promise<void> {
         if (!this.isValid) {
             this.setState('isSwapping', false)

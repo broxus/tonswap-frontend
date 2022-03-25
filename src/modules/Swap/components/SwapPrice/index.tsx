@@ -89,9 +89,9 @@ function Price(): JSX.Element | null {
                             __html: intl.formatMessage({
                                 id: 'SWAP_PRICE_RESULT',
                             }, {
-                                value: formStore.swap.priceLeftToRight !== undefined
+                                value: formStore.priceLeftToRight !== undefined
                                     ? formattedTokenAmount(
-                                        formStore.swap.priceLeftToRight,
+                                        formStore.priceLeftToRight,
                                         formStore.leftToken.decimals,
                                     )
                                     : '--',
@@ -109,9 +109,9 @@ function Price(): JSX.Element | null {
                             __html: intl.formatMessage({
                                 id: 'SWAP_PRICE_RESULT',
                             }, {
-                                value: formStore.swap.priceRightToLeft !== undefined
+                                value: formStore.priceRightToLeft !== undefined
                                     ? formattedTokenAmount(
-                                        formStore.swap.priceRightToLeft,
+                                        formStore.priceRightToLeft,
                                         formStore.rightToken.decimals,
                                     )
                                     : '--',

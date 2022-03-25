@@ -184,6 +184,10 @@ export type SwapFailureResult = {
     step?: SwapRouteResult;
 }
 
+export interface SwapFormStoreData extends BaseSwapStoreData {
+    pair?: SwapPair;
+}
+
 export type SwapFormStoreState = {
     direction: SwapDirection;
     exchangeMode: SwapExchangeMode;
@@ -203,11 +207,17 @@ export interface BaseSwapStoreInitialData {
 }
 
 export interface BaseSwapStoreData extends BaseSwapStoreInitialData {
+    bill: SwapBill;
+    pair?: SwapPair;
+    priceLeftToRight?: string;
+    priceRightToLeft?: string;
     transaction?: SwapTransactionReceipt | undefined;
 }
 
 export interface BaseSwapStoreState {
     isCalculating: boolean;
+    isLowTvl: boolean;
+    isPairChecking: boolean;
     isSwapping: boolean;
 }
 
@@ -216,16 +226,7 @@ export interface DirectSwapStoreInitialData extends BaseSwapStoreInitialData {
 }
 
 export interface DirectSwapStoreData extends BaseSwapStoreData {
-    bill: SwapBill;
     coin: WalletNativeCoin;
-    pair?: SwapPair;
-    priceLeftToRight?: string;
-    priceRightToLeft?: string;
-}
-
-export interface DirectSwapStoreState extends BaseSwapStoreState {
-    isLowTvl: boolean;
-    isPairChecking: boolean;
 }
 
 export type DirectTransactionSuccessResult = TransactionSuccessResult<DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairExchangeSuccess'>>
@@ -252,8 +253,8 @@ export type CoinSwapFailureResult =
 export type CoinSwapTransactionCallbacks = TransactionCallbacks<CoinSwapSuccessResult, CoinSwapFailureResult>
 
 export interface CrossPairSwapStoreData extends BaseSwapStoreData {
+    bill: SwapBill;
     crossPairs: SwapPair[];
-    directBill: SwapBill;
     pair?: SwapPair;
     route?: SwapRoute;
     routes: SwapRoute[];

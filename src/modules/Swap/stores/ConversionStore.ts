@@ -41,10 +41,8 @@ export class ConversionStore extends BaseStore<ConversionStoreData, ConversionSt
         })
 
         makeObservable(this, {
-            amount: computed,
             wrappedAmount: computed,
             unwrappedAmount: computed,
-            coin: computed,
             token: computed,
             txHash: computed,
             isWrapAmountValid: computed,
