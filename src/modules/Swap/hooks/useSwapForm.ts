@@ -306,6 +306,7 @@ export function useSwapForm(): SwapFormShape {
                 })
                 formStore.setData({
                     leftToken: formStore.multipleSwapTokenRoot,
+                    rightAmount: formStore.leftAmount,
                     rightToken: undefined,
                 })
                 break
@@ -472,10 +473,10 @@ export function useSwapForm(): SwapFormShape {
                         nativeCoinSide: 'leftToken',
                     })
                     formStore.setData({
+                        rightAmount: formStore.leftAmount,
                         leftToken: undefined,
                         rightToken: root,
                     })
-                    // formStore.forceRightAmountUpdate(formStore.leftAmount)
                 }
                 else { // to new tip3
                     formStore.setData('rightToken', root)

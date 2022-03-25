@@ -20,11 +20,11 @@ import {
 } from '@/modules/Swap/components'
 import { useSwapForm } from '@/modules/Swap/hooks/useSwapForm'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
+import { SwapDirection } from '@/modules/Swap/types'
 import { TokensList } from '@/modules/TokensList'
 import { TokenImportPopup } from '@/modules/TokensList/components'
 
 import './index.scss'
-import { SwapDirection } from '@/modules/Swap/types'
 
 
 export function Swap(): JSX.Element {
