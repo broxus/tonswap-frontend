@@ -314,7 +314,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         await this.changeLeftAmount(balance.toFixed(), debounce(async () => {
             if (this.isConversionMode) {
-                this.setData('leftAmount', this.leftAmount)
+                this.setData('rightAmount', this.leftAmount)
             }
             else {
                 await this.recalculate(!this.isCalculating)
