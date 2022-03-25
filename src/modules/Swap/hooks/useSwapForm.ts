@@ -208,6 +208,7 @@ export function useSwapForm(): SwapFormShape {
 
     const onChangeLeftAmount: SwapFormShape['onChangeLeftAmount'] = value => {
         if (formStore.isConversionMode) {
+            formStore.setData('leftAmount', value)
             debouncedRightAmount(value)
         }
         else {
@@ -217,6 +218,7 @@ export function useSwapForm(): SwapFormShape {
 
     const onChangeRightAmount: SwapFormShape['onChangeRightAmount'] = value => {
         if (formStore.isConversionMode) {
+            formStore.setData('rightAmount', value)
             debouncedLeftAmount(value)
         }
         else {

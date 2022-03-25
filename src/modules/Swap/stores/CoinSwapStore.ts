@@ -77,7 +77,7 @@ export class CoinSwapStore extends DirectSwapStore {
         const fee = new BigNumber(this.initialData?.swapFee ?? 0).shiftedBy(-this.coin.decimals)
         return (
             isGoodBignumber(this.leftAmountNumber)
-            && this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals).lt(balance.minus(fee))
+            && this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals).lte(balance.minus(fee))
         )
     }
 
@@ -92,7 +92,7 @@ export class CoinSwapStore extends DirectSwapStore {
      * @protected
      */
     protected async swapCoinToTip3(): Promise<void> {
-        if (!this.isValid) {
+        if (!this.isValidCoinToTip3) {
             this.setState('isSwapping', false)
             return
         }
@@ -209,7 +209,7 @@ export class CoinSwapStore extends DirectSwapStore {
      * @protected
      */
     protected async swapTip3ToCoin(): Promise<void> {
-        if (!this.isValid) {
+        if (!this.isValidTip3ToCoin) {
             this.setState('isSwapping', false)
         }
 
@@ -318,6 +318,36 @@ export class CoinSwapStore extends DirectSwapStore {
             error('decodeTransaction error: ', e)
             this.setState('isSwapping', false)
         }
+    }
+
+    /**
+     * Returns `true` if all data and bill is valid, otherwise `false`.
+     * @returns {boolean}
+     */
+    public get isValidCoinToTip3(): boolean {
+        return (
+            this.isEnoughCoinBalance
+            && this.wallet.account?.address !== undefined
+            && new BigNumber(this.amount || 0).gt(0)
+            && new BigNumber(this.expectedAmount || 0).gt(0)
+            && new BigNumber(this.minExpectedAmount || 0).gt(0)
+        )
+    }
+
+    /**
+     * Returns `true` if all data and bill is valid, otherwise `false`.
+     * @returns {boolean}
+     */
+    public get isValidTip3ToCoin(): boolean {
+        return (
+            this.wallet.account?.address !== undefined
+            && this.leftToken?.wallet !== undefined
+            && this.leftTokenAddress !== undefined
+            && new BigNumber(this.amount || 0).gt(0)
+            && new BigNumber(this.expectedAmount || 0).gt(0)
+            && new BigNumber(this.minExpectedAmount || 0).gt(0)
+            && new BigNumber(this.leftToken?.balance || 0).gte(this.amount || 0)
+        )
     }
 
     /**

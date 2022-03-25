@@ -9,7 +9,7 @@ import { DEFAULT_SWAP_BILL } from '@/modules/Swap/constants'
 import { BaseSwapStore } from '@/modules/Swap/stores/BaseSwapStore'
 import { TokensCacheService } from '@/stores/TokensCacheService'
 import { WalletService } from '@/stores/WalletService'
-import { error, isGoodBignumber } from '@/utils'
+import { error } from '@/utils'
 import type {
     BaseSwapStoreState,
     DirectSwapStoreData,
@@ -215,10 +215,10 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, BaseSwap
             && this.pair?.contract !== undefined
             && this.leftToken?.wallet !== undefined
             && this.leftTokenAddress !== undefined
-            && isGoodBignumber(this.amount || 0)
-            && isGoodBignumber(this.expectedAmount || 0)
-            && isGoodBignumber(this.minExpectedAmount || 0)
-            && isGoodBignumber(this.leftAmount || 0)
+            && new BigNumber(this.amount || 0).gt(0)
+            && new BigNumber(this.expectedAmount || 0).gt(0)
+            && new BigNumber(this.minExpectedAmount || 0).gt(0)
+            && new BigNumber(this.leftToken.balance || 0).gte(this.amount || 0)
         )
     }
 

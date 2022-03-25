@@ -13,12 +13,7 @@ function SubmitButton(): JSX.Element {
     const tokensCache = formStore.useTokensCache
     const wallet = formStore.useWallet
 
-    if (
-        formStore.isSwapping
-        || formStore.isCalculating
-        || formStore.isLoading
-        || !tokensCache.isReady
-    ) {
+    if (formStore.isSwapping || formStore.isCalculating || formStore.isLoading || !tokensCache.isReady) {
         return (
             <button
                 type="button"
@@ -87,14 +82,14 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case formStore.swap.isValid:
+        case formStore.isValid:
             buttonProps.onClick = () => {
                 formStore.setState('isConfirmationAwait', true)
             }
             break
 
         default:
-            buttonProps.disabled = !formStore.swap.isValid || formStore.isLoading
+            buttonProps.disabled = !formStore.isValid || formStore.isLoading
     }
 
     return (

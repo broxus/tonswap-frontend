@@ -64,7 +64,11 @@ export function Swap(): JSX.Element {
                                         disabled={formStore.isLoading || formStore.isSwapping}
                                         id="leftField"
                                         isMultiple={formStore.isMultipleSwapMode}
-                                        isValid={formStore.isSwapping || formStore.isLeftAmountValid}
+                                        isValid={(
+                                            formStore.isLoading
+                                            || formStore.isSwapping
+                                            || formStore.isLeftAmountValid
+                                        )}
                                         nativeCoin={(formStore.isMultipleSwapMode || formStore.nativeCoinSide === 'leftToken')
                                             ? formStore.coin
                                             : undefined}
@@ -104,7 +108,11 @@ export function Swap(): JSX.Element {
                                         balance={formStore.formattedRightBalance}
                                         disabled={formStore.isLoading || formStore.isSwapping}
                                         id="rightField"
-                                        isValid={formStore.isRightAmountValid}
+                                        isValid={(
+                                            formStore.isLoading
+                                            || formStore.isSwapping
+                                            || formStore.isRightAmountValid
+                                        )}
                                         nativeCoin={formStore.nativeCoinSide === 'rightToken' ? formStore.coin : undefined}
                                         readOnly={formStore.isSwapping}
                                         token={formStore.rightToken}

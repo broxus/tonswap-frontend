@@ -9,7 +9,12 @@ import {
 } from 'mobx'
 
 import { DexConstants } from '@/misc'
-import { DEFAULT_LEFT_TOKEN_ROOT, DEFAULT_RIGHT_TOKEN_ROOT, DEFAULT_SLIPPAGE_VALUE } from '@/modules/Swap/constants'
+import {
+    DEFAULT_LEFT_TOKEN_ROOT,
+    DEFAULT_RIGHT_TOKEN_ROOT,
+    DEFAULT_SLIPPAGE_VALUE,
+    DEFAULT_SWAP_BILL,
+} from '@/modules/Swap/constants'
 import { BaseSwapStore } from '@/modules/Swap/stores/BaseSwapStore'
 import { CoinSwapStore } from '@/modules/Swap/stores/CoinSwapStore'
 import { ConversionStore } from '@/modules/Swap/stores/ConversionStore'
@@ -135,6 +140,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             isConfirmationAwait: computed,
             isMultipleSwapMode: computed,
             multipleSwapTokenRoot: computed,
+            isCalculating: override,
             isCrossExchangeAvailable: computed,
             isCrossExchangeMode: computed,
             isCrossExchangeOnly: computed,
@@ -282,6 +288,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
         })
         this.setState({
             direction: SwapDirection.LTR,
+            exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
             isConfirmationAwait: false,
             priceDirection: SwapDirection.LTR,
         })
@@ -338,9 +345,10 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         this.setData('leftAmount', value)
 
+        this.forceInvalidate()
+
         if (value.length === 0) {
             this.setData('rightAmount', '')
-            this.forceInvalidate()
             if (this.pair !== undefined && !this.isLowTvl) {
                 this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
             }
@@ -365,9 +373,10 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         this.setData('rightAmount', value)
 
+        this.forceInvalidate()
+
         if (value.length === 0) {
             this.setData('leftAmount', '')
-            this.forceInvalidate()
             if (this.pair !== undefined && !this.isLowTvl) {
                 this.setState('exchangeMode', SwapExchangeMode.DIRECT_EXCHANGE)
             }
@@ -624,12 +633,12 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             }
         }
 
-        setTimeout(() => {
-            this.setData({
-                leftAmount: this.swap.leftAmount || this.leftAmount,
-                rightAmount: this.swap.rightAmount || this.rightAmount,
-            })
-        }, 0)
+        // setTimeout(() => {
+        //     this.setData({
+        //         leftAmount: this.swap.leftAmount || this.leftAmount,
+        //         rightAmount: this.swap.rightAmount || this.rightAmount,
+        //     })
+        // }, 0)
 
         this.setState('isCalculating', false)
 
@@ -720,12 +729,16 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      * ----------------------------------------------------------------------------------
      */
 
+    public get isCalculating(): boolean {
+        return this.state.isCalculating || this.swap.isCalculating || this.crossPairSwap.isCalculating
+    }
+
     /**
      * Returns `true` if cross-pair exchange is available for current pair.
      * @returns {boolean}
      */
     public get isCrossExchangeAvailable(): boolean {
-        return this.#crossPairSwap.routes.length > 0
+        return this.crossPairSwap.routes.length > 0
     }
 
     /**
@@ -784,7 +797,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      * @returns {boolean}
      */
     public get isLoading(): boolean {
-        return this.tokensCache.isFetching || this.isPairChecking || this.#crossPairSwap.isPreparing
+        return this.tokensCache.isFetching || this.isPairChecking || this.crossPairSwap.isPreparing
     }
 
     /**
@@ -839,6 +852,61 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             return this.isEnoughLiquidity
         }
         return true
+    }
+
+    /**
+     * Returns `true` if all data and bill is valid, otherwise `false`.
+     * @returns {boolean}
+     */
+    public get isValid(): boolean {
+        switch (true) {
+            case this.isWrapMode:
+                return this.conversion.isWrapValid
+
+            case this.isUnwrapMode:
+                return this.conversion.isWrapValid
+
+            case this.isCrossExchangeMode:
+                return this.crossPairSwap.isValid
+
+            case this.isMultipleSwapMode:
+                return (
+                    this.isEnoughLiquidity
+                    && (
+                        this.multipleSwap.isEnoughTokenBalance
+                        || this.multipleSwap.isEnoughCoinBalance
+                        || this.multipleSwap.isEnoughCombinedBalance
+                    )
+                    && this.wallet.account?.address !== undefined
+                    && this.pair?.address !== undefined
+                    && this.pair?.contract !== undefined
+                    && this.leftToken?.wallet !== undefined
+                    && this.leftTokenAddress !== undefined
+                    && isGoodBignumber(this.multipleSwap.amount || 0)
+                    && isGoodBignumber(this.multipleSwap.expectedAmount || 0)
+                    && isGoodBignumber(this.multipleSwap.minExpectedAmount || 0)
+                )
+
+            case this.nativeCoinSide === 'leftToken':
+                return this.#coinSwap.isValidCoinToTip3
+
+            case this.nativeCoinSide === 'rightToken':
+                return this.#coinSwap.isValidTip3ToCoin
+
+            default:
+                return (
+                    this.isEnoughLiquidity
+                    && this.wallet.account?.address !== undefined
+                    && this.pair?.address !== undefined
+                    && this.pair?.contract !== undefined
+                    && this.leftToken?.wallet !== undefined
+                    && this.leftTokenAddress !== undefined
+                    && new BigNumber(this.amount || 0).gt(0)
+                    && new BigNumber(this.expectedAmount || 0).gt(0)
+                    && new BigNumber(this.minExpectedAmount || 0).gt(0)
+                    && new BigNumber(this.leftToken.balance || 0).gte(this.amount || 0)
+                )
+        }
     }
 
     /**
@@ -943,6 +1011,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      * Invalidate partial data of the internal stores
      */
     public forceInvalidate(): void {
+        this.setData('bill', DEFAULT_SWAP_BILL)
         this.#crossPairSwap.forceInvalidate()
         this.#directSwap.forceInvalidate()
         this.#multipleSwap.forceInvalidate()

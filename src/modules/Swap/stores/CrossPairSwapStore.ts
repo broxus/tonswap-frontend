@@ -406,6 +406,8 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
      */
     public forceInvalidate(): void {
         this.setData({
+            leftAmount: '',
+            rightAmount: '',
             route: undefined,
         })
     }
@@ -997,6 +999,8 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
     public get isValid(): boolean {
         return (
             this.wallet.account?.address !== undefined
+            && this.routes.length > 0
+            && this.route !== undefined
             && this.leftToken?.wallet !== undefined
             && this.leftTokenAddress !== undefined
             && new BigNumber(this.amount || 0).gt(0)

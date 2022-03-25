@@ -17,7 +17,7 @@ export default {
     WALLET_UPDATING_POPUP_NOTE: '<p>Your wallet version is too old. Please update extension at <a href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a> or local, through chrome://extensions/.</p><p>Reload this page after installing the update.</p>',
     WALLET_UPDATING_LINK_TEXT: 'Update EVER Wallet',
     WALLET_INSTALLATION_LINK_TEXT: 'Install EVER Wallet',
-    WALLET_INSTALLATION_NOTE: '<p>At the moment, only EVER Wallet supports FlatQube.</p><p>If you haven’t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/category/extensions" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
+    WALLET_INSTALLATION_NOTE: '<p>At the moment, only EVER Wallet supports FlatQube.</p><p>If you haven’t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
 
     WALLET_BALANCE_HINT: '{balance} {currency}',
     WALLET_BTN_TEXT_CONNECT: 'Connect to a wallet',
