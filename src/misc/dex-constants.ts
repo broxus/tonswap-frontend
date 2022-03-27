@@ -16,13 +16,11 @@ export class DexConstants {
 
     static DexRootAddress = new AddressLiteral('0:5eb5713ea9b4a0f3a13bc91b282cde809636eb1e68d2fcb6427b9ad78a5a9008')
 
-    static DexVaultAddress = new AddressLiteral('0:6fa537fa97adf43db0206b5bec98eb43474a9836c016a190ac8b792feb852230')
-
-    static EverToTip3Address = new AddressLiteral('0:963f7adb8cc1518b872ae83fbf5069d9775f4865915d96edc99109fc125f9f9d')
+    static EverToTip3Address = new AddressLiteral('0:b59144e1333e7f8a564e35adeaa93653ab4cebeb2c41651601de1c40a4040350')
 
     static Tip3ToEverAddress = new AddressLiteral('0:4d7dbf7a62cf329bf74260c66028e2381b58cce96b13acc8524dda2358ee88c5')
 
-    static EverWeverToTip3Address = new AddressLiteral('0:1240ad60a5f6dd1c1b67fb2f5a16490664d93ac1d82a1d4025a936c13fb46d1b')
+    static EverWeverToTip3Address = new AddressLiteral('0:51600c4c30911f92fee1f9acde1765d6ed1eb0cc2ac3db1758ff222b11f27401')
 
     static WeverVaultAddress = new AddressLiteral('0:557957cba74ab1dc544b4081be81f1208ad73997d74ab3b72d95864a41b779a4')
 
