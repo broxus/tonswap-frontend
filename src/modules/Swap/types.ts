@@ -188,17 +188,6 @@ export interface SwapFormStoreData extends BaseSwapStoreData {
     pair?: SwapPair;
 }
 
-export type SwapFormStoreState = {
-    direction: SwapDirection;
-    exchangeMode: SwapExchangeMode;
-    isCalculating: boolean;
-    isConfirmationAwait: boolean;
-    isMultiple: boolean;
-    isPreparing: boolean;
-    nativeCoinSide?: TokenSide;
-    priceDirection: SwapDirection;
-}
-
 export interface BaseSwapStoreInitialData {
     leftAmount: string;
     leftToken?: string;
@@ -302,4 +291,14 @@ export type ConversionTransactionResponse = {
 export type ConversionTransactionCallbacks = {
     onTransactionSuccess?: (response: ConversionTransactionResponse) => void;
     onTransactionFailure?: (reason: unknown) => void;
+}
+
+export interface SwapFormStoreState extends BaseSwapStoreState {
+    direction: SwapDirection;
+    exchangeMode: SwapExchangeMode;
+    isConfirmationAwait: boolean;
+    isMultiple: boolean;
+    isPreparing: boolean;
+    nativeCoinSide?: TokenSide;
+    priceDirection: SwapDirection;
 }

@@ -55,11 +55,7 @@ export class DirectSwapStore extends BaseSwapStore<DirectSwapStoreData, BaseSwap
      * Invalidate bills data and recalculate
      */
     public forceInvalidate(): void {
-        this.setData({
-            bill: DEFAULT_SWAP_BILL,
-            priceLeftToRight: undefined,
-            priceRightToLeft: undefined,
-        })
+        this.setData('bill', DEFAULT_SWAP_BILL)
         this.finalizeCalculation()
     }
 

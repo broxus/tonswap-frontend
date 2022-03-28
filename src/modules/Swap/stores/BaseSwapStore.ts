@@ -62,13 +62,8 @@ export class BaseSwapStore<
 
         makeObservable<
             BaseSwapStore<T, U>,
-            | 'isPairInverted'
-            | 'pairLeftBalanceNumber'
-            | 'pairRightBalanceNumber'
-            | 'leftAmountNumber'
             | 'leftTokenAddress'
             | 'rightTokenAddress'
-            | 'rightAmountNumber'
         >(this, {
             amount: computed,
             expectedAmount: computed,
@@ -252,8 +247,10 @@ export class BaseSwapStore<
      */
     public get isEnoughLiquidity(): boolean {
         if (isGoodBignumber(this.rightAmountNumber)) {
-            const pairRightBalanceBN = this.isPairInverted ? this.pairLeftBalanceNumber : this.pairRightBalanceNumber
-            return this.rightAmountNumber.lt(pairRightBalanceBN.shiftedBy(this.rightTokenDecimals))
+            const pairRightBalanceNumber = this.isPairInverted
+                ? this.pairLeftBalanceNumber
+                : this.pairRightBalanceNumber
+            return this.rightAmountNumber.lt(pairRightBalanceNumber)
         }
 
         return !this.pairLeftBalanceNumber.isZero() && !this.pairRightBalanceNumber.isZero()
@@ -269,7 +266,7 @@ export class BaseSwapStore<
         if (this.leftAmount.length === 0) {
             return true
         }
-        return this.leftAmount.length > 0 && isGoodBignumber(this.leftAmountNumber, false)
+        return isGoodBignumber(this.leftAmountNumber, false) && this.leftBalanceNumber.gte(this.leftAmountNumber)
     }
 
     /**
@@ -290,12 +287,12 @@ export class BaseSwapStore<
      * @returns {boolean}
      * @protected
      */
-    protected get isPairInverted(): boolean {
+    public get isPairInverted(): boolean {
         return this.pair?.roots?.left.toString() !== this.leftToken?.root
     }
 
     /**
-     * Returns left amount BigNumber unshifted by the left token decimals
+     * Returns BigNumber of the left amount value whose shifted by left token decimals
      * @returns {BigNumber}
      * @protected
      */
@@ -303,6 +300,13 @@ export class BaseSwapStore<
         return new BigNumber(this.data.leftAmount)
             .shiftedBy(this.leftTokenDecimals)
             .dp(0, BigNumber.ROUND_DOWN)
+    }
+
+    /**
+     Returns BigNumber of the left token balance
+     */
+    public get leftBalanceNumber(): BigNumber {
+        return new BigNumber(this.leftToken?.balance || 0)
     }
 
     /**
@@ -331,27 +335,27 @@ export class BaseSwapStore<
     }
 
     /**
-     * Returns pair raw left balance as BigNumber instance
+     * Returns BigNumber of the pair left balance value
      * @protected
      */
-    protected get pairLeftBalanceNumber(): BigNumber {
+    public get pairLeftBalanceNumber(): BigNumber {
         return new BigNumber(this.pair?.balances?.left || 0)
     }
 
     /**
-     Returns pair raw right balance as BigNumber instance
+     * Returns BigNumber of the pair right balance value
      * @protected
      */
-    protected get pairRightBalanceNumber(): BigNumber {
+    public get pairRightBalanceNumber(): BigNumber {
         return new BigNumber(this.pair?.balances?.right || 0)
     }
 
     /**
-     * Returns right amount BigNumber unshifted by the right token decimals
+     * Returns BigNumber of the right amount value whose shifted by right token decimals
      * @returns {BigNumber}
      * @protected
      */
-    protected get rightAmountNumber(): BigNumber {
+    public get rightAmountNumber(): BigNumber {
         return new BigNumber(this.data.rightAmount)
             .shiftedBy(this.rightTokenDecimals)
             .dp(0, BigNumber.ROUND_DOWN)
@@ -453,15 +457,7 @@ export class BaseSwapStore<
                     this.syncPairData(),
                 ])
 
-                if (this.isLowTvl) {
-                    this.setData({
-                        priceLeftToRight: undefined,
-                        priceRightToLeft: undefined,
-                    })
-                }
-                else {
-                    this.finalizeCalculation()
-                }
+                this.finalizeCalculation()
             }
             catch (e) {
                 error('Sync pair data error', e)
@@ -648,17 +644,17 @@ export class BaseSwapStore<
             return
         }
 
-        const pairLeftBalanceBN = this.isPairInverted ? this.pairRightBalanceNumber : this.pairLeftBalanceNumber
-        const pairRightBalanceBN = this.isPairInverted ? this.pairLeftBalanceNumber : this.pairRightBalanceNumber
+        const pairLeftBalanceNumber = this.isPairInverted ? this.pairRightBalanceNumber : this.pairLeftBalanceNumber
+        const pairRightBalanceNumber = this.isPairInverted ? this.pairLeftBalanceNumber : this.pairRightBalanceNumber
 
         let priceLeftToRight = getDefaultPerPrice(
-                pairLeftBalanceBN.shiftedBy(-this.leftTokenDecimals),
-                pairRightBalanceBN.shiftedBy(-this.rightTokenDecimals),
+                pairLeftBalanceNumber.shiftedBy(-this.leftTokenDecimals),
+                pairRightBalanceNumber.shiftedBy(-this.rightTokenDecimals),
                 this.leftTokenDecimals,
             ),
             priceRightToLeft = getDefaultPerPrice(
-                pairRightBalanceBN.shiftedBy(-this.rightTokenDecimals),
-                pairLeftBalanceBN.shiftedBy(-this.leftTokenDecimals),
+                pairRightBalanceNumber.shiftedBy(-this.rightTokenDecimals),
+                pairLeftBalanceNumber.shiftedBy(-this.leftTokenDecimals),
                 this.rightTokenDecimals,
             )
 
@@ -704,7 +700,7 @@ export class BaseSwapStore<
         this.setData('bill', {
             ...this.data.bill,
             priceImpact: getDirectExchangePriceImpact(
-                pairRightBalanceBN.div(pairLeftBalanceBN).times(amountBN),
+                pairRightBalanceNumber.div(pairLeftBalanceNumber).times(amountBN),
                 expectedAmountBN,
             ).toFixed(),
         })
@@ -781,7 +777,7 @@ export class BaseSwapStore<
             })
         }
         catch (e) {
-            error(e)
+            error('Sync pai balances error', e)
         }
     }
 

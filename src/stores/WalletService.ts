@@ -13,6 +13,7 @@ import {
     Subscription,
     Transaction,
 } from 'everscale-inpage-provider'
+import BigNumber from 'bignumber.js'
 
 import { useRpcClient } from '@/hooks/useRpcClient'
 import {
@@ -333,6 +334,14 @@ export class WalletService {
      */
     public get balance(): WalletData['balance'] {
         return this.data.balance
+    }
+
+    /**
+     * Returns computed BigNumber instance of the wallet balance value
+     * @returns {BigNumber}
+     */
+    public get balanceNumber(): BigNumber {
+        return new BigNumber(this.balance || 0).shiftedBy(-this.coin.decimals)
     }
 
     /**

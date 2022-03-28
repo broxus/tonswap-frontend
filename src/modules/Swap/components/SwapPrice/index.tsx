@@ -18,6 +18,23 @@ function Price(): JSX.Element | null {
         return null
     }
 
+    const leftSymbol = React.useMemo(() => {
+        if (
+            formStore.nativeCoinSide === 'leftToken'
+            || (!formStore.multipleSwap.isEnoughTokenBalance && formStore.multipleSwap.isEnoughCoinBalance)
+        ) {
+            return formStore.coin.symbol
+        }
+        return formStore.leftToken?.symbol
+    }, [formStore.leftToken.symbol, formStore.nativeCoinSide, formStore.multipleSwap.isEnoughTokenBalance])
+
+    const rightSymbol = React.useMemo(() => {
+        if (formStore.nativeCoinSide === 'rightToken') {
+            return formStore.coin.symbol
+        }
+        return formStore.rightToken?.symbol
+    }, [formStore.rightToken.symbol, formStore.nativeCoinSide])
+
     return (
         <div className="form-row swap-price">
             <div>
@@ -95,8 +112,8 @@ function Price(): JSX.Element | null {
                                         formStore.leftToken.decimals,
                                     )
                                     : '--',
-                                leftSymbol: formStore.nativeCoinSide === 'leftToken' ? formStore.coin.symbol : formStore.leftToken.symbol,
-                                rightSymbol: formStore.nativeCoinSide === 'rightToken' ? formStore.coin.symbol : formStore.rightToken.symbol,
+                                leftSymbol,
+                                rightSymbol,
                             }, {
                                 ignoreTag: true,
                             }),
@@ -115,8 +132,8 @@ function Price(): JSX.Element | null {
                                         formStore.rightToken.decimals,
                                     )
                                     : '--',
-                                leftSymbol: formStore.nativeCoinSide === 'rightToken' ? formStore.coin.symbol : formStore.rightToken.symbol,
-                                rightSymbol: formStore.nativeCoinSide === 'leftToken' ? formStore.coin.symbol : formStore.leftToken.symbol,
+                                leftSymbol: rightSymbol,
+                                rightSymbol: leftSymbol,
                             }, {
                                 ignoreTag: true,
                             }),

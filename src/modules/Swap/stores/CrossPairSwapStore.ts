@@ -405,11 +405,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
      * Invalidate bills data and recalculate
      */
     public forceInvalidate(): void {
-        this.setData({
-            leftAmount: '',
-            rightAmount: '',
-            route: undefined,
-        })
+        this.setData('route', undefined)
         this.finalizeCalculation()
     }
 

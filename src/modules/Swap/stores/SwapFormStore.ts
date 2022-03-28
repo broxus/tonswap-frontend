@@ -1,11 +1,7 @@
 import BigNumber from 'bignumber.js'
 import type { IReactionDisposer } from 'mobx'
 import {
-    action,
-    computed,
-    makeObservable,
-    override,
-    reaction,
+    action, computed, makeObservable, override, reaction,
 } from 'mobx'
 
 import { DexConstants } from '@/misc'
@@ -37,11 +33,7 @@ import type { WalletNativeCoin } from '@/stores/WalletService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import {
-    debounce,
-    debug,
-    formattedBalance,
-    isGoodBignumber,
-    storage,
+    debounce, debug, formattedBalance, isGoodBignumber, storage,
 } from '@/utils'
 
 
@@ -134,6 +126,8 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             toggleSwapExchangeMode: action.bound,
             togglePriceDirection: action.bound,
             cleanTransactionResult: action.bound,
+            priceLeftToRight: override,
+            priceRightToLeft: override,
             direction: computed,
             exchangeMode: computed,
             nativeCoinSide: computed,
@@ -166,6 +160,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             currentSwap: computed,
         })
     }
+
 
     /*
      * Public actions. Useful in UI
@@ -306,7 +301,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
     }
 
     /**
-     *
+     * Maximizing the value of the left field depending on the form mode
      */
     public async maximizeLeftAmount(): Promise<void> {
         let balance = this.leftBalanceNumber
@@ -343,9 +338,9 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         this.setState('direction', SwapDirection.LTR)
 
-        this.setData('leftAmount', value)
-
         this.forceInvalidate()
+
+        this.setData('leftAmount', value)
 
         if (value.length === 0) {
             this.setData('rightAmount', '')
@@ -371,9 +366,9 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         this.setState('direction', SwapDirection.RTL)
 
-        this.setData('rightAmount', value)
-
         this.forceInvalidate()
+
+        this.setData('rightAmount', value)
 
         if (value.length === 0) {
             this.setData('leftAmount', '')
@@ -412,6 +407,12 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
                 pair: undefined,
             })
             this.#crossPairSwap.setData('routes', [])
+            if (this.direction === SwapDirection.LTR) {
+                this.setData('rightAmount', '')
+            }
+            else if (this.direction === SwapDirection.RTL) {
+                this.setData('leftAmount', '')
+            }
         }
 
         this.forceInvalidate()
@@ -467,6 +468,12 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
                 rightToken: root,
             })
             this.#crossPairSwap.setData('routes', [])
+            if (this.direction === SwapDirection.LTR) {
+                this.setData('rightAmount', '')
+            }
+            else if (this.direction === SwapDirection.RTL) {
+                this.setData('leftAmount', '')
+            }
         }
 
         this.forceInvalidate()
@@ -619,14 +626,18 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
         this.setState('isCalculating', true)
 
         if (this.direction === SwapDirection.LTR && !this.leftAmountNumber.isZero()) {
-            await this.calculateLeftToRight(force)
+            if (!this.isCrossExchangeOnly) {
+                await this.calculateLeftToRight(force)
+            }
 
             if (this.isCrossExchangeAvailable && (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
                 await this.#crossPairSwap.calculateLeftToRight(force)
             }
         }
         else if (this.direction === SwapDirection.RTL && !this.rightAmountNumber.isZero()) {
-            await this.calculateRightToLeft(force)
+            if (!this.isCrossExchangeOnly) {
+                await this.calculateRightToLeft(force)
+            }
 
             if (this.isCrossExchangeAvailable && (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
                 await this.#crossPairSwap.calculateRightToLeft(force, this.isEnoughLiquidity)
@@ -640,7 +651,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
         }
 
         if (!this.isEnoughLiquidity) {
-            this.setData('rightAmount', '')
+            // this.setData('rightAmount', '')
         }
 
         debug('Recalculated. Stores data', this, this.currentSwap, this.#crossPairSwap)
@@ -658,6 +669,28 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      * Memoized store data and state values
      * ----------------------------------------------------------------------------------
      */
+
+    /**
+     * Price of right token per 1 left token
+     * @returns {BaseSwapStoreData['priceLeftToRight']}
+     */
+    public get priceLeftToRight(): SwapFormStoreData['priceLeftToRight'] {
+        if (this.isCrossExchangeMode) {
+            return this.crossPairSwap.priceLeftToRight
+        }
+        return this.isLowTvl ? undefined : this.data.priceLeftToRight
+    }
+
+    /**
+     * Price of left token per 1 right token
+     * @returns {BaseSwapStoreData['priceRightToLeft']}
+     */
+    public get priceRightToLeft(): SwapFormStoreData['priceRightToLeft'] {
+        if (this.isCrossExchangeMode) {
+            return this.crossPairSwap.priceRightToLeft
+        }
+        return this.isLowTvl ? undefined : this.data.priceRightToLeft
+    }
 
     /**
      * Returns memoized swap direction value
@@ -815,9 +848,19 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
     }
 
     /**
-     *
+     * Returns `true` if left amount value is valid, otherwise `false`.
+     * NOTE: Use it only in UI for determining field validation and
+     * DON'T USE it in internal calculations or validations
+     * @returns {boolean}
      */
     public get isLeftAmountValid(): boolean {
+        if (this.isCrossExchangeMode && this.direction === SwapDirection.RTL) {
+            return (
+                isGoodBignumber(this.crossPairSwap.leftAmountNumber, false)
+                && this.leftBalanceNumber.gte(this.crossPairSwap.leftAmountNumber.shiftedBy(-this.leftTokenDecimals))
+            )
+        }
+
         if (this.isWrapMode) {
             return this.#conversion.isWrapAmountValid
         }
@@ -835,17 +878,25 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
         }
 
         if (this.nativeCoinSide === 'leftToken') {
-            const balance = new BigNumber(this.coin.balance || 0).shiftedBy(-this.coin.decimals)
             const fee = new BigNumber(this.options?.multipleSwapFee ?? 0).shiftedBy(-this.coin.decimals)
-            return isGoodBignumber(this.leftAmountNumber, false) && balance.minus(fee).gte(this.leftAmount || 0)
+            return (
+                isGoodBignumber(this.leftAmountNumber, false)
+                && this.wallet.balanceNumber.minus(fee).gte(this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals))
+            )
         }
 
-        const balance = new BigNumber(this.leftToken?.balance || 0).shiftedBy(-this.leftTokenDecimals)
-        return isGoodBignumber(this.leftAmountNumber, false) && balance.gte(this.leftAmount || 0)
+        return (
+            isGoodBignumber(this.leftAmountNumber, false)
+            && this.leftBalanceNumber.gte(this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals))
+        )
     }
 
     /**
-     *
+     * Returns `true` if right amount value is valid, otherwise `false`.
+     * NOTE: Use it only in UI for determining field validation and
+     * DON'T USE it in internal calculations or validations
+     * @returns {boolean}
+     * todo: check liquidity across all pairs in route
      */
     public get isRightAmountValid(): boolean {
         if (this.swap.rightAmount.length > 0 && !this.isCrossExchangeMode && !this.isConversionMode) {
@@ -940,18 +991,17 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      *
      */
     public get leftBalanceNumber(): BigNumber {
-        const tokenBalance = new BigNumber(this.leftToken?.balance || 0).shiftedBy(-this.leftTokenDecimals)
-        const coinBalance = new BigNumber(this.coin.balance || 0).shiftedBy(-this.coin.decimals)
+        const balance = new BigNumber(this.leftToken?.balance || 0).shiftedBy(-this.leftTokenDecimals)
 
         if (this.isMultipleSwapMode) {
-            return tokenBalance.plus(coinBalance)
+            return balance.plus(this.wallet.balanceNumber)
         }
 
         if (this.nativeCoinSide === 'leftToken') {
-            return coinBalance
+            return this.wallet.balanceNumber
         }
 
-        return tokenBalance
+        return balance
     }
 
     /**
@@ -1042,8 +1092,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      */
     protected checkExchangeMode(): void {
         switch (true) {
-            case this.pair === undefined && this.route !== undefined:
-            case this.route !== undefined && this.isLowTvl:
+            case (this.pair === undefined || this.isLowTvl) && this.isCrossExchangeAvailable:
                 this.setState('exchangeMode', SwapExchangeMode.CROSS_PAIR_EXCHANGE_ONLY)
                 break
 
@@ -1176,6 +1225,12 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
         this.forceInvalidate()
     }
 
+    /**
+     *
+     * @param input
+     * @param transaction
+     * @protected
+     */
     protected async handleCoinSwapSuccess({ input, transaction }: CoinSwapSuccessResult): Promise<void> {
         this.setData({
             leftAmount: '',

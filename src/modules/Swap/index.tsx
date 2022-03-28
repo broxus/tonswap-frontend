@@ -179,22 +179,6 @@ export function Swap(): JSX.Element {
                                 tokens={formStore.route?.tokens}
                             />
                         )}
-                        {/*
-                        {process.env.NODE_ENV === 'development' && (
-                            <>
-                                <p>DEBUG</p>
-                                <p>{`mode: ${formStore.exchangeMode}`}</p>
-                                <p>{`is multiple: ${formStore.isMultipleSwapMode}`}</p>
-                                <p>{`is coin-based swap: ${formStore.isCoinBasedSwapMode}`}</p>
-                                <p>{`is cross-pair: ${formStore.isCrossExchangeMode}`}</p>
-                                <p>{`is cross-pair available: ${formStore.isCrossExchangeAvailable}`}</p>
-                                <p>{`coin side: ${formStore.nativeCoinSide}`}</p>
-                                <p>{`left token: ${formStore.leftToken?.symbol} ${sliceAddress(formStore.leftToken?.root)}`}</p>
-                                <p>{`right token: ${formStore.rightToken?.symbol} ${sliceAddress(formStore.rightToken?.root)}`}</p>
-                                <p>{`pair: ${formStore.pair !== undefined}`}</p>
-                            </>
-                        )}
-                        */}
                     </>
                 )}
             </Observer>
