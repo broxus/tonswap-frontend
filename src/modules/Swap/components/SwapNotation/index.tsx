@@ -53,7 +53,7 @@ export function SwapNotation(): JSX.Element | null {
             <p>
                 <a
                     className="swap-notation-link"
-                    href="https://docs.flatqube.io/use"
+                    href="https://docs.flatqube.io/use/swap/how-to/make-a-basic-swap"
                     target="_blank"
                     rel="noopener noreferrer"
                 >
