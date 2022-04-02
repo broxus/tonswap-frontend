@@ -13,7 +13,6 @@ import { Footer } from '@/components/layout/Footer'
 import { TokensUpgradeModal } from '@/components/common/TokensUpgradeModal'
 import { WalletConnectingModal } from '@/components/common/WalletConnectingModal'
 import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
-import { ServiceAlert } from '@/components/common/ServiceAlert'
 import { Header } from '@/components/layout/Header'
 import messages from '@/lang/en'
 import Builder from '@/pages/builder'
@@ -58,8 +57,6 @@ export function App(): JSX.Element {
             <Router>
                 <div className="wrapper">
                     <Header key="header" />
-
-                    <ServiceAlert />
 
                     <main className="main">
                         <Switch>
