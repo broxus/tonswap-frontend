@@ -98,6 +98,16 @@ export function useSwapForm(): SwapFormShape {
                 formStore.setData('rightToken', formStore.multipleSwapTokenRoot)
             }
         }
+        else if (isAddressValid(leftRoot) && !isAddressValid(rightRoot) && !isLeftCoin && !isRightCoin && !isCombined) {
+            formStore.setState({
+                isMultiple: false,
+                nativeCoinSide: undefined,
+            })
+            formStore.setData({
+                leftToken: leftRoot ?? formStore.leftToken?.root,
+                rightToken: undefined,
+            })
+        }
         else if (isLeftRootValid && isRightRootValid && !isLeftCoin && !isRightCoin && !isCombined) {
             formStore.setState({
                 isMultiple: formStore.isMultipleSwapMode,
