@@ -17,8 +17,9 @@
     z-index: 4;
 
     @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
+        -webkit-backdrop-filter: blur(80px);
         backdrop-filter: blur(80px);
-        background: rgba(255, 255, 255, 0.08);
+        background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
     }
 
     &__title {

@@ -24,12 +24,25 @@
 .manage-token {
     .card-parts {
         align-items: flex-start;
-        column-gap: 40px;
+        gap: 40px;
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
 
         &__part {
             flex-grow: 1;
+            width: 100%;
+        }
+
+        @media only screen and (min-width: 768px) {
+            flex-direction: row;
+
+            &__part:first-child {
+                width: 45%;
+            }
+            &__part:last-child {
+                width: 55%;
+            }
         }
     }
 

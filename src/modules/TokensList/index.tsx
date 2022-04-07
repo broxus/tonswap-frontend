@@ -2,6 +2,7 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import { useIntl } from 'react-intl'
+import getScrollBarSize from 'rc-util/es/getScrollBarSize'
 
 import { Icon } from '@/components/common/Icon'
 import { NativeCoinItem, TokenAndCoinCombinator, WaypointWrappedItem } from '@/modules/TokensList/components'
@@ -69,6 +70,22 @@ export function TokensList({
             setSearchResults([])
         }
     }, [query, searchResults])
+
+    React.useEffect(() => {
+        try {
+            document.body.style.touchAction = 'none'
+            document.body.style.overflow = 'hidden'
+            document.body.style.width = `calc(100% - ${getScrollBarSize() || 0}px)`
+        }
+        catch (e) {
+
+        }
+        return () => {
+            document.body.style.touchAction = ''
+            document.body.style.overflow = ''
+            document.body.style.width = ''
+        }
+    }, [])
 
     return ReactDOM.createPortal(
         <div className="popup">
