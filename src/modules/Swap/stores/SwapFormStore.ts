@@ -506,7 +506,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      * @param {string} value
      */
     public async changeSlippage(value: string): Promise<void> {
-        if (value !== this.data.slippage && isGoodBignumber(new BigNumber(value || 0))) {
+        if (value !== this.slippage) {
             this.setData('slippage', value)
             storage.set('slippage', value)
 
