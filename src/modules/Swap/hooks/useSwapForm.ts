@@ -62,15 +62,39 @@ export function useSwapForm(): SwapFormShape {
     const prepare = async (leftRoot: string, rightRoot: string) => {
         const isLeftRootAvailable = isAddressValid(formStore.leftToken?.root)
         const isRightRootAvailable = isAddressValid(formStore.rightToken?.root)
-        const isLeftRootValid = isAddressValid(leftRoot) || isLeftRootAvailable
-        const isRightRootValid = isAddressValid(rightRoot) || isRightRootAvailable
+        const isLeftRootValid = isAddressValid(leftRoot)
+        const isRightRootValid = isAddressValid(rightRoot)
         const isLeftCoin = leftRoot === 'coin' || formStore.nativeCoinSide === 'leftToken'
         const isRightCoin = rightRoot === 'coin' || formStore.nativeCoinSide === 'rightToken'
         const isCombined = leftRoot === 'combined' || (!isLeftRootValid && !isRightRootValid && !isLeftCoin && !isRightCoin)
         const isWrap = isLeftCoin && rightRoot === formStore.multipleSwapTokenRoot
         const isUnwrap = isRightCoin && leftRoot === formStore.multipleSwapTokenRoot
 
-        if (isLeftCoin) {
+        if (isLeftRootAvailable && isRightRootAvailable && !isLeftRootValid && !isRightRootValid) {
+            return
+        }
+
+        if (isLeftRootValid && isRightRootValid) {
+            formStore.setState({
+                isMultiple: false,
+                nativeCoinSide: undefined,
+            })
+            formStore.setData({
+                leftToken: leftRoot,
+                rightToken: rightRoot,
+            })
+        }
+        else if (isLeftRootValid && !isRightRootValid) {
+            formStore.setState({
+                isMultiple: false,
+                nativeCoinSide: isRightCoin ? 'rightToken' : undefined,
+            })
+            formStore.setData({
+                leftToken: leftRoot ?? formStore.leftToken?.root,
+                rightToken: undefined,
+            })
+        }
+        else if (isLeftCoin) {
             formStore.setState({
                 isMultiple: false,
                 nativeCoinSide: 'leftToken',
@@ -98,26 +122,6 @@ export function useSwapForm(): SwapFormShape {
                 formStore.setData('rightToken', formStore.multipleSwapTokenRoot)
             }
         }
-        else if (isAddressValid(leftRoot) && !isAddressValid(rightRoot) && !isLeftCoin && !isRightCoin && !isCombined) {
-            formStore.setState({
-                isMultiple: false,
-                nativeCoinSide: undefined,
-            })
-            formStore.setData({
-                leftToken: leftRoot ?? formStore.leftToken?.root,
-                rightToken: undefined,
-            })
-        }
-        else if (isLeftRootValid && isRightRootValid && !isLeftCoin && !isRightCoin && !isCombined) {
-            formStore.setState({
-                isMultiple: formStore.isMultipleSwapMode,
-                nativeCoinSide: undefined,
-            })
-            formStore.setData({
-                leftToken: leftRoot ?? formStore.leftToken?.root,
-                rightToken: rightRoot ?? formStore.rightToken?.root,
-            })
-        }
         else if (isCombined) {
             formStore.setData({
                 leftToken: DEFAULT_LEFT_TOKEN_ROOT,
@@ -125,8 +129,6 @@ export function useSwapForm(): SwapFormShape {
             })
             formStore.setState('isMultiple', true)
         }
-
-        // await formStore.changeLeftToken(formStore.leftToken?.root)
 
         if (tokensCache.isReady) {
             const leftInCache = tokensCache.has(leftRoot)
