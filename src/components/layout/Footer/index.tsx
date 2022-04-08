@@ -21,7 +21,7 @@ export function Footer(): JSX.Element {
                     <>
                         {(!wallet.isInitialized && !wallet.isInitializing) && (
                             <a
-                                href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk"
+                                href="https://l1.broxus.com/everscale/wallet"
                                 className="btn btn--xl btn-tertiary footer-tool"
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -35,7 +35,7 @@ export function Footer(): JSX.Element {
                 )}
             </Observer>
             <a
-                href="https://github.com/broxus/ton-dex"
+                href="https://github.com/broxus/tonswap-frontend"
                 className="btn btn--xl btn--empty footer-tool"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -112,39 +112,108 @@ export function Footer(): JSX.Element {
                         <div className="footer-nav__col">
                             <div className="footer-nav__col-title">
                                 {intl.formatMessage({
-                                    id: 'FOOTER_NAV_HEADER_DEFI_PRODUCTS',
+                                    id: 'FOOTER_NAV_HEADER_DOCS',
+                                })}
+                            </div>
+                            <ul className="footer-nav__list">
+                                <li>
+                                    <a
+                                        href="https://drive.google.com/u/0/uc?id=1V9rDRD6ltXTNwxmWqDw3ey3-SYTQX2mN&view?usp=sharing"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'FOOTER_NAV_SECURITY_AUDIT_LINK_TEXT',
+                                        })}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="https://github.com/broxus/ton-dex"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'FOOTER_NAV_GITHUB_LINK_TEXT',
+                                        })}
+                                    </a>
+                                </li>
+                            </ul>
+
+                        </div>
+                        <div className="footer-nav__col">
+                            <div className="footer-nav__col-title">
+                                {intl.formatMessage({
+                                    id: 'FOOTER_NAV_HEADER_OUR_PRODUCTS',
                                 })}
                             </div>
                             <ul className="footer-nav__list">
                                 <li>
                                     <a href="https://octusbridge.io" target="_blank" rel="noopener noreferrer">
                                         {intl.formatMessage({
-                                            id: 'FOOTER_NAV_TON_BRIDGE_LINK_TEXT',
+                                            id: 'FOOTER_NAV_OCTUS_BRIDGE_LINK_TEXT',
                                         })}
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="https://tonscan.io" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://evrscan.io" target="_blank" rel="noopener noreferrer">
                                         {intl.formatMessage({
-                                            id: 'FOOTER_NAV_TON_SCAN_LINK_TEXT',
+                                            id: 'FOOTER_NAV_EVER_SCAN_LINK_TEXT',
                                         })}
                                     </a>
                                 </li>
                                 <li>
                                     <a href="https://wrappedever.io" target="_blank" rel="noopener noreferrer">
                                         {intl.formatMessage({
-                                            id: 'FOOTER_NAV_WTON_LINK_TEXT',
+                                            id: 'FOOTER_NAV_WEVER_LINK_TEXT',
                                         })}
                                     </a>
                                 </li>
                                 <li>
                                     <a
-                                        href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk"
+                                        href="https://l1.broxus.com/everscale/wallet"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                     >
                                         {intl.formatMessage({
-                                            id: 'FOOTER_NAV_CRYSTAL_WALLET_LINK_TEXT',
+                                            id: 'FOOTER_NAV_EVER_WALLET_LINK_TEXT',
+                                        })}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://everpools.io" target="_blank" rel="noopener noreferrer">
+                                        {intl.formatMessage({
+                                            id: 'FOOTER_NAV_EVER_POOLS_LINK_TEXT',
+                                        })}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="footer-nav__col">
+                            <div className="footer-nav__col-title">
+                                {intl.formatMessage({
+                                    id: 'FOOTER_NAV_HEADER_FAQ',
+                                })}
+                            </div>
+                            <ul className="footer-nav__list">
+                                <li>
+                                    <a href="https://docs.flatqube.io/" target="_blank" rel="noopener noreferrer">
+                                        {intl.formatMessage({
+                                            id: 'FOOTER_NAV_GITBOOK_LINK_TEXT',
+                                        })}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://docs.everwallet.net/" target="_blank" rel="noopener noreferrer">
+                                        {intl.formatMessage({
+                                            id: 'FOOTER_NAV_EVER_WALLET_MANUAL_LINK_TEXT',
+                                        })}
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://docs.everwallet.net/concepts/ever-and-wever" target="_blank" rel="noopener noreferrer">
+                                        {intl.formatMessage({
+                                            id: 'FOOTER_NAV_WHAT_IS_WEVER_LINK_TEXT',
                                         })}
                                     </a>
                                 </li>
@@ -159,7 +228,17 @@ export function Footer(): JSX.Element {
                     <ul className="footer-soc">
                         <li>
                             <a
-                                href="https://t.me/tonbridge_official"
+                                href="https://discord.gg/6dryaZQNmC"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Discord"
+                            >
+                                <Icon icon="discord" />
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="https://t.me/FlatQube"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title="Telegram"
@@ -169,12 +248,22 @@ export function Footer(): JSX.Element {
                         </li>
                         <li>
                             <a
-                                href="https://twitter.com/Broxus"
+                                href="https://twitter.com/FlatQube"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 title="Twitter"
                             >
                                 <Icon icon="twitter" />
+                            </a>
+                        </li>
+                        <li>
+                            <a
+                                href="https://flatqube.medium.com/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Medium"
+                            >
+                                <Icon icon="medium" />
                             </a>
                         </li>
                         <li>
@@ -185,16 +274,6 @@ export function Footer(): JSX.Element {
                                 title="GitHub"
                             >
                                 <Icon icon="github" />
-                            </a>
-                        </li>
-                        <li>
-                            <a
-                                href="https://broxus.medium.com/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                title="Medium"
-                            >
-                                <Icon icon="medium" />
                             </a>
                         </li>
                     </ul>
