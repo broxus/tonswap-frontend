@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
-import { Link, NavLink } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 
 import { Icon } from '@/components/common/Icon'
 import { Logo } from '@/components/layout/Logo'
@@ -52,9 +52,9 @@ export function Footer(): JSX.Element {
             <div className="container container--large">
                 <div className="footer__wrapper">
                     <div className="footer__left">
-                        <Link to="/" className="footer-logo">
+                        <a href="https://flatqube.io" className="footer-logo">
                             <Logo />
-                        </Link>
+                        </a>
                         {toolbar}
                     </div>
                     <nav className="footer-nav">

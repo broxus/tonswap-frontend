@@ -22,7 +22,9 @@ export function Header(): JSX.Element {
                     {match => match && (
                         <>
                             <Navbar.Item>
-                                <Logo />
+                                <a href="https://flatqube.io" className="logo">
+                                    <Logo />
+                                </a>
                             </Navbar.Item>
                             <DesktopNav />
                             <Navbar.Right component={Navbar.Item}>
@@ -38,7 +40,9 @@ export function Header(): JSX.Element {
                             {() => (
                                 <>
                                     <Navbar.Item>
-                                        <Logo ratio={0.9} />
+                                        <a href="https://flatqube.io" className="logo">
+                                            <Logo ratio={0.9} />
+                                        </a>
                                     </Navbar.Item>
                                     <Navbar.Right>
                                         {wallet.isConnected && (

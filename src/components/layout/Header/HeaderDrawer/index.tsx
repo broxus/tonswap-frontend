@@ -53,7 +53,9 @@ export function HeaderDrawer(): JSX.Element {
                 >
                     <Component className="device-drawer-content-inner">
                         <div className="device-drawer-header">
-                            <Logo ratio={0.9} />
+                            <div className="logo">
+                                <Logo ratio={0.9} />
+                            </div>
 
                             <div className="device-drawer-header-inner">
                                 {wallet.isConnected && (
