@@ -31,13 +31,17 @@ export function useField({ decimals, ...props }: Props): FieldShape {
     }
 
     const onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
+        if ((event.nativeEvent as InputEvent).inputType === 'deleteByCut') {
+            props.onChange?.('')
+            return
+        }
         let { value } = event.target
         value = value.replace(/[,]/g, '.')
         if (
-            props.value
-            && props.value.indexOf('.') > -1
+            (props.value
+            && (props.value.includes('.')
             && value.length > props.value.length
-            && value.charAt(value.length - 1) === '.'
+            && value.charAt(value.length - 1) === '.'))
         ) {
             return
         }

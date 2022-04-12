@@ -449,7 +449,7 @@ export class TokensCacheService extends BaseStore<TokensCacheData, TokensCacheSt
                     address,
                 })).on('data', async event => {
                     debug(
-                        `'%cRPC%c %c${token.symbol}%c \`contractStateChanged\` event was captured'`,
+                        `%cRPC%c %c${token.symbol}%c \`contractStateChanged\` event was captured'`,
                         'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
                         'color: #c5e4f3',
                         'color: #bae701',

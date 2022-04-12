@@ -15,6 +15,10 @@ function SwapNotationInternal(): JSX.Element | null {
 
     const [available, setAvailable] = React.useState(storage.get('swap_notation') == null)
 
+    if (wallet.hasProvider && wallet.isInitializing) {
+        return null
+    }
+
     if (!wallet.hasProvider || !wallet.isConnected || (wallet.isConnected && wallet.balance === '0')) {
         const connect: React.MouseEventHandler<HTMLAnchorElement> = async event => {
             event.preventDefault()
