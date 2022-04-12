@@ -112,7 +112,8 @@ export function Swap(): JSX.Element {
                                         disabled={formStore.isLoading || formStore.isSwapping}
                                         id="rightField"
                                         isValid={(
-                                            formStore.isLoading
+                                            formStore.isCalculating
+                                            || formStore.isLoading
                                             || formStore.isSwapping
                                             || formStore.isRightAmountValid
                                         )}

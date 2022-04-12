@@ -53,7 +53,10 @@ function SubmitButton(): JSX.Element {
             })
             break
 
-        case formStore.pair === undefined || !formStore.isEnoughLiquidity:
+        case (
+            (formStore.leftAmount.length > 0 || formStore.rightAmount.length > 0)
+            && (formStore.pair === undefined || !formStore.isEnoughLiquidity)
+        ):
             buttonProps.disabled = true
             buttonText = intl.formatMessage({
                 id: 'SWAP_BTN_TEXT_NOT_ENOUGH_LIQUIDITY',

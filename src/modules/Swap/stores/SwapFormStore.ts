@@ -430,9 +430,9 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         this.checkExchangeMode()
 
-        if (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode)) {
-            await this.#crossPairSwap.prepare()
-        }
+        // if (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode)) {
+        //     await this.#crossPairSwap.prepare()
+        // }
 
         debug('Change left token. Stores data', this, this.currentSwap, this.#crossPairSwap)
 
@@ -491,9 +491,9 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         this.checkExchangeMode()
 
-        if (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode)) {
-            await this.#crossPairSwap.prepare()
-        }
+        // if (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode)) {
+        //     await this.#crossPairSwap.prepare()
+        // }
 
         debug('Change right token. Stores data', this, this.currentSwap, this.#crossPairSwap)
 
@@ -619,29 +619,34 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             return
         }
 
-        if (this.pair?.address === undefined && !this.isCrossExchangeAvailable) {
-            return
-        }
+        // if (this.pair?.address === undefined/* && !this.isCrossExchangeAvailable */) {
+        //     return
+        // }
 
         this.setState('isCalculating', true)
 
-        if (this.direction === SwapDirection.LTR && !this.leftAmountNumber.isZero()) {
-            if (!this.isCrossExchangeOnly) {
+        if (this.direction === SwapDirection.LTR && isGoodBignumber(this.leftAmountNumber)) {
+            if (this.pair?.address !== undefined && !this.isCrossExchangeOnly) {
                 await this.calculateLeftToRight(force)
             }
 
-            if (this.isCrossExchangeAvailable && (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
+            if (/* this.isCrossExchangeAvailable && */(!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
+                await this.#crossPairSwap.checkSuggestions(this.leftAmountNumber.toFixed(), 'expectedexchange')
                 await this.#crossPairSwap.calculateLeftToRight(force)
             }
         }
-        else if (this.direction === SwapDirection.RTL && !this.rightAmountNumber.isZero()) {
-            if (!this.isCrossExchangeOnly) {
+        else if (this.direction === SwapDirection.RTL && isGoodBignumber(this.rightAmountNumber)) {
+            if (this.pair?.address !== undefined && !this.isCrossExchangeOnly) {
                 await this.calculateRightToLeft(force)
             }
 
-            if (this.isCrossExchangeAvailable && (!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
+            if (/* this.isCrossExchangeAvailable && */(!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
+                await this.#crossPairSwap.checkSuggestions(this.rightAmountNumber.toFixed(), 'expectedspendamount')
                 await this.#crossPairSwap.calculateRightToLeft(force, this.isEnoughLiquidity)
             }
+        }
+        else {
+            this.finalizeCalculation()
         }
 
         this.setState('isCalculating', false)
@@ -855,9 +860,10 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      */
     public get isLeftAmountValid(): boolean {
         if (this.isCrossExchangeMode && this.direction === SwapDirection.RTL) {
+            const leftAmountNumber = new BigNumber(this.crossPairSwap.route?.leftAmount || 0)
             return (
-                isGoodBignumber(this.crossPairSwap.leftAmountNumber, false)
-                && this.leftBalanceNumber.gte(this.crossPairSwap.leftAmountNumber.shiftedBy(-this.leftTokenDecimals))
+                isGoodBignumber(leftAmountNumber, false)
+                && this.leftBalanceNumber.gte(leftAmountNumber.shiftedBy(-this.leftTokenDecimals))
             )
         }
 
@@ -899,7 +905,11 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      * todo: check liquidity across all pairs in route
      */
     public get isRightAmountValid(): boolean {
-        if (this.swap.rightAmount.length > 0 && !this.isCrossExchangeMode && !this.isConversionMode) {
+        if (
+            this.swap.rightAmount.length > 0
+            && !this.isCrossExchangeMode
+            && !this.isConversionMode
+        ) {
             return this.isEnoughLiquidity
         }
         return true

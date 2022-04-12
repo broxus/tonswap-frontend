@@ -7,9 +7,8 @@ import * as E from 'fp-ts/Either'
 import type { DecodedAbiFunctionInputs, DecodedAbiFunctionOutputs } from 'everscale-inpage-provider'
 
 import { useRpcClient } from '@/hooks/useRpcClient'
-import { DexAbi, TokenWallet } from '@/misc'
+import { DexAbi, DexConstants, TokenWallet } from '@/misc'
 import {
-    CROSS_PAIR_EXCHANGE_WHITE_LIST,
     DEFAULT_DECIMALS,
     DEFAULT_SLIPPAGE_VALUE,
     DEFAULT_SWAP_BILL,
@@ -26,7 +25,6 @@ import {
     getReducedCrossExchangeAmount,
     getReducedCrossExchangeFee,
     getSlippageMinExpectedAmount,
-    intersection,
 } from '@/modules/Swap/utils'
 import { TokenCache, TokensCacheService } from '@/stores/TokensCacheService'
 import { WalletService } from '@/stores/WalletService'
@@ -42,7 +40,7 @@ import type {
     SwapRoute,
     SwapRouteResult,
 } from '@/modules/Swap/types'
-import type { CrossPairsRequest, PairsResponse } from '@/modules/Pairs/types'
+import { CrossChainKind, NewCrossPairsRequest, NewCrossPairsResponse } from '@/modules/Pairs/types'
 
 
 const rpc = useRpcClient()
@@ -94,9 +92,11 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
      * Load and save all pairs.
      * Create routes by white list.
      * Check tokens wallets.
+     * @param {string} amount
+     * @param {CrossChainKind} direction
      * @protected
      */
-    public async prepare(): Promise<void> {
+    public async checkSuggestions(amount: string, direction: CrossChainKind): Promise<void> {
         if (
             this.isPreparing
             || this.isSwapping
@@ -108,12 +108,12 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
 
         debug('Prepare cross-pair')
 
-        let response: PairsResponse[] | undefined
+        let response: NewCrossPairsResponse | undefined
 
         this.setState('isPreparing', true)
 
         try {
-            response = await this.fetchCrossPairs()
+            response = await this.fetchCrossPairs(amount, direction)
         }
         catch (e) {
             error('Load cross-pairs error', e)
@@ -124,42 +124,27 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
             return
         }
 
-        const [leftTokenPairs, rightTokenPairs] = response
-
-        const leftPairs = leftTokenPairs.pairs.filter(
-            ({ tvl }) => new BigNumber(tvl).dp(0, BigNumber.ROUND_DOWN).gte(100000),
-        )
-        const rightPairs = rightTokenPairs.pairs.filter(
-            ({ tvl }) => new BigNumber(tvl).dp(0, BigNumber.ROUND_DOWN).gte(100000),
-        )
-
-        const crossPairs: SwapPair[] = [...leftPairs, ...rightPairs].map(({ meta }) => {
-            const pair: SwapPair = {
-                address: new Address(meta.poolAddress),
-                contract: new rpc.Contract(DexAbi.Pair, new Address(meta.poolAddress)),
+        const crossPairs: SwapPair[] = response.pairs.map(item => {
+            const address = new Address(item.pairAddress)
+            const leftToken = this.tokensCache.get(item.leftAddress)
+            const rightToken = this.tokensCache.get(item.rightAddress)
+            return {
+                address,
+                contract: new rpc.Contract(DexAbi.Pair, address),
                 decimals: {
-                    left: DEFAULT_DECIMALS,
-                    right: DEFAULT_DECIMALS,
+                    left: leftToken?.decimals ?? DEFAULT_DECIMALS,
+                    right: rightToken?.decimals ?? DEFAULT_DECIMALS,
                 },
                 roots: {
-                    left: new Address(meta.baseAddress),
-                    right: new Address(meta.counterAddress),
+                    left: new Address(item.leftAddress),
+                    right: new Address(item.rightAddress),
                 },
                 symbols: {
-                    left: meta.base,
-                    right: meta.counter,
+                    left: leftToken?.symbol ?? '',
+                    right: rightToken?.symbol ?? '',
                 },
             }
-
-            if (pair.roots?.left !== undefined && pair.roots?.right !== undefined) {
-                const leftToken = this.tokensCache.get(meta.baseAddress)
-                pair.decimals!.left = leftToken?.decimals ?? DEFAULT_DECIMALS
-                const rightToken = this.tokensCache.get(meta.counterAddress)
-                pair.decimals!.right = rightToken?.decimals ?? DEFAULT_DECIMALS
-            }
-
-            return pair
-        }).filter(pair => pair.address?.toString() !== this.data.pair?.address?.toString())
+        })
 
         this.setData('crossPairs', crossPairs)
 
@@ -167,49 +152,66 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
         await this.syncCrossExchangePairs()
         await this.syncCrossExchangePairsBalances()
 
-        const leftRoots = leftPairs.map(
-            ({ meta }) => [meta.baseAddress, meta.counterAddress],
-        )
-        const rightRoots = rightPairs.map(
-            ({ meta }) => [meta.baseAddress, meta.counterAddress],
-        )
-
-        const intersections = intersection(...leftRoots, ...rightRoots).filter(
-            root => ![this.leftToken?.root, this.rightToken?.root].includes(root),
-        )
-
         const routes: SwapRoute[] = []
+        const tokens: TokenCache[] = []
+        const roots = this.data.crossPairs.reduce<string[]>((acc, pair) => {
+            const pairRoots = [pair.roots?.left.toString(), pair.roots?.right.toString()]
 
-        try {
-            await (
-                async () => {
-                    // eslint-disable-next-line no-restricted-syntax
-                    for (const root of CROSS_PAIR_EXCHANGE_WHITE_LIST) {
-                        if (intersections.includes(root)) {
+            let idx = pairRoots.indexOf(this.leftToken?.root),
+                // eslint-disable-next-line no-nested-ternary
+                root = pairRoots[idx === 0 ? 1 : idx === 1 ? 0 : -1]
+
+            if (root !== undefined && !acc.includes(root)) {
+                acc.push(root)
+            }
+
+            idx = pairRoots.indexOf(this.rightToken?.root)
+            // eslint-disable-next-line no-nested-ternary
+            root = pairRoots[idx === 0 ? 1 : idx === 1 ? 0 : -1]
+
+            if (root !== undefined && !acc.includes(root)) {
+                acc.push(root)
+            }
+
+            return acc
+        }, [])
+
+        if (roots.length > 0) {
+            try {
+                await (
+                    async () => {
+                        // eslint-disable-next-line no-restricted-syntax
+                        for (const root of roots) {
                             const token = this.tokensCache.get(root)
                             if (token !== undefined) {
                                 await this.tokensCache.syncToken(token.root)
-
-                                routes.push({
-                                    bill: {},
-                                    leftAmount: this.leftAmount,
-                                    pairs: [],
-                                    rightAmount: this.rightAmount,
-                                    slippage: this.data.slippage,
-                                    steps: [],
-                                    tokens: [token],
-                                })
+                                tokens.push(token)
                             }
                         }
                     }
+                )()
+            }
+            catch (e) {
+
+            }
+            finally {
+                if (tokens.length > 0) {
+                    routes.push({
+                        bill: {},
+                        leftAmount: this.leftAmount,
+                        pairs: [],
+                        rightAmount: this.rightAmount,
+                        slippage: this.data.slippage,
+                        steps: [],
+                        tokens,
+                    })
                 }
-            )()
+
+                this.setData('routes', routes)
+            }
         }
-        catch (e) {}
-        finally {
-            this.setData('routes', routes)
-            this.setState('isPreparing', false)
-        }
+
+        this.setState('isPreparing', false)
     }
 
     /**
@@ -371,9 +373,9 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
         try {
             await TokenWallet.send({
                 address: new Address(this.leftToken.wallet),
-                grams: new BigNumber(steps.length)
-                    .times(1000000000)
-                    .plus(1500000000)
+                grams: new BigNumber(steps.length - 1)
+                    .times(500000000)
+                    .plus(2500000000)
                     .plus(deployGrams)
                     .toFixed(),
                 owner: this.wallet.account.address,
@@ -1173,29 +1175,34 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
 
     /**
      * Load pairs for each selected token.
-     * Filter by TVl value which greater or equal $100000.
+     * Filter by TVl value which greater or equal $50000.
+     * @param {string} amount
+     * @param {CrossChainKind} direction
      * @protected
      */
-    protected async fetchCrossPairs(): Promise<PairsResponse[] | undefined> {
-        if (this.leftToken === undefined || this.rightToken === undefined) {
+    protected async fetchCrossPairs(
+        amount: string,
+        direction: CrossChainKind,
+    ): Promise<NewCrossPairsResponse | undefined> {
+        if (this.leftToken === undefined || this.rightToken === undefined || amount == null) {
             return undefined
         }
 
         const api = useSwapApi()
-        const request = (fromCurrencyAddress: string) => (
-            api.crossPairs({}, {
-                body: JSON.stringify({
-                    fromCurrencyAddress,
-                    toCurrencyAddresses: CROSS_PAIR_EXCHANGE_WHITE_LIST,
-                } as CrossPairsRequest),
-            })
-        )
 
         try {
-            return await Promise.all([
-                request(this.leftToken.root),
-                request(this.rightToken.root),
-            ])
+            return await api.newCrossPairs({}, {
+                body: JSON.stringify({
+                    amount,
+                    deep: 3,
+                    direction,
+                    fromCurrencyAddress: direction === 'expectedspendamount' ? this.rightToken.root : this.leftToken.root,
+                    minTvl: '50000',
+                    toCurrencyAddress: direction === 'expectedspendamount' ? this.leftToken.root : this.rightToken.root,
+                    whiteListCurrencies: [],
+                    whiteListUri: DexConstants.TokenListURI,
+                } as NewCrossPairsRequest),
+            })
         }
         catch (e) {
             error('Load selected tokens cross-pairs error', e)

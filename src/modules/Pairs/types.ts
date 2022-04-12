@@ -65,6 +65,30 @@ export type CrossPairsRequest = {
     toCurrencyAddresses: string[];
 }
 
+export type CrossChainKind = 'expectedexchange' | 'expectedspendamount'
+
+export type NewCrossPairsRequest = {
+    amount: string;
+    deep: number;
+    direction: CrossChainKind;
+    fromCurrencyAddress: string;
+    minTvl: string;
+    toCurrencyAddress: string;
+    whiteListCurrencies: string[];
+    whiteListUri?: string;
+}
+
+export type CrossChainPairInfoResponse = {
+    leftAddress: string;
+    pairAddress: string;
+    rightAddress: string;
+}
+
+export type NewCrossPairsResponse = {
+    amount: number;
+    pairs: CrossChainPairInfoResponse[];
+}
+
 export type PairResponse = PairInfo
 
 export type PairsResponse = {

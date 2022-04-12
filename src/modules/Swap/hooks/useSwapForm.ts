@@ -207,6 +207,7 @@ export function useSwapForm(): SwapFormShape {
     const onKeyPress = React.useCallback(debounce(() => {
         (async () => {
             await formStore.recalculate(true)
+            formStore.setState('isCalculating', false)
         })()
     }, 400), [formStore.isCalculating])
 
@@ -224,6 +225,7 @@ export function useSwapForm(): SwapFormShape {
             debouncedRightAmount(value)
         }
         else {
+            formStore.setState('isCalculating', true)
             formStore.changeLeftAmount(value, onKeyPress)
         }
     }
@@ -234,6 +236,7 @@ export function useSwapForm(): SwapFormShape {
             debouncedLeftAmount(value)
         }
         else {
+            formStore.setState('isCalculating', true)
             formStore.changeRightAmount(value, onKeyPress)
         }
     }
