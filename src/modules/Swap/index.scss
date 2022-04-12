@@ -16,6 +16,7 @@
 
     svg { stroke: #ffffff; }
 }
+
 .swap-field-balance {
     max-width: 205px;
     padding: 0 !important;
@@ -28,60 +29,15 @@
 .swap-container {
     align-items: flex-start;
     display: flex;
-    gap: 40px;
     flex-flow: column;
+    flex-shrink: 0;
+    gap: 40px;
     @media only screen and (min-width: 1200px) {
+        align-items: stretch;
         flex-flow: row nowrap;
     }
 }
 
 .card.swap-card {
     min-width: 100%;
-}
-
-.card.swap-notation {
-    background-color: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.24);
-    border-radius: 0;
-    flex-shrink: 1;
-    padding: 24px;
-    position: relative;
-
-    @media only screen and (min-width: 1200px) {
-        min-width: 290px;
-        order: 9999;
-    }
-
-    h3 {
-        font-size: 18px;
-        font-weight: 700;
-        line-height: 24px;
-        letter-spacing: 0.6px;
-    }
-
-    p {
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 20px;
-        letter-spacing: 0.5px;
-        margin-top: 15px
-    }
-
-    .swap-notation__icon-holders {
-        margin-bottom: 20px;
-    }
-
-    .swap-notation-link {
-        color: #C5E4F3;
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 20px;
-        letter-spacing: 0.6px;
-        text-decoration: none;
-        &:hover { color: #fff; }
-        .icon {
-            margin-left: 10px;
-            vertical-align: 2px;
-        }
-    }
 }

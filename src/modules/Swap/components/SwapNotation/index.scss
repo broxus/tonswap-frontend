@@ -1,0 +1,82 @@
+.card[class*='swap-notation'] {
+    background-color: transparent;
+    border: 1px solid rgb(255 255 255 / 24%);
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 1;
+    justify-content: space-between;
+    padding: 24px;
+    position: relative;
+
+    @media only screen and (min-width: 1200px) {
+        min-width: 290px;
+        order: 9999;
+    }
+
+    h3 {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        line-height: 24px;
+    }
+
+    p {
+        font-size: 14px;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+        line-height: 20px;
+        margin-top: 15px
+    }
+
+    // noinspection ALL
+    .swap-notation__icon-holders {
+        margin-bottom: 20px;
+    }
+
+    .swap-notation-link {
+        color: #c5e4f3;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        line-height: 20px;
+        text-decoration: none;
+        &:hover { color: #ffffff; }
+
+        .icon {
+            margin-left: 10px;
+            vertical-align: 2px;
+        }
+    }
+}
+
+
+.card.swap-notation-newbie {
+    background-clip: padding-box;
+    background-image: radial-gradient(100% 100% at 100% 100%, rgb(0 56 255 / 24%) 0%, rgb(0 56 255 / 0%) 100%),
+        radial-gradient(50% 100% at 100% 0%, rgb(173 144 233 / 24%) 0%, rgb(173 144 233 / 0%) 100%);
+    border: 1px solid;
+    border-bottom: 0 none;
+    border-image-slice: 1;
+    border-image-source: radial-gradient(100% 97.92% at 0% 0%, rgb(173 144 233 / 64%) 0%, rgb(0 56 255 / 0%) 100%);
+    border-right: 0 none;
+    position: relative;
+
+    // noinspection ALL
+    h3 {
+        background: linear-gradient(90.26deg, #ad90e9 0%, #8da0ee 65.86%), #ffffff;
+        -webkit-background-clip: text;
+        background-clip: text;
+        border-image: none;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: 0.25px;
+        line-height: 32px;
+        -webkit-text-fill-color: transparent;
+        text-fill-color: transparent;
+    }
+
+    footer {
+        margin-top: 120px;
+    }
+}
