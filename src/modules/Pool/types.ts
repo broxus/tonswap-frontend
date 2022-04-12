@@ -16,6 +16,7 @@ export type PoolStoreState = {
     isDepositingLiquidity: boolean;
     isDepositingLp: boolean;
     isDepositingRight: boolean;
+    isPreparing: boolean;
     isSyncPairBalances: boolean;
     isSyncPairRoots: boolean;
     isWithdrawingLeft: boolean;

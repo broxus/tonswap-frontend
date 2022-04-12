@@ -59,7 +59,7 @@ export function useSwapForm(): SwapFormShape {
         setTokenListVisible(true)
     }
 
-    const prepare = async (leftRoot: string, rightRoot: string) => {
+    const resolveStateFromUrl = async (leftRoot: string, rightRoot: string) => {
         const isLeftRootAvailable = isAddressValid(formStore.leftToken?.root)
         const isRightRootAvailable = isAddressValid(formStore.rightToken?.root)
         const isLeftRootValid = isAddressValid(leftRoot)
@@ -580,7 +580,7 @@ export function useSwapForm(): SwapFormShape {
                 formStore.setState('isPreparing', true)
                 if (isReady) {
                     try {
-                        await prepare(leftTokenRoot, rightTokenRoot)
+                        await resolveStateFromUrl(leftTokenRoot, rightTokenRoot)
                         await formStore.init()
                     }
                     catch (e) {}

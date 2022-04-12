@@ -13,6 +13,21 @@ function SubmitButton(): JSX.Element {
     const wallet = useWallet()
     const pool = usePoolStore()
 
+    if (pool.isPreparing) {
+        return (
+            <button
+                type="button"
+                className="btn btn-primary btn-lg form-submit btn-block"
+                aria-disabled="true"
+                disabled
+            >
+                {intl.formatMessage({
+                    id: 'POOL_BTN_TEXT_PREPARING',
+                })}
+            </button>
+        )
+    }
+
     const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
         disabled: false,
     }

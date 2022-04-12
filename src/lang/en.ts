@@ -223,6 +223,7 @@ export default {
     POOL_BTN_TEXT_CONNECTING_POOL: 'Connecting...',
     POOL_BTN_TEXT_DEPOSIT_TOKEN: 'Deposit {symbol}',
     POOL_BTN_TEXT_SUPPLY: 'Supply',
+    POOL_BTN_TEXT_PREPARING: 'Preparing...',
     POOL_BTN_TEXT_SUBMIT: 'Submit',
     POOL_DATA_SUBTITLE_DEX_ACCOUNT: 'FlatQube account balance',
     POOL_DEX_DATA_LABEL_LP_TOKENS: 'LP Tokens',

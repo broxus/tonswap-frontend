@@ -7,7 +7,6 @@ import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { PoolStoreData } from '@/modules/Pool/types'
 import { TokenSide } from '@/modules/TokensList'
 import { useTokensCache } from '@/stores/TokensCacheService'
-import { useWallet } from '@/stores/WalletService'
 import { debounce, debug, error } from '@/utils'
 
 
@@ -18,7 +17,8 @@ type PoolFormShape = {
     hideTokensList: () => void;
     showTokensList: (side: TokenSide) => () => void;
     onChangeData: <K extends keyof PoolStoreData>(key: K) => (value: PoolStoreData[K]) => void;
-    onSelectToken: (root: string) => void;
+    onSelectLeftToken: (root: string) => void;
+    onSelectRightToken: (root: string) => void;
     onDismissTransactionReceipt: () => void;
 }
 
@@ -34,7 +34,6 @@ export function usePoolForm(): PoolFormShape {
     }>()
     const history = useHistory()
     const tokensCache = useTokensCache()
-    const wallet = useWallet()
 
     const [isTokenListShown, setTokenListVisible] = React.useState(false)
 
@@ -64,68 +63,68 @@ export function usePoolForm(): PoolFormShape {
         setTokenListVisible(true)
     }
 
-    const updateTokens = (leftRoot: string, rightRoot: string) => {
-        if (!isAddressValid(leftRoot) && !isAddressValid(leftRoot)) {
+    const resolveStateFromUrl = async (leftRoot: string, rightRoot: string) => {
+        const isLeftRootValid = isAddressValid(leftRoot)
+        const isRightRootValid = isAddressValid(rightRoot)
+
+        if (!isLeftRootValid && !isRightRootValid) {
             return
         }
 
-        pool.changeData('leftToken', leftRoot)
-        pool.changeData('rightToken', rightRoot)
+        pool.setData({ leftToken: leftRoot, rightToken: rightRoot })
 
-        if (tokensCache.tokens.length > 0) {
-            const isLeftRootValid = isAddressValid(leftRoot)
-            const isRightRootValid = isAddressValid(rightRoot)
-            const leftInCache = pool.leftToken !== undefined
-            const rightInCache = pool.rightToken !== undefined;
+        if (tokensCache.isReady) {
+            const leftInCache = tokensCache.has(leftRoot)
+            const rightInCache = tokensCache.has(rightRoot)
 
-            (async () => {
-                try {
-                    if (isLeftRootValid && !leftInCache) {
-                        debug('Try to fetch left token')
-                        await tokensCache.addToImportQueue(leftRoot)
-                    }
+            try {
+                if (isLeftRootValid && !leftInCache) {
+                    debug('Try to fetch left token')
+                    await tokensCache.addToImportQueue(leftRoot)
                 }
-                catch (e) {
-                    error(e)
-                }
+            }
+            catch (e) {
+                error('Left token import error', e)
+                pool.setData('leftToken', undefined)
+            }
 
-                try {
-                    if (isRightRootValid && !rightInCache) {
-                        debug('Try to fetch right token')
-                        await tokensCache.addToImportQueue(rightRoot)
-                    }
+            try {
+                if (isRightRootValid && !rightInCache) {
+                    debug('Try to fetch right token')
+                    await tokensCache.addToImportQueue(rightRoot)
                 }
-                catch (e) {
-                    error(e)
-                }
-            })()
+            }
+            catch (e) {
+                error('Right token import error', e)
+                pool.setData('rightToken', undefined)
+            }
         }
     }
 
     const onChangeData: PoolFormShape['onChangeData'] = key => value => {
-        pool.changeData(key, value)
+        if (['leftAmount', 'rightAmount'].includes(key)) {
+            pool.changeAmount(key, value)
+        }
+        else {
+            pool.setData(key, value)
+        }
     }
 
-    const onSelectToken: PoolFormShape['onSelectToken'] = root => {
-        let pathname = '/pool'
-        if (tokenSide === 'leftToken') {
-            const rightRoot = (pool.rightToken?.root !== undefined && pool.rightToken.root !== root)
-                ? `/${pool.rightToken.root}`
-                : ''
-            pathname += `/${root}${rightRoot}`
-        }
-        else if (
-            tokenSide === 'rightToken'
-            && pool.leftToken?.root !== undefined
-            && pool.leftToken.root !== root
-        ) {
-            pathname += `/${pool.leftToken.root}/${root}`
-        }
-        else if (tokenSide) {
-            pool.changeData(tokenSide, root)
-        }
-        history.push({ pathname })
+    const onSelectLeftToken: PoolFormShape['onSelectLeftToken'] = root => {
         hideTokensList()
+        pool.setData('leftToken', root)
+        const rightRoot = (pool.rightToken?.root !== undefined && pool.rightToken.root !== root)
+            ? `/${pool.rightToken.root}`
+            : ''
+        history.replace(`/pool/${root}${rightRoot}`)
+    }
+
+    const onSelectRightToken: PoolFormShape['onSelectRightToken'] = root => {
+        hideTokensList()
+        pool.setData('rightToken', root)
+        if (pool.leftToken?.root !== undefined) {
+            history.replace(`/pool/${pool.leftToken.root}/${root}`)
+        }
     }
 
     const onDismissTransactionReceipt = () => {
@@ -133,27 +132,29 @@ export function usePoolForm(): PoolFormShape {
     }
 
     React.useEffect(() => {
-        (async () => {
-            await pool.init()
-        })()
-
         const tokensListDisposer = reaction(
-            () => [tokensCache.tokens],
-            () => {
-                updateTokens(leftTokenRoot, rightTokenRoot)
+            () => tokensCache.isReady,
+            async isReady => {
+                pool.setState('isPreparing', true)
+                if (isReady) {
+                    try {
+                        await resolveStateFromUrl(leftTokenRoot, rightTokenRoot)
+                        await pool.init()
+                    }
+                    catch (e) {}
+                    finally {
+                        pool.setState('isPreparing', false)
+                    }
+                }
             },
+            { fireImmediately: true, delay: 50 },
         )
 
         return () => {
-            pool.dispose().catch(reason => error(reason))
             tokensListDisposer()
+            pool.dispose().catch(reason => error(reason))
         }
     }, [])
-
-    // Update tokens state after change the uri params
-    React.useEffect(() => {
-        updateTokens(leftTokenRoot, rightTokenRoot)
-    }, [leftTokenRoot, rightTokenRoot, wallet.address])
 
     return {
         isTokenListShown,
@@ -161,8 +162,9 @@ export function usePoolForm(): PoolFormShape {
         debouncedSyncPoolShare,
         hideTokensList,
         showTokensList,
+        onSelectRightToken,
         onChangeData,
-        onSelectToken,
+        onSelectLeftToken,
         onDismissTransactionReceipt,
     }
 }

@@ -60,7 +60,7 @@ export function Pool(): JSX.Element {
                             {() => (
                                 <PoolField
                                     key="leftField"
-                                    dexAccountBalance={pool.dexLeftBalance}
+                                    balance={pool.formattedLeftBalance}
                                     label={intl.formatMessage({
                                         id: 'POOL_FIELD_LABEL_LEFT',
                                     })}
@@ -97,7 +97,7 @@ export function Pool(): JSX.Element {
                             {() => (
                                 <PoolField
                                     key="rightField"
-                                    dexAccountBalance={pool.dexRightBalance}
+                                    balance={pool.formattedRightBalance}
                                     label={intl.formatMessage({
                                         id: 'POOL_FIELD_LABEL_RIGHT',
                                     })}
@@ -179,12 +179,21 @@ export function Pool(): JSX.Element {
                 )}
             </Observer>
 
-            {(form.isTokenListShown && form.tokenSide) && (
+            {(form.isTokenListShown && form.tokenSide === 'leftToken') && (
                 <TokensList
-                    key="tokensList"
-                    currentToken={pool[form.tokenSide]}
+                    key="leftTokensList"
+                    currentToken={pool.leftToken}
                     onDismiss={form.hideTokensList}
-                    onSelectToken={form.onSelectToken}
+                    onSelectToken={form.onSelectLeftToken}
+                />
+            )}
+
+            {(form.isTokenListShown && form.tokenSide === 'rightToken') && (
+                <TokensList
+                    key="rightTokensList"
+                    currentToken={pool.rightToken}
+                    onDismiss={form.hideTokensList}
+                    onSelectToken={form.onSelectRightToken}
                 />
             )}
 

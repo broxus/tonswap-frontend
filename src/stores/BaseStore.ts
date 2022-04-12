@@ -1,18 +1,18 @@
 import { action, makeObservable, observable } from 'mobx'
 
-export class BaseStore<T, U> {
+export class BaseStore<T extends Record<string, any>, U extends Record<string, any>> {
 
     /**
      * Store data (e.g. user data, account data, form data etc.)
      * @protected
      */
-    protected data = {} as T
+    protected data: T = {} as T
 
     /**
      * Store state (e.g. interface states, notations, errors etc.)
      * @protected
      */
-    protected state = {} as U
+    protected state: U = {} as U
 
     constructor() {
         makeObservable<
@@ -21,9 +21,9 @@ export class BaseStore<T, U> {
             | 'state'
         >(this, {
             data: observable,
-            state: observable,
             setData: action.bound,
             setState: action.bound,
+            state: observable,
         })
     }
 
@@ -43,20 +43,34 @@ export class BaseStore<T, U> {
      */
     public setData<K extends keyof T & string>(data: Partial<Pick<T, K>> | T): this;
     /**
+     * Pass a function as an argument that takes the argument of the current data object.
+     * @template {object} T
+     * @template {keyof T & string} K
+     * @param {((prevData: Readonly<Partial<T>>) => (Pick<T, K> | T)) } data
+     */
+    public setData<K extends keyof T & string>(data: (prevData: Readonly<Partial<T>>) => (Pick<T, K> | T)): this;
+    /**
      * Pass `key:value` hash  (one or many keys) of the data.
      * You may also pass individual keys and values to change data.
      * @template {object} T
      * @template {keyof T & string} K
-     * @param {K | (Partial<Pick<T, K>> | T)} keyOrData
+     * @param {K | (Partial<Pick<T, K>> | T) | ((prevData: Readonly<Partial<T>>) => (Pick<T, K> | T))} keyOrData
      * @param {T[K]} [value]
      */
-    public setData<K extends keyof T & string>(keyOrData: K | (Partial<Pick<T, K>> | T), value?: T[K]): this {
+    public setData<K extends keyof T & string>(
+        keyOrData: K | (Partial<Pick<T, K>> | T) | ((prevData: Readonly<Partial<T>>) => (Pick<T, K> | T)),
+        value?: T[K],
+    ): this {
+        if (typeof keyOrData === 'function') {
+            // @ts-ignore
+            this.data = keyOrData(this.data)
+        }
+
         if (typeof keyOrData === 'string') {
             this.data = {
                 ...this.data,
                 [keyOrData]: value,
             }
-            return this
         }
 
         if (typeof keyOrData === 'object' && !Array.isArray(keyOrData)) {
@@ -66,6 +80,13 @@ export class BaseStore<T, U> {
         return this
     }
 
+    /**
+     * Pass a function as an argument that takes the argument of the current state object.
+     * @template {object} U
+     * @template {keyof U & string} K
+     * @param {((prevData: Readonly<Partial<U>>) => (Pick<U, K> | U)) } data
+     */
+    public setState<K extends keyof U & string>(data: (prevData: Readonly<Partial<U>>) => (Pick<U, K> | U)): this;
     /**
      * Set state by the given key and value.
      * @template {object} U
@@ -86,16 +107,23 @@ export class BaseStore<T, U> {
      * You may also pass individual keys and values to change state.
      * @template {object} U
      * @template {keyof U & string} K
-     * @param {K | (Partial<Pick<U, K>> | U)} keyOrState
+     * @param {((prevData: Readonly<Partial<U>>) => (Pick<U, K> | U)) | K | (Partial<Pick<U, K>> | U)} keyOrState
      * @param {U[K]} [value]
      */
-    public setState<K extends keyof U & string>(keyOrState: K | (Partial<Pick<U, K>> | U), value?: U[K]): this {
+    public setState<K extends keyof U & string>(
+        keyOrState: ((prevData: Readonly<Partial<U>>) => (Pick<U, K> | U)) | K | (Partial<Pick<U, K>> | U),
+        value?: U[K],
+    ): this {
+        if (typeof keyOrState === 'function') {
+            // @ts-ignore
+            this.state = keyOrState(this.state)
+        }
+
         if (typeof keyOrState === 'string') {
             this.state = {
                 ...this.state,
                 [keyOrState]: value,
             }
-            return this
         }
 
         if (typeof keyOrState === 'object' && !Array.isArray(keyOrState)) {

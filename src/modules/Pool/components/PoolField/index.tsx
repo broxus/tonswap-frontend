@@ -8,11 +8,12 @@ import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useField } from '@/hooks/useField'
 import { TokenCache } from '@/stores/TokensCacheService'
-import { useTokenFormattedBalance } from '@/hooks/useTokenFormattedBalance'
+import { useTokenBalanceWatcher } from '@/hooks/useTokenBalanceWatcher'
+import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 
 
 type Props = {
-    dexAccountBalance?: string;
+    balance?: string;
     disabled?: boolean;
     label: string;
     id?: string;
@@ -28,7 +29,7 @@ type Props = {
 
 
 function Field({
-    dexAccountBalance,
+    balance = '0',
     isValid = true,
     token,
     ...props
@@ -39,16 +40,18 @@ function Field({
         value: props.value,
         onChange: props.onChange,
     })
-    const balance = useTokenFormattedBalance(token, {
-        subscriberPrefix: 'liquidity-pool',
-        dexAccountBalance,
+    const formStore = usePoolStore()
+    const tokensCache = formStore.useTokensCache
+
+    useTokenBalanceWatcher(token, {
+        subscriberPrefix: 'liquidity-filed',
     })
 
-    const deFormattedBalance = balance.value?.replace(/\s/g, '') ?? 0
+    const deFormattedBalance = balance?.replace(/\s/g, '') ?? 0
 
     const isInsufficientBalance = React.useMemo(
         () => new BigNumber(props.value ?? 0).gt(deFormattedBalance),
-        [props.value, balance.value],
+        [props.value, balance],
     )
 
     const onMax = () => {
@@ -61,7 +64,7 @@ function Field({
                 className={classNames('form-fieldset', {
                     invalid: !isValid,
                     caution: props.isCaution,
-                    checking: balance.isFetching,
+                    checking: tokensCache.isTokenUpdatingBalance(token?.root) && !props.disabled,
                 })}
             >
                 <div className="form-fieldset__header">
@@ -92,7 +95,7 @@ function Field({
                                 {intl.formatMessage({
                                     id: 'POOL_FIELD_TOKEN_WALLET_BALANCE',
                                 }, {
-                                    balance: balance.value,
+                                    balance,
                                 })}
                             </div>
                         )}

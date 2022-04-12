@@ -3,8 +3,10 @@ import * as E from 'fp-ts/Either'
 import isEqual from 'lodash.isequal'
 import {
     action,
+    computed,
     IReactionDisposer,
-    makeAutoObservable,
+    makeObservable,
+    observable,
     reaction,
     runInAction,
 } from 'mobx'
@@ -42,22 +44,16 @@ import { FavoritePairs, useFavoritePairs } from '@/stores/FavoritePairs'
 import {
     concatSymbols,
     debounce,
-    error,
+    error, formattedBalance,
     isGoodBignumber,
 } from '@/utils'
+import { BaseStore } from '@/stores/BaseStore'
 
 
 const rpc = useRpcClient()
 
 
-export class PoolStore {
-
-    /**
-     * Current data of the liquidity pool form
-     * @type {PoolStoreData}
-     * @protected
-     */
-    protected data: PoolStoreData = DEFAULT_POOL_STORE_DATA
+export class PoolStore extends BaseStore<PoolStoreData, PoolStoreState> {
 
     /**
      * Current data of the liquidity pool
@@ -65,13 +61,6 @@ export class PoolStore {
      * @protected
      */
     protected pool: PoolData = DEFAULT_POOL_DATA
-
-    /**
-     * Current state of the liquidity pool store
-     * @type {PoolStoreState}
-     * @protected
-     */
-    protected state: PoolStoreState = DEFAULT_POOL_STORE_STATE
 
     /**
      * Last deposit liquidity transaction result data
@@ -86,18 +75,83 @@ export class PoolStore {
         protected readonly dex: DexAccountService,
         protected readonly favoritePairs: FavoritePairs,
     ) {
-        makeAutoObservable<
+        super()
+
+        this.resetData()
+        this.resetState()
+
+        makeObservable<
             PoolStore,
+            | 'pool'
+            | 'changePoolData'
             | 'handleLpBalanceChange'
             | 'handleTokensChange'
             | 'handleStepChange'
             | 'handleWalletAddressChange'
         >(this, {
-            changeData: action.bound,
+            pool: observable,
+            changePoolData: action.bound,
             handleLpBalanceChange: action.bound,
             handleTokensChange: action.bound,
             handleStepChange: action.bound,
             handleWalletAddressChange: action.bound,
+            isAutoExchangeAvailable: computed,
+            isDexAccountDataAvailable: computed,
+            isPoolDataAvailable: computed,
+            isPoolShareDataAvailable: computed,
+            isSupplyComputeReady: computed,
+            isSupplyReady: computed,
+            dexLeftBalance: computed,
+            isDexLeftBalanceValid: computed,
+            isLeftTokenWithdrawAvailable: computed,
+            dexRightBalance: computed,
+            isDexRightBalanceValid: computed,
+            isRightTokenWithdrawAvailable: computed,
+            transaction: computed,
+            isWithdrawLpAvailable: computed,
+            isWithdrawLiquidityAvailable: computed,
+            isLeftAmountValid: computed,
+            isRightAmountValid: computed,
+            leftAmount: computed,
+            leftToken: computed,
+            rightAmount: computed,
+            rightToken: computed,
+            formattedLeftBalance: computed,
+            formattedRightBalance: computed,
+            isAutoExchangeEnabled: computed,
+            isDepositingLeft: computed,
+            isDepositingLiquidity: computed,
+            isDepositingRight: computed,
+            isPreparing: computed,
+            isSyncPairBalances: computed,
+            isSyncPairRoots: computed,
+            isWithdrawingLeftToken: computed,
+            isWithdrawingLiquidity: computed,
+            isWithdrawingRightToken: computed,
+            step: computed,
+            isPoolEmpty: computed,
+            lpBalance: computed,
+            lpDecimals: computed,
+            lpRoot: computed,
+            lpWalletAddress: computed,
+            lpWalletBalance: computed,
+            poolShare: computed,
+            sharePercent: computed,
+            shareChangePercent: computed,
+            currentShareLeft: computed,
+            currentSharePercent: computed,
+            currentShareRight: computed,
+            leftPrice: computed,
+            rightPrice: computed,
+            newLeftPrice: computed,
+            newRightPrice: computed,
+            leftDeposit: computed,
+            rightDeposit: computed,
+            pair: computed,
+            pairAddress: computed,
+            pairBalances: computed,
+            pairRoots: computed,
+            useTokensCache: computed,
         })
     }
 
@@ -107,38 +161,23 @@ export class PoolStore {
      */
 
     /**
-     * Manually change data by the given key
-     * @template K
-     * @param {K} key
-     * @param {PoolStoreData[K]} value
-     */
-    public changeData<K extends keyof PoolStoreData>(key: K, value: PoolStoreData[K]): void {
-        if (['leftAmount', 'rightAmount'].includes(key)) {
-            this.changeAmount(key, value)
-        }
-        else {
-            this.data[key] = value
-        }
-    }
-
-    /**
      * Manually init all necessary subscribers.
      * Toggle to initial step.
      */
     public async init(): Promise<void> {
         await this.unsubscribeTransactionSubscriber()
 
-        this.#transactionSubscriber = rpc.createSubscriber()
+        this.#transactionSubscriber = new rpc.Subscriber()
 
         this.#dexLeftBalanceValidationDisposer = reaction(() => this.isDexLeftBalanceValid, value => {
             if (value) {
-                this.changeState('isDepositingLeft', false)
+                this.setState('isDepositingLeft', false)
             }
         })
 
         this.#dexRightBalanceValidationDisposer = reaction(() => this.isDexRightBalanceValid, value => {
             if (value) {
-                this.changeState('isDepositingRight', false)
+                this.setState('isDepositingRight', false)
             }
         })
 
@@ -164,8 +203,8 @@ export class PoolStore {
         })
 
         this.#tokensDisposer = reaction(
-            () => [this.leftToken, this.rightToken],
-            debounce(this.handleTokensChange, 200),
+            () => [this.data.leftToken, this.data.rightToken],
+            this.handleTokensChange,
         )
 
         this.#walletAccountDisposer = reaction(() => this.wallet.address, this.handleWalletAddressChange)
@@ -197,7 +236,7 @@ export class PoolStore {
      * Manually toggle auto exchange mode
      */
     public toggleAutoExchange(): void {
-        this.changeState('isAutoExchangeEnabled', !this.isAutoExchangeEnabled)
+        this.setState('isAutoExchangeEnabled', !this.isAutoExchangeEnabled)
 
         if (!this.isAutoExchangeEnabled) {
             this.updateAmount()
@@ -316,12 +355,12 @@ export class PoolStore {
         if (side === 'leftToken') {
             amount = this.leftAmount
             dexBalance = this.dexLeftBalance
-            this.changeState('isDepositingLeft', true)
+            this.setState('isDepositingLeft', true)
         }
         else if (side === 'rightToken') {
             amount = this.rightAmount
             dexBalance = this.dexRightBalance
-            this.changeState('isDepositingRight', true)
+            this.setState('isDepositingRight', true)
         }
 
         const delta = new BigNumber(amount || 0)
@@ -351,10 +390,10 @@ export class PoolStore {
         catch (e) {
             error('Cannot deposit token', e)
             if (side === 'leftToken') {
-                this.changeState('isDepositingLeft', false)
+                this.setState('isDepositingLeft', false)
             }
             else if (side === 'rightToken') {
-                this.changeState('isDepositingRight', false)
+                this.setState('isDepositingRight', false)
             }
         }
     }
@@ -375,9 +414,9 @@ export class PoolStore {
         }
 
         this.cleanDepositLiquidityResult()
-        this.changeState('isDepositingLiquidity', true)
+        this.setState('isDepositingLiquidity', true)
 
-        const owner = rpc.createContract(DexAbi.Callbacks, new Address(this.wallet.address))
+        const owner = new rpc.Contract(DexAbi.Callbacks, new Address(this.wallet.address))
 
         // eslint-disable-next-line no-bitwise
         const callId = ((Math.random() * 100000) | 0).toString()
@@ -451,7 +490,7 @@ export class PoolStore {
         }
         catch (e) {
             error('Cannot deposit liquidity', e)
-            this.changeState('isDepositingLiquidity', false)
+            this.setState('isDepositingLiquidity', false)
         }
     }
 
@@ -469,10 +508,10 @@ export class PoolStore {
      */
     public async withdrawToken(root: string, amount: string): Promise<void> {
         if (root === this.leftToken?.root) {
-            this.changeState('isWithdrawingLeft', true)
+            this.setState('isWithdrawingLeft', true)
         }
         else if (root === this.rightToken?.root) {
-            this.changeState('isWithdrawingRight', true)
+            this.setState('isWithdrawingRight', true)
         }
 
         try {
@@ -485,10 +524,10 @@ export class PoolStore {
         }
         finally {
             if (root === this.leftToken?.root) {
-                this.changeState('isWithdrawingLeft', false)
+                this.setState('isWithdrawingLeft', false)
             }
             else if (root === this.rightToken?.root) {
-                this.changeState('isWithdrawingRight', false)
+                this.setState('isWithdrawingRight', false)
             }
         }
 
@@ -510,7 +549,7 @@ export class PoolStore {
             return
         }
 
-        this.changeState('isWithdrawingLiquidity', true)
+        this.setState('isWithdrawingLiquidity', true)
 
         try {
             await Dex.withdrawLiquidity(
@@ -524,7 +563,7 @@ export class PoolStore {
         }
         catch (e) {
             error('Withdraw Liquidity error', e)
-            this.changeState('isWithdrawingLiquidity', false)
+            this.setState('isWithdrawingLiquidity', false)
             return
         }
 
@@ -532,7 +571,7 @@ export class PoolStore {
         await this.syncLpBalance()
         await this.syncPoolShare()
 
-        this.changeState('isWithdrawingLiquidity', false)
+        this.setState('isWithdrawingLiquidity', false)
     }
 
     /*
@@ -602,44 +641,44 @@ export class PoolStore {
 
     /**
      *
-     * @param {(TokenCache | undefined)[]} tokens
-     * @param {(TokenCache | undefined)[]} prevTokens
+     * @param {(string | undefined)[]} roots
+     * @param {(string | undefined)[]} prevRoots
      * @returns {Promise<void>}
      * @protected
      */
     protected handleTokensChange(
-        tokens: (TokenCache | undefined)[] = [],
-        prevTokens: (TokenCache | undefined)[] = [],
+        roots: (string | undefined)[] = [],
+        prevRoots: (string | undefined)[] = [],
     ): void {
-        const [leftToken, rightToken] = tokens
-        const [prevLeftToken, prevRightToken] = prevTokens
+        const [leftRoot, rightRoot] = roots
+        const [prevLeftRoot, prevRightRoot] = prevRoots
 
-        if (leftToken?.root === prevLeftToken?.root && rightToken?.root === prevRightToken?.root) {
+        if (leftRoot === prevLeftRoot && rightRoot === prevRightRoot) {
             return
         }
 
-        const isLeftChanged = leftToken !== undefined && leftToken?.root !== prevLeftToken?.root
-        const isRightChanged = rightToken !== undefined && rightToken?.root !== prevRightToken?.root
+        const isLeftChanged = leftRoot !== undefined && leftRoot !== prevLeftRoot
+        const isRightChanged = rightRoot !== undefined && rightRoot !== prevRightRoot
 
-        if (leftToken?.root === rightToken?.root) {
+        if (leftRoot === rightRoot) {
             if (isLeftChanged) {
-                const { leftAmount } = this
-                // Note: do not use changeData method
-                this.data.rightToken = undefined
-                this.data.rightAmount = leftAmount
-                this.data.leftAmount = ''
+                this.setData({
+                    leftAmount: '',
+                    rightAmount: this.leftAmount,
+                    rightToken: undefined,
+                })
             }
             else if (isRightChanged) {
-                const { rightAmount } = this
-                // Note: do not use changeData method
-                this.data.leftToken = undefined
-                this.data.leftAmount = rightAmount
-                this.data.rightAmount = ''
+                this.setData({
+                    leftAmount: this.rightAmount,
+                    leftToken: undefined,
+                    rightAmount: '',
+                })
             }
             this.changePoolData('pair', undefined)
         }
 
-        if (leftToken?.root && rightToken?.root) {
+        if (leftRoot && rightRoot) {
             this.setStep(AddLiquidityStep.CHECK_PAIR)
         }
     }
@@ -832,7 +871,7 @@ export class PoolStore {
             this.data.rightAmount = ''
         })
 
-        this.changeState('isDepositingLiquidity', false)
+        this.setState('isDepositingLiquidity', false)
     }
 
     /*
@@ -1117,21 +1156,11 @@ export class PoolStore {
 
     /**
      *
-     * @param {K} key
-     * @param {PoolStoreState[K]} value
-     * @protected
-     */
-    protected changeState<K extends keyof PoolStoreState>(key: K, value: PoolStoreState[K]): void {
-        this.state[key] = value
-    }
-
-    /**
-     *
      * @param {AddLiquidityStep} [step]
      * @protected
      */
     protected setStep(step?: AddLiquidityStep): void {
-        this.changeState('step', step)
+        this.setState('step', step)
     }
 
     /**
@@ -1140,8 +1169,8 @@ export class PoolStore {
      * @param {PoolStoreData[K]} value
      * @protected
      */
-    protected changeAmount<K extends keyof PoolStoreData>(key: K, value: PoolStoreData[K]): void {
-        this.data[key] = value
+    public changeAmount<K extends keyof PoolStoreData>(key: K, value: PoolStoreData[K]): void {
+        this.setData(key, value)
 
         if (this.isPoolEmpty) {
             this.syncPoolShare().catch(reason => error(reason))
@@ -1161,20 +1190,20 @@ export class PoolStore {
             const right = getAmount(this.rightPrice || '0', this.leftAmount, this.rightToken?.decimals)
 
             if (isGoodBignumber(right)) {
-                this.data.rightAmount = right.toFixed()
+                this.setData('rightAmount', right.toFixed())
             }
             else {
-                this.data.rightAmount = ''
+                this.setData('rightAmount', '')
             }
         }
         else if (key === 'rightAmount' && this.isRightAmountValid && this.leftToken) {
             const left = getAmount(this.leftPrice || '0', this.rightAmount, this.leftToken.decimals)
 
             if (isGoodBignumber(left)) {
-                this.data.leftAmount = left.toFixed()
+                this.setData('leftAmount', left.toFixed())
             }
             else {
-                this.data.leftAmount = ''
+                this.setData('leftAmount', '')
             }
         }
     }
@@ -1202,7 +1231,7 @@ export class PoolStore {
             return
         }
 
-        this.changeState('isSyncPairBalances', true)
+        this.setState('isSyncPairBalances', true)
 
         try {
             const { left, lp, right } = await Dex.pairBalances(new Address(this.pairAddress))
@@ -1222,7 +1251,7 @@ export class PoolStore {
             error('DEX account balances error', e)
         }
         finally {
-            this.changeState('isSyncPairBalances', false)
+            this.setState('isSyncPairBalances', false)
         }
     }
 
@@ -1236,7 +1265,7 @@ export class PoolStore {
             return
         }
 
-        this.changeState('isSyncPairRoots', true)
+        this.setState('isSyncPairRoots', true)
 
         try {
             const roots = await Dex.pairTokenRoots(new Address(this.pairAddress))
@@ -1261,7 +1290,7 @@ export class PoolStore {
             error('DEX account roots error', e)
         }
         finally {
-            this.changeState('isSyncPairRoots', false)
+            this.setState('isSyncPairRoots', false)
         }
     }
 
@@ -1495,7 +1524,7 @@ export class PoolStore {
      * @protected
      */
     protected resetData(): void {
-        this.data = DEFAULT_POOL_STORE_DATA
+        this.setData(() => DEFAULT_POOL_STORE_DATA)
     }
 
     /**
@@ -1511,7 +1540,7 @@ export class PoolStore {
      * @protected
      */
     protected resetState(): void {
-        this.state = DEFAULT_POOL_STORE_STATE
+        this.setState(() => DEFAULT_POOL_STORE_STATE)
     }
 
     /*
@@ -1669,6 +1698,20 @@ export class PoolStore {
         return this.tokensCache.tokens.find(({ root }) => root === this.data.rightToken)
     }
 
+    public get formattedLeftBalance(): string {
+        if (this.leftToken?.decimals === undefined) {
+            return '0'
+        }
+        return formattedBalance(this.leftToken?.balance, this.leftToken.decimals, this.dexLeftBalance)
+    }
+
+    public get formattedRightBalance(): string {
+        if (this.rightToken?.decimals === undefined) {
+            return '0'
+        }
+        return formattedBalance(this.rightToken?.balance, this.rightToken.decimals, this.dexRightBalance)
+    }
+
     /*
      * Memoized store state values
      * ----------------------------------------------------------------------------------
@@ -1688,6 +1731,10 @@ export class PoolStore {
 
     public get isDepositingRight(): PoolStoreState['isDepositingRight'] {
         return this.state.isDepositingRight
+    }
+
+    public get isPreparing(): PoolStoreState['isPreparing'] {
+        return this.state.isPreparing
     }
 
     public get isSyncPairBalances(): PoolStoreState['isSyncPairBalances'] {
@@ -1805,6 +1852,10 @@ export class PoolStore {
 
     public get pairRoots(): PairTokenRoots | undefined {
         return this.pair?.roots
+    }
+
+    public get useTokensCache(): TokensCacheService {
+        return this.tokensCache
     }
 
     /**
