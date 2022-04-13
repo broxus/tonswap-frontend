@@ -15,7 +15,7 @@ function SwapNotationInternal(): JSX.Element | null {
 
     const [available, setAvailable] = React.useState(storage.get('swap_notation') == null)
 
-    if (wallet.hasProvider && wallet.isInitializing) {
+    if (wallet.isInitializing || wallet.isUpdatingContract) {
         return null
     }
 

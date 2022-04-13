@@ -254,11 +254,11 @@ export function useSwapForm(): SwapFormShape {
             nativeCoinSide: undefined,
         })
 
-        await formStore.changeLeftToken(formStore.multipleSwapTokenRoot)
-
         const rightParam = formStore.rightToken?.root !== undefined ? `/${formStore.rightToken?.root}` : ''
 
         history.replace(`/swap/combined${rightParam}`)
+
+        await formStore.changeLeftToken(formStore.multipleSwapTokenRoot)
     }
 
     const onSelectLeftNativeCoin = async () => {
@@ -302,11 +302,11 @@ export function useSwapForm(): SwapFormShape {
                 }
         }
 
-        await formStore.changeLeftToken(formStore.leftToken?.root)
-
         const rightParam = formStore.rightToken?.root !== undefined ? `/${formStore.rightToken?.root}` : ''
 
         history.replace(`/swap/coin${rightParam}`)
+
+        await formStore.changeLeftToken(formStore.leftToken?.root)
     }
 
     const onSelectRightNativeCoin = async () => {
@@ -354,11 +354,11 @@ export function useSwapForm(): SwapFormShape {
                 }
         }
 
-        await formStore.changeLeftToken(formStore.leftToken?.root)
-
         const leftParam = formStore.leftToken?.root !== undefined ? `/${formStore.leftToken?.root}` : ''
 
         history.replace(`/swap${leftParam}/coin`)
+
+        await formStore.changeLeftToken(formStore.leftToken?.root)
     }
 
     const onSelectLeftToken: SwapFormShape['onSelectLeftToken'] = async root => {
@@ -454,9 +454,9 @@ export function useSwapForm(): SwapFormShape {
             default:
         }
 
-        await formStore.changeLeftToken(root)
-
         navigate()
+
+        await formStore.changeLeftToken(root)
     }
 
     const onSelectRightToken: SwapFormShape['onSelectRightToken'] = async root => {
@@ -564,9 +564,9 @@ export function useSwapForm(): SwapFormShape {
             default:
         }
 
-        await formStore.changeRightToken(root)
-
         navigate()
+
+        await formStore.changeRightToken(root)
     }
 
     const onDismissTransactionReceipt = () => {

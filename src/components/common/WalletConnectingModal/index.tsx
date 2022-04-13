@@ -28,7 +28,7 @@ function ConnectingModal(): JSX.Element | null {
 
     const onClose = () => {
         setOpen(false)
-        wallet.cancelConnecting()
+        wallet.setState('isConnecting', false)
     }
 
     return isOpen ? ReactDOM.createPortal(

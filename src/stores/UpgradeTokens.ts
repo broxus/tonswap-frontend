@@ -54,7 +54,7 @@ export class UpgradeTokens {
     protected state: UpgradeTokensState
 
     constructor(
-        protected readonly tonWallet: WalletService,
+        protected readonly wallet: WalletService,
     ) {
         this.data = {
             tokens: [],
@@ -70,8 +70,10 @@ export class UpgradeTokens {
             state: observable,
         })
 
-        reaction(() => this.tonWallet.address, async () => {
-            await this.checkForUpdates()
+        reaction(() => this.wallet.address, async address => {
+            if (address !== undefined) {
+                await this.checkForUpdates()
+            }
         }, { fireImmediately: true })
     }
 
@@ -84,7 +86,7 @@ export class UpgradeTokens {
     }
 
     public async checkForUpdates(): Promise<void> {
-        if (this.tonWallet.account?.address === undefined) {
+        if (this.wallet.account?.address === undefined) {
             return
         }
 
@@ -121,7 +123,7 @@ export class UpgradeTokens {
                     }
 
                     const wallet = await TokenWalletV4.walletAddress({
-                        owner: this.tonWallet.account.address,
+                        owner: this.wallet.account.address,
                         root: rootV4Address,
                     })
 
@@ -170,7 +172,7 @@ export class UpgradeTokens {
     public async upgrade(token: OutdatedToken): Promise<void> {
         if (
             this.isTokenUpgrading(token.rootV4)
-            || this.tonWallet.account?.address === undefined
+            || this.wallet.account?.address === undefined
             || token.wallet === undefined
             || token.proxy === undefined
             || token.balance === undefined
@@ -188,12 +190,12 @@ export class UpgradeTokens {
                 callback_address: new Address(token.proxy),
                 callback_payload: '',
                 grams: 0,
-                send_gas_to: this.tonWallet.account.address,
+                send_gas_to: this.wallet.account.address,
                 tokens: token.balance,
             }).send({
                 amount: '1000000000',
                 bounce: true,
-                from: this.tonWallet.account.address,
+                from: this.wallet.account.address,
             })
             this.state.upgradedTokens.set(token.rootV4, true)
             runInAction(() => {

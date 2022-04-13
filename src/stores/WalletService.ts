@@ -1,19 +1,20 @@
+import BigNumber from 'bignumber.js'
 import {
-    action,
-    makeAutoObservable,
-    reaction,
-    runInAction,
-} from 'mobx'
-import {
+    Address,
+    AssetType,
     Contract,
     ContractState,
     FullContractState,
     hasEverscaleProvider,
     Permissions,
     Subscription,
-    Transaction,
 } from 'everscale-inpage-provider'
-import BigNumber from 'bignumber.js'
+import {
+    action,
+    computed,
+    makeObservable,
+    reaction,
+} from 'mobx'
 
 import { useRpcClient } from '@/hooks/useRpcClient'
 import {
@@ -22,7 +23,8 @@ import {
     DexConstants,
     Token,
 } from '@/misc'
-import { debug, error } from '@/utils'
+import { BaseStore } from '@/stores/BaseStore'
+import { debug, error, log } from '@/utils'
 
 
 export type Account = Permissions['accountInteraction']
@@ -31,7 +33,6 @@ export type WalletData = {
     account?: Account;
     balance: string;
     contract?: ContractState | FullContractState;
-    transaction?: Transaction;
     version?: string;
 }
 
@@ -40,15 +41,21 @@ export type WalletState = {
     isConnecting: boolean;
     isInitialized: boolean;
     isInitializing: boolean;
+    isUpdatingContract: boolean;
+}
+
+export type WalletServiceCtorOptions = {
+    /** Semver dot-notation string */
+    minWalletVersion?: string;
 }
 
 export type WalletNativeCoin = Pick<Token, 'balance' | 'decimals' | 'icon' | 'name' | 'symbol'>
+
 
 const DEFAULT_WALLET_DATA: WalletData = {
     account: undefined,
     balance: '0',
     contract: undefined,
-    transaction: undefined,
 }
 
 const DEFAULT_WALLET_STATE: WalletState = {
@@ -56,123 +63,74 @@ const DEFAULT_WALLET_STATE: WalletState = {
     isConnecting: false,
     isInitialized: false,
     isInitializing: false,
+    isUpdatingContract: false,
 }
 
 const rpc = useRpcClient()
 
 
-export class WalletService {
+export class WalletService extends BaseStore<WalletData, WalletState> {
 
-    /**
-     * Current data of the wallet
-     * @type {WalletData}
-     * @protected
-     */
-    protected data: WalletData = DEFAULT_WALLET_DATA
+    constructor(
+        protected readonly nativeCoin?: WalletNativeCoin,
+        protected readonly options?: WalletServiceCtorOptions,
+    ) {
+        super()
 
-    /**
-     * Current state of the wallet connection
-     * @type {WalletState}
-     * @protected
-     */
-    protected state: WalletState = DEFAULT_WALLET_STATE
-
-    constructor(protected readonly nativeCoin?: WalletNativeCoin) {
         this.#contractSubscriber = undefined
 
-        makeAutoObservable(this, {
+        this.setData(DEFAULT_WALLET_DATA)
+        this.setState({
+            ...DEFAULT_WALLET_STATE,
+            isInitializing: true,
+        })
+
+        makeObservable(this, {
             connect: action.bound,
             disconnect: action.bound,
+            address: computed,
+            balance: computed,
+            balanceNumber: computed,
+            hasProvider: computed,
+            isConnected: computed,
+            isConnecting: computed,
+            isInitialized: computed,
+            isInitializing: computed,
+            isOutdated: computed,
+            isReady: computed,
+            isUpdatingContract: computed,
+            account: computed,
+            coin: computed,
+            contract: computed,
+            walletContractCallbacks: computed,
         })
 
         reaction(
-            () => this.data.contract,
-            contract => {
-                this.data.balance = contract?.balance || '0'
+            () => this.contract?.balance,
+            balance => {
+                this.setData('balance', balance || '0')
             },
+            { fireImmediately: true },
         )
 
         reaction(
-            () => this.data.account,
+            () => this.account,
             (account, prevAccount) => {
                 if (prevAccount?.address?.toString() === account?.address?.toString()) {
-                    this.state.isConnecting = false
+                    this.setState('isConnecting', false)
                     return
                 }
 
-                this.handleAccountChange(account).then(() => {
-                    runInAction(() => {
-                        this.state.isConnecting = false
-                    })
+                this.onAccountChange(account).then(() => {
+                    this.setState('isConnecting', false)
                 })
             },
+            { fireImmediately: true },
         )
 
         this.init().catch(reason => {
             error('Wallet init error', reason)
-            runInAction(() => {
-                this.state.isConnecting = false
-            })
-        })
-    }
-
-    /**
-     * Wallet initializing. It runs
-     * @returns {Promise<void>}
-     * @protected
-     */
-    protected async init(): Promise<void> {
-        runInAction(() => {
-            this.state.isInitializing = true
-        })
-
-        const hasProvider = await hasEverscaleProvider()
-
-        if (!hasProvider) {
-            runInAction(() => {
-                this.state.isInitializing = false
-                this.state.hasProvider = false
-            })
-            return
-        }
-
-        runInAction(() => {
-            this.state.hasProvider = hasProvider
-        })
-
-        await rpc.ensureInitialized()
-
-        runInAction(() => {
-            this.state.isInitializing = false
-            this.state.isInitialized = true
-            this.state.isConnecting = true
-        })
-
-        const permissionsSubscriber = await rpc.subscribe('permissionsChanged')
-        permissionsSubscriber.on('data', event => {
-            runInAction(() => {
-                this.data.account = event.permissions.accountInteraction
-            })
-        })
-
-        const currentProviderState = await rpc.getProviderState()
-
-        if (currentProviderState.permissions.accountInteraction === undefined) {
-            runInAction(() => {
-                this.state.isConnecting = false
-            })
-            return
-        }
-
-        runInAction(() => {
-            this.data.version = currentProviderState.version
-            this.state.isConnecting = true
-        })
-
-        await connectToWallet()
-
-        runInAction(() => {
-            this.state.isConnecting = false
+            this.setState('isConnecting', false)
         })
     }
 
@@ -185,28 +143,29 @@ export class WalletService {
             return
         }
 
-        const hasProvider = await hasEverscaleProvider()
+        this.setState('isConnecting', true)
 
-        runInAction(() => {
-            this.state.hasProvider = hasProvider
-            this.state.isConnecting = true
-        })
+        try {
+            const hasProvider = await hasEverscaleProvider()
+            this.setState('hasProvider', hasProvider)
+        }
+        catch (e) {
+            this.setState('hasProvider', false)
+            return
+        }
 
-        if (!hasProvider) {
+        if (!this.hasProvider) {
             return
         }
 
         try {
             await connectToWallet()
-            runInAction(() => {
-                this.state.isConnecting = false
-            })
         }
         catch (e) {
             error('Wallet connect error', e)
-            runInAction(() => {
-                this.state.isConnecting = false
-            })
+        }
+        finally {
+            this.setState('isConnecting', false)
         }
     }
 
@@ -219,7 +178,7 @@ export class WalletService {
             return
         }
 
-        this.state.isConnecting = true
+        this.setState('isConnecting', true)
 
         try {
             await rpc.disconnect()
@@ -227,97 +186,29 @@ export class WalletService {
         }
         catch (e) {
             error('Wallet disconnect error', e)
-            runInAction(() => {
-                this.state.isConnecting = false
-            })
+        }
+        finally {
+            this.setState('isConnecting', false)
         }
     }
 
     /**
-     * Cancel connecting state
+     * Add custom token asset to the EVER Wallet
+     * @param {string} root
+     * @param {AssetType} [type]
      */
-    public cancelConnecting(): void {
-        this.state.isConnecting = false
-    }
-
-    /**
-     * Reset wallet data to defaults
-     * @protected
-     */
-    protected reset(): void {
-        this.data = DEFAULT_WALLET_DATA
-        this.state.isConnecting = false
-    }
-
-    /**
-     * Internal callback to subscribe for contract and transactions updates.
-     *
-     * Run it when account was changed or disconnected.
-     * @param {Account} [account]
-     * @returns {Promise<void>}
-     * @protected
-     */
-    protected async handleAccountChange(account?: Account): Promise<void> {
-        if (this.#contractSubscriber !== undefined) {
-            if (account !== undefined) {
-                try {
-                    await this.#contractSubscriber.unsubscribe()
-                }
-                catch (e) {
-                    error(e)
-                }
-            }
-            this.#contractSubscriber = undefined
+    public async addAsset(root: string, type: AssetType = 'tip3_token'): Promise<{ newAsset: boolean } | undefined> {
+        if (this.account?.address === undefined) {
+            return undefined
         }
 
-        if (account === undefined) {
-            return
-        }
-
-        try {
-            const { state } = await rpc.getFullContractState({
-                address: account.address,
-            })
-
-            runInAction(() => {
-                this.data.contract = state
-            })
-        }
-        catch (e) {
-            error(e)
-        }
-
-        try {
-            this.#contractSubscriber = await rpc.subscribe(
-                'contractStateChanged',
-                { address: account.address },
-            )
-
-            this.#contractSubscriber.on('data', event => {
-                debug(
-                    '%cRPC%c The wallet\'s `contractStateChanged` event was captured',
-                    'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
-                    'color: #c5e4f3',
-                    event,
-                )
-
-                runInAction(() => {
-                    this.data.contract = event.state
-                })
-            })
-        }
-        catch (e) {
-            error(e)
-            this.#contractSubscriber = undefined
-        }
-    }
-
-    /**
-     * Returns computed account
-     * @returns {WalletData['account']}
-     */
-    public get account(): WalletData['account'] {
-        return this.data.account
+        return rpc.addAsset({
+            account: this.account.address,
+            params: {
+                rootContract: new Address(root),
+            },
+            type,
+        })
     }
 
     /**
@@ -325,12 +216,12 @@ export class WalletService {
      * @returns {string | undefined}
      */
     public get address(): string | undefined {
-        return this.data.account?.address.toString()
+        return this.account?.address.toString()
     }
 
     /**
      * Returns computed wallet balance value
-     * @returns {WalletData['balance']}
+     * @returns {string | undefined}
      */
     public get balance(): WalletData['balance'] {
         return this.data.balance
@@ -342,6 +233,105 @@ export class WalletService {
      */
     public get balanceNumber(): BigNumber {
         return new BigNumber(this.balance || 0).shiftedBy(-this.coin.decimals)
+    }
+
+    /**
+     * Returns `true` if provider is available.
+     * That means extension is installed and activated, else `false`
+     * @returns {boolean}
+     */
+    public get hasProvider(): WalletState['hasProvider'] {
+        return this.state.hasProvider
+    }
+
+    /**
+     * Returns `true` if wallet is connected
+     * @returns {boolean}
+     */
+    public get isConnected(): boolean {
+        return this.address !== undefined
+    }
+
+    /**
+     * Returns `true` if wallet is connecting
+     * @returns {boolean}
+     */
+    public get isConnecting(): WalletState['isConnecting'] {
+        return this.state.isConnecting
+    }
+
+    /**
+     * Returns `true` if wallet is initialized
+     * @returns {boolean}
+     */
+    public get isInitialized(): WalletState['isInitialized'] {
+        return this.state.isInitialized
+    }
+
+    /**
+     * Returns `true` if wallet is initializing
+     * @returns {boolean}
+     */
+    public get isInitializing(): WalletState['isInitializing'] {
+        return this.state.isInitializing
+    }
+
+    /**
+     * Returns `true` if installed wallet has outdated version
+     */
+    public get isOutdated(): boolean {
+        if (this.data.version === undefined || this.options?.minWalletVersion === undefined) {
+            return false
+        }
+
+        const [
+            currentMajorVersion = '0',
+            currentMinorVersion = '0',
+            currentPatchVersion = '0',
+        ] = this.data.version.split('.')
+        const [
+            minMajorVersion,
+            minMinorVersion,
+            minPatchVersion,
+        ] = this.options.minWalletVersion.split('.')
+        return (
+            currentMajorVersion < minMajorVersion
+            || (currentMajorVersion <= minMajorVersion && currentMinorVersion < minMinorVersion)
+            || (
+                currentMajorVersion <= minMajorVersion
+                && currentMinorVersion <= minMinorVersion
+                && currentPatchVersion < minPatchVersion
+            )
+        )
+    }
+
+    /**
+     * Returns `true` if connection to RPC is initialized and connected
+     * @returns {boolean}
+     */
+    public get isReady(): boolean {
+        return (
+            !this.isInitializing
+            && !this.isConnecting
+            && this.isInitialized
+            && this.isConnected
+        )
+    }
+
+    /**
+     * Returns `true` if wallet contract is updating
+     * @returns {boolean}
+     */
+    public get isUpdatingContract(): WalletState['isUpdatingContract'] {
+        return this.state.isUpdatingContract
+    }
+
+    /**
+     * Returns computed account
+     * @returns {WalletData['account']}
+     */
+    public get account(): WalletData['account'] {
+        return this.data.account
     }
 
     /**
@@ -372,74 +362,142 @@ export class WalletService {
      */
     public get walletContractCallbacks(): Contract<typeof DexAbi.Callbacks> | undefined {
         return this.account?.address !== undefined
-            ? new rpc.Contract(DexAbi.Callbacks, this.account?.address)
+            ? new rpc.Contract(DexAbi.Callbacks, this.account.address)
             : undefined
     }
 
     /**
-     * Returns computed last successful transaction data
-     * @returns {WalletData['transaction']}
+     * Wallet initializing. It runs
+     * @returns {Promise<void>}
+     * @protected
      */
-    public get transaction(): WalletData['transaction'] {
-        return this.data.transaction
-    }
+    protected async init(): Promise<void> {
+        this.setState('isInitializing', true)
 
-    /**
-     * Returns `true` if provider is available.
-     * That means extension is installed in activated, else `false`
-     * @returns {WalletState['hasProvider']}
-     */
-    public get hasProvider(): WalletState['hasProvider'] {
-        return this.state.hasProvider
-    }
+        let hasProvider = false
 
-    /**
-     * Returns computed connecting state value
-     * @returns {WalletState['isConnecting']}
-     */
-    public get isConnecting(): WalletState['isConnecting'] {
-        return this.state.isConnecting
-    }
+        try {
+            hasProvider = await hasEverscaleProvider()
+        }
+        catch (e) {}
 
-    /**
-     * Returns computed initialized state value
-     * @returns {WalletState['isInitialized']}
-     */
-    public get isInitialized(): WalletState['isInitialized'] {
-        return this.state.isInitialized
-    }
-
-    public get isInitializing(): WalletState['isInitializing'] {
-        return this.state.isInitializing
-    }
-
-    public get isConnected(): boolean {
-        return Boolean(this.address)
-    }
-
-    /**
-     * Returns `true` if installed wallet has outdated version
-     */
-    public get isOutdated(): boolean {
-        if (this.data.version === undefined) {
-            return false
+        if (!hasProvider) {
+            this.setState({
+                hasProvider: false,
+                isInitializing: false,
+            })
+            return
         }
 
-        const [
-            currentMajorVersion = '0',
-            currentMinorVersion = '0',
-            currentPatchVersion = '0',
-        ] = this.data.version.split('.')
-        const [minMajorVersion, minMinorVersion, minPatchVersion] = DexConstants.MinWalletVersion.split('.')
-        return (
-            currentMajorVersion < minMajorVersion
-            || (currentMajorVersion <= minMajorVersion && currentMinorVersion < minMinorVersion)
-            || (
-                currentMajorVersion <= minMajorVersion
-                && currentMinorVersion <= minMinorVersion
-                && currentPatchVersion < minPatchVersion
+        this.setState('hasProvider', hasProvider)
+
+        try {
+            await rpc.ensureInitialized()
+        }
+        catch (e) {
+            return
+        }
+
+        this.setState('isConnecting', true)
+
+        const permissionsSubscriber = await rpc.subscribe('permissionsChanged')
+        permissionsSubscriber.on('data', event => {
+            this.setData('account', event.permissions.accountInteraction)
+        })
+
+        const currentProviderState = await rpc.getProviderState()
+
+        if (currentProviderState.permissions.accountInteraction === undefined) {
+            this.setState({
+                isConnecting: false,
+                isInitialized: true,
+                isInitializing: false,
+            })
+            return
+        }
+
+        this.setData('version', currentProviderState.version)
+
+        await connectToWallet()
+
+        this.setState({
+            isConnecting: false,
+            isInitialized: true,
+            isInitializing: false,
+        })
+    }
+
+    /**
+     * Internal callback to subscribe for contract and transactions updates.
+     *
+     * Run it when account was changed or disconnected.
+     * @param {Account} [account]
+     * @returns {Promise<void>}
+     * @protected
+     */
+    protected async onAccountChange(account?: Account): Promise<void> {
+        if (this.#contractSubscriber !== undefined) {
+            if (account !== undefined) {
+                try {
+                    await this.#contractSubscriber.unsubscribe()
+                }
+                catch (e) {
+                    error('Wallet contract unsubscribe error', e)
+                }
+            }
+            this.#contractSubscriber = undefined
+        }
+
+        if (account === undefined) {
+            return
+        }
+
+        this.setState('isUpdatingContract', true)
+
+        try {
+            const { state } = await rpc.getFullContractState({
+                address: account.address,
+            })
+
+            this.setData('contract', state)
+            this.setState('isUpdatingContract', false)
+        }
+        catch (e) {
+            error('Get account full contract state error', e)
+        }
+        finally {
+            this.setState('isUpdatingContract', false)
+        }
+
+        try {
+            this.#contractSubscriber = await rpc.subscribe(
+                'contractStateChanged',
+                { address: account.address },
             )
-        )
+
+            this.#contractSubscriber.on('data', event => {
+                debug(
+                    '%RPC%c The wallet\'s `contractStateChanged` event was captured',
+                    'font-weight: bold; background: #4a5772; color: #fff; border-radius: 2px; padding: 3px 6.5px',
+                    'color: #c5e4f3',
+                    event,
+                )
+
+                this.setData('contract', event.state)
+            })
+        }
+        catch (e) {
+            error('Contract subscribe error', e)
+            this.#contractSubscriber = undefined
+        }
+    }
+
+    /**
+     * Reset wallet data to defaults
+     * @protected
+     */
+    protected reset(): void {
+        this.setData(DEFAULT_WALLET_DATA)
     }
 
     /**
@@ -452,13 +510,23 @@ export class WalletService {
 }
 
 
-const WalletServiceStore = new WalletService({
-    decimals: DexConstants.CoinDecimals,
-    icon: DexConstants.CoinLogoURI,
-    name: DexConstants.CoinSymbol,
-    symbol: DexConstants.CoinSymbol,
-})
+let wallet: WalletService
 
 export function useWallet(): WalletService {
-    return WalletServiceStore
+    if (wallet === undefined) {
+        log(
+            '%cCreated a new one WalletService instance as global service to interact with the EVER Wallet browser extension',
+            'color: #bae701',
+        )
+        wallet = new WalletService({
+            decimals: DexConstants.CoinDecimals,
+            icon: DexConstants.CoinLogoURI,
+            name: DexConstants.CoinSymbol,
+            symbol: DexConstants.CoinSymbol,
+        }, {
+            minWalletVersion: DexConstants.MinWalletVersion,
+        })
+    }
+    return wallet
 }
+
