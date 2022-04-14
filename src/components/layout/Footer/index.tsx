@@ -156,7 +156,7 @@ export function Footer(): JSX.Element {
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="https://evrscan.io" target="_blank" rel="noopener noreferrer">
+                                    <a href="https://everscan.io" target="_blank" rel="noopener noreferrer">
                                         {intl.formatMessage({
                                             id: 'FOOTER_NAV_EVER_SCAN_LINK_TEXT',
                                         })}
