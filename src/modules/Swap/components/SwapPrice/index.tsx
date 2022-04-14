@@ -14,10 +14,6 @@ function Price(): JSX.Element | null {
     const intl = useIntl()
     const formStore = useSwapFormStore()
 
-    if (formStore.leftToken === undefined || formStore.rightToken === undefined) {
-        return null
-    }
-
     const leftSymbol = React.useMemo(() => {
         if (
             formStore.nativeCoinSide === 'leftToken'
@@ -26,14 +22,18 @@ function Price(): JSX.Element | null {
             return formStore.coin.symbol
         }
         return formStore.leftToken?.symbol
-    }, [formStore.leftToken.symbol, formStore.nativeCoinSide, formStore.multipleSwap.isEnoughTokenBalance])
+    }, [formStore.leftToken?.symbol, formStore.nativeCoinSide, formStore.multipleSwap.isEnoughTokenBalance])
 
     const rightSymbol = React.useMemo(() => {
         if (formStore.nativeCoinSide === 'rightToken') {
             return formStore.coin.symbol
         }
         return formStore.rightToken?.symbol
-    }, [formStore.rightToken.symbol, formStore.nativeCoinSide])
+    }, [formStore.rightToken?.symbol, formStore.nativeCoinSide])
+
+    if (formStore.leftToken === undefined || formStore.rightToken === undefined) {
+        return null
+    }
 
     return (
         <div className="form-row swap-price">
