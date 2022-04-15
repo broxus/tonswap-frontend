@@ -54,29 +54,26 @@ export function formattedAmount(
         return formatDigits(integerNumber.toFixed()) ?? ''
     }
 
-    let dp = 4
-
     switch (true) {
         case roundOn && integerNumber.gte(roundOn):
-            dp = 0
+            fractionalPartNumber = fractionalPartNumber.dp(0, BigNumber.ROUND_DOWN)
             break
 
-        case integerNumber.isZero() && fractionalPartNumber.lte(1e-4):
-            dp = fractionalPartNumber.decimalPlaces()
+        case integerNumber.isZero() && fractionalPartNumber.lte(1e-3):
+            fractionalPartNumber = fractionalPartNumber.precision(4, BigNumber.ROUND_DOWN)
             break
 
         case integerNumber.gt(0) && roundOn && integerNumber.lt(roundOn):
-            dp = 2
+            fractionalPartNumber = fractionalPartNumber.dp(2, BigNumber.ROUND_DOWN)
             break
 
         case integerNumber.isZero() && fractionalPartNumber.lte(1e-2):
-            dp = 3
+            fractionalPartNumber = fractionalPartNumber.dp(3, BigNumber.ROUND_DOWN)
             break
 
         default:
+            fractionalPartNumber = fractionalPartNumber.dp(4, BigNumber.ROUND_DOWN)
     }
-
-    fractionalPartNumber = fractionalPartNumber.dp(dp, BigNumber.ROUND_DOWN)
 
     digits.push(fractionalPartNumber.toFixed().split('.')[1] ?? '')
 
