@@ -24,6 +24,7 @@ type Props = {
     value?: string;
     onKeyPress?: () => void;
     onChange?: (value: string) => void;
+    onMaximize?: (value: string) => void;
     onToggleTokensList?: () => void;
 }
 
@@ -50,7 +51,12 @@ function Field({
     const deFormattedBalance = balance?.replace(/\s/g, '') ?? 0
 
     const isInsufficientBalance = React.useMemo(
-        () => new BigNumber(props.value ?? 0).gt(deFormattedBalance),
+        () => (
+            new BigNumber(props.value ?? 0).gt(deFormattedBalance)
+            && !formStore.isDepositingLiquidity
+            && !formStore.isDepositingLeft
+            && !formStore.isDepositingRight
+        ),
         [props.value, balance],
     )
 
@@ -84,7 +90,7 @@ function Field({
                                 key="max-button"
                                 type="button"
                                 className="btn btn-xs btn-secondary form-btn-max"
-                                disabled={props.disabled}
+                                disabled={props.disabled || props.readOnly}
                                 onClick={onMax}
                             >
                                 Max

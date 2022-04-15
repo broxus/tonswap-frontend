@@ -83,6 +83,7 @@ export class PoolStore extends BaseStore<PoolStoreData, PoolStoreState> {
         makeObservable<
             PoolStore,
             | 'pool'
+            | 'depositLiquidityReceipt'
             | 'changePoolData'
             | 'handleLpBalanceChange'
             | 'handleTokensChange'
@@ -90,6 +91,7 @@ export class PoolStore extends BaseStore<PoolStoreData, PoolStoreState> {
             | 'handleWalletAddressChange'
         >(this, {
             pool: observable,
+            depositLiquidityReceipt: observable,
             changePoolData: action.bound,
             handleLpBalanceChange: action.bound,
             handleTokensChange: action.bound,

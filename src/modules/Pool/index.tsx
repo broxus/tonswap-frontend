@@ -66,10 +66,14 @@ export function Pool(): JSX.Element {
                                     })}
                                     id="leftField"
                                     isCaution={pool.isAutoExchangeEnabled}
-                                    isValid={useBalanceValidation(
-                                        pool.leftToken,
-                                        pool.leftAmount,
-                                        pool.dexLeftBalance,
+                                    isValid={(
+                                        pool.isDepositingLeft
+                                        || pool.isDepositingLiquidity
+                                        || useBalanceValidation(
+                                            pool.leftToken,
+                                            pool.leftAmount,
+                                            pool.dexLeftBalance,
+                                        )
                                     )}
                                     token={pool.leftToken}
                                     value={pool.leftAmount}
@@ -85,13 +89,9 @@ export function Pool(): JSX.Element {
                             )}
                         </Observer>
 
-                        <Observer>
-                            {() => (
-                                <div className="pool-linkage">
-                                    <Icon icon="link" ratio={1.8} />
-                                </div>
-                            )}
-                        </Observer>
+                        <div className="pool-linkage">
+                            <Icon icon="link" ratio={1.8} />
+                        </div>
 
                         <Observer>
                             {() => (
@@ -103,10 +103,14 @@ export function Pool(): JSX.Element {
                                     })}
                                     id="rightField"
                                     isCaution={pool.isAutoExchangeEnabled}
-                                    isValid={useBalanceValidation(
-                                        pool.rightToken,
-                                        pool.rightAmount,
-                                        pool.dexRightBalance,
+                                    isValid={(
+                                        pool.isDepositingRight
+                                        || pool.isDepositingLiquidity
+                                        || useBalanceValidation(
+                                            pool.rightToken,
+                                            pool.rightAmount,
+                                            pool.dexRightBalance,
+                                        )
                                     )}
                                     token={pool.rightToken}
                                     value={pool.rightAmount}

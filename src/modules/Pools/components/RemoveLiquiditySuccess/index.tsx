@@ -125,7 +125,7 @@ function RemoveLiquiditySuccessInner({
                         <a
                             target="_blank"
                             rel="noopener noreferrer"
-                            href={`https://tonscan.io/transactions/${transactionHash}`}
+                            href={`https://everscan.io/transactions/${transactionHash}`}
                             className="btn btn--empty"
                         >
                             {intl.formatMessage({
