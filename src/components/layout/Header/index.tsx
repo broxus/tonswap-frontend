@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { Observer } from 'mobx-react-lite'
 import Media from 'react-media'
+import { Link } from 'react-router-dom'
 
 import { HeaderDrawer } from '@/components/layout/Header/HeaderDrawer'
 import { Navbar } from '@/components/common/Navbar'
@@ -22,9 +23,9 @@ export function Header(): JSX.Element {
                     {match => match && (
                         <>
                             <Navbar.Item>
-                                <a href="https://flatqube.io" className="logo">
+                                <Link to="/" className="logo">
                                     <Logo />
-                                </a>
+                                </Link>
                             </Navbar.Item>
                             <DesktopNav />
                             <Navbar.Right component={Navbar.Item}>
@@ -40,9 +41,9 @@ export function Header(): JSX.Element {
                             {() => (
                                 <>
                                     <Navbar.Item>
-                                        <a href="https://flatqube.io" className="logo">
+                                        <Link to="/" className="logo">
                                             <Logo ratio={0.9} />
-                                        </a>
+                                        </Link>
                                     </Navbar.Item>
                                     <Navbar.Right>
                                         {wallet.isConnected && (
