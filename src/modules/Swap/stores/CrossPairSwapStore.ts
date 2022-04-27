@@ -22,7 +22,6 @@ import {
     getExchangePerPrice,
     getExpectedExchange,
     getExpectedSpendAmount,
-    getReducedCrossExchangeAmount,
     getReducedCrossExchangeFee,
     getSlippageMinExpectedAmount,
 } from '@/modules/Swap/utils'
@@ -549,14 +548,14 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
                 break
             }
 
-            const expectedAmountBN = new BigNumber(route.bill.expectedAmount || 0)
+            const expectedAmountNumber = new BigNumber(route.bill.expectedAmount || 0)
 
-            if (expectedAmountBN.gt(directExpectedAmount) && expectedAmountBN.gt(bestExpectedAmount)) {
+            if (expectedAmountNumber.gt(directExpectedAmount) && expectedAmountNumber.gt(bestExpectedAmount)) {
                 const prices: Pick<SwapRoute, 'priceLeftToRight' | 'priceRightToLeft'> = {}
 
                 const priceLeftToRight = getExchangePerPrice(
                     this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals),
-                    expectedAmountBN.shiftedBy(-this.rightTokenDecimals),
+                    expectedAmountNumber.shiftedBy(-this.rightTokenDecimals),
                     this.leftTokenDecimals,
                 )
 
@@ -565,7 +564,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
                 }
 
                 const priceRightToLeft = getExchangePerPrice(
-                    expectedAmountBN.shiftedBy(-this.rightTokenDecimals),
+                    expectedAmountNumber.shiftedBy(-this.rightTokenDecimals),
                     this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals),
                     this.rightTokenDecimals,
                 )
@@ -574,27 +573,21 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
                     prices.priceRightToLeft = priceRightToLeft.toFixed()
                 }
 
-                const amount = getReducedCrossExchangeAmount(
-                    this.leftAmountNumber,
-                    this.leftToken,
-                    route.pairs,
-                )
-
                 bestRoute = {
                     ...route,
                     ...prices,
                     bill: {
                         ...route.bill,
-                        expectedAmount: expectedAmountBN.toFixed(),
+                        expectedAmount: expectedAmountNumber.toFixed(),
                         fee: getReducedCrossExchangeFee(route.steps).toFixed(),
-                        priceImpact: getCrossExchangePriceImpact(amount, expectedAmountBN).toFixed(),
+                        priceImpact: getCrossExchangePriceImpact(route.steps, this.leftToken.root).toFixed(),
                     },
                     leftAmount: this.leftAmountNumber.shiftedBy(-this.leftTokenDecimals).toFixed(),
-                    rightAmount: expectedAmountBN.shiftedBy(-this.rightTokenDecimals).toFixed(),
+                    rightAmount: expectedAmountNumber.shiftedBy(-this.rightTokenDecimals).toFixed(),
                     slippage: getCrossExchangeSlippage(this.data.slippage, route.steps.length),
                 }
 
-                bestExpectedAmount = expectedAmountBN
+                bestExpectedAmount = expectedAmountNumber
             }
         }
 
@@ -704,6 +697,11 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
                         }
                     }
 
+                    route.bill.priceImpact = getCrossExchangePriceImpact(
+                        route.steps,
+                        this.leftToken!.root,
+                    ).toFixed()
+
                     _routes.push(route)
                 }
 
@@ -750,6 +748,7 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
                                 new BigNumber(expectedAmount || 0),
                                 this.data.slippage,
                             ).toFixed() as string
+
 
                             step.expectedAmount = expectedAmount
                             step.minExpectedAmount = route.bill.minExpectedAmount
@@ -814,12 +813,6 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
                     prices.priceRightToLeft = priceRightToLeft.toFixed()
                 }
 
-                const amount = getReducedCrossExchangeAmount(
-                    amountBN,
-                    this.leftToken,
-                    route.pairs,
-                )
-
                 bestRoute = {
                     ...route,
                     ...prices,
@@ -827,7 +820,6 @@ export class CrossPairSwapStore extends BaseSwapStore<CrossPairSwapStoreData, Cr
                         ...route.bill,
                         amount: amountBN.toFixed(),
                         fee: getReducedCrossExchangeFee(route.steps).toFixed(),
-                        priceImpact: getCrossExchangePriceImpact(amount, this.rightAmountNumber).toFixed(),
                     },
                     leftAmount: amountBN.shiftedBy(-this.leftTokenDecimals).toFixed(),
                     rightAmount: this.rightAmountNumber.shiftedBy(-this.rightTokenDecimals).toFixed(),

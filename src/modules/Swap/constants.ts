@@ -1,11 +1,5 @@
 import { DexConstants } from '@/misc'
-import {
-    SwapBill,
-    SwapDirection,
-    SwapExchangeMode,
-    SwapStoreData,
-    SwapStoreState,
-} from '@/modules/Swap/types'
+import { SwapBill } from '@/modules/Swap/types'
 
 
 /* WEVER root address */
@@ -25,43 +19,3 @@ export const DEFAULT_SWAP_BILL: SwapBill = {
     minExpectedAmount: undefined,
     priceImpact: undefined,
 }
-
-/**
- * @deprecated
- */
-export const DEFAULT_SWAP_STORE_DATA: SwapStoreData = {
-    bestCrossExchangeRoute: undefined,
-    bill: DEFAULT_SWAP_BILL,
-    crossPairs: [],
-    leftAmount: '',
-    leftToken: undefined,
-    priceLeftToRight: undefined,
-    priceRightToLeft: undefined,
-    rightAmount: '',
-    rightToken: undefined,
-    routes: [],
-    slippage: DEFAULT_SLIPPAGE_VALUE,
-}
-
-/**
- * @deprecated
- */
-export const DEFAULT_SWAP_STORE_STATE: SwapStoreState = {
-    direction: SwapDirection.LTR,
-    exchangeMode: SwapExchangeMode.DIRECT_EXCHANGE,
-    isCalculating: false,
-    isConfirmationAwait: false,
-    isCrossExchangeCalculating: false,
-    isCrossExchangePreparing: false,
-    isEnoughLiquidity: false,
-    isLowTvl: false,
-    isPairChecking: false,
-    isSwapping: false,
-    priceDirection: SwapDirection.LTR,
-}
-
-export const CROSS_PAIR_EXCHANGE_WHITE_LIST = [
-    DexConstants.WEVERRootAddress.toString(),
-    DexConstants.USDTRootAddress.toString(),
-    DexConstants.USDCRootAddress.toString(),
-]

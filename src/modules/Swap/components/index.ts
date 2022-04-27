@@ -1,4 +1,3 @@
-export * from '@/modules/Swap/components/ConversionInfo'
 export * from '@/modules/Swap/components/ConversionSubmitButton'
 export * from '@/modules/Swap/components/ConversionReceipt'
 export * from '@/modules/Swap/components/CrossExchangeSubmitButton'

@@ -9,8 +9,7 @@ import {
 } from 'everscale-inpage-provider'
 
 import { DexAbi } from '@/misc'
-import { SwapPair, SwapRouteResult, SwapRouteStep } from '@/modules/Swap/types'
-import { TokenCache } from '@/stores/TokensCacheService'
+import { SwapRouteResult, SwapRouteStep } from '@/modules/Swap/types'
 
 
 export function fillStepResult(
@@ -34,10 +33,6 @@ export function fillStepResult(
         }
     }
     return result
-}
-
-export function getFeeMultiplier(denominator: string, numerator: string): BigNumber {
-    return new BigNumber(denominator).minus(numerator).div(denominator)
 }
 
 export async function getExpectedExchange(
@@ -93,7 +88,7 @@ export function getExchangePerPrice(
 }
 
 export function getDirectExchangePriceImpact(start: BigNumber, end: BigNumber): BigNumber {
-    return end.minus(start)
+    return new BigNumber(end.minus(start))
         .div(start)
         .abs()
         .times(100)
@@ -133,60 +128,60 @@ export function getReducedCrossExchangeFee(iteratee: SwapRouteStep[]): BigNumber
     return fee.dp(0, BigNumber.ROUND_DOWN)
 }
 
-export function getReducedCrossExchangeAmount(
-    initialAmount: BigNumber,
-    initialToken: TokenCache,
-    pairs: SwapPair[],
-): BigNumber {
-    let currentRoot: string | undefined = initialToken.root
-    return pairs.reduce((acc, pair) => {
-        if (
-            pair.denominator === undefined
-            || pair.numerator === undefined
-            || pair.balances?.left === undefined
-            || pair.balances?.right === undefined
-            || pair.decimals?.left === undefined
-            || pair.decimals?.right === undefined
-        ) {
-            return acc
+export function getCrossExchangePriceImpact(steps: SwapRouteStep[], initialLeftRoot: string): BigNumber {
+    const reduced = steps.reduce<{
+        leftRoot: string | undefined,
+        value: BigNumber,
+        start: BigNumber,
+        end: BigNumber,
+    }>((acc, step, idx) => {
+        const isInverted = step.pair.roots?.left.toString() !== acc.leftRoot
+
+        const leftDecimals = isInverted
+            ? -(step.pair.decimals?.right ?? 0)
+            : -(step.pair.decimals?.left ?? 0)
+
+        const rightDecimals = isInverted
+            ? -(step.pair.decimals?.left ?? 0)
+            : -(step.pair.decimals?.right ?? 0)
+
+        const pairLeftBalanceNumber = isInverted
+            ? new BigNumber(step.pair.balances?.right || 0).shiftedBy(-(step.pair.decimals?.right ?? 0))
+            : new BigNumber(step.pair.balances?.left || 0).shiftedBy(-(step.pair.decimals?.left ?? 0))
+
+        const pairRightBalanceNumber = isInverted
+            ? new BigNumber(step.pair.balances?.left || 0).shiftedBy(-(step.pair.decimals?.left ?? 0))
+            : new BigNumber(step.pair.balances?.right || 0).shiftedBy(-(step.pair.decimals?.right ?? 0))
+
+        const expectedLeftPairBalanceNumber = pairLeftBalanceNumber.plus(
+            new BigNumber(step.amount).shiftedBy(leftDecimals),
+        )
+        const expectedRightPairBalanceNumber = pairRightBalanceNumber.minus(
+            new BigNumber(step.expectedAmount).shiftedBy(rightDecimals),
+        )
+
+        const start = pairRightBalanceNumber.div(pairLeftBalanceNumber)
+        const end = expectedRightPairBalanceNumber.div(expectedLeftPairBalanceNumber)
+
+        return {
+            leftRoot: isInverted ? step.pair.roots?.left.toString() : step.pair.roots?.right.toString(),
+            value: end.minus(start)
+                .div(end)
+                .abs()
+                .times(idx === 0 ? 1 : acc.value),
+            start: start.times(idx === 0 ? 1 : acc.start),
+            end: end.times(idx === 0 ? 1 : acc.end),
         }
-
-        const isInverted = pair.roots?.left.toString() !== currentRoot
-
-        const leftBalanceBN = new BigNumber(pair.balances.left)
-        const rightBalanceBN = new BigNumber(pair.balances.right)
-
-        currentRoot = isInverted ? pair.roots?.left.toString() : pair.roots?.right.toString()
-
-        return acc
-            .times(getFeeMultiplier(pair.denominator, pair.numerator))
-            .times(isInverted ? leftBalanceBN : rightBalanceBN)
-            .div(isInverted ? rightBalanceBN : leftBalanceBN)
-    }, initialAmount)
-}
-
-export function getCrossExchangePriceImpact(
-    amount: BigNumber,
-    expectedAmount: BigNumber,
-): BigNumber {
-    return new BigNumber(amount.minus(expectedAmount))
-        .div(amount)
-        .times(100)
-        .dp(2, BigNumber.ROUND_UP)
-}
-
-export function intersection(...arrays: Array<Array<string>>): string[] {
-    const entries: Record<string, number> = {}
-    const elements: Array<string> = arrays.reduce((acc, value) => acc.concat(...value), [])
-
-    elements.forEach(value => {
-        if (entries[value] !== undefined) {
-            entries[value] += 1
-        }
-        else {
-            entries[value] = 1
-        }
+    }, {
+        leftRoot: initialLeftRoot,
+        value: new BigNumber(0),
+        start: new BigNumber(0),
+        end: new BigNumber(0),
     })
 
-    return Object.entries(entries).filter(([_, count]) => count > 1).map(([value]) => value)
+    return reduced.end.minus(reduced.start)
+        .div(reduced.start)
+        .abs()
+        .times(100)
+        .dp(2, BigNumber.ROUND_DOWN)
 }

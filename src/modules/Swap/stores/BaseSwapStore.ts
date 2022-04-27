@@ -678,30 +678,33 @@ export class BaseSwapStore<
             return
         }
 
-        let amountBN = new BigNumber(this.amount || 0)
-        const expectedAmountBN = new BigNumber(this.expectedAmount || 0)
+        let amountNumber = new BigNumber(this.amount || 0)
+        const expectedAmountNumber = new BigNumber(this.expectedAmount || 0)
 
         priceLeftToRight = getExchangePerPrice(
-            amountBN,
-            expectedAmountBN,
+            amountNumber,
+            expectedAmountNumber,
             this.rightTokenDecimals,
         )
 
         priceRightToLeft = getExchangePerPrice(
-            expectedAmountBN,
-            amountBN,
+            expectedAmountNumber,
+            amountNumber,
             this.leftTokenDecimals,
         )
 
-        amountBN = amountBN
+        amountNumber = amountNumber
             .times(new BigNumber(this.pair.denominator).minus(this.pair.numerator))
             .div(this.pair.denominator)
+
+        const expectedLeftPairBalanceNumber = pairLeftBalanceNumber.plus(amountNumber)
+        const expectedRightPairBalanceNumber = pairRightBalanceNumber.minus(expectedAmountNumber)
 
         this.setData('bill', {
             ...this.data.bill,
             priceImpact: getDirectExchangePriceImpact(
-                pairRightBalanceNumber.div(pairLeftBalanceNumber).times(amountBN),
-                expectedAmountBN,
+                pairRightBalanceNumber.div(pairLeftBalanceNumber),
+                expectedRightPairBalanceNumber.div(expectedLeftPairBalanceNumber),
             ).toFixed(),
         })
 

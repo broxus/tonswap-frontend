@@ -166,24 +166,6 @@ export type SwapTransactionReceipt = {
     success: boolean;
 }
 
-/**
- * @deprecated
- */
-export type SwapSuccessResult = {
-    input: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairExchangeSuccess'>;
-    transaction: Transaction;
-}
-
-/**
- * @deprecated
- */
-export type SwapFailureResult = {
-    cancelStep?: SwapRouteResult;
-    index?: number;
-    input?: DecodedAbiFunctionInputs<typeof DexAbi.Callbacks, 'dexPairOperationCancelled'>;
-    step?: SwapRouteResult;
-}
-
 export interface SwapFormStoreData extends BaseSwapStoreData {
     pair?: SwapPair;
 }

@@ -1,7 +1,11 @@
 import BigNumber from 'bignumber.js'
 import type { IReactionDisposer } from 'mobx'
 import {
-    action, computed, makeObservable, override, reaction,
+    action,
+    computed,
+    makeObservable,
+    override,
+    reaction,
 } from 'mobx'
 
 import { DexConstants } from '@/misc'
@@ -33,7 +37,11 @@ import type { WalletNativeCoin } from '@/stores/WalletService'
 import { useWallet, WalletService } from '@/stores/WalletService'
 import { TokensCacheService, useTokensCache } from '@/stores/TokensCacheService'
 import {
-    debounce, debug, formattedBalance, isGoodBignumber, storage,
+    debounce,
+    debug,
+    formattedBalance,
+    isGoodBignumber,
+    storage,
 } from '@/utils'
 
 
@@ -332,10 +340,6 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      * @param {() => void} [callback]
      */
     public changeLeftAmount(value: string, callback?: () => void): void {
-        if (value === this.data.leftAmount) {
-            return
-        }
-
         this.setState('direction', SwapDirection.LTR)
 
         this.forceInvalidate()
@@ -350,6 +354,10 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
         }
 
         callback?.()
+
+        if (!this.isEnoughLiquidity) {
+            this.setData('rightAmount', '')
+        }
     }
 
     /**
@@ -360,10 +368,6 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
      * @param {() => void} [callback]
      */
     public changeRightAmount(value: string, callback?: () => void): void {
-        if (value === this.data.rightAmount) {
-            return
-        }
-
         this.setState('direction', SwapDirection.RTL)
 
         this.forceInvalidate()
@@ -525,7 +529,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
                         new BigNumber(this.currentSwap.expectedAmount || 0),
                         value,
                     ).toFixed(),
-                    priceImpact:  this.currentSwap.priceImpact,
+                    priceImpact: this.currentSwap.priceImpact,
                 })
             }
         }
@@ -619,10 +623,6 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
             return
         }
 
-        // if (this.pair?.address === undefined/* && !this.isCrossExchangeAvailable */) {
-        //     return
-        // }
-
         this.setState('isCalculating', true)
 
         if (this.direction === SwapDirection.LTR && isGoodBignumber(this.leftAmountNumber)) {
@@ -630,7 +630,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
                 await this.calculateLeftToRight(force)
             }
 
-            if (/* this.isCrossExchangeAvailable && */(!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
+            if ((!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
                 await this.#crossPairSwap.checkSuggestions(this.leftAmountNumber.toFixed(), 'expectedexchange')
                 await this.#crossPairSwap.calculateLeftToRight(force)
             }
@@ -640,7 +640,7 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
                 await this.calculateRightToLeft(force)
             }
 
-            if (/* this.isCrossExchangeAvailable && */(!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
+            if ((!(this.isMultipleSwapMode || this.isCoinBasedSwapMode))) {
                 await this.#crossPairSwap.checkSuggestions(this.rightAmountNumber.toFixed(), 'expectedspendamount')
                 await this.#crossPairSwap.calculateRightToLeft(force, this.isEnoughLiquidity)
             }
@@ -653,10 +653,6 @@ export class SwapFormStore extends BaseSwapStore<SwapFormStoreData, SwapFormStor
 
         if (!this.isCrossExchangeOnly) {
             this.checkExchangeMode()
-        }
-
-        if (!this.isEnoughLiquidity) {
-            // this.setData('rightAmount', '')
         }
 
         debug('Recalculated. Stores data', this, this.currentSwap, this.#crossPairSwap)
