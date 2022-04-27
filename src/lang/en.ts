@@ -149,7 +149,7 @@ export default {
 
     REMOVE_LIQUIDITY_SUCCESS_TITLE: 'Transaction submitted',
     REMOVE_LIQUIDITY_SUCCESS_BURNED: 'Burned, {symbol}',
-    REMOVE_LIQUIDITY_SUCCESS_SUBMIT: 'View on TON Scan',
+    REMOVE_LIQUIDITY_SUCCESS_SUBMIT: 'View on EVER Scan',
     REMOVE_LIQUIDITY_SUCCESS_SENT: 'Sent, {symbol}',
     REMOVE_LIQUIDITY_SUCCESS_PLUS: '+{value}',
     REMOVE_LIQUIDITY_SUCCESS_MINUS: '-{value}',
