@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokenBalanceWatcher } from '@/hooks/useTokenBalanceWatcher'
 import { TokenImportPopup } from '@/modules/TokensList/components/TokenImportPopup'
@@ -67,15 +68,15 @@ export function Item({ disabled, token, onSelect }: ItemProps): JSX.Element {
                         </div>
                     ) : (
                         <div className="popup-item__right">
-                            <button
-                                type="button"
-                                className="btn btn-s btn-primary"
+                            <Button
+                                size="sm"
+                                type="primary"
                                 onClick={onImporting}
                             >
                                 {intl.formatMessage({
                                     id: 'TOKENS_LIST_POPUP_BTN_TEXT_IMPORT_TOKEN',
                                 })}
-                            </button>
+                            </Button>
                         </div>
                     ))}
                 </Observer>

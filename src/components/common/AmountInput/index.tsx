@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 import classNames from 'classnames'
 
+import { Button } from '@/components/common/Button'
 import { TextInput, TextInputProps } from '@/components/common/TextInput'
 import { useField } from '@/hooks/useField'
 
@@ -56,11 +57,10 @@ export function AmountInput({
             />
 
             {maxIsVisible && (
-                <button
-                    type="button"
-                    className={classNames('btn btn-tertiary', {
-                        'btn-xs': size === 'small',
-                        'btn-s': size === 'medium',
+                <Button
+                    type="secondary"
+                    className={classNames({
+                        'btn-sm': size === 'small',
                     })}
                     onClick={onClickMax}
                     disabled={disabled}
@@ -68,7 +68,7 @@ export function AmountInput({
                     {intl.formatMessage({
                         id: 'AMOUNT_INPUT_MAX',
                     })}
-                </button>
+                </Button>
             )}
         </div>
     )

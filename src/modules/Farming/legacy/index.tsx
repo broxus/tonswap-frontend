@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { PoolsList } from '@/modules/Farming/components/PoolsList'
 import { useFarmingStore } from '@/modules/Farming/stores/FarmingStore'
@@ -65,11 +65,16 @@ export function Farming(): JSX.Element {
                         <Observer>
                             {() => (
                                 wallet.address != null ? (
-                                    <Link key="createPoolLink" to="/farming/create" className="btn btn-primary">
+                                    <Button
+                                        key="createPoolLink"
+                                        link="/farming/create"
+                                        size="md"
+                                        type="primary"
+                                    >
                                         {intl.formatMessage({
                                             id: 'FARMING_HEADER_CREATE_LINK_TEXT',
                                         })}
-                                    </Link>
+                                    </Button>
                                 ) : null
                             )}
                         </Observer>
@@ -88,16 +93,18 @@ export function Farming(): JSX.Element {
                             }}
                         >
                             <div>
-                                <button
-                                    type="button"
-                                    className="btn btn-primary btn-lg btn-block swap-form-submit"
+                                <Button
+                                    block
+                                    className="form-submit"
+                                    size="lg"
+                                    type="primary"
                                     onClick={connect}
                                     disabled={wallet.isConnecting}
                                 >
                                     {intl.formatMessage({
-                                        id: 'WALLET_BTN_TEXT_CONNECT',
+                                        id: 'EVER_WALLET_CONNECT_BTN_TEXT',
                                     })}
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     ) : (

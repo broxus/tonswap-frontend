@@ -4,17 +4,24 @@
     @include btn-reset;
 
     align-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: rgba(255, 255, 255, 0.56);
+    border: 1px solid rgb(255 255 255 / 16%);
     column-gap: 13px;
     cursor: pointer;
     display: flex;
+    font-weight: 400;
     justify-content: space-between;
     padding: 0 12px;
 
-    svg {
-        fill: #ffffff;
+    &.btn {
+        color: rgb(255 255 255 / 56%);
     }
+
+    &:hover,
+    &:focus {
+        color: #fff;
+    }
+
+    svg { fill: #fff; }
 
     &_size {
         &_small {
@@ -29,8 +36,8 @@
     }
 
     &_dirty {
-        border-color: rgba(255, 255, 255, 0.24);
-        color: #ffffff;
+        border-color: rgb(255 255 255 / 24%);
+        color: #fff;
     }
 
     &__value {

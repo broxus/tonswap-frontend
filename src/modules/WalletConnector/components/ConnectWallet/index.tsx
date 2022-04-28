@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
+
 type Props = {
     onClickConnect: () => void;
     message?: string;
@@ -18,13 +20,13 @@ export function ConnectWallet({
                 {message && (
                     <p>{message}</p>
                 )}
-                <button
-                    className="btn btn-secondary"
+                <Button
+                    size="md"
+                    type="secondary"
                     onClick={onClickConnect}
-                    type="button"
                 >
-                    {intl.formatMessage({ id: 'WALLET_BTN_TEXT_CONNECT' })}
-                </button>
+                    {intl.formatMessage({ id: 'EVER_WALLET_CONNECT_BTN_TEXT' })}
+                </Button>
             </div>
         </div>
     )

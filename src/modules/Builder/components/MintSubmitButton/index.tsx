@@ -3,10 +3,11 @@ import { useParams } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
-import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
-import { useWallet } from '@/stores/WalletService'
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { isAddressValid } from '@/misc'
+import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
+import { useWallet } from '@/stores/WalletService'
 
 type Props = {
     closePopup: () => void;
@@ -19,7 +20,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     const wallet = useWallet()
     const managingToken = useManageTokenStore(tokenRoot)
 
-    const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
+    const buttonProps: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> = {
         disabled: managingToken.isMinting,
     }
     let buttonText = intl.formatMessage({ id: 'BUILDER_MANAGE_TOKEN_MINT_BTN_TEXT' })
@@ -32,7 +33,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
                 await wallet.connect()
             }
             buttonText = intl.formatMessage({
-                id: 'WALLET_BTN_TEXT_CONNECT',
+                id: 'EVER_WALLET_CONNECT_BTN_TEXT',
             })
             break
 
@@ -57,10 +58,12 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
     }
 
     return (
-        <button
-            type="button"
-            className="btn btn-primary btn-lg form-submit btn-block"
+        <Button
             aria-disabled={buttonProps.disabled}
+            block
+            className="form-submit"
+            size="lg"
+            type="primary"
             {...buttonProps}
         >
             {showSpinner ? (
@@ -68,7 +71,7 @@ function SubmitButton({ closePopup }: Props): JSX.Element {
                     <Icon icon="loader" />
                 </div>
             ) : buttonText}
-        </button>
+        </Button>
     )
 }
 

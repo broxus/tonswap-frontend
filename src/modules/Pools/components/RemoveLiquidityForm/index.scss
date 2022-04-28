@@ -1,5 +1,5 @@
 .remove-liquidity-form {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgb(255 255 255 / 8%);
     border-radius: 6px;
     display: grid;
     gap: 32px;
@@ -29,7 +29,7 @@
         }
 
         &_translucent {
-            color: rgba(255, 255, 255, 0.56);
+            color: rgb(255 255 255 / 56%);
         }
     }
 
@@ -46,7 +46,7 @@
 
     &__receive {
         align-items: flex-start;
-        background: rgba(255, 255, 255, 0.08);
+        background: rgb(255 255 255 / 8%);
         display: flex;
         flex-direction: column;
         font-size: 24px;
@@ -65,7 +65,7 @@
     }
 
     &__hint {
-        color: rgba(255, 255, 255, 0.48);
+        color: rgb(255 255 255 / 48%);
         font-size: 12px;
         letter-spacing: 0.6px;
         line-height: 16px;
@@ -78,19 +78,19 @@
 }
 
 .remove-liquidity-form-stats {
-    color: #ffffff;
+    color: #fff;
     font-size: 14px;
     letter-spacing: 0.75px;
     line-height: 20px;
 
     &__title {
-        color: rgba(255, 255, 255, 0.8);
+        color: rgb(255 255 255 / 80%);
         margin: 0 0 14px;
     }
 
     &__head {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.16);
-        color: rgba(255, 255, 255, 0.56);
+        border-bottom: 1px solid rgb(255 255 255 / 16%);
+        color: rgb(255 255 255 / 56%);
         display: grid;
         grid-template-columns: 15% 1fr 1fr;
         margin: 0 0 2px;

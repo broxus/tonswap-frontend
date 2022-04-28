@@ -1,50 +1,61 @@
 .pair-stats {
     display: flex;
+    flex-flow: column wrap;
     gap: 10px;
     margin-top: 32px;
 
-    @media only screen and (max-width: 824px) {
-        flex-wrap: wrap;
+    @media only screen and (min-width: 960px) {
+        flex-flow: row nowrap;
     }
 
     &__sidebar {
         display: flex;
-        flex-direction: column;
+        flex-flow: column wrap;
         flex-shrink: 0;
-        row-gap: 10px;
-        width: 300px;
+        gap: 10px;
+        justify-content: space-between;
+        width: 100%;
 
-        @media only screen and (max-width: 824px) {
-            width: 100%;
+        @media only screen and (min-width: 640px) {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        @media only screen and (min-width: 960px) {
+            display: flex;
+            width: 270px;
         }
     }
 
     &__sidebar-item {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgb(255 255 255 / 8%);
         padding: 16px;
     }
 
     &__chart {
-        background: rgba(255, 255, 255, 0.08);
+        background: rgb(255 255 255 / 8%);
         flex-grow: 1;
         overflow: hidden;
-        padding: 32px;
+        padding: 16px;
         width: 100%;
 
-        @media only screen and (max-width: 824px) {
-            padding: 16px;
+        @media only screen and (min-width: 960px) {
+            padding: 32px;
         }
 
         .chart {
-            min-height: 314px;
+            min-height: 300px;
         }
 
         &-actions {
-            align-items: center;
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            margin-bottom: 24px;
+            .native-scroll-area-content {
+                align-items: center;
+                display: flex;
+                flex-direction: row;
+                gap: 40px;
+                justify-content: space-between;
+                margin-bottom: 24px;
+            }
         }
     }
 

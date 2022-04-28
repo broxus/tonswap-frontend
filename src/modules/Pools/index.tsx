@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
 
+import { Button } from '@/components/common/Button'
 import { SectionTitle } from '@/components/common/SectionTitle'
 import { PoolsContent } from '@/modules/Pools/components/PoolsContent'
 import { WalletConnector } from '@/modules/WalletConnector'
@@ -21,13 +21,13 @@ export function Pools(): JSX.Element {
                     </SectionTitle>
 
                     <div className="section__header-actions">
-                        <Link to="/pools/burn-liquidity" className="btn btn-secondary">
+                        <Button size="md" link="/pools/burn-liquidity" type="secondary">
                             {intl.formatMessage({ id: 'POOLS_LIST_HEADER_REMOVE' })}
-                        </Link>
+                        </Button>
 
-                        <Link to="/pool" className="btn btn-primary">
+                        <Button size="md" link="/pool" type="primary">
                             {intl.formatMessage({ id: 'POOLS_LIST_HEADER_NEW' })}
-                        </Link>
+                        </Button>
                     </div>
                 </div>
                 <WalletConnector

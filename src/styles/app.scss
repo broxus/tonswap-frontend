@@ -1,9 +1,10 @@
 @keyframes checking {
     from {
-        border: 1px solid rgba(255, 255, 255, 0.16);
+        border: 1px solid rgb(255 255 255 / 16%);
     }
+
     to {
-        border: 1px solid rgba(116, 166, 255, 0.76);
+        border: 1px solid rgb(116 166 255 / 76%);
     }
 }
 
@@ -11,6 +12,7 @@
     from {
         transform: rotate(0);
     }
+
     to {
         transform: rotate(360deg);
     }
@@ -18,7 +20,7 @@
 
 .alert {
     align-items: center;
-    background: rgba(230, 172, 0, 0.48);
+    background: rgb(230 172 0 / 48%);
     border-left: 4px solid #e6ac00;
     display: flex;
     flex-direction: row;
@@ -46,26 +48,25 @@
     width: 100%;
 
     &__header {
-        align-items: center;
-        column-gap: 2em;
         display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        margin: 64px 0 32px;
+        flex-flow: column wrap;
+        gap: 10px;
+        justify-content: flex-start;
+        margin: 40px 0 16px;
 
         &:first-child {
             margin-top: 0;
         }
 
         &-link {
-            color: #ffffff;
+            color: #fff;
             display: flex;
             flex-direction: row;
             font-size: 16px;
             font-weight: 500;
             opacity: 0.48;
             outline: none;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+            -webkit-tap-highlight-color: rgb(0 0 0 / 0%);
             text-decoration: none;
             transition: 0.25s ease;
 
@@ -79,6 +80,13 @@
             flex-wrap: wrap;
             row-gap: 1em;
         }
+
+        @media only screen and (min-width: 640px) {
+            align-items: flex-end;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            margin: 64px 0 32px;
+        }
     }
 
     &__header-actions {
@@ -86,10 +94,17 @@
         column-gap: 20px;
         display: flex;
         justify-content: space-between;
+        > * { width: 100% }
+        @media only screen and (min-width: 640px) {
+            > * { width: fit-content }
+        }
     }
 
     + .section {
-        margin-top: 64px;
+        margin-top: 40px;
+        @media only screen and (min-width: 640px) {
+            margin-top: 64px;
+        }
     }
 }
 
@@ -99,7 +114,7 @@
     input { display: none; }
 
     &__handle {
-        background-color: rgba(255, 255, 255, 0.4);
+        background-color: rgb(255 255 255 / 40%);
         border-radius: 8px;
         cursor: pointer;
         display: block;
@@ -109,7 +124,7 @@
         width: 32px;
 
         &::after {
-            background-color: #ffffff;
+            background-color: #fff;
             border-radius: 50%;
             content: '';
             display: block;
@@ -132,7 +147,7 @@
 
 .divider {
     background: none;
-    border-top: 1px dashed rgba(255, 255, 255, 0.16);
+    border-top: 1px dashed rgb(255 255 255 / 16%);
     margin: 16px 0;
     opacity: 1;
 }

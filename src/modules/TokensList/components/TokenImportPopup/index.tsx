@@ -3,6 +3,7 @@ import { Observer } from 'mobx-react-lite'
 import * as ReactDOM from 'react-dom'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
@@ -22,13 +23,13 @@ export function TokenImportPopup(): JSX.Element | null {
         <div className="popup">
             <div className="popup-overlay" onClick={tokensCache.onImportDismiss} />
             <div className="popup__wrap">
-                <button
-                    type="button"
+                <Button
+                    className="popup-close"
+                    type="icon"
                     onClick={tokensCache.onImportDismiss}
-                    className="btn btn-icon popup-close"
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
                         id: 'TOKENS_LIST_POPUP_IMPORT_TOKEN_TITLE',
@@ -61,15 +62,16 @@ export function TokenImportPopup(): JSX.Element | null {
                     }}
                 />
 
-                <button
-                    type="button"
-                    className="btn btn-md btn-primary btn-block"
+                <Button
+                    block
+                    size="md"
+                    type="primary"
                     onClick={onImportConfirm}
                 >
                     {intl.formatMessage({
                         id: 'TOKENS_LIST_POPUP_BTN_TEXT_IMPORT_TOKEN',
                     })}
-                </button>
+                </Button>
             </div>
         </div>,
         document.body,

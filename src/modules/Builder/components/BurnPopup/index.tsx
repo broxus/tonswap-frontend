@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { BuilderField } from '@/modules/Builder/components/BuilderField'
 import { BurnSubmitButton } from '@/modules/Builder/components/BurnSubmitButton'
@@ -41,13 +42,13 @@ function Popup({ onDismiss }: Props): JSX.Element {
         <div className="popup popup_scrollable">
             <div className="popup-overlay" />
             <div className="popup__wrap">
-                <button
-                    type="button"
-                    className="btn btn-icon popup-close"
+                <Button
+                    type="icon"
+                    className="popup-close"
                     onClick={onDismiss}
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
                         id: 'BUILDER_MANAGE_TOKEN_BURN_POPUP_TITLE',
@@ -85,14 +86,17 @@ function Popup({ onDismiss }: Props): JSX.Element {
                 </div>
                 <BurnDetails />
                 <div className="popup-actions">
-                    <button
-                        className="btn btn-tertiary btn-lg btn-block form-submit"
-                        onClick={onDismiss} type="button"
+                    <Button
+                        block
+                        className="form-submit"
+                        size="lg"
+                        type="tertiary"
+                        onClick={onDismiss}
                     >
                         {intl.formatMessage({
                             id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_CANCEL',
                         })}
-                    </button>
+                    </Button>
                     <BurnSubmitButton closePopup={onDismiss} />
                 </div>
             </div>

@@ -29,7 +29,9 @@ export const AccountConnector = observer(({
 
     React.useEffect(() => {
         if (!dex.isConnected) {
-            connect()
+            (async () => {
+                await connect()
+            })()
         }
     }, [])
 

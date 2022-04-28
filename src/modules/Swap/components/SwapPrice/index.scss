@@ -2,21 +2,19 @@
     align-items: center;
     column-gap: 10px;
     display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
+    flex-flow: row nowrap;
     font-size: 12px;
     justify-content: space-between;
     letter-spacing: 0.6px;
     line-height: 16px;
-    min-height: 28px;
     margin-left: 0 !important;
     margin-right: 0 !important;
+    min-height: 28px;
 
     &-details {
         align-items: center;
         display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
+        flex-flow: row nowrap;
         font-size: 12px;
         justify-content: space-between;
         line-height: 16px;
@@ -25,8 +23,7 @@
         > span {
             align-items: center;
             display: flex;
-            flex-direction: row;
-            flex-wrap: nowrap;
+            flex-flow: row nowrap;
             justify-content: space-between;
         }
     }
@@ -38,30 +35,30 @@
         font-weight: 500;
         line-height: 16px;
         min-height: 0;
-        padding: 3px 8px;
+        padding: 2px 8px;
 
         &:not(:hover) {
-            background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
+            background: linear-gradient(0deg, rgb(5 11 46 / 12%), rgb(5 11 46 / 12%)), rgb(255 255 255 / 12%);
         }
 
         &:hover { color: #293166; }
     }
 
     div.btn.swap-price__exchange-mode-btn {
-        background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
+        background: linear-gradient(0deg, rgb(5 11 46 / 12%), rgb(5 11 46 / 12%)), rgb(255 255 255 / 12%);
         color: #fff !important;
         cursor: default;
     }
 }
 
-button.swap-price__reverse-btn {
+.btn.swap-price__reverse-btn {
     border: 0 none;
     border-radius: 50%;
     opacity: 0.5;
     padding: 0;
     transition: opacity 0.15s ease-in-out;
 
-    svg { stroke: #ffffff; }
+    svg { stroke: #fff; }
 
     &:hover { opacity: 0.7; }
 }

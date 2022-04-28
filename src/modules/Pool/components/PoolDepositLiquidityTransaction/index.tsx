@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { Icon } from '@/components/common/Icon'
 import { UserAvatar } from '@/components/common/UserAvatar'
@@ -29,13 +30,13 @@ export function PoolDepositLiquidityTransaction({ onDismiss }: Props): JSX.Eleme
                     <div className="popup">
                         <div className="popup-overlay" />
                         <div className="popup__wrap">
-                            <button
-                                type="button"
-                                className="btn btn-icon popup-close"
+                            <Button
+                                type="icon"
+                                className="popup-close"
                                 onClick={onDismiss}
                             >
                                 <Icon icon="close" />
-                            </button>
+                            </Button>
                             <h2 className="popup-title">
                                 {intl.formatMessage({
                                     id: 'POOL_SUPPLY_RECEIPT_POPUP_TITLE',
@@ -189,15 +190,16 @@ export function PoolDepositLiquidityTransaction({ onDismiss }: Props): JSX.Eleme
                                     />
                                 </>
                             )}
-                            <button
-                                type="button"
-                                className="btn btn-primary btn-block"
+                            <Button
+                                block
+                                size="md"
+                                type="primary"
                                 onClick={onDismiss}
                             >
                                 {intl.formatMessage({
                                     id: 'POOL_SUPPLY_RECEIPT_POPUP_BTN_TEXT_CLOSE',
                                 })}
-                            </button>
+                            </Button>
                         </div>
                     </div>,
                     document.body,

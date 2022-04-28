@@ -4,10 +4,11 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 import { useParams } from 'react-router-dom'
 
-import { SectionTitle } from '@/components/common/SectionTitle'
-import { Icon } from '@/components/common/Icon'
-import { ContentLoader } from '@/components/common/ContentLoader'
 import { Breadcrumb } from '@/components/common/Breadcrumb'
+import { Button } from '@/components/common/Button'
+import { ContentLoader } from '@/components/common/ContentLoader'
+import { Icon } from '@/components/common/Icon'
+import { SectionTitle } from '@/components/common/SectionTitle'
 import { FarmingHead } from '@/modules/Farming/components/FarmingHead'
 import {
     FarmingMessageAdminLowBalance,
@@ -228,13 +229,14 @@ export function FarmingInner(): JSX.Element {
                                                 })}
                                             </SectionTitle>
 
-                                            <button
-                                                type="button"
-                                                className="btn btn-md btn-square btn-icon"
+                                            <Button
+                                                className="btn-square"
+                                                size="md"
+                                                type="icon"
                                                 onClick={showConfig}
                                             >
                                                 <Icon icon="config" />
-                                            </button>
+                                            </Button>
 
                                             {configVisible && farmingData.rewardTokensAddress && (
                                                 <FarmingConfig
@@ -347,13 +349,14 @@ export function FarmingInner(): JSX.Element {
                                                 </SectionTitle>
 
                                                 {farmingData.isAdmin && (
-                                                    <button
-                                                        type="button"
-                                                        className="btn btn-md btn-square btn-icon"
+                                                    <Button
+                                                        className="btn-square"
+                                                        size="md"
+                                                        type="icon"
                                                         onClick={showConfig}
                                                     >
                                                         <Icon icon="config" />
-                                                    </button>
+                                                    </Button>
                                                 )}
                                             </div>
 

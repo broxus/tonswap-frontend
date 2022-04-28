@@ -4,6 +4,7 @@ import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 import { UserAvatar } from '@/components/common/UserAvatar'
@@ -119,13 +120,13 @@ function SwapReceipt(): JSX.Element | null {
         <div className="popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
-                <button
-                    type="button"
-                    className="btn btn-icon popup-close"
+                <Button
+                    type="icon"
+                    className="popup-close"
                     onClick={formStore.cleanTransactionResult}
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
                         id: formStore.transaction.success

@@ -4,8 +4,9 @@ import { observer } from 'mobx-react-lite'
 import { useParams } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 
-import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
+import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 
 import './index.scss'
 
@@ -24,13 +25,13 @@ function Modal(): JSX.Element | null {
         <div className="builder-confirmation-modal popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
-                <button
-                    type="button"
-                    className="btn btn-icon popup-close"
+                <Button
+                    className="popup-close"
+                    type="icon"
                     disabled
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <div className="builder-confirmation-modal__loader">
                     <Icon icon="loader" ratio={2} />
                 </div>

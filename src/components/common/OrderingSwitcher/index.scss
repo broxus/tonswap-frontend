@@ -7,6 +7,7 @@
         color: inherit;
         font: inherit;
         margin: 0;
+        min-height: unset;
         padding: 0;
 
         &:hover,
@@ -19,7 +20,7 @@
 
     &-desc,
     &-asc {
-        color: #ffffff !important;
+        color: #fff !important;
         padding-right: 24px !important;
 
         &::before {
@@ -30,15 +31,17 @@
             right: 5px;
         }
     }
+
     &-asc {
         &::before {
-            border-bottom-color: #ffffff;
+            border-bottom-color: #fff;
             top: 2px;
         }
     }
+
     &-desc {
         &::before {
-            border-top-color: #ffffff;
+            border-top-color: #fff;
             top: 7.5px;
         }
     }

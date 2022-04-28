@@ -7,15 +7,19 @@ import { camelify } from '@/utils'
 import './index.scss'
 
 
-export interface IconProps extends React.AllHTMLAttributes<HTMLElement> {
+type DefaultLibraryType = typeof library
+
+export interface IconProps<
+    T extends DefaultLibraryType | { [key in string]: any }
+> extends React.AllHTMLAttributes<HTMLElement> {
     component?: React.ElementType;
-    lib?: Record<string, React.ElementType>;
-    icon: string;
+    lib?: T;
+    icon: keyof T;
     ratio?: number;
 }
 
 
-export function Icon(props: IconProps): JSX.Element | null {
+export function Icon<T = DefaultLibraryType>(props: IconProps<T>): JSX.Element | null {
     const {
         className,
         component: Component = 'span',
@@ -29,9 +33,8 @@ export function Icon(props: IconProps): JSX.Element | null {
         return null
     }
 
-    const Ico = lib[camelify(icon)]
+    const Ico = (lib as T)[camelify(icon as string) as keyof T] as unknown as React.ElementType
 
-    // Render
     return (
         <Component
             className={classNames(

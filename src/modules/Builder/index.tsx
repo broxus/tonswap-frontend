@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
 
+import { Button } from '@/components/common/Button'
 import { BuilderTokensList } from '@/modules/Builder/components/BuilderTokensList'
 import { FilterField } from '@/modules/Builder/components/FilterField'
 import { useBuilderStore } from '@/modules/Builder/stores/BuilderStore'
@@ -32,11 +32,15 @@ export function Builder(): JSX.Element {
                     </h2>
                     <div className="section__header-actions">
                         <FilterField className="filter" />
-                        <Link to="/builder/create" className="btn btn-primary">
+                        <Button
+                            link="/builder/create"
+                            size="md"
+                            type="primary"
+                        >
                             {intl.formatMessage({
                                 id: 'BUILDER_HEADER_CREATE_LINK_TEXT',
                             })}
-                        </Link>
+                        </Button>
                     </div>
                 </header>
 

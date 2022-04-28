@@ -2,6 +2,7 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { SwapDirection } from '@/modules/Swap/types'
@@ -53,16 +54,17 @@ function Price(): JSX.Element | null {
 
                         case formStore.isCrossExchangeMode:
                             return (
-                                <button
-                                    type="button"
-                                    className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"
+                                <Button
+                                    size="xs"
+                                    type="secondary"
+                                    className="swap-price__exchange-mode-btn"
                                     disabled={formStore.isSwapping}
                                     onClick={formStore.toggleSwapExchangeMode}
                                 >
                                     {intl.formatMessage({
                                         id: 'SWAP_PRICE_DIRECT_EXCHANGE_MODE_LABEL',
                                     })}
-                                </button>
+                                </Button>
                             )
 
                         case (
@@ -70,9 +72,10 @@ function Price(): JSX.Element | null {
                             && formStore.route !== undefined
                         ):
                             return (
-                                <button
-                                    type="button"
-                                    className="btn btn-xs btn-secondary swap-price__exchange-mode-btn"
+                                <Button
+                                    size="xs"
+                                    type="secondary"
+                                    className="swap-price__exchange-mode-btn"
                                     disabled={formStore.isSwapping}
                                     onClick={formStore.toggleSwapExchangeMode}
                                 >
@@ -82,7 +85,7 @@ function Price(): JSX.Element | null {
                                             ? 'SWAP_PRICE_CROSS_EXCHANGE_AVAILABLE_LABEL'
                                             : 'SWAP_PRICE_CROSS_EXCHANGE_MODE_LABEL',
                                     })}
-                                </button>
+                                </Button>
                             )
 
                         default:
@@ -140,13 +143,13 @@ function Price(): JSX.Element | null {
                         }}
                     />
                 )}
-                <button
-                    type="button"
-                    className="btn form-row__btn swap-price__reverse-btn"
+                <Button
+                    size="xs"
+                    className="swap-price__reverse-btn"
                     onClick={formStore.togglePriceDirection}
                 >
                     <Icon icon="reverseHorizontal" />
-                </button>
+                </Button>
             </div>
         </div>
     )

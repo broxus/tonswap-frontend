@@ -1,11 +1,11 @@
-import { reaction } from 'mobx'
 import * as React from 'react'
 import BigNumber from 'bignumber.js'
+import { reaction } from 'mobx'
 import { Observer, observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
 
 import { AccountExplorerLink } from '@/components/common/AccountExplorerLink'
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { PairRates } from '@/components/common/PairRates'
 import { Breadcrumb } from '@/components/common/Breadcrumb'
@@ -176,7 +176,7 @@ function PairInner(): JSX.Element {
                         </div>
                         <div className="pair-page__header-actions">
                             {store.pair?.meta.poolAddress !== undefined && (
-                                <div>
+                                <div className="pair-page__header-actions-secondary">
                                     <TogglePoolButton
                                         poolAddress={store.pair.meta.poolAddress}
                                         leftSymbol={baseToken?.symbol}
@@ -191,22 +191,26 @@ function PairInner(): JSX.Element {
                                     </AccountExplorerLink>
                                 </div>
                             )}
-                            <Link
-                                className="btn btn-md btn-secondary"
-                                to={`/pool/${baseToken?.root || store.pair?.meta.baseAddress}/${counterToken?.root || store.pair?.meta.counterAddress}`}
-                            >
-                                {intl.formatMessage({
-                                    id: 'PAIR_ADD_LIQUIDITY_BTN_TEXT',
-                                })}
-                            </Link>
-                            <Link
-                                className="btn btn-md btn-primary"
-                                to={`/swap/${baseToken?.root || store.pair?.meta.baseAddress}/${counterToken?.root || store.pair?.meta.counterAddress}`}
-                            >
-                                {intl.formatMessage({
-                                    id: 'PAIR_TRADE_BTN_TEXT',
-                                })}
-                            </Link>
+                            <div className="pair-page__header-actions-inner">
+                                <Button
+                                    link={`/pool/${baseToken?.root || store.pair?.meta.baseAddress}/${counterToken?.root || store.pair?.meta.counterAddress}`}
+                                    size="md"
+                                    type="secondary"
+                                >
+                                    {intl.formatMessage({
+                                        id: 'PAIR_ADD_LIQUIDITY_BTN_TEXT',
+                                    })}
+                                </Button>
+                                <Button
+                                    link={`/swap/${baseToken?.root || store.pair?.meta.baseAddress}/${counterToken?.root || store.pair?.meta.counterAddress}`}
+                                    size="md"
+                                    type="primary"
+                                >
+                                    {intl.formatMessage({
+                                        id: 'PAIR_TRADE_BTN_TEXT',
+                                    })}
+                                </Button>
+                            </div>
                         </div>
                     </header>
 

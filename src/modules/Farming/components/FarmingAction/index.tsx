@@ -1,6 +1,7 @@
 import * as React from 'react'
 
 import { AmountInput } from '@/components/common/AmountInput'
+import { Button } from '@/components/common/Button'
 import { ContentLoader } from '@/components/common/ContentLoader'
 
 import './index.scss'
@@ -52,17 +53,17 @@ export function FarmingAction({
                     maxIsVisible={maxValue !== undefined}
                 />
 
-                <button
+                <Button
                     disabled={submitDisabled || loading}
-                    type="button"
-                    className="btn btn-s btn-primary btn-with-icon"
+                    className="btn-with-icon"
+                    type="primary"
                     onClick={onClickSubmit}
                 >
                     {action}
                     {loading && (
                         <ContentLoader slim size="s" />
                     )}
-                </button>
+                </Button>
             </div>
 
             {hint && (

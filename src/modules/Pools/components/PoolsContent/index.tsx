@@ -29,7 +29,7 @@ export const PoolsContent = observer((): JSX.Element => {
     return (
         <>
             <div className="card card--small card--flat">
-                <div className="list polls-list">
+                <div className="list pools-list">
                     <div className="list__header">
                         <div className="list__cell list__cell--left">
                             {intl.formatMessage({ id: 'POOLS_LIST_TABLE_PAIR' })}

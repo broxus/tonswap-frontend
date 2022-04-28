@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 
-import { TextInput } from '@/components/common/TextInput'
+import { Button } from '@/components/common/Button'
 import { Checkbox } from '@/components/common/Checkbox'
+import { TextInput } from '@/components/common/TextInput'
 import { TokenSelector } from '@/modules/TokensList/components/TokenSelector'
 import { FarmingPoolFilter } from '@/modules/Farming/types'
 
@@ -252,25 +253,24 @@ export function FarmingFiltersPopup({
                 />
             </div>
             <div className="farming-filters-popup__footer">
-                <button
-                    type="button"
-                    className="btn btn-tertiary btn-s"
-                    onClick={reset}
+                <Button
                     disabled={!resetEnabled}
+                    type="secondary"
+                    onClick={reset}
                 >
                     {intl.formatMessage({
                         id: 'FARMING_FILTER_CLEAR',
                     })}
-                </button>
-                <button
-                    type="submit"
-                    className="btn btn-primary btn-s"
+                </Button>
+                <Button
                     disabled={!applyEnabled}
+                    submit
+                    type="primary"
                 >
                     {intl.formatMessage({
                         id: 'FARMING_FILTER_APPLY',
                     })}
-                </button>
+                </Button>
             </div>
         </form>
     )

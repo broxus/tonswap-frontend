@@ -1,0 +1,26 @@
+.language-switcher {
+    align-items: center;
+    color: #fff;
+    display: flex;
+    gap: 12px;
+    padding: 0;
+
+    &:focus {
+        color: #fff;
+    }
+}
+
+.languages-drop {
+    backdrop-filter: blur(64px);
+    background: linear-gradient(0deg, rgb(5 11 46 / 12%), rgb(5 11 46 / 12%)), rgb(255 255 255 / 12%);
+    padding: 10px 20px;
+    width: 100px
+}
+
+.languages-list {
+    .btn {
+        color: rgb(255 255 255 / 48%);
+        padding: 0;
+    }
+    .btn.active { color: #fff; }
+}

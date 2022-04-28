@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { formattedTokenAmount } from '@/utils'
@@ -68,16 +69,15 @@ function FarmingAdminWithdrawInner({
                 )}
 
                 <div>
-                    <button
-                        type="button"
-                        className="btn btn-s btn-tertiary"
+                    <Button
                         disabled={disabled}
+                        type="secondary"
                         onClick={onSubmit}
                     >
                         {intl.formatMessage({
                             id: 'FARMING_ADMIN_WITHDRAW_BTN',
                         })}
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

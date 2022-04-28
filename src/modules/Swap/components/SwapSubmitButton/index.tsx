@@ -2,9 +2,10 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
-import { SwapDirection } from '@/modules/Swap/types'
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
+import { SwapDirection } from '@/modules/Swap/types'
 
 
 function SubmitButton(): JSX.Element {
@@ -21,18 +22,20 @@ function SubmitButton(): JSX.Element {
         || !tokensCache.isReady
     ) {
         return (
-            <button
-                type="button"
-                className="btn btn-primary btn-lg btn-block form-submit"
+            <Button
+                block
+                size="lg"
+                type="primary"
+                className="form-submit"
                 aria-disabled="true"
                 disabled
             >
                 <Icon icon="loader" className="spin" />
-            </button>
+            </Button>
         )
     }
 
-    const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {}
+    const buttonProps: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> = {}
     let buttonText: React.ReactNode = intl.formatMessage({ id: 'SWAP_BTN_TEXT_SUBMIT' })
 
     switch (true) {
@@ -42,7 +45,7 @@ function SubmitButton(): JSX.Element {
                 await wallet.connect()
             }
             buttonText = intl.formatMessage({
-                id: 'WALLET_BTN_TEXT_CONNECT',
+                id: 'EVER_WALLET_CONNECT_BTN_TEXT',
             })
             break
 
@@ -102,14 +105,16 @@ function SubmitButton(): JSX.Element {
     }
 
     return (
-        <button
-            type="button"
-            className="btn btn-primary btn-lg btn-block form-submit"
+        <Button
+            block
+            size="lg"
+            type="primary"
+            className="form-submit"
             aria-disabled={buttonProps.disabled}
             {...buttonProps}
         >
             {buttonText}
-        </button>
+        </Button>
     )
 }
 

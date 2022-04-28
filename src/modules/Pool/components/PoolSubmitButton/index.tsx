@@ -2,6 +2,7 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { useBalanceValidation } from '@/hooks/useBalanceValidation'
 import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { AddLiquidityStep } from '@/modules/Pool/types'
@@ -15,20 +16,22 @@ function SubmitButton(): JSX.Element {
 
     if (pool.isPreparing) {
         return (
-            <button
-                type="button"
-                className="btn btn-primary btn-lg form-submit btn-block"
+            <Button
                 aria-disabled="true"
+                block
+                className="form-submit"
                 disabled
+                size="lg"
+                type="primary"
             >
                 {intl.formatMessage({
                     id: 'POOL_BTN_TEXT_PREPARING',
                 })}
-            </button>
+            </Button>
         )
     }
 
-    const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
+    const buttonProps: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> = {
         disabled: false,
     }
     let buttonText = intl.formatMessage({ id: 'POOL_BTN_TEXT_SUBMIT' })
@@ -185,19 +188,21 @@ function SubmitButton(): JSX.Element {
             await wallet.connect()
         }
         buttonText = intl.formatMessage({
-            id: 'WALLET_BTN_TEXT_CONNECT',
+            id: 'EVER_WALLET_CONNECT_BTN_TEXT',
         })
     }
 
     return (
-        <button
-            type="button"
-            className="btn btn-primary btn-lg form-submit btn-block"
+        <Button
             aria-disabled={buttonProps.disabled}
+            className="form-submit"
+            block
+            size="lg"
+            type="primary"
             {...buttonProps}
         >
             {buttonText}
-        </button>
+        </Button>
     )
 }
 

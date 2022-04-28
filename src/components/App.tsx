@@ -14,7 +14,7 @@ import { TokensUpgradeModal } from '@/components/common/TokensUpgradeModal'
 import { WalletConnectingModal } from '@/components/common/WalletConnectingModal'
 import { WalletUpdateModal } from '@/components/common/WalletUpdateModal'
 import { Header } from '@/components/layout/Header'
-import messages from '@/lang/en'
+import { LocalizationContext } from '@/context/Localization'
 import Builder from '@/pages/builder'
 import CreateToken from '@/pages/builder/create'
 import CustomToken from '@/pages/builder/token'
@@ -41,17 +41,18 @@ import './App.scss'
 export function App(): JSX.Element {
     const wallet = useWallet()
     const upgradeTokens = useUpgradeTokens()
+    const localization = React.useContext(LocalizationContext)
 
     React.useEffect(() => {
-        Settings.defaultLocale = 'en'
-    }, [])
+        Settings.defaultLocale = localization.locale
+    }, [localization.locale])
 
     return (
         <IntlProvider
             key="intl"
-            locale="en"
+            locale={localization.locale}
             defaultLocale="en"
-            messages={messages}
+            messages={localization.messages}
             onError={noop}
         >
             <Router>

@@ -15,18 +15,18 @@
         opacity: 0.5;
         width: 36px;
 
-        svg { fill: #ffffff; }
+        svg { fill: #fff; }
 
         &:hover,
         &.active {
-            background: rgba(255, 255, 255, 0.16);
+            background: rgb(255 255 255 / 16%);
             opacity: 1;
         }
     }
 
     &__drop {
         background-color: #2d324d;
-        box-shadow: 0 8px 16px rgba(43, 51, 56, 0.08);
+        box-shadow: 0 8px 16px rgb(43 51 56 / 8%);
         padding: 20px;
         position: absolute;
         right: 0;
@@ -85,8 +85,8 @@
     &__input {
         @include input-reset;
 
-        border: 1px solid rgba(255, 255, 255, 0.16);
-        color: #ffffff;
+        border: 1px solid rgb(255 255 255 / 16%);
+        color: #fff;
         font-size: 14px;
         height: 36px;
         letter-spacing: 0.75px;
@@ -108,9 +108,9 @@
         margin: 8px 8px 0 0;
 
         &-txt {
-            background-color: rgba(255, 255, 255, 0.08);
+            background-color: rgb(255 255 255 / 8%);
             border-radius: 2px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgb(255 255 255 / 50%);
             cursor: pointer;
             display: block;
             font-size: 12px;
@@ -120,7 +120,7 @@
             transition: color 0.25s, background-color 0.25s;
 
             &:hover {
-                background-color: #ffffff;
+                background-color: #fff;
                 color: #293166;
             }
         }
@@ -129,7 +129,7 @@
             display: none;
 
             &:checked + .swap-settings__radio-txt {
-                background-color: #ffffff;
+                background-color: #fff;
                 color: #293166;
             }
         }

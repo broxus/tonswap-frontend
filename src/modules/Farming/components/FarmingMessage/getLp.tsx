@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Link } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { appRoutes } from '@/routes'
 import { useTokensCache } from '@/stores/TokensCacheService'
@@ -43,13 +43,12 @@ export function FarmingMessageGetLp({
 
     return (
         <div className="farming-message">
-            <button
-                type="button"
+            <Button
                 className="farming-message__close"
                 onClick={dismiss}
             >
                 <Icon icon="close" ratio={0.9} />
-            </button>
+            </Button>
             <div>
                 <h3>
                     {intl.formatMessage({
@@ -75,28 +74,31 @@ export function FarmingMessageGetLp({
                 </p>
             </div>
             <div className="farming-message__actions">
-                <a
-                    target="_blank"
-                    rel="nofollow noopener noreferrer"
+                <Button
+                    ghost
                     href="https://docs.tonbridge.io/ton-swap/yield-farming-guide/farming-guide"
-                    className="btn btn--empty btn-dark"
+                    rel="nofollow noopener noreferrer"
+                    size="md"
+                    target="_blank"
+                    type="primary"
                 >
                     {intl.formatMessage({
                         id: 'FARMING_MESSAGE_GET_LP_GUIDE',
                     })}
-                </a>
+                </Button>
 
-                <Link
-                    to={appRoutes.poolCreate.makeUrl({
+                <Button
+                    link={appRoutes.poolCreate.makeUrl({
                         leftTokenRoot,
                         rightTokenRoot,
                     })}
-                    className="btn btn-primary btn-dark"
+                    size="md"
+                    type="dark"
                 >
                     {intl.formatMessage({
                         id: 'FARMING_MESSAGE_GET_LP_GET',
                     })}
-                </Link>
+                </Button>
             </div>
         </div>
     )

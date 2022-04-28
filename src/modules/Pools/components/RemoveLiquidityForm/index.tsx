@@ -4,6 +4,7 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { Warning } from '@/components/common/Warning'
 import { ContentLoader } from '@/components/common/ContentLoader'
 import { AmountInput } from '@/components/common/AmountInput'
@@ -351,9 +352,10 @@ function RemoveLiquidityFormInner({
             }
 
             {walletConnected ? (
-                <button
-                    type="submit"
-                    className="btn btn-primary btn-lg"
+                <Button
+                    size="lg"
+                    submit
+                    type="primary"
                     disabled={!amountIsValid || loading}
                 >
                     {loading ? (
@@ -363,17 +365,17 @@ function RemoveLiquidityFormInner({
                             id: 'REMOVE_LIQUIDITY_FORM_CONFIRM',
                         })
                     )}
-                </button>
+                </Button>
             ) : (
-                <button
-                    type="button"
-                    className="btn btn-primary btn-lg"
+                <Button
+                    size="lg"
+                    type="primary"
                     onClick={onClickConnect}
                 >
                     {intl.formatMessage({
                         id: 'REMOVE_LIQUIDITY_FORM_CONNECT',
                     })}
-                </button>
+                </Button>
             )}
         </form>
     )

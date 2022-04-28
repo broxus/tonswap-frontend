@@ -36,7 +36,7 @@ export function CurrenciesList({
                         id: 'CURRENCIES_LIST_HEADER_NAME_CELL',
                     })}
                 </div>
-                <div className="list__cell list__cell--right hide-540">
+                <div className="list__cell list__cell--right">
                     {intl.formatMessage({
                         id: 'CURRENCIES_LIST_HEADER_PRICE_CELL',
                     })}

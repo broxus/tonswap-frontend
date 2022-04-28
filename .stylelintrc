@@ -1,28 +1,47 @@
 {
-    "extends": ["stylelint-config-standard", "stylelint-config-standard-scss", "stylelint-config-prettier"],
+    "extends": [
+        "stylelint-config-standard",
+        "stylelint-config-standard-scss",
+        "stylelint-config-prettier"
+    ],
     "plugins": ["stylelint-order"],
     "rules": {
         "at-rule-no-unknown": null,
         "block-no-empty": [true, {
-            "ignore": ["comments"]
+            "ignore": ["comments", "mixin"]
         }],
         "block-opening-brace-space-before": "always",
         "block-opening-brace-space-after": "always-single-line",
         "block-closing-brace-space-before": "always-single-line",
+        "value-keyword-case": ["lower", {
+            "camelCaseSvgKeywords": true
+        }],
         "color-hex-case": "lower",
-        "color-hex-length": "long",
+        "color-hex-length": "short",
         "declaration-block-semicolon-space-after": "always-single-line",
         "declaration-colon-space-after": "always",
         "function-comma-space-after": "always",
+        "function-no-unknown": null,
         "function-whitespace-after": "always",
         "length-zero-no-unit": true,
         "indentation": 4,
         "max-empty-lines": 2,
         "no-descending-specificity": null,
+        "no-invalid-position-at-import-rule": null,
         "number-leading-zero": "always",
         "order/properties-alphabetical-order": true,
+        "property-no-vendor-prefix": null,
+        "selector-no-vendor-prefix": null,
         "selector-pseudo-class-no-unknown": [true, {
             "ignorePseudoClasses": ["global", "local"]
-        }]
+        }],
+        "selector-class-pattern": null,
+        "scss/at-rule-no-unknown": true,
+        "scss/at-import-no-partial-leading-underscore": null,
+        "scss/at-import-partial-extension": null,
+        "scss/at-extend-no-missing-placeholder": null,
+        "scss/comment-no-empty": null,
+        "scss/dollar-variable-colon-space-after": null,
+        "scss/no-global-function-names": null
     }
 }

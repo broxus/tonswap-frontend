@@ -3,11 +3,13 @@ import * as ReactDOM from 'react-dom'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { formattedTokenAmount } from '@/utils'
 
 import './index.scss'
+import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 
 type Props = {
     lpAmount?: string;
@@ -39,13 +41,13 @@ function RemoveLiquiditySuccessInner({
         <div className="popup">
             <div className="popup-overlay" onClick={onClose} />
             <div className="popup__wrap remove-liquidity-success">
-                <button
-                    type="button"
+                <Button
+                    type="icon"
                     onClick={onClose}
-                    className="btn btn-icon popup-close"
+                    className="popup-close"
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
 
                 <div className="remove-liquidity-success__head">
                     <Icon icon="success" />
@@ -122,16 +124,14 @@ function RemoveLiquiditySuccessInner({
 
                 {transactionHash && (
                     <div className="remove-liquidity-success__action">
-                        <a
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            href={`https://everscan.io/transactions/${transactionHash}`}
-                            className="btn btn--empty"
+                        <TransactionExplorerLink
+                            className="btn btn-ghost btn-md btn-block btn-secondary"
+                            id={transactionHash}
                         >
                             {intl.formatMessage({
                                 id: 'REMOVE_LIQUIDITY_SUCCESS_SUBMIT',
                             })}
-                        </a>
+                        </TransactionExplorerLink>
                     </div>
                 )}
             </div>

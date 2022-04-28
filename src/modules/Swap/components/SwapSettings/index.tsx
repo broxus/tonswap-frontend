@@ -2,6 +2,7 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
 import { useSwapSettings } from '@/modules/Swap/hooks/useSwapSettings'
@@ -16,14 +17,13 @@ function Settings(): JSX.Element {
 
     return (
         <div className="swap-settings">
-            <button
+            <Button
                 ref={settings.triggerRef}
-                type="button"
-                className="btn swap-settings__btn"
+                className="swap-settings__btn"
                 onClick={settings.isOpen ? settings.hide : settings.show}
             >
                 <Icon icon="config" />
-            </button>
+            </Button>
             {settings.isOpen && (
                 <div ref={settings.popupRef} className="swap-settings__drop">
                     <h3 className="swap-settings__title">

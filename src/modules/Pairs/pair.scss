@@ -3,16 +3,53 @@
         align-items: flex-end;
         column-gap: 16px;
         display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        row-gap: 32px;
+        flex-flow: column wrap;
+        row-gap: 16px;
+        width: 100%;
+
+        > * { width: 100%; }
+
+        @media only screen and (min-width: 960px) {
+            flex-flow: row nowrap;
+            justify-content: space-between;
+        }
     }
 
     &__header-actions {
-        align-items: center;
-        column-gap: 16px;
+        align-items: flex-start;
         display: flex;
-        flex-direction: row;
+        flex-flow: column-reverse wrap;
+        gap: 8px;
+        width: 100%;
+
+        @media only screen and (min-width: 640px) {
+            flex-flow: row nowrap;
+            justify-content: space-between;
+        }
+
+        @media only screen and (min-width: 960px) {
+            align-items: center;
+            width: auto;
+        }
+    }
+
+    &__header-actions-secondary {
+        align-items: center;
+        display: flex;
+        gap: 8px;
+    }
+
+    &__header-actions-inner {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        width: 100%;
+        > * { width: 100% }
+
+        @media only screen and (min-width: 640px) {
+            width: auto;
+            > * { width: auto }
+        }
     }
 
     &__token {
@@ -33,9 +70,19 @@
     &__tokens-prices {
         align-items: center;
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-flow: column wrap;
         gap: 10px;
         margin-top: 24px;
+
+        > * {
+            justify-content: center;
+            width: 100%
+        }
+
+        @media only screen and (min-width: 640px) {
+            flex-flow: row nowrap;
+            > * { width: auto }
+        }
+
     }
 }

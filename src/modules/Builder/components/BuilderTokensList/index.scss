@@ -3,7 +3,7 @@
         --list-grid-template: minmax(30%, 70%) minmax(100px, 150px) minmax(100px, 150px) minmax(200px, 250px) minmax(100px, 150px);
 
         @media only screen and (max-width: 824px) {
-            --list-grid-template: minmax(30%, 50%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
+            --list-grid-template: minmax(200px, 50%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
         }
     }
 }

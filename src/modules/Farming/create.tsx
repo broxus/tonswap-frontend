@@ -5,6 +5,7 @@ import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 import { useHistory } from 'react-router-dom'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { PoolCreatingParams } from '@/modules/Farming/components/PoolCreatingParams'
 import { PoolField } from '@/modules/Farming/components/PoolField'
@@ -225,11 +226,13 @@ export function Create(): JSX.Element {
 
                             <Observer>
                                 {() => (
-                                    <button
-                                        type="button"
-                                        className="btn btn-primary btn-lg form-submit btn-block"
+                                    <Button
+                                        block
+                                        className="form-submit"
                                         aria-disabled={creatingPool.isCreating || !creatingPool.isValid}
                                         disabled={creatingPool.isCreating || !creatingPool.isValid}
+                                        size="lg"
+                                        type="primary"
                                         onClick={create}
                                     >
                                         {creatingPool.isCreating ? (
@@ -239,7 +242,7 @@ export function Create(): JSX.Element {
                                         ) : intl.formatMessage({
                                             id: 'FARMING_CREATE_BTN_TEXT_SUBMIT',
                                         })}
-                                    </button>
+                                    </Button>
                                 )}
                             </Observer>
                         </div>

@@ -31,7 +31,7 @@
     }
 
     &:disabled {
-        background-color: rgba(197, 228, 243, 0.16) !important;
+        background-color: rgb(197 228 243 / 16%) !important;
         color: #c5e4f3 !important;
         cursor: not-allowed !important;
         opacity: 0.5 !important;
@@ -41,8 +41,8 @@
     &.btn-xs {
         font-size: 14px;
         letter-spacing: 0.75px;
-        line-height: 32px;
-        min-height: 32px;
+        line-height: 22px;
+        min-height: 22px;
         padding: 0 12px;
     }
 
@@ -105,7 +105,7 @@
         color: #c5e4f3;
 
         &:hover {
-            background-color: rgba(5, 10, 46, 0.88);
+            background-color: rgb(5 10 46 / 88%);
         }
     }
 }
@@ -113,7 +113,7 @@
 .btn-secondary {
     @include btn-reset;
 
-    background-color: rgba(197, 228, 243, 0.16);
+    background-color: rgb(197 228 243 / 16%);
     color: #c5e4f3;
     font-size: 16px;
     font-weight: 700;
@@ -131,7 +131,7 @@
 .btn-tertiary {
     @include btn-reset;
 
-    background-color: rgba(197, 228, 243, 0.16);
+    background-color: rgb(197 228 243 / 16%);
     color: #c5e4f3;
     font-size: 16px;
     font-weight: 700;
@@ -140,7 +140,7 @@
     padding: 0 16px;
 
     &:hover {
-        background-color: rgba(197, 228, 243, 0.24);
+        background-color: rgb(197 228 243 / 24%);
         color: #c5e4f3;
     }
 
@@ -154,7 +154,7 @@
     @include btn-reset;
 
     background-color: #eb4361;
-    color: #ffffff;
+    color: #fff;
     font-size: 16px;
     font-weight: 700;
     line-height: 44px;
@@ -163,14 +163,14 @@
 
     &:hover {
         background-color: darken(#eb4361, 10%);
-        color: #ffffff;
+        color: #fff;
     }
 }
 
 .btn--empty {
     @include btn-reset;
 
-    border: 1px solid rgba(255, 255, 255, 0.48);
+    border: 1px solid rgb(255 255 255 / 48%);
     color: #c5e4f3;
     font-size: 16px;
     font-weight: 700;
@@ -179,16 +179,16 @@
     padding: 0 16px;
 
     &:hover {
-        border-color: rgba(255, 255, 255, 0.78);
-        color: #ffffff;
+        border-color: rgb(255 255 255 / 78%);
+        color: #fff;
     }
 
     &.btn-dark {
-        border: 1px solid rgba(5, 10, 46, 0.32);
+        border: 1px solid rgb(5 10 46 / 32%);
         color: #050a2e;
 
         &:hover {
-            border: 1px solid rgba(5, 10, 46, 0.56);
+            border: 1px solid rgb(5 10 46 / 56%);
         }
     }
 }
@@ -196,7 +196,7 @@
 .btn-icon {
     align-items: center;
     border: none 0;
-    color: #ffffff;
+    color: #fff;
     display: inline-flex;
     height: auto;
     justify-content: center;
@@ -208,7 +208,7 @@
 
     &:hover,
     &.active {
-        color: #ffffff;
+        color: #fff;
         opacity: 1;
     }
 
@@ -224,6 +224,7 @@
         &.active {
             svg {
                 fill: #c5e4f3;
+
                 path {
                     stroke: #c5e4f3;
                 }

@@ -1,0 +1,21 @@
+.native-scroll-area {
+    overflow: hidden;
+
+    .native-scroll-area-inner {
+        margin-bottom: -30px;
+        overflow: hidden;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: scroll;
+        padding-bottom: 30px;
+        -webkit-transform: translate3d(0, 0, 0);
+
+        &::-webkit-scrollbar {
+            height: 0 !important;
+            width: 0 !important;
+        }
+    }
+
+    .native-scroll-area-content > * {
+        flex-wrap: nowrap;
+    }
+}

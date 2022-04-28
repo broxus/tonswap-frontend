@@ -4,6 +4,7 @@ import { reaction } from 'mobx'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { TokenIcons } from '@/components/common/TokenIcons'
@@ -60,13 +61,13 @@ function ConfirmationPopup(): JSX.Element {
         <div className="popup">
             <div onClick={onDismiss} className="popup-overlay" />
             <div className="popup__wrap popup__wrap-confirm-swap">
-                <button
-                    type="button"
+                <Button
+                    type="icon"
                     onClick={onDismiss}
-                    className="btn btn-icon popup-close"
+                    className="popup-close"
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
                         id: 'SWAP_POPUP_CONFORMATION_TITLE',
@@ -164,7 +165,7 @@ function ConfirmationPopup(): JSX.Element {
                             type="text"
                             value={rightAmount}
                         />
-                        <div className="btn form-drop">
+                        <div className="btn form-drop form-drop-extra">
                             <span className="form-drop__logo">
                                 <TokenIcon
                                     address={formStore.rightToken?.root}
@@ -189,13 +190,13 @@ function ConfirmationPopup(): JSX.Element {
                             </p>
                         </div>
                         <div>
-                            <button
-                                type="button"
-                                className="btn btn-xs btn--empty"
+                            <Button
+                                size="xs"
+                                type="ghost"
                                 onClick={onUpdate}
                             >
                                 Update a rate
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 ) : (
@@ -212,16 +213,17 @@ function ConfirmationPopup(): JSX.Element {
                     />
                 )}
 
-                <button
-                    type="button"
-                    className="btn btn-md btn-primary btn-block"
+                <Button
+                    block
+                    size="lg"
+                    type="primary"
                     disabled={isChanged}
                     onClick={onSubmit}
                 >
                     {intl.formatMessage({
                         id: 'SWAP_BTN_TEXT_CONFIRM_SUBMIT',
                     })}
-                </button>
+                </Button>
             </div>
         </div>,
         document.body,

@@ -1,13 +1,24 @@
 .farming-filters {
-    column-gap: 20px;
+    align-items: center;
+    column-gap: 16px;
     display: grid;
     grid-template-columns: 1fr max-content;
+    max-width: 420px;
     position: relative;
+    width: 100%;
+
+    > * {
+        min-width: fit-content;
+    }
+
+    > .filter-field {
+        width: 100%;
+    }
 }
 
 .farming-filters-popup {
     background: #313551;
-    box-shadow: 0 8px 16px rgba(43, 51, 56, 0.08);
+    box-shadow: 0 8px 16px rgb(43 51 56 / 8%);
     margin-top: 8px;
     padding: 20px;
     position: absolute;
@@ -19,7 +30,7 @@
     @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
         -webkit-backdrop-filter: blur(80px);
         backdrop-filter: blur(80px);
-        background: linear-gradient(0deg, rgba(5, 11, 46, 0.12), rgba(5, 11, 46, 0.12)), rgba(255, 255, 255, 0.12);
+        background: linear-gradient(0deg, rgb(5 11 46 / 12%), rgb(5 11 46 / 12%)), rgb(255 255 255 / 12%);
     }
 
     &__title {
@@ -33,7 +44,7 @@
         font-size: 14px;
         font-weight: normal;
         line-height: 20px;
-        margin: 16px 0 8px 0;
+        margin: 16px 0 8px;
     }
 
     &__cols {
@@ -51,7 +62,7 @@
 
     &__footer {
         align-items: center;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-top: 1px solid rgb(255 255 255 / 8%);
         column-gap: 10px;
         display: flex;
         justify-content: flex-end;

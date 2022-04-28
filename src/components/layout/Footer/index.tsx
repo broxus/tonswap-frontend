@@ -3,6 +3,7 @@ import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 import { Link, NavLink } from 'react-router-dom'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { Logo } from '@/components/layout/Logo'
 import { useWallet } from '@/stores/WalletService'
@@ -20,30 +21,35 @@ export function Footer(): JSX.Element {
                 {() => (
                     <>
                         {(!wallet.isInitialized && !wallet.isInitializing) && (
-                            <a
+                            <Button
                                 href="https://l1.broxus.com/everscale/wallet"
-                                className="btn btn--xl btn-tertiary footer-tool"
-                                target="_blank"
+                                className="footer-tool"
                                 rel="noopener noreferrer"
+                                size="md"
+                                target="_blank"
+                                type="secondary"
                             >
                                 {intl.formatMessage({
                                     id: 'WALLET_INSTALLATION_LINK_TEXT',
                                 })}
-                            </a>
+                            </Button>
                         )}
                     </>
                 )}
             </Observer>
-            <a
+            <Button
+                className="footer-tool"
+                ghost
                 href="https://github.com/broxus/tonswap-frontend"
-                className="btn btn--xl btn--empty footer-tool"
-                target="_blank"
                 rel="noopener noreferrer"
+                size="md"
+                target="_blank"
+                type="secondary"
             >
                 {intl.formatMessage({
                     id: 'FOOTER_GITHUB_LINK_TEXT',
                 })}
-            </a>
+            </Button>
         </div>
     )
 

@@ -2,23 +2,24 @@ import React from 'react'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { useTransferForm } from '@/modules/Builder/hooks/useTransferForm'
 import { TransferPopup } from '@/modules/Builder/components/TransferPopup'
 
-function Button(): JSX.Element {
+function ButtonInternal(): JSX.Element {
     const intl = useIntl()
     const transferForm = useTransferForm()
 
     return (
         <>
-            <button className="btn btn-danger" type="button" onClick={transferForm.showTransferPopup}>
+            <Button type="danger" onClick={transferForm.showTransferPopup}>
                 {intl.formatMessage({
                     id: 'BUILDER_MANAGE_TOKEN_TRANSFER_OWNERSHIP_BTN_TEXT',
                 })}
-            </button>
+            </Button>
             {transferForm.isTransferPopupShown && <TransferPopup onDismiss={transferForm.hideTransferPopup} />}
         </>
     )
 }
 
-export const TransferButton = observer(Button)
+export const TransferButton = observer(ButtonInternal)

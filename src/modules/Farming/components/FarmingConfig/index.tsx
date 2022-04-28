@@ -4,6 +4,7 @@ import * as ReactDOM from 'react-dom'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { Warning } from '@/components/common/Warning'
 import { TextInput } from '@/components/common/TextInput'
@@ -83,13 +84,13 @@ function FarmingConfigInner({
                             : 'FARMING_CONFIG_TITLE',
                     })}
 
-                    <button
-                        type="button"
+                    <Button
+                        className="popup-close"
+                        type="icon"
                         onClick={onClose}
-                        className="btn btn-icon popup-close"
                     >
                         <Icon icon="close" />
-                    </button>
+                    </Button>
                 </h2>
 
                 {confirmationVisible ? (
@@ -101,26 +102,24 @@ function FarmingConfigInner({
                         </div>
 
                         <div className="farming-config__action">
-                            <button
-                                type="button"
-                                className="btn btn-s btn-tertiary"
-                                onClick={hideConfirmation}
+                            <Button
                                 disabled={endDateFrom.loading}
+                                onClick={hideConfirmation}
+                                type="tertiary"
                             >
                                 {intl.formatMessage({
                                     id: 'FARMING_CONFIG_CONFIRMATION_NO',
                                 })}
-                            </button>
-                            <button
-                                type="button"
-                                className="btn btn-s btn-danger"
-                                onClick={submitEndDate}
+                            </Button>
+                            <Button
                                 disabled={endDateFrom.disabled || endDateFrom.loading}
+                                onClick={submitEndDate}
+                                type="danger"
                             >
                                 {intl.formatMessage({
                                     id: 'FARMING_CONFIG_CONFIRMATION_YES',
                                 })}
-                            </button>
+                            </Button>
                         </div>
                     </>
                 ) : (
@@ -195,16 +194,15 @@ function FarmingConfigInner({
                                 </div>
 
                                 <div className="farming-config__action">
-                                    <button
-                                        type="button"
-                                        className="btn btn-s btn-primary"
+                                    <Button
                                         disabled={rewardFrom.blocked || rewardFrom.disabled || rewardFrom.blocked}
+                                        type="primary"
                                         onClick={submitReward}
                                     >
                                         {intl.formatMessage({
                                             id: 'FARMING_CONFIG_SAVE_CHANGES',
                                         })}
-                                    </button>
+                                    </Button>
                                 </div>
                             </>
                         )}
@@ -253,20 +251,19 @@ function FarmingConfigInner({
                                 </div>
 
                                 <div className="farming-config__action">
-                                    <button
-                                        type="button"
-                                        className="btn btn-s btn-danger"
-                                        onClick={showConfirmation}
+                                    <Button
                                         disabled={
                                             endDateFrom.loading
                                             || endDateFrom.disabled
                                             || endDateFrom.actualEndTime > 0
                                         }
+                                        type="danger"
+                                        onClick={showConfirmation}
                                     >
                                         {intl.formatMessage({
                                             id: 'FARMING_CONFIG_CLOSE_POOL',
                                         })}
-                                    </button>
+                                    </Button>
                                 </div>
                             </>
                         )}

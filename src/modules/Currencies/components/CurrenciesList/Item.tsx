@@ -46,7 +46,7 @@ export function Item({ currency, idx }: Props): JSX.Element {
                     </div>
                 </div>
             </div>
-            <div className="list__cell list__cell--right hide-540">
+            <div className="list__cell list__cell--right">
                 {price}
             </div>
             <div className="list__cell list__cell--right hide-824">

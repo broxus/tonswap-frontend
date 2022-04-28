@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { useTokenBalanceWatcher } from '@/hooks/useTokenBalanceWatcher'
@@ -80,10 +81,9 @@ function Field({
                         switch (true) {
                             case isMultiple:
                                 return (
-                                    <button
+                                    <Button
                                         key="change-token"
-                                        type="button"
-                                        className={classNames('btn form-drop form-drop-extra', {
+                                        className={classNames('form-drop form-drop-extra', {
                                             disabled: props.disabled,
                                         })}
                                         disabled={props.disabled}
@@ -110,16 +110,15 @@ function Field({
                                         <span className="form-drop__arrow">
                                             <Icon icon="arrowDown" ratio={1.2} />
                                         </span>
-                                    </button>
+                                    </Button>
                                 )
 
                             case token !== undefined:
                             case nativeCoin !== undefined:
                                 return (
-                                    <button
+                                    <Button
                                         key="change-token"
-                                        type="button"
-                                        className={classNames('btn form-drop form-drop-extra', {
+                                        className={classNames('form-drop form-drop-extra', {
                                             disabled: props.disabled,
                                         })}
                                         disabled={props.disabled}
@@ -139,15 +138,14 @@ function Field({
                                         <span className="form-drop__arrow">
                                             <Icon icon="arrowDown" ratio={1.2} />
                                         </span>
-                                    </button>
+                                    </Button>
                                 )
 
                             default:
                                 return (
-                                    <button
+                                    <Button
                                         key="select-token"
-                                        type="button"
-                                        className={classNames('btn form-select', {
+                                        className={classNames('form-select', {
                                             disabled: props.disabled,
                                         })}
                                         disabled={props.disabled}
@@ -161,7 +159,7 @@ function Field({
                                         <span className="form-select__arrow">
                                             <Icon icon="arrowDown" ratio={1.2} />
                                         </span>
-                                    </button>
+                                    </Button>
                                 )
                         }
                     })()}
@@ -175,15 +173,16 @@ function Field({
                             && typeof props.onMaximize === 'function'
                             && showMaximizeButton
                         ) && (
-                            <button
+                            <Button
                                 key="max-button"
-                                type="button"
-                                className="btn btn-xs btn-secondary form-btn-max"
+                                size="xs"
+                                type="secondary"
+                                className="form-btn-max"
                                 disabled={props.disabled}
                                 onClick={props.onMaximize}
                             >
                                 Max
-                            </button>
+                            </Button>
                         )}
                         <div key="token-balance" className="swap-field-balance truncate">
                             {intl.formatMessage({

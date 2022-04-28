@@ -1,34 +1,47 @@
 .wallet {
     &__wrapper {
         align-items: center;
-        column-gap: 8px;
+        column-gap: 15px;
         display: flex;
         justify-content: space-between;
     }
 
+    &__inner {
+        align-items: center;
+        column-gap: 15px;
+        display: flex;
+        justify-content: flex-start;
+    }
+
     &__user-avatar {
         position: relative;
-        width: 24px;
+        width: 32px;
+
+        .wallet-icon {
+            bottom: -2px;
+            position: absolute;
+            right: -2px;
+        }
     }
 
     &__address {
-        color: #ffffff;
+        color: #fff;
         font-size: 14px;
         letter-spacing: 0.5px;
         line-height: 20px;
     }
 
     &__balance {
-        color: rgba(255, 255, 255, 0.56);
+        color: rgb(255 255 255 / 56%);
         font-size: 12px;
         letter-spacing: 0.6px;
         line-height: 16px;
+        white-space: nowrap;
     }
 }
 
 .btn.btn-logout {
     padding: 0;
-    svg {
-        fill: #c5e4f3;
-    }
+
+    svg { fill: #c5e4f3; }
 }

@@ -1,6 +1,8 @@
 import * as React from 'react'
 import classNames from 'classnames'
 
+import { Button } from '@/components/common/Button'
+
 import './index.scss'
 
 
@@ -25,15 +27,14 @@ export function OrderingSwitcher<T>({
     }
 
     return (
-        <button
-            type="button"
-            className={classNames('btn ordering-switcher', {
+        <Button
+            className={classNames('ordering-switcher', {
                 'ordering-switcher-asc': value === ascending,
                 'ordering-switcher-desc': value === descending,
             })}
             onClick={onClick}
         >
             {children}
-        </button>
+        </Button>
     )
 }

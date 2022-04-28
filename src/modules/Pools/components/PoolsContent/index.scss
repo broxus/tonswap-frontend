@@ -1,5 +1,5 @@
-.polls-list.list {
-    --list-grid-template: 2fr 1fr 1fr 1fr;
+.pools-list.list {
+    --list-grid-template: minmax(190px, 40%) minmax(100px, 245px) minmax(100px, 245px) minmax(100px, 245px);
 
     min-height: auto;
 }

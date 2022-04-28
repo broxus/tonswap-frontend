@@ -2,6 +2,7 @@ import * as React from 'react'
 import classNames from 'classnames'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { useFavoriteFarmings } from '@/stores/FavoritePairs'
 import { concatSymbols } from '@/utils'
@@ -32,15 +33,16 @@ export function FarmingToggleButtonInner({
     }
 
     return (
-        <button
-            type="button"
-            className={classNames('btn btn-md btn-square btn-icon btn-fav', {
+        <Button
+            className={classNames('btn-square btn-fav', {
                 active: favoriteFarmings.addresses.includes(poolAddress),
             })}
+            size="md"
+            type="icon"
             onClick={onClickBtn}
         >
             <Icon icon="star" />
-        </button>
+        </Button>
     )
 }
 

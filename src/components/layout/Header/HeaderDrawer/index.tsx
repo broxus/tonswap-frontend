@@ -1,13 +1,14 @@
 import * as React from 'react'
-import classNames from 'classnames'
 import { reaction } from 'mobx'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { Component } from '@/components/common/Component'
+import { LangSwitcher } from '@/components/layout/LangSwitcher'
 import { Logo } from '@/components/layout/Logo'
-import { Account } from '@/modules/Account'
+import { EverWallet } from '@/modules/Accounts'
 import { DeviceNav } from '@/components/layout/DeviceNav'
 import { Drawer, DrawerRef } from '@/components/common/Drawer'
 import { useWallet } from '@/stores/WalletService'
@@ -41,13 +42,13 @@ export function HeaderDrawer(): JSX.Element {
                     destroyOnClose
                     /* eslint-disable-next-line react/no-unstable-nested-components */
                     trigger={({ expand }) => (
-                        <button
-                            type="button"
-                            className="btn btn-icon btn-open-drawer"
+                        <Button
+                            type="icon"
+                            className="btn-open-drawer"
                             onClick={expand}
                         >
                             <Icon icon="menu" />
-                        </button>
+                        </Button>
                     )}
                     width="100vw"
                 >
@@ -59,36 +60,35 @@ export function HeaderDrawer(): JSX.Element {
 
                             <div className="device-drawer-header-inner">
                                 {wallet.isConnected && (
-                                    <Account showDisconnectButton={false} />
+                                    <EverWallet showDisconnectButton={false} />
                                 )}
 
-                                <button
-                                    type="button"
-                                    className="btn btn-icon btn-close-drawer"
+                                <Button
+                                    type="icon"
+                                    className="btn-close-drawer"
                                     onClick={collapse}
                                 >
                                     <Icon icon="close" />
-                                </button>
+                                </Button>
                             </div>
                         </div>
                         <DeviceNav onNavigate={collapse} />
+                        <LangSwitcher />
                         <div className="device-drawer-footer">
-                            <button
-                                type="button"
-                                className={classNames('btn btn-block', {
-                                    'btn-primary': !wallet.isConnected,
-                                    'btn-secondary': wallet.isConnected,
-                                })}
+                            <Button
+                                block
+                                size="md"
+                                type={wallet.isConnected ? 'secondary' : 'primary'}
                                 onClick={wallet.isConnected
                                     ? wallet.disconnect
                                     : wallet.connect}
                             >
                                 {intl.formatMessage({
                                     id: wallet.isConnected
-                                        ? 'WALLET_BTN_TEXT_DISCONNECT'
-                                        : 'WALLET_BTN_TEXT_CONNECT',
+                                        ? 'WALLET_DISCONNECT_BTN_TEXT'
+                                        : 'EVER_WALLET_CONNECT_BTN_TEXT',
                                 })}
-                            </button>
+                            </Button>
                         </div>
                     </Component>
                 </Drawer>

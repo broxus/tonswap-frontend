@@ -18,9 +18,9 @@
                 }
 
                 &::after {
-                    background-image: linear-gradient(to top, #242737, rgba(36, 39, 55, 85%) 30%, rgba(36, 39, 54, 25%));
+                    background-image: linear-gradient(to top, #242737, rgb(36 39 55 / 85%) 30%, rgb(36 39 54 / 25%));
                     bottom: 0;
-                    box-shadow: 0 -16px 20px rgba(35, 38, 53, 25%);
+                    box-shadow: 0 -16px 20px rgb(35 38 53 / 25%);
                     content: '';
                     height: 30px;
                     left: 0;
@@ -41,8 +41,8 @@
             &__input {
                 @include input-reset;
 
-                border: 1px solid rgba(255, 255, 255, 0.16);
-                color: #ffffff;
+                border: 1px solid rgb(255 255 255 / 16%);
+                color: #fff;
                 cursor: text;
                 font-size: 14px;
                 height: 36px;
@@ -51,33 +51,33 @@
                 padding: 0 12px;
 
                 &::-webkit-input-placeholder {
-                    color: #ffffff;
+                    color: #fff;
                     opacity: 0.24;
                 }
 
                 &::-moz-placeholder {
-                    color: #ffffff;
+                    color: #fff;
                     opacity: 0.24;
                 }
 
                 &:-moz-placeholder {
-                    color: #ffffff;
+                    color: #fff;
                     opacity: 0.24;
                 }
 
                 &:-ms-input-placeholder {
-                    color: #ffffff;
+                    color: #fff;
                     opacity: 0.24;
                 }
 
                 &::placeholder {
-                    color: #ffffff;
+                    color: #fff;
                     opacity: 0.24;
                 }
 
                 &:-webkit-autofill {
-                    color: #ffffff !important;
-                    -webkit-text-fill-color: #ffffff !important;
+                    color: #fff !important;
+                    -webkit-text-fill-color: #fff !important;
                 }
             }
 
@@ -89,7 +89,7 @@
         }
 
         &-list {
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid rgb(255 255 255 / 8%);
             display: flex;
             flex-direction: column;
             flex-grow: 1;
@@ -111,8 +111,8 @@
 
         &-item {
             align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            color: #ffffff;
+            border-top: 1px solid rgb(255 255 255 / 8%);
+            color: #fff;
             column-gap: 10px;
             cursor: pointer;
             display: flex;

@@ -6,13 +6,38 @@
         flex-wrap: wrap;
         justify-content: space-between;
         row-gap: 32px;
+        width: 100%;
     }
 
     &__header-actions {
-        align-items: center;
-        column-gap: 16px;
+        align-items: flex-start;
         display: flex;
-        flex-direction: row;
+        flex-flow: column wrap;
+        gap: 8px;
+        width: 100%;
+
+        @media only screen and (min-width: 640px) {
+            flex-flow: row nowrap;
+            justify-content: space-between;
+        }
+
+        @media only screen and (min-width: 960px) {
+            align-items: center;
+            width: auto;
+        }
+    }
+
+    &__header-actions-inner {
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        width: 100%;
+        > * { width: 100% }
+
+        @media only screen and (min-width: 640px) {
+            width: auto;
+            > * { width: auto }
+        }
     }
 
     &__token {
@@ -32,6 +57,7 @@
             font-weight: 500;
             letter-spacing: 0.25px;
             line-height: 20px;
+
             > span {
                 font-weight: 400;
                 margin-left: 12px;
@@ -47,7 +73,7 @@
         flex-direction: row;
 
         &-currency-cost {
-            color: #ffffff;
+            color: #fff;
             font-size: 36px;
             font-weight: 700;
             letter-spacing: 0.25px;

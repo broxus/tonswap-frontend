@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
+
 import './index.scss'
 
 export function FarmingMessageAdminLowBalance(): JSX.Element {
@@ -24,14 +26,15 @@ export function FarmingMessageAdminLowBalance(): JSX.Element {
             </div>
 
             <div className="farming-message__actions">
-                <a
+                <Button
                     href="#pool-management"
-                    className="btn btn-primary"
+                    size="md"
+                    type="primary"
                 >
                     {intl.formatMessage({
                         id: 'FARMING_MESSAGE_ADMIN_LOW_BALANCE_BTN',
                     })}
-                </a>
+                </Button>
             </div>
         </div>
     )

@@ -2,6 +2,14 @@
 export default {
     OPEN_IN_EXPLORER: 'Open in explorer',
 
+    GREETING_BANNER_TITLE: 'New to FlatQube?',
+    GREETING_BANNER_WALLET_NOT_INSTALLED_NOTE: 'It only takes 2 steps to get the best out of FlatQube:',
+    GREETING_BANNER_WALLET_INSTALLED_NOTE_P1: 'You successfully installed and connected EVER Wallet.',
+    GREETING_BANNER_WALLET_INSTALLED_NOTE_P2: 'It only takes 1 last step to get the best out of FlatQube:',
+    GREETING_BANNER_GET_EVER_LINK_TEXT: 'Get EVERs',
+    GREETING_BANNER_FAQ_NOTE: 'Any questions?',
+    GREETING_BANNER_JOIN_TELEGRAM_LINK_TEXT: 'Join our Telegram group',
+
     NAV_LINK_SOON_HINT: ' soon',
     NAV_LINK_TEXT_SWAP: 'Swap',
     NAV_LINK_TEXT_POOLS: 'Pools',
@@ -14,14 +22,18 @@ export default {
     WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME: 'EVER Wallet',
     WALLET_CONNECTING_POPUP_LEAD_IN_PROCESS: 'Initializing...',
     WALLET_UPDATING_POPUP_LEAD_IS_OUTDATED: 'Extension version is outdated',
-    WALLET_UPDATING_POPUP_NOTE: '<p>Your wallet version is too old. Please update extension at <a href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a> or local, through chrome://extensions/.</p><p>Reload this page after installing the update.</p>',
+    WALLET_UPDATING_POPUP_NOTE: '<p>Your wallet version is too old. Please update extension at <a href="https://chrome.google.com/webstore/detail/ever-wallet/cgeeodpfagjceefieflmdfphplkenlfk" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a> or local, through chrome://extensions/.</p><p>Reload this page after installing the update.</p>',
     WALLET_UPDATING_LINK_TEXT: 'Update EVER Wallet',
     WALLET_INSTALLATION_LINK_TEXT: 'Install EVER Wallet',
-    WALLET_INSTALLATION_NOTE: '<p>At the moment, only EVER Wallet supports FlatQube.</p><p>If you haven’t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
+    WALLET_INSTALLATION_NOTE: '<p>At the moment, only EVER Wallet supports FlatQube.</p><p>If you haven’t installed the extension yet, you can do it at <a href="https://chrome.google.com/webstore/detail/ever-wallet/cgeeodpfagjceefieflmdfphplkenlfk" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
 
-    WALLET_BALANCE_HINT: '{balance} {currency}',
-    WALLET_BTN_TEXT_CONNECT: 'Connect to a wallet',
-    WALLET_BTN_TEXT_DISCONNECT: 'Logout',
+    WALLET_BALANCE_HINT: '{value} {currency}',
+    WALLET_CONNECT_BTN_TEXT: 'Connect',
+    WALLET_NOT_CONNECTED_HINT: 'Not connected',
+    WALLET_DISCONNECT_BTN_TEXT: 'Logout',
+
+    EVER_WALLET_CONNECTOR_BLOCKCHAIN_NAME: 'Everscale',
+    EVER_WALLET_CONNECT_BTN_TEXT: 'Connect EVER Wallet',
 
     TOKENS_UPGRADE_POPUP_TITLE: 'Upgrade tokens',
     TOKENS_UPGRADE_POPUP_NOTE: 'We found some outdated tokens in your wallet. Please, upgrade these tokens to continue.',
@@ -95,6 +107,11 @@ export default {
     SWAP_TRANSACTION_RECEIPT_LINK_TXT_TRANSACTION: 'Transaction result',
     SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE: '<p>The Swap was canceled. Your balance hasn’t changed.</p>',
     SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE: 'Due to the slippage is more than {slippage}% of the {leftSymbol}/{rightSymbol} pair, you stayed with {leftSymbol} token.',
+
+    SWAP_COMBINED_NOTATION_TITLE: 'From now on EVER can be used on FlatQube',
+    SWAP_COMBINED_NOTATION_P1: 'Your default balance on the DEX will now be the cumulative balance of your EVER and wEVER, which you can swap for any other TIP-3.1 tokens.',
+    SWAP_COMBINED_NOTATION_P2: 'You can also swap by using only your EVER or wEVER balance, if preferable.',
+    SWAP_COMBINED_NOTATION_HOW_TO_LINK_TEXT: 'How to swap',
 
     CONVERSION_FIELD_LABEL_WRAP: 'Amount to wrap',
     CONVERSION_FIELD_LABEL_UNWRAP: 'Amount to unwrap',

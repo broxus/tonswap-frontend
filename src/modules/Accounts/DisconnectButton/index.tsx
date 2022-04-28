@@ -1,5 +1,6 @@
 import * as React from 'react'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { useWallet } from '@/stores/WalletService'
 
@@ -8,13 +9,12 @@ export function DisconnectButton(): JSX.Element {
     const wallet = useWallet()
 
     return (
-        <button
+        <Button
             key="logout"
-            type="button"
-            className="btn btn-logout"
+            className="btn-logout"
             onClick={wallet.disconnect}
         >
             <Icon icon="logout" />
-        </button>
+        </Button>
     )
 }

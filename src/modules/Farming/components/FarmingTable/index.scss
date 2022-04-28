@@ -1,6 +1,7 @@
 .farming-table {
     &.list {
         --list-grid-template: minmax(220px, 25%) minmax(70px, 70px) minmax(145px, 145px) minmax(145px, 145px) minmax(125px, 125px) minmax(150px, 150px) minmax(150px, 150px);
+
         min-height: auto;
     }
 
@@ -11,7 +12,7 @@
 
     &__message {
         align-items: center;
-        color: #ffffff;
+        color: #fff;
         display: flex;
         font-size: 14px;
         justify-content: center;

@@ -2,9 +2,10 @@ import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
-import { useWallet } from '@/stores/WalletService'
 import { useCreateTokenStore } from '@/modules/Builder/stores/CreateTokenStore'
+import { useWallet } from '@/stores/WalletService'
 
 
 function SubmitButton(): JSX.Element {
@@ -12,7 +13,7 @@ function SubmitButton(): JSX.Element {
     const wallet = useWallet()
     const creatingToken = useCreateTokenStore()
 
-    const buttonProps: React.ButtonHTMLAttributes<HTMLButtonElement> = {
+    const buttonProps: Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'type'> = {
         disabled: creatingToken.isCreating,
     }
     let buttonText = intl.formatMessage({ id: 'BUILDER_CREATE_BTN_TEXT_SUBMIT' })
@@ -25,7 +26,7 @@ function SubmitButton(): JSX.Element {
                 await wallet.connect()
             }
             buttonText = intl.formatMessage({
-                id: 'WALLET_BTN_TEXT_CONNECT',
+                id: 'EVER_WALLET_CONNECT_BTN_TEXT',
             })
             break
 
@@ -44,10 +45,12 @@ function SubmitButton(): JSX.Element {
     }
 
     return (
-        <button
-            type="button"
-            className="btn btn-primary btn-lg btn-block form-submit"
+        <Button
             aria-disabled={buttonProps.disabled}
+            block
+            className="form-submit"
+            size="lg"
+            type="primary"
             {...buttonProps}
         >
             {showSpinner ? (
@@ -55,7 +58,7 @@ function SubmitButton(): JSX.Element {
                     <Icon icon="loader" />
                 </div>
             ) : buttonText}
-        </button>
+        </Button>
     )
 }
 

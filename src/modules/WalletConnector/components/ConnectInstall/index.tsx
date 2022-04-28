@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
+
 import './index.scss'
 
 export function ConnectInstall(): JSX.Element {
@@ -15,14 +17,14 @@ export function ConnectInstall(): JSX.Element {
                         __html: intl.formatMessage({ id: 'WALLET_INSTALLATION_NOTE' }),
                     }}
                 />
-                <a
-                    className="btn btn-secondary"
-                    href="https://chrome.google.com/webstore/detail/ton-crystal-wallet/cgeeodpfagjceefieflmdfphplkenlfk"
+                <Button
+                    type="secondary"
+                    href="https://chrome.google.com/webstore/detail/ever-wallet/cgeeodpfagjceefieflmdfphplkenlfk"
                     target="_blank"
                     rel="nofollow noopener noreferrer"
                 >
                     {intl.formatMessage({ id: 'WALLET_INSTALLATION_LINK_TEXT' })}
-                </a>
+                </Button>
             </div>
         </div>
     )

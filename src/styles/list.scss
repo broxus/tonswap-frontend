@@ -18,8 +18,8 @@
     &__header,
     &__row {
         align-items: center;
-        border-bottom: 1px solid rgb(255, 255, 255, 8%);
-        column-gap: 10px;
+        border-bottom: 1px solid rgb(255 255 255 / 8%);
+        column-gap: 16px;
         display: grid;
         grid-template-columns: var(--list-grid-template);
         min-height: 57px;
@@ -34,7 +34,7 @@
     }
 
     &__header {
-        color: rgba(255, 255, 255, 48%);
+        color: rgb(255 255 255 / 48%);
         font-size: 14px;
         text-align: center;
     }
@@ -43,6 +43,7 @@
         font-size: 14px;
         font-weight: 500;
         line-height: 20px;
+        min-width: min-content;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -64,7 +65,7 @@
                 }
 
                 &-term {
-                    color: rgba(255, 255, 255, 48%);
+                    color: rgb(255 255 255 / 48%);
                     font-size: 14px;
 
                     @media only screen and (min-width: 960px) {
@@ -103,7 +104,7 @@
 
     &__info {
         align-items: center;
-        color: rgba(255, 255, 266, 0.64);
+        color: rgb(255 255 266 / 64%);
         display: flex;
         font-size: 14px;
         justify-content: flex-start;
@@ -112,6 +113,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+
         > span {
             overflow: hidden;
             text-overflow: ellipsis;

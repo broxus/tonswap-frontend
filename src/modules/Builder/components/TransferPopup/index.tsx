@@ -4,12 +4,13 @@ import { useParams } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
+import { isAddressValid } from '@/misc'
 import { BuilderField } from '@/modules/Builder/components/BuilderField'
 import { TransferSubmitButton } from '@/modules/Builder/components/TransferSubmitButton'
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 import { useTransferForm } from '@/modules/Builder/hooks/useTransferForm'
-import { isAddressValid } from '@/misc'
 
 import './index.scss'
 
@@ -29,13 +30,13 @@ function Popup({ onDismiss }: Props): JSX.Element {
         <div className="manage-token transfer-popup popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
-                <button
-                    type="button"
-                    className="btn popup-close btn-icon"
+                <Button
+                    className="popup-close"
+                    type="icon"
                     onClick={onDismiss}
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
                         id: 'BUILDER_MANAGE_TOKEN_TRANSFER_POPUP_TITLE',
@@ -59,11 +60,17 @@ function Popup({ onDismiss }: Props): JSX.Element {
                     />
                 </div>
                 <div className="popup-actions">
-                    <button className="btn btn-tertiary btn-lg form-submit btn-block" onClick={onDismiss} type="button">
+                    <Button
+                        block
+                        className="form-submit"
+                        size="lg"
+                        type="tertiary"
+                        onClick={onDismiss}
+                    >
                         {intl.formatMessage({
                             id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_CANCEL',
                         })}
-                    </button>
+                    </Button>
                     <TransferSubmitButton closePopup={onDismiss} />
                 </div>
             </div>

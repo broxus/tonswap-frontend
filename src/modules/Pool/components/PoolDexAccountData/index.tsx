@@ -2,6 +2,7 @@ import * as React from 'react'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { usePoolStore } from '@/modules/Pool/stores/PoolStore'
 import { formattedTokenAmount } from '@/utils'
@@ -57,9 +58,8 @@ export function PoolDexAccountData(): JSX.Element {
                                         {pool.leftToken.symbol}
                                     </span>
                                     {pool.isLeftTokenWithdrawAvailable && (
-                                        <button
-                                            type="button"
-                                            className="btn btn-icon"
+                                        <Button
+                                            type="icon"
                                             title="Withdraw"
                                             onClick={onWithdrawLeftToken}
                                         >
@@ -68,7 +68,7 @@ export function PoolDexAccountData(): JSX.Element {
                                             ) : (
                                                 <Icon icon="push" ratio={0.7} />
                                             )}
-                                        </button>
+                                        </Button>
                                     )}
                                 </div>
                                 <div className="list-bill__val">
@@ -84,9 +84,8 @@ export function PoolDexAccountData(): JSX.Element {
                                         {pool.rightToken.symbol}
                                     </span>
                                     {pool.isRightTokenWithdrawAvailable && (
-                                        <button
-                                            type="button"
-                                            className="btn btn-icon"
+                                        <Button
+                                            type="icon"
                                             title="Withdraw"
                                             onClick={onWithdrawRightToken}
                                         >
@@ -95,7 +94,7 @@ export function PoolDexAccountData(): JSX.Element {
                                             ) : (
                                                 <Icon icon="push" ratio={0.7} />
                                             )}
-                                        </button>
+                                        </Button>
                                     )}
                                 </div>
                                 <div className="list-bill__val">
@@ -113,10 +112,9 @@ export function PoolDexAccountData(): JSX.Element {
                                         })}
                                     </span>
                                     {pool.isWithdrawLpAvailable && (
-                                        <button
+                                        <Button
                                             key="withdrawLp"
-                                            type="button"
-                                            className="btn btn-icon"
+                                            type="icon"
                                             title="Withdraw"
                                             onClick={onWithdrawLpToken}
                                         >
@@ -125,13 +123,12 @@ export function PoolDexAccountData(): JSX.Element {
                                             ) : (
                                                 <Icon icon="push" ratio={0.7} />
                                             )}
-                                        </button>
+                                        </Button>
                                     )}
                                     {pool.isWithdrawLiquidityAvailable && (
-                                        <button
+                                        <Button
                                             key="withdrawLiquidity"
-                                            type="button"
-                                            className="btn btn-icon"
+                                            type="icon"
                                             title="Withdraw Liquidity"
                                             onClick={onWithdrawLiquidity}
                                         >
@@ -140,7 +137,7 @@ export function PoolDexAccountData(): JSX.Element {
                                             ) : (
                                                 <Icon icon="remove" ratio={0.9} />
                                             )}
-                                        </button>
+                                        </Button>
                                     )}
                                 </div>
                                 <div className="list-bill__val">

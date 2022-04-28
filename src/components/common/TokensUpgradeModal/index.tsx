@@ -3,6 +3,7 @@ import * as ReactDOM from 'react-dom'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { ContentLoader } from '@/components/common/ContentLoader'
 import { Icon } from '@/components/common/Icon'
 import { TokenIcon } from '@/components/common/TokenIcon'
@@ -26,13 +27,13 @@ export function TokensUpgradeModal(): JSX.Element {
         <div className="popup">
             <div className="popup-overlay" />
             <div className="popup__wrap">
-                <button
-                    type="button"
-                    className="btn btn-icon popup-close"
+                <Button
+                    type="icon"
+                    className="popup-close"
                     onClick={onClose}
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
                         id: 'TOKENS_UPGRADE_POPUP_TITLE',
@@ -78,10 +79,10 @@ export function TokensUpgradeModal(): JSX.Element {
                                             style={{ display: 'flex', alignItems: 'center' }}
                                         >
                                             <span>{formattedTokenAmount(token.balance, token.decimals)}</span>
-                                            <button
-                                                type="button"
+                                            <Button
+                                                type="primary"
                                                 disabled={migration.isTokenUpgrading(token.rootV4)}
-                                                className="btn btn-primary btn-with-icon"
+                                                className="btn-with-icon"
                                                 style={{ marginLeft: 10 }}
                                                 onClick={(
                                                     token.proxy === undefined
@@ -96,7 +97,7 @@ export function TokensUpgradeModal(): JSX.Element {
                                                 {migration.isTokenUpgrading(token.rootV4) && (
                                                     <ContentLoader slim size="s" />
                                                 )}
-                                            </button>
+                                            </Button>
                                         </div>
                                     </div>
                                 )))}

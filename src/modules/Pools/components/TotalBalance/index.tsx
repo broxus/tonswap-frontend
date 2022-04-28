@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 import * as React from 'react'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
 
+import { Button } from '@/components/common/Button'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { appRoutes } from '@/routes'
 
@@ -105,19 +105,22 @@ export function TotalBalance({
 
                     <div className="balance-buttons balance-buttons_inline">
                         {walletLpAmount && new BigNumber(walletLpAmount).isGreaterThan(0) && (
-                            <Link
-                                className="btn btn--empty btn-with-icon"
-                                to={appRoutes.poolRemoveLiquidity.makeUrl({ leftTokenRoot, rightTokenRoot })}
+                            <Button
+                                className="btn-with-icon"
+                                link={appRoutes.poolRemoveLiquidity.makeUrl({ leftTokenRoot, rightTokenRoot })}
+                                size="md"
+                                type="empty"
                             >
                                 {intl.formatMessage({ id: 'POOLS_LIST_BURN_BUTTON' })}
-                            </Link>
+                            </Button>
                         )}
-                        <Link
-                            className="btn btn-primary"
-                            to={appRoutes.poolCreate.makeUrl({ leftTokenRoot, rightTokenRoot })}
+                        <Button
+                            link={appRoutes.poolCreate.makeUrl({ leftTokenRoot, rightTokenRoot })}
+                            size="md"
+                            type="primary"
                         >
                             {intl.formatMessage({ id: 'POOLS_LIST_ADD_BUTTON' })}
-                        </Link>
+                        </Button>
                     </div>
                 </div>
             </div>

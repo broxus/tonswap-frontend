@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { observer } from 'mobx-react-lite'
+import { useIntl } from 'react-intl'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { TokenIcons } from '@/components/common/TokenIcons'
 import { useSwapFormStore } from '@/modules/Swap/stores/SwapFormStore'
@@ -10,6 +12,7 @@ import './index.scss'
 
 
 function SwapNotationInternal(): JSX.Element | null {
+    const intl = useIntl()
     const formStore = useSwapFormStore()
     const wallet = formStore.useWallet
 
@@ -27,13 +30,13 @@ function SwapNotationInternal(): JSX.Element | null {
         return (
             <div className="card swap-notation-newbie">
                 <div>
-                    <h3>New to FlatQube?</h3>
+                    <h3>{intl.formatMessage({ id: 'GREETING_BANNER_TITLE' })}</h3>
                     {(!wallet.hasProvider || !wallet.isConnected) ? (
-                        <p>It only takes 2 steps to get the best out of FlatQube:</p>
+                        <p>{intl.formatMessage({ id: 'GREETING_BANNER_WALLET_NOT_INSTALLED_NOTE' })}</p>
                     ) : (
                         <>
-                            <p>You successfully installed and connected EVER Wallet.</p>
-                            <p>It only takes 1 last step to get the best out of FlatQube:</p>
+                            <p>{intl.formatMessage({ id: 'GREETING_BANNER_WALLET_INSTALLED_NOTE_P1' })}</p>
+                            <p>{intl.formatMessage({ id: 'GREETING_BANNER_WALLET_INSTALLED_NOTE_P2' })}</p>
                         </>
                     )}
                     <p>
@@ -44,7 +47,7 @@ function SwapNotationInternal(): JSX.Element | null {
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                Install EVER Wallet
+                                {intl.formatMessage({ id: 'WALLET_INSTALLATION_LINK_TEXT' })}
                                 <Icon icon="chevronRight" />
                             </a>
                         )}
@@ -56,7 +59,7 @@ function SwapNotationInternal(): JSX.Element | null {
                                 rel="noopener noreferrer"
                                 onClick={connect}
                             >
-                                Connect to a wallet
+                                {intl.formatMessage({ id: 'EVER_WALLET_CONNECT_BTN_TEXT' })}
                                 <Icon icon="chevronRight" />
                             </a>
                         )}
@@ -68,14 +71,16 @@ function SwapNotationInternal(): JSX.Element | null {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            Get EVERs
+                            {intl.formatMessage({ id: 'GREETING_BANNER_GET_EVER_LINK_TEXT' })}
                             <Icon icon="chevronRight" />
                         </a>
                     </p>
                 </div>
 
                 <footer>
-                    <p>Any questions?</p>
+                    <p>
+                        {intl.formatMessage({ id: 'GREETING_BANNER_FAQ_NOTE' })}
+                    </p>
                     <p>
                         <a
                             className="swap-notation-link"
@@ -83,7 +88,7 @@ function SwapNotationInternal(): JSX.Element | null {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            Join our Telegram group
+                            {intl.formatMessage({ id: 'GREETING_BANNER_JOIN_TELEGRAM_LINK_TEXT' })}
                             <Icon icon="chevronRight" />
                         </a>
                     </p>
@@ -101,13 +106,13 @@ function SwapNotationInternal(): JSX.Element | null {
         return (
             <div className="card swap-notation">
                 <div>
-                    <button
-                        type="button"
-                        className="btn btn-icon popup-close"
+                    <Button
+                        type="icon"
+                        className="popup-close"
                         onClick={onDismiss}
                     >
                         <Icon icon="close" />
-                    </button>
+                    </Button>
                     <div className="swap-notation__icon-holders">
                         <TokenIcons
                             icons={[
@@ -117,13 +122,14 @@ function SwapNotationInternal(): JSX.Element | null {
                             size="medium"
                         />
                     </div>
-                    <h3>From now on EVER can be used on FlatQube</h3>
+                    <h3>
+                        {intl.formatMessage({ id: 'SWAP_COMBINED_NOTATION_TITLE' })}
+                    </h3>
                     <p>
-                        Your default balance on the DEX will now be the cumulative balance of your
-                        EVER and wEVER, which you can swap for any other TIP-3.1 tokens.
+                        {intl.formatMessage({ id: 'SWAP_COMBINED_NOTATION_P1' })}
                     </p>
                     <p>
-                        You can also swap by using only your EVER or wEVER balance, if preferable.
+                        {intl.formatMessage({ id: 'SWAP_COMBINED_NOTATION_P2' })}
                     </p>
                 </div>
                 <footer>
@@ -134,7 +140,7 @@ function SwapNotationInternal(): JSX.Element | null {
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            How to swap
+                            {intl.formatMessage({ id: 'SWAP_COMBINED_NOTATION_HOW_TO_LINK_TEXT' })}
                             <Icon icon="chevronRight" />
                         </a>
                     </p>

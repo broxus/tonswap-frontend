@@ -1,12 +1,12 @@
 import * as React from 'react'
 import { observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
-import { Link } from 'react-router-dom'
 
-import { useWallet } from '@/stores/WalletService'
+import { Button } from '@/components/common/Button'
+import { ContentLoader } from '@/components/common/ContentLoader'
 import { Item } from '@/modules/Builder/components/BuilderTokensList/Item'
 import { useBuilderStore } from '@/modules/Builder/stores/BuilderStore'
-import { ContentLoader } from '@/components/common/ContentLoader'
+import { useWallet } from '@/stores/WalletService'
 
 import './index.scss'
 
@@ -28,16 +28,18 @@ export function TokensList(): JSX.Element {
             return (
                 <div className="message">
                     <div>
-                        <button
-                            type="button"
-                            className="btn btn-primary btn-lg swap-form-submit btn-block"
-                            onClick={connect}
+                        <Button
+                            block
+                            className="form-submit"
                             disabled={wallet.isConnecting}
+                            size="lg"
+                            type="primary"
+                            onClick={connect}
                         >
                             {intl.formatMessage({
-                                id: 'WALLET_BTN_TEXT_CONNECT',
+                                id: 'EVER_WALLET_CONNECT_BTN_TEXT',
                             })}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             )
@@ -50,11 +52,11 @@ export function TokensList(): JSX.Element {
                             id: 'BUILDER_MESSAGE_TOKEN_NOT_FOUND',
                         })}
                     </p>
-                    <Link to="/builder/create" className="btn btn-primary">
+                    <Button link="/builder/create" type="primary">
                         {intl.formatMessage({
                             id: 'BUILDER_BUTTON_CREATE_TOKEN',
                         })}
-                    </Link>
+                    </Button>
                 </div
                 >
             )
@@ -67,11 +69,11 @@ export function TokensList(): JSX.Element {
                             id: 'BUILDER_MESSAGE_NO_TOKEN',
                         })}
                     </p>
-                    <Link to="/builder/create" className="btn btn-primary">
+                    <Button link="/builder/create" type="primary">
                         {intl.formatMessage({
                             id: 'BUILDER_BUTTON_CREATE_TOKEN',
                         })}
-                    </Link>
+                    </Button>
                 </div>
             )
 

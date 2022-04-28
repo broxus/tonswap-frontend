@@ -2,10 +2,13 @@ import * as React from 'react'
 import * as ReactDOM from 'react-dom'
 
 import { App } from '@/components/App'
+import { LocalizationProvider } from '@/context/Localization'
 
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <LocalizationProvider>
+            <App />
+        </LocalizationProvider>
     </React.StrictMode>,
     document.getElementById('root'),
 )

@@ -2,11 +2,12 @@ import * as React from 'react'
 import { useIntl } from 'react-intl'
 import classNames from 'classnames'
 
+import { Button } from '@/components/common/Button'
 import { FilterField } from '@/components/common/FilterField'
+import { useDropdown } from '@/hooks/useDropdown'
 import { FarmingFiltersPopup } from '@/modules/Farming/components/FarmingFilters/popup'
 import { useLocationFilter } from '@/modules/Farming/hooks/useLocationFilter'
 import { FarmingPoolFilter } from '@/modules/Farming/types'
-import { useDropdown } from '@/hooks/useDropdown'
 
 import './index.scss'
 
@@ -77,11 +78,11 @@ export function FarmingFilters({
                 onChange={onChangeQuery}
             />
 
-            <button
-                type="button"
-                className={classNames('btn btn-tertiary btn-xs btn-with-icon', {
+            <Button
+                className={classNames('btn-with-icon', {
                     active: dropdown.visible,
                 })}
+                type="secondary"
                 onClick={dropdown.open}
             >
                 {intl.formatMessage({
@@ -90,7 +91,7 @@ export function FarmingFilters({
                 {enabledFilterCount > 0 && (
                     <span className="btn__counter">{enabledFilterCount}</span>
                 )}
-            </button>
+            </Button>
 
             {dropdown.visible && (
                 <div ref={dropdown.popupRef}>

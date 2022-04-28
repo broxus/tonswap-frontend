@@ -4,14 +4,15 @@ import { useParams } from 'react-router-dom'
 import { useIntl } from 'react-intl'
 import { observer } from 'mobx-react-lite'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
+import { usePage } from '@/hooks/usePage'
 import { BuilderField } from '@/modules/Builder/components/BuilderField'
 import { MintSubmitButton } from '@/modules/Builder/components/MintSubmitButton'
 import { useMintForm } from '@/modules/Builder/hooks/useMintForm'
 import { useManageTokenStore } from '@/modules/Builder/stores/ManageTokenStore'
 import { MintAddressField } from '@/modules/Builder/components/MintAddressField'
 import { MintDetails } from '@/modules/Builder/components/MintDetails'
-import { usePage } from '@/hooks/usePage'
 
 type Props = {
     onDismiss: () => void;
@@ -38,13 +39,13 @@ function Popup({ onDismiss }: Props): JSX.Element {
         <div className="popup popup_scrollable">
             <div className="popup-overlay" />
             <div className="popup__wrap">
-                <button
-                    type="button"
-                    className="btn btn-icon popup-close"
+                <Button
+                    className="popup-close"
+                    type="icon"
                     onClick={onDismiss}
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
                         id: 'BUILDER_MANAGE_TOKEN_MINT_POPUP_TITLE',
@@ -65,11 +66,17 @@ function Popup({ onDismiss }: Props): JSX.Element {
                 </div>
                 <MintDetails />
                 <div className="popup-actions">
-                    <button className="btn btn-tertiary btn-lg form-submit btn-block" onClick={onDismiss} type="button">
+                    <Button
+                        block
+                        className="form-submit"
+                        size="lg"
+                        type="tertiary"
+                        onClick={onDismiss}
+                    >
                         {intl.formatMessage({
                             id: 'BUILDER_MANAGE_TOKEN_BTN_TEXT_CANCEL',
                         })}
-                    </button>
+                    </Button>
                     <MintSubmitButton closePopup={onDismiss} />
                 </div>
             </div>

@@ -4,6 +4,7 @@ import classNames from 'classnames'
 import { useIntl } from 'react-intl'
 import getScrollBarSize from 'rc-util/es/getScrollBarSize'
 
+import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
 import { NativeCoinItem, TokenAndCoinCombinator, WaypointWrappedItem } from '@/modules/TokensList/components'
 import { useTokensCache } from '@/stores/TokensCacheService'
@@ -91,13 +92,13 @@ export function TokensList({
         <div className="popup">
             <div onClick={onDismiss} className="popup-overlay" />
             <div className="popup__wrap popup__wrap--list">
-                <button
-                    type="button"
+                <Button
+                    type="icon"
                     onClick={onDismiss}
-                    className="btn btn-icon popup-close"
+                    className="popup-close"
                 >
                     <Icon icon="close" />
-                </button>
+                </Button>
                 <h2 className="popup-title">
                     {intl.formatMessage({
                         id: 'TOKENS_LIST_POPUP_TITLE',

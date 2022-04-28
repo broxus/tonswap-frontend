@@ -3,6 +3,7 @@ import classNames from 'classnames'
 import { Observer } from 'mobx-react-lite'
 import { useIntl } from 'react-intl'
 
+import { NativeScrollArea } from '@/components/common/NativeScrollArea'
 import { TokenIcon } from '@/components/common/TokenIcon'
 import { RateChange } from '@/components/common/RateChange'
 import { Chart } from '@/modules/Chart'
@@ -138,7 +139,7 @@ export function Stats({ baseToken, counterToken }: Props): JSX.Element {
                 <header className="pair-stats__chart-actions">
                     <Observer>
                         {() => (
-                            <>
+                            <NativeScrollArea>
                                 <ul className="tabs">
                                     <li
                                         className={classNames({
@@ -203,7 +204,7 @@ export function Stats({ baseToken, counterToken }: Props): JSX.Element {
                                         </a>
                                     </li>
                                 </ul>
-                            </>
+                            </NativeScrollArea>
                         )}
                     </Observer>
                 </header>
