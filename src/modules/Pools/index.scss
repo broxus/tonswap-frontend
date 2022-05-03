@@ -6,7 +6,7 @@
         justify-content: flex-start;
         margin: 40px 0 16px;
 
-        @media only screen and (min-width: 640px) {
+        @media only screen and (min-width: 960px) {
             align-items: flex-end;
             flex-flow: row nowrap;
             justify-content: space-between;
@@ -16,19 +16,32 @@
 
     &-toolbar {
         display: flex;
+        flex-flow: column wrap;
+        gap: 10px;
         justify-content: space-between;
-        @media only screen and (max-width: 959px) {
-            flex-direction: column;
+
+        @media only screen and (min-width: 960px) {
+            flex-flow: row nowrap;
         }
     }
 
     &-pair-buttons {
-        align-items: center;
         display: flex;
+        flex-flow: column wrap;
         gap: 10px;
-        @media only screen and (max-width: 959px) {
+
+        .pair-rates {
+            justify-content: center;
+            width: 100%;
+        }
+
+        @media only screen and (min-width: 768px) {
             align-items: flex-start;
-            flex-direction: column;
+            flex-flow: row nowrap;
+
+            .pair-rates {
+                width: auto;
+            }
         }
     }
 
@@ -41,8 +54,19 @@
     }
 
     &-pair-title {
+        align-items: center;
         column-gap: 12px;
         display: flex;
         margin: 0 0 16px;
+
+        .section-title {
+            align-items: center;
+            display: flex;
+            flex-flow: column wrap;
+            @media only screen and (min-width: 768px) {
+                flex-flow: row nowrap;
+                gap: 10px;
+            }
+        }
     }
 }

@@ -3,7 +3,6 @@ $drop-width:                                    300px !default;
 
 .drop {
     box-sizing: border-box;
-
     position: absolute;
     width: $drop-width;
     z-index: $drop-z-index;

@@ -337,6 +337,20 @@
     &.btn-lg { width: 56px; }
 }
 
+.btn-fav {
+    &.active {
+        svg {
+            fill: #c5e4f3;
+
+            path { stroke: #c5e4f3; }
+        }
+    }
+
+    svg path {
+        stroke: #c5e4f3;
+    }
+}
+
 .btn-with-icon {
     align-items: center;
     column-gap: 10px;

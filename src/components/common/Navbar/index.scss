@@ -152,7 +152,7 @@
 }
 
 .navbar-nav .nav-item-rest {
-    color: rgba(255, 255, 255, 0.48);
+    color: rgb(255 255 255 / 48%);
     cursor: pointer;
     padding: 0;
 }
@@ -162,7 +162,7 @@
  */
 
 .navbar-nav > li > a {
-    color: rgba(255, 255, 255, 0.48);
+    color: rgb(255 255 255 / 48%);
 }
 
 /*
@@ -192,7 +192,7 @@
  ========================================================================== */
 
 .navbar-item {
-    color: rgba(255, 255, 255, 0.48);
+    color: rgb(255 255 255 / 48%);
 }
 
 /*
@@ -208,7 +208,7 @@
  ========================================================================== */
 
 .navbar-toggle {
-    color: rgba(255, 255, 255, 0.48);
+    color: rgb(255 255 255 / 48%);
 }
 
 .navbar-toggle:hover,
@@ -256,17 +256,19 @@
  */
 
 .navbar-dropdown {
-    background: #313551;
+    -webkit-backdrop-filter: blur(64px);
+    backdrop-filter: blur(64px);
+    background: linear-gradient(0deg, rgb(5 11 46 / 12%), rgb(5 11 46 / 12%)), rgb(255 255 255 / 12%);
 
     /* 3 */
     box-sizing: border-box;
-    color: rgba(255, 255, 255, 0.48);
+    color: rgb(255 255 255 / 48%);
 
     /* 1 */
     display: block;
 
     /* 4 */
-    padding: 12px;
+    padding: 10px 20px;
 
     /* 2 */
     position: absolute;
@@ -314,7 +316,7 @@
  */
 
 .navbar-dropdown-nav > li > a {
-    color: rgba(255, 255, 255, 0.48);
+    color: rgb(255 255 255 / 48%);
 
 }
 
@@ -345,7 +347,7 @@
  */
 
 .navbar-dropdown-nav .nav-divider {
-    border-top: 1px solid rgba(255, 255, 255, 0.48);
+    border-top: 1px solid rgb(255 255 255 / 48%);
 
 }
 
@@ -355,7 +357,7 @@
 
 // noinspection Stylelint
 .navbar-dropdown-nav .nav-sub a {
-    color: rgba(255, 255, 255, 0.48);
+    color: rgb(255 255 255 / 48%);
 }
 
 .navbar-dropdown-nav .nav-sub a:hover,

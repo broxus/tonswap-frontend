@@ -1,23 +1,20 @@
 /* eslint-disable */
 export default {
-    OPEN_IN_EXPLORER: 'Open in explorer',
-
-    GREETING_BANNER_TITLE: 'New to FlatQube?',
-    GREETING_BANNER_WALLET_NOT_INSTALLED_NOTE: 'It only takes 2 steps to get the best out of FlatQube:',
-    GREETING_BANNER_WALLET_INSTALLED_NOTE_P1: 'You successfully installed and connected EVER Wallet.',
-    GREETING_BANNER_WALLET_INSTALLED_NOTE_P2: 'It only takes 1 last step to get the best out of FlatQube:',
-    GREETING_BANNER_GET_EVER_LINK_TEXT: 'Get EVERs',
-    GREETING_BANNER_FAQ_NOTE: 'Any questions?',
-    GREETING_BANNER_JOIN_TELEGRAM_LINK_TEXT: 'Join our Telegram group',
-
+    OPEN_IN_EXPLORER: '탐색기에서 열기',
+    GREETING_BANNER_TITLE: '플랫큐브가 처음이신가요?',
+    GREETING_BANNER_WALLET_NOT_INSTALLED_NOTE: '플랫큐브를 최대한 활용하기까지 두 단계가 남았습니다.',
+    GREETING_BANNER_WALLET_INSTALLED_NOTE_P1: '에버월릿(EVER Wallet)을 성공적으로 설치하고 연결했습니다.',
+    GREETING_BANNER_WALLET_INSTALLED_NOTE_P2: '플랫큐브를 최대한 활용하기까지 마지막 한 단계만 남았습니다.',
+    GREETING_BANNER_GET_EVER_LINK_TEXT: 'EVER를 구입하세요',
+    GREETING_BANNER_FAQ_NOTE: '질문이 있으신가요?',
+    GREETING_BANNER_JOIN_TELEGRAM_LINK_TEXT: '텔레그램 그룹에 참여하세요',
     NAV_LINK_SOON_HINT: ' 곧',
     NAV_LINK_TEXT_SWAP: '스왑',
     NAV_LINK_TEXT_POOLS: '풀',
     NAV_LINK_TEXT_TOKENS: '토큰',
     NAV_LINK_TEXT_PAIRS: '페어',
-    NAV_LINK_TEXT_FARMING: 'Farming',
+    NAV_LINK_TEXT_FARMING: '파밍 (Farming)',
     NAV_LINK_TEXT_BUILDER: '빌더',
-
     WALLET_CONNECTING_POPUP_TITLE: '지갑에 연결',
     WALLET_CONNECTING_POPUP_LEAD_WALLET_NAME: '크리스탈 월릿',
     WALLET_CONNECTING_POPUP_LEAD_IN_PROCESS: '초기화 중...',
@@ -26,14 +23,12 @@ export default {
     WALLET_UPDATING_LINK_TEXT: '크리스탈 월릿 업데이트',
     WALLET_INSTALLATION_LINK_TEXT: '크리스탈 월릿 설치',
     WALLET_INSTALLATION_NOTE: '<p>현재 톤스왑은 크리스탈 월릿만 지원합니다</p><p>확장프로그램을 아직 설치하지 않으셨다면 여기에서 설치 가능합니다.<a href="https://chrome.google.com/webstore/category/extensions" target="_blank" rel="nofollow noopener noreferrer">chrome.google.com</a></p>',
-
     WALLET_BALANCE_HINT: '{value} {currency}',
     WALLET_CONNECT_BTN_TEXT: '연결하다',
     WALLET_NOT_CONNECTED_HINT: '연결되지 않은',
     WALLET_DISCONNECT_BTN_TEXT: '로그아웃',
     EVER_WALLET_CONNECTOR_BLOCKCHAIN_NAME: '에버스케일',
     EVER_WALLET_CONNECT_BTN_TEXT: '지갑에 연결',
-
     TOKENS_UPGRADE_POPUP_TITLE: '토큰 업그레이드',
     TOKENS_UPGRADE_POPUP_NOTE: '귀하의 지갑에서 규격이 오래된 일부 토큰을 발견했습니다. 부디 최신 규격으로 업데이트하셔서 사용 가능한 상태를 유지하십시오.',
     TOKENS_UPGRADE_UPGRADE_BTN_TEXT: '업그레이드',
@@ -60,7 +55,6 @@ export default {
     PAGINATION_BEFORE_TEXT: '페이지',
     PAGINATION_PAGE_OF: 'of {totalPages}',
     COPY_CLIPBOARD_SUCCESS: '복사됨',
-
     CHART_NO_DATA: '해당하는 데이터가 현재 없습니다',
     SWAP_HEADER_TITLE: '토큰 스왑',
     SWAP_HEADER_WRAP_TITLE: '포장 {symbol}',
@@ -102,12 +96,10 @@ export default {
     SWAP_TRANSACTION_RECEIPT_LINK_TXT_TRANSACTION: '트랜잭션 결과',
     SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE: '<p>스왑이 취소되었습니다. 당신의 잔액은 변경되지 않았습니다.</p>',
     SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE: 'Slippage이 {leftSymbol}/{rightSymbol} 페어의 {slippage}% 이상이므로 {leftSymbol} 상태로 남겨졌습니다.',
-
     SWAP_COMBINED_NOTATION_TITLE: 'From now on EVER can be used on FlatQube',
-    SWAP_COMBINED_NOTATION_P1: 'Your default balance on the DEX will now be the cumulative balance of your EVER and wEVER, which you can swap for any other TIP-3.1 tokens.',
-    SWAP_COMBINED_NOTATION_P2: 'You can also swap by using only your EVER or wEVER balance, if preferable.',
-    SWAP_COMBINED_NOTATION_HOW_TO_LINK_TEXT: 'How to swap',
-
+    SWAP_COMBINED_NOTATION_P1: 'DEX의 기본 잔액은 이제 EVER 및 wEVER의 누적 잔액이 되며 다른 TIP-3.1 토큰으로 교환할 수 있습니다.',
+    SWAP_COMBINED_NOTATION_P2: '원하실 경우 EVER 또는 wEVER 잔액만 사용하여 환전할 수도 있습니다.',
+    SWAP_COMBINED_NOTATION_HOW_TO_LINK_TEXT: '환전방법 안내',
     CONVERSION_FIELD_LABEL_WRAP: '포장할 금액',
     CONVERSION_FIELD_LABEL_UNWRAP: '포장해제할 금액',
     CONVERSION_FIELD_LABEL_RECEIVE: '수신금액',
@@ -128,7 +120,6 @@ export default {
     TOKENS_LIST_POPUP_IMPORT_TOKEN_TITLE: '토큰 임포트',
     TOKENS_LIST_POPUP_IMPORT_TOKEN_WARNING: '이 토큰은 활성 토큰 목록에 표시되지 않습니다. 거래하시려는 토큰이 맞는지 확인하십시오.',
     TOKENS_LIST_POPUP_COMBINED_SELECTOR_NOTE: '양 토큰의 총합',
-
     ACCOUNT_CONNECTOR_NOTE: '계속하려면 계정을 연결해야 합니다. 이 지갑에 대한 계정 연결은 한번만 하시면 됩니다. 앞으로는 이 절차를 거칠 필요가 없습니다.',
     ACCOUNT_CONNECTOR_BUTTON: '계정 연결',
     TOKEN_SELECTOR_PLACEHOLDER: '토큰…',
@@ -150,18 +141,15 @@ export default {
     REMOVE_LIQUIDITY_FORM_CONFIRM: '확인',
     REMOVE_LIQUIDITY_FORM_CONNECT: '월릿에 연결하기',
     REMOVE_LIQUIDITY_FORM_SHARE_NULL: '—',
-
     REMOVE_LIQUIDITY_PROCESS_TITLE: '확인 대기 중',
     REMOVE_LIQUIDITY_PROCESS_TEXT: '소각 {amount} {symbol}',
     REMOVE_LIQUIDITY_PROCESS_HINT: '월릿에서 이 거래를 컨펌하세요.',
-
     REMOVE_LIQUIDITY_SUCCESS_TITLE: '거래 제출',
     REMOVE_LIQUIDITY_SUCCESS_BURNED: '소각됨, {symbol}',
     REMOVE_LIQUIDITY_SUCCESS_SUBMIT: 'Everscan 스캔에서 보기',
     REMOVE_LIQUIDITY_SUCCESS_SENT: '보냄, {symbol}',
     REMOVE_LIQUIDITY_SUCCESS_PLUS: '+{value}',
     REMOVE_LIQUIDITY_SUCCESS_MINUS: '-{value}',
-
     POOLS_LIST_CONNECT_WALLET_TITLE: '귀하의 유동성 포지션은 여기에 나타날 것입니다.',
     POOLS_LIST_TITLE: '풀 개요',
     POOLS_LIST_HEADER_NEW: '새로운 포지션',
@@ -191,11 +179,9 @@ export default {
     POOLS_LIST_USER_BALANCE: '귀하의 잔고',
     POOLS_LIST_LOCKED_FARM: '파밍풀(Farming pool)에 잠김 ',
     POOLS_FARMINGS_TITLE: 'Farming 풀',
-
     POOLS_LIST_ITEM_NOT_FOUND: '풀을 찾을 수 없음',
-    POOLS_LIST_ITEM_TITLE: '{symbol} 유동성 풀',
+    POOLS_LIST_ITEM_TITLE: '유동성 풀',
     POOLS_LIST_ITEM_OVERVIEW: '풀 개요',
-
     POOL_HEADER_TITLE: '유동성 추가',
     POOL_FIELD_TOKEN_WALLET_BALANCE: '잔고: {balance}',
     POOL_FIELD_LABEL_LEFT: '왼쪽',
@@ -268,7 +254,6 @@ export default {
     POOL_SUPPLY_RECEIPT_CANCELLED_NOTE: '<p>공급이 취소되었습니다. 잔액은 변경되지 않았습니다.</p>',
     POOL_SUPPLY_RECEIPT_POPUP_BTN_TEXT_CLOSE: '닫기',
     POOL_INSUFFICIENT_TOKEN_BALANCE: '잔고부족',
-
     FARMING_HEADER_TITLE: 'Farming',
     FARMING_HEADER_CREATE_LINK_TEXT: 'farm 풀 만들기',
     FARMING_HEADER_GUIDE_LINK_TEXT: '가이드',
@@ -352,12 +337,10 @@ export default {
     FARMING_CREATE_POOL_VALID_STATE_CREATION_NOTE: 'Farm 풀 생성 비용은 7 TON입니다. 가스는 반환되지 않습니다.',
     FARMING_CREATE_POOL_VALID_STATE_DEPOSIT_NOTE: '풀 주소가 활성화되기 전에 전체 {tokensDeposits} 금액을 풀 주소에 입금해야 합니다.',
     FARMING_CREATE_BTN_TEXT_SUBMIT: '풀 생성',
-
     FARMING_LIST_TITLE: 'Farming 풀',
     FARMING_LIST_TITLE_ALL: '모든 풀',
     FARMING_LIST_TITLE_FAV: '즐겨찾는 풀',
     FARMING_LIST_CREATE_BTN: 'Farm 풀 생성하기',
-
     FARMING_TABLE_FARMING_POOL: 'Farming 풀',
     FARMING_TABLE_REWARD: '보상',
     FARMING_TABLE_TVL: 'TVL',
@@ -373,17 +356,14 @@ export default {
     FARMING_TABLE_APR_VALUE: '{value}%',
     FARMING_TABLE_SHARE_VALUE: '{value}%',
     FARMING_TABLE_NULL: 'N/A',
-
     FARMING_DATE_WAITING: '시작 {date}',
     FARMING_DATE_ACTIVE: '종료 {date}',
     FARMING_DATE_INFINITE: '시작함',
     FARMING_DATE_ENDED: '종료됨',
-
     FARMING_PAIR_WAITING_TOOLTIP: '<h4>Farming 시작을 기다리는 중</h4><p>이 풀에서는 아직 farming 기간이 시작되지 않았습니다.</p>',
     FARMING_PAIR_PUBLIC_TOOLTIP: '<h4>귀하의 farming 풀은 모든 사람이 볼 수 있습니다.</h4>',
     FARMING_PAIR_PRIVATE_TOOLTIP: '<h4>당신만이 자신의 farming 풀을 볼 수 있습니다</h4><p>공개적으로 볼 수 있도록 풀<br />잔액에 보상 금액을 예치합니다.</p>',
     FARMING_PAIR_WARNING_TOOLTIP: '<h4>경고!</h4><p>보상 잔액이 낮습니다.<br />이 풀에 투자하지 않는 것이 좋습니다.</p>',
-
     FARMING_FILTER_FORM_BUTTON: '필터',
     FARMING_FILTER_FORM_INPUT: '찾기...',
     FARMING_ITEM_BREADCRUMB_LIST: '모든 Farming 풀',
@@ -398,7 +378,6 @@ export default {
     FARMING_ITEM_DETAILS_TITLE: '구체적사항',
     FARMING_ITEM_SPEED_TITLE: 'Farming 속도변동',
     FARMING_ITEM_TRANSACTIONS_TITLE: '트랜잭션',
-
     FARMING_MESSAGE_GET_LP_ACCEPTS: '이 풀은 {symbol} 토큰을 받아들입니다.',
     FARMING_MESSAGE_GET_LP_DEPOSIT: '{left}와 {right}를 유동성 풀에 예치하고 LP 토큰을 받아 Farming을 시작하세요.',
     FARMING_MESSAGE_GET_LP_TITLE: '필요한 LP 토큰이 없습니다. 그를 확보하셔서 APR{apr}%로 farming을 시작하세요',
@@ -412,7 +391,6 @@ export default {
     FARMING_MESSAGE_ADMIN_NULL_BALANCE_TITLE: '잔고부족',
     FARMING_MESSAGE_ADMIN_NULL_BALANCE_TEXT: '보상 토큰의 잔액이 낮아 Farm에 부채가 쌓이고 있습니다.<br />부채를 상환하기 위해 Farm의 잔액을 채우거나 적자의 증가를 방지하기 위해 풀을 닫으십시오.',
     FARMING_MESSAGE_ADMIN_NULL_BALANCE_BTN: '보상토큰을 예치하세요',
-
     FARMING_BALANCE_DEPOSIT_TITLE: 'Deposit',
     FARMING_BALANCE_DEPOSIT_TEXT: 'LP 토큰을 예치하여 Farming을 시작하세요',
     FARMING_BALANCE_DEPOSIT_ACTION: 'Deposit',
@@ -424,7 +402,6 @@ export default {
     FARMING_BALANCE_WITHDRAW_ACTION_WITHDRAW: '인출',
     FARMING_BALANCE_WITHDRAW_BALANCE: '당신의 farming 잔고: {value} {symbol}',
     FARMING_BALANCE_TOKEN: '{amount} {symbol}',
-
     FARMING_ADMIN_DEPOSIT_REQUIRED_BALANCE: '예치됨: <b>{amount} {symbol}</b> / {required} {symbol}',
     FARMING_ADMIN_DEPOSIT_BALANCE: '예치됨: {amount} {symbol}',
     FARMING_ADMIN_DEPOSIT_TITLE: '보상토큰을 예치하세요',
@@ -577,7 +554,7 @@ export default {
     BUILDER_LIST_HEADER_SYMBOL_CELL: '심볼',
     BUILDER_LIST_HEADER_DECIMALS_CELL: '소수점',
     BUILDER_LIST_HEADER_TOTAL_SUPPLY_CELL: '총 공급',
-    BUILDER_LIST_HEADER_TOTAL_ROOT_CELL: 'Root',
+    BUILDER_LIST_HEADER_TOTAL_ROOT_CELL: '루트',
     BUILDER_CREATE_HEADER_TITLE: '토큰 생성',
     BUILDER_CREATE_FIELD_LABEL_NAME: '이름',
     BUILDER_CREATE_FIELD_LABEL_SYMBOL: '심볼',
@@ -659,4 +636,11 @@ export default {
     TRANSACTIONS_LIST_NO_TRANSACTIONS: '트랜잭션 없음',
     TRANSACTIONS_LIST_NULL: 'N/A',
     TRANSACTIONS_LIST_TITLE: '트랜잭션',
+    WALLET_BTN_TEXT_CONNECT: '지갑에 연결',
+    WALLET_BTN_TEXT_DISCONNECT: '로그아웃',
+    FOOTER_NAV_HEADER_DEFI_PRODUCTS: '디파이 제품',
+    FOOTER_NAV_TON_BRIDGE_LINK_TEXT: '옥터스브릿지',
+    FOOTER_NAV_TON_SCAN_LINK_TEXT: '에버스캔',
+    FOOTER_NAV_WTON_LINK_TEXT: 'Wrapped EVER ',
+    FOOTER_NAV_CRYSTAL_WALLET_LINK_TEXT: '에버월릿 (EVER Wallet)',
 }

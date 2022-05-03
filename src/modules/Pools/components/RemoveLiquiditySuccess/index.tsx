@@ -5,11 +5,11 @@ import { observer } from 'mobx-react-lite'
 
 import { Button } from '@/components/common/Button'
 import { Icon } from '@/components/common/Icon'
+import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 import { useTokensCache } from '@/stores/TokensCacheService'
 import { formattedTokenAmount } from '@/utils'
 
 import './index.scss'
-import { TransactionExplorerLink } from '@/components/common/TransactionExplorerLink'
 
 type Props = {
     lpAmount?: string;

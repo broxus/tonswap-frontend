@@ -155,7 +155,7 @@ export class TokenWallet {
 
         if (state.isDeployed) {
             const [decimals, name, symbol, details] = await Promise.all([
-                TokenWallet.getDecimals(address),
+                TokenWallet.getDecimals(address, state),
                 TokenWallet.getName(address, state),
                 TokenWallet.getSymbol(address, state),
                 TokenWallet.getDetails(address, state),

@@ -73,11 +73,13 @@ export function FarmingChart({
             })}
         </div>
     ) : (
-        <Chart
-            data={data}
-            timeframe={timeframe}
-            type="Area"
-            load={load}
-        />
+        <div className="farming-chart__chart-wrapper">
+            <Chart
+                data={data}
+                timeframe={timeframe}
+                type="Area"
+                load={load}
+            />
+        </div>
     )
 }

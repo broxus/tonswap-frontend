@@ -1,7 +1,7 @@
 import * as React from 'react'
-import { Link } from 'react-router-dom'
 import classNames from 'classnames'
 
+import { Button } from '@/components/common/Button'
 import { TokenIcon, TokenIconProps } from '@/components/common/TokenIcon'
 
 import './index.scss'
@@ -20,12 +20,13 @@ export function PairRates({
     className,
 }: Props): JSX.Element {
     return (
-        <Link
-            to={link}
-            className={classNames('btn btn-s btn-secondary pair-rates', className)}
+        <Button
+            className={classNames('pair-rates', className)}
+            type="secondary"
+            link={link}
         >
             <TokenIcon size="small" {...tokenIcon} />
             {label}
-        </Link>
+        </Button>
     )
 }

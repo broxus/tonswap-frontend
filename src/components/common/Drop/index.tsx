@@ -71,7 +71,7 @@ export const Drop = React.forwardRef<unknown, DropProps>((props, ref) => {
     const triggerRef = React.useRef(null)
 
     const [triggerVisible, setTriggerVisible] = React.useState<boolean>()
-    const mergedVisible = 'visible' in restProps ? visible : triggerVisible
+    const mergedVisible = 'visible' in props ? visible : triggerVisible
 
     const onPopupVisibleChange = (value: boolean) => {
         setTriggerVisible(value)

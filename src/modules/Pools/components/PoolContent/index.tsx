@@ -79,14 +79,17 @@ export function PoolContent(): JSX.Element {
                                     rightToken={rightToken}
                                 />
                                 <h2 className="section-title">
-                                    {intl.formatMessage({
-                                        id: 'POOLS_LIST_ITEM_TITLE',
-                                    }, {
-                                        symbol: concatSymbols(
+                                    <span>
+                                        {concatSymbols(
                                             leftToken?.symbol,
                                             rightToken?.symbol,
-                                        ),
-                                    })}
+                                        )}
+                                    </span>
+                                    <span>
+                                        {intl.formatMessage({
+                                            id: 'POOLS_LIST_ITEM_TITLE',
+                                        })}
+                                    </span>
                                 </h2>
                             </div>
 

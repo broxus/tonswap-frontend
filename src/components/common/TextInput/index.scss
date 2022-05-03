@@ -3,23 +3,23 @@
 .text-input {
     @include input-reset;
 
-    border: 1px solid rgba(255, 255, 255, 0.16);
-    color: #ffffff;
+    border: 1px solid rgb(255 255 255 / 16%);
+    color: #fff;
     cursor: text;
     font-size: 14px;
     height: 36px;
     padding: 0 12px;
 
     &::placeholder {
-        color: rgba(255, 255, 255, 0.56);
+        color: rgb(255 255 255 / 56%);
     }
 
     &:disabled {
-        color: rgba(255, 255, 255, 0.72);
+        color: rgb(255 255 255 / 72%);
     }
 
     &_dirty {
-        border-color: rgba(255, 255, 255, 0.24);
+        border-color: rgb(255 255 255 / 24%);
     }
 
     &_invalid {

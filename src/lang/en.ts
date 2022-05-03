@@ -202,7 +202,7 @@ export default {
     POOLS_FARMINGS_TITLE: 'Farming pools',
 
     POOLS_LIST_ITEM_NOT_FOUND: 'Pool not found',
-    POOLS_LIST_ITEM_TITLE: '{symbol} Liquidity pool',
+    POOLS_LIST_ITEM_TITLE: 'Liquidity pool',
     POOLS_LIST_ITEM_OVERVIEW: 'Pools overview',
 
     POOL_HEADER_TITLE: 'Add Liquidity',

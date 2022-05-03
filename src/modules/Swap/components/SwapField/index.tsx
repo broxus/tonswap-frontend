@@ -175,10 +175,10 @@ function Field({
                         ) && (
                             <Button
                                 key="max-button"
-                                size="xs"
-                                type="secondary"
                                 className="form-btn-max"
                                 disabled={props.disabled}
+                                size="xs"
+                                type="secondary"
                                 onClick={props.onMaximize}
                             >
                                 Max
