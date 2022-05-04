@@ -96,7 +96,7 @@ export default {
     SWAP_TRANSACTION_RECEIPT_LINK_TXT_TRANSACTION: '트랜잭션 결과',
     SWAP_TRANSACTION_RECEIPT_CANCELLED_NOTE: '<p>스왑이 취소되었습니다. 당신의 잔액은 변경되지 않았습니다.</p>',
     SWAP_TRANSACTION_RECEIPT_CROSS_EXCHANGE_CANCELLED_NOTE: 'Slippage이 {leftSymbol}/{rightSymbol} 페어의 {slippage}% 이상이므로 {leftSymbol} 상태로 남겨졌습니다.',
-    SWAP_COMBINED_NOTATION_TITLE: 'From now on EVER can be used on FlatQube',
+    SWAP_COMBINED_NOTATION_TITLE: '이제 플랫큐브에서 EVER를 사용하실 수 있습니다',
     SWAP_COMBINED_NOTATION_P1: 'DEX의 기본 잔액은 이제 EVER 및 wEVER의 누적 잔액이 되며 다른 TIP-3.1 토큰으로 교환할 수 있습니다.',
     SWAP_COMBINED_NOTATION_P2: '원하실 경우 EVER 또는 wEVER 잔액만 사용하여 환전할 수도 있습니다.',
     SWAP_COMBINED_NOTATION_HOW_TO_LINK_TEXT: '환전방법 안내',
