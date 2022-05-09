@@ -5,15 +5,11 @@
     justify-content: space-between;
 
     .navbar {
-        flex-wrap: wrap;
         justify-content: center;
 
         .navbar-item,
         .navbar-toggle {
-            min-height: 44px;
-            @media (min-width: 768px) {
-                min-height: 64px;
-            }
+            min-height: 64px;
         }
     }
 

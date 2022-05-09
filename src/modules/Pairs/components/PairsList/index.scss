@@ -1,13 +1,13 @@
 .pairs-list {
     &.list {
-        --list-grid-template: 50px minmax(30%, 60%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
+        --list-grid-template: minmax(160px, 65%) minmax(80px, 140px);
 
-        @media only screen and (max-width: 824px) {
+        @media only screen and (min-width: 768px) {
             --list-grid-template: 50px minmax(30%, 60%) minmax(100px, 120px) minmax(100px, 120px);
         }
 
-        @media only screen and (max-width: 540px) {
-            --list-grid-template: minmax(40%, 65%) minmax(120px, 140px);
+        @media only screen and (min-width: 960px) {
+            --list-grid-template: 50px minmax(30%, 60%) minmax(100px, 120px) minmax(100px, 120px) minmax(100px, 120px);
         }
     }
 

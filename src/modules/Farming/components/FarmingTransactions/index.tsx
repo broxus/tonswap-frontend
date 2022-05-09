@@ -121,7 +121,9 @@ export function FarmingTransactionsInner({
 
                 {userAddress && (
                     <Checkbox
-                        label="Only my transactions"
+                        label={intl.formatMessage({
+                            id: 'FARMING_TRANSACTIONS_FILTER_ONLY_USER_TRANSACTIONS',
+                        })}
                         onChange={setOnlyUser}
                         checked={onlyUser}
                     />
